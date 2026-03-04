@@ -1,5 +1,7 @@
 # Lucent UI
 
+[![CI](https://github.com/rozinashopify/lucent-ui/actions/workflows/ci.yml/badge.svg)](https://github.com/rozinashopify/lucent-ui/actions/workflows/ci.yml)
+
 > An AI-first React component library. Every component ships with a machine-readable manifest so AI coding assistants generate correct, on-brand UI the first time.
 
 ---

@@ -26,6 +26,7 @@
     "dev": "vite --config vite.dev.config.ts",
     "build": "vite build",
     "build:server": "tsc -p server/tsconfig.json",
+    "test": "echo \"No tests yet\" && exit 0",
     "prepublishOnly": "tsc --noEmit && pnpm build && pnpm build:server"
   },
   "keywords": [
