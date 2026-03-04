@@ -10,6 +10,8 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   fullWidth?: boolean;
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
+  /** Appends a chevron-down icon after the label (or rightIcon). Useful for dropdown triggers. */
+  chevron?: boolean;
 }
 
 const variantStyles: Record<ButtonVariant, CSSProperties> = {
@@ -42,7 +44,7 @@ const sizeStyles: Record<ButtonSize, CSSProperties> = {
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = 'primary', size = 'md', loading = false, fullWidth = false, leftIcon, rightIcon, children, disabled, style, ...rest }, ref) => {
+  ({ variant = 'primary', size = 'md', loading = false, fullWidth = false, leftIcon, rightIcon, chevron = false, children, disabled, style, ...rest }, ref) => {
     const isDisabled = disabled ?? loading;
 
     return (
@@ -61,9 +63,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           letterSpacing: '0.01em',
           borderRadius: 'var(--lucent-radius-lg)',
           cursor: isDisabled ? 'not-allowed' : 'pointer',
-          opacity: isDisabled ? 0.5 : 1,
           width: fullWidth ? '100%' : undefined,
-          transition: 'background var(--lucent-duration-fast) var(--lucent-easing-default), border-color var(--lucent-duration-fast) var(--lucent-easing-default), box-shadow var(--lucent-duration-fast) var(--lucent-easing-default)',
+          transition: 'background var(--lucent-duration-fast) var(--lucent-easing-default), border-color var(--lucent-duration-fast) var(--lucent-easing-default), box-shadow var(--lucent-duration-fast) var(--lucent-easing-default), transform 80ms var(--lucent-easing-default)',
           whiteSpace: 'nowrap',
           boxSizing: 'border-box',
           outline: 'none',
@@ -71,6 +72,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           ...sizeStyles[size],
           ...variantStyles[variant],
           ...style,
+          ...(isDisabled && {
+            background: 'var(--lucent-bg-muted)',
+            color: 'var(--lucent-text-disabled)',
+            borderColor: 'transparent',
+          }),
         }}
         onMouseEnter={(e) => {
           if (!isDisabled) applyHover(e.currentTarget, variant);
@@ -81,7 +87,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           rest.onMouseLeave?.(e);
         }}
         onMouseDown={(e) => {
-          if (!isDisabled) e.currentTarget.style.transform = 'translateY(1px)';
+          if (!isDisabled) e.currentTarget.style.transform = 'scale(0.95)';
           rest.onMouseDown?.(e);
         }}
         onMouseUp={(e) => {
@@ -101,6 +107,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {leftIcon}
         {loading ? <ButtonSpinner /> : children}
         {!loading && rightIcon}
+        {!loading && chevron && <ButtonChevron size={size} />}
       </button>
     );
   },
@@ -134,6 +141,17 @@ function removeHover(el: HTMLButtonElement, variant: ButtonVariant) {
     el.style.background = 'var(--lucent-danger-default)';
     el.style.borderColor = 'var(--lucent-danger-default)';
   }
+}
+
+const chevronSizePx: Record<ButtonSize, number> = { sm: 12, md: 14, lg: 16 };
+
+function ButtonChevron({ size }: { size: ButtonSize }) {
+  const px = chevronSizePx[size];
+  return (
+    <svg width={px} height={px} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden style={{ flexShrink: 0, marginLeft: -2 }}>
+      <polyline points="6 9 12 15 18 9" />
+    </svg>
+  );
 }
 
 function ButtonSpinner() {

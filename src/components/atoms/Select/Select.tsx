@@ -1,26 +1,44 @@
-import { forwardRef, type InputHTMLAttributes, type ReactNode } from 'react';
+import { forwardRef, type SelectHTMLAttributes } from 'react';
 
-export type InputType = 'text' | 'number' | 'password' | 'email' | 'tel' | 'url' | 'search';
+export type SelectSize = 'sm' | 'md' | 'lg';
 
-export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
-  type?: InputType;
+export interface SelectOption {
+  value: string;
+  label: string;
+  disabled?: boolean;
+}
+
+export interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'size'> {
+  options: SelectOption[];
+  size?: SelectSize;
   label?: string;
   helperText?: string;
   errorText?: string;
-  leftElement?: ReactNode;
-  rightElement?: ReactNode;
+  placeholder?: string;
 }
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, helperText, errorText, leftElement, rightElement, id, style, ...rest }, ref) => {
-    const inputId = id ?? `lucent-input-${Math.random().toString(36).slice(2, 7)}`;
+const sizeHeights: Record<SelectSize, string> = {
+  sm: '32px',
+  md: '40px',
+  lg: '46px',
+};
+
+const sizeFonts: Record<SelectSize, string> = {
+  sm: 'var(--lucent-font-size-sm)',
+  md: 'var(--lucent-font-size-md)',
+  lg: 'var(--lucent-font-size-lg)',
+};
+
+export const Select = forwardRef<HTMLSelectElement, SelectProps>(
+  ({ options, size = 'md', label, helperText, errorText, placeholder, disabled, id, style, ...rest }, ref) => {
+    const selectId = id ?? `lucent-select-${Math.random().toString(36).slice(2, 7)}`;
     const hasError = Boolean(errorText);
 
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--lucent-space-1)', width: '100%' }}>
         {label && (
           <label
-            htmlFor={inputId}
+            htmlFor={selectId}
             style={{
               fontSize: 'var(--lucent-font-size-sm)',
               fontWeight: 'var(--lucent-font-weight-medium)',
@@ -32,26 +50,19 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           </label>
         )}
         <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-          {leftElement && (
-            <span style={{
-              position: 'absolute', left: 'var(--lucent-space-3)',
-              color: 'var(--lucent-text-secondary)', display: 'flex', alignItems: 'center',
-            }}>
-              {leftElement}
-            </span>
-          )}
-          <input
+          <select
             ref={ref}
-            id={inputId}
+            id={selectId}
+            disabled={disabled}
             aria-invalid={hasError}
             aria-describedby={
-              hasError ? `${inputId}-error` : helperText ? `${inputId}-helper` : undefined
+              hasError ? `${selectId}-error` : helperText ? `${selectId}-helper` : undefined
             }
             style={{
               width: '100%',
-              height: '40px',
-              padding: `0 ${rightElement ? 'var(--lucent-space-10)' : 'var(--lucent-space-3)'} 0 ${leftElement ? 'var(--lucent-space-10)' : 'var(--lucent-space-3)'}`,
-              fontSize: 'var(--lucent-font-size-md)',
+              height: sizeHeights[size],
+              padding: `0 var(--lucent-space-8) 0 var(--lucent-space-3)`,
+              fontSize: sizeFonts[size],
               fontFamily: 'var(--lucent-font-family-base)',
               color: 'var(--lucent-text-primary)',
               background: 'var(--lucent-surface-default)',
@@ -59,11 +70,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               borderRadius: 'var(--lucent-radius-lg)',
               outline: 'none',
               boxSizing: 'border-box',
+              appearance: 'none',
+              cursor: disabled ? 'not-allowed' : 'pointer',
               transition: `border-color var(--lucent-duration-fast) var(--lucent-easing-default)`,
               ...style,
             }}
             onMouseEnter={(e) => {
-              if (!rest.disabled && e.currentTarget !== document.activeElement) {
+              if (!disabled && e.currentTarget !== document.activeElement) {
                 e.currentTarget.style.borderColor = hasError
                   ? 'var(--lucent-danger-default)'
                   : 'var(--lucent-border-strong)';
@@ -71,7 +84,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               rest.onMouseEnter?.(e);
             }}
             onMouseLeave={(e) => {
-              if (!rest.disabled && e.currentTarget !== document.activeElement) {
+              if (!disabled && e.currentTarget !== document.activeElement) {
                 e.currentTarget.style.borderColor = hasError
                   ? 'var(--lucent-danger-default)'
                   : 'var(--lucent-border-default)';
@@ -93,19 +106,38 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               rest.onBlur?.(e);
             }}
             {...rest}
-          />
-          {rightElement && (
-            <span style={{
-              position: 'absolute', right: 'var(--lucent-space-3)',
-              color: 'var(--lucent-text-secondary)', display: 'flex', alignItems: 'center',
-            }}>
-              {rightElement}
-            </span>
-          )}
+          >
+            {placeholder && (
+              <option value="" disabled>
+                {placeholder}
+              </option>
+            )}
+            {options.map((opt) => (
+              <option key={opt.value} value={opt.value} disabled={opt.disabled}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+          {/* Chevron */}
+          <span
+            aria-hidden
+            style={{
+              position: 'absolute',
+              right: 'var(--lucent-space-3)',
+              pointerEvents: 'none',
+              color: 'var(--lucent-text-secondary)',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </span>
         </div>
         {hasError && (
           <span
-            id={`${inputId}-error`}
+            id={`${selectId}-error`}
             role="alert"
             style={{
               fontSize: 'var(--lucent-font-size-sm)',
@@ -118,7 +150,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         )}
         {!hasError && helperText && (
           <span
-            id={`${inputId}-helper`}
+            id={`${selectId}-helper`}
             style={{
               fontSize: 'var(--lucent-font-size-sm)',
               color: 'var(--lucent-text-secondary)',
@@ -133,4 +165,4 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
   },
 );
 
-Input.displayName = 'Input';
+Select.displayName = 'Select';
