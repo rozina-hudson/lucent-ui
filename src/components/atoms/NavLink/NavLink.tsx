@@ -34,19 +34,21 @@ export function NavLink({
         display: 'flex',
         alignItems: 'center',
         gap: 'var(--lucent-space-2)',
-        padding: 'var(--lucent-space-2) var(--lucent-space-3)',
+        padding: 'var(--lucent-space-2) var(--lucent-space-3) var(--lucent-space-2) var(--lucent-space-4)',
         borderRadius: 'var(--lucent-radius-md)',
-        borderLeft: `3px solid ${isActive ? 'var(--lucent-accent-default)' : 'transparent'}`,
-        paddingLeft: `calc(var(--lucent-space-3) - 3px)`,
-        background: isActive ? 'var(--lucent-bg-subtle)' : 'transparent',
+        background: disabled
+          ? 'transparent'
+          : isActive
+          ? 'var(--lucent-accent-default)'
+          : 'transparent',
         color: disabled
           ? 'var(--lucent-text-disabled)'
           : isActive
-          ? 'var(--lucent-text-primary)'
+          ? 'var(--lucent-text-on-accent)'
           : 'var(--lucent-text-secondary)',
         fontFamily: 'var(--lucent-font-family-base)',
         fontSize: 'var(--lucent-font-size-md)',
-        fontWeight: isActive ? 'var(--lucent-font-weight-semibold)' : 'var(--lucent-font-weight-regular)',
+        fontWeight: isActive ? 'var(--lucent-font-weight-medium)' : 'var(--lucent-font-weight-regular)',
         textDecoration: 'none',
         cursor: disabled ? 'not-allowed' : 'pointer',
         transition: 'background var(--lucent-duration-fast) var(--lucent-easing-default), color var(--lucent-duration-fast) var(--lucent-easing-default)',
