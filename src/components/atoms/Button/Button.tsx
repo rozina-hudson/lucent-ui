@@ -35,11 +35,10 @@ const variantStyles: Record<ButtonVariant, CSSProperties> = {
   },
 };
 
-// Hardcoded rem values matching the token scale — avoids CSS variable resolution timing issues
 const sizeStyles: Record<ButtonSize, CSSProperties> = {
-  sm: { height: '32px', paddingLeft: '12px', paddingRight: '12px', paddingTop: '0', paddingBottom: '0', fontSize: '13px', letterSpacing: '0.01em' },
-  md: { height: '38px', paddingLeft: '16px', paddingRight: '16px', paddingTop: '0', paddingBottom: '0', fontSize: '14px', letterSpacing: '0.01em' },
-  lg: { height: '46px', paddingLeft: '22px', paddingRight: '22px', paddingTop: '0', paddingBottom: '0', fontSize: '15px', letterSpacing: '0.01em' },
+  sm: { height: '32px', padding: '0 var(--lucent-space-3)', fontSize: 'var(--lucent-font-size-sm)' },
+  md: { height: '38px', padding: '0 var(--lucent-space-4)', fontSize: 'var(--lucent-font-size-md)' },
+  lg: { height: '46px', padding: '0 var(--lucent-space-5)', fontSize: 'var(--lucent-font-size-lg)' },
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -55,17 +54,17 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: '6px',
+          gap: 'var(--lucent-space-2)',
           fontFamily: 'var(--lucent-font-family-base)',
-          fontWeight: '500',
+          fontWeight: 'var(--lucent-font-weight-medium)',
           lineHeight: 1,
-          borderRadius: '6px',
+          letterSpacing: '0.01em',
+          borderRadius: 'var(--lucent-radius-md)',
           cursor: isDisabled ? 'not-allowed' : 'pointer',
           opacity: isDisabled ? 0.5 : 1,
           width: fullWidth ? '100%' : undefined,
-          transition: 'background 100ms ease, border-color 100ms ease, opacity 100ms ease, box-shadow 100ms ease',
+          transition: 'background var(--lucent-duration-fast) var(--lucent-easing-default), border-color var(--lucent-duration-fast) var(--lucent-easing-default), box-shadow var(--lucent-duration-fast) var(--lucent-easing-default)',
           whiteSpace: 'nowrap',
-          textDecoration: 'none',
           boxSizing: 'border-box',
           outline: 'none',
           margin: 0,

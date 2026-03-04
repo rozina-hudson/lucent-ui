@@ -3,7 +3,6 @@ import {
   useContext,
   useEffect,
   useId,
-  useRef,
   type ReactNode,
 } from 'react';
 import { lightTokens } from '../tokens/light.js';
@@ -29,7 +28,8 @@ export interface LucentProviderProps {
 
 /**
  * Wraps your app (or a subtree) and injects Lucent design tokens
- * as CSS custom properties on a scoped element.
+ * as CSS custom properties. Renders a <style> tag inline so tokens
+ * are available on the first paint — no useEffect flash.
  *
  * @example
  * <LucentProvider theme="dark">
@@ -41,33 +41,28 @@ export function LucentProvider({
   tokens: tokenOverrides,
   children,
 }: LucentProviderProps) {
-  const styleId = useId();
-  const styleRef = useRef<HTMLStyleElement | null>(null);
-
+  const id = useId().replace(/:/g, '');
   const baseTokens = theme === 'dark' ? darkTokens : lightTokens;
   const tokens: LucentTokens = tokenOverrides
     ? { ...baseTokens, ...tokenOverrides }
     : baseTokens;
 
+  const css = makeLibraryCSS(tokens, ':root');
+
+  // Clean up the style tag on unmount
   useEffect(() => {
-    if (!styleRef.current) {
-      const el = document.createElement('style');
-      el.setAttribute('data-lucent-id', styleId);
-      document.head.appendChild(el);
-      styleRef.current = el;
-    }
-
-    styleRef.current.textContent = makeLibraryCSS(tokens, ':root');
-
     return () => {
-      styleRef.current?.remove();
-      styleRef.current = null;
+      document.getElementById(`lucent-tokens-${id}`)?.remove();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [theme, tokenOverrides]);
+  }, [id]);
 
   return (
     <LucentContext.Provider value={{ theme, tokens }}>
+      {/* Inline <style> renders synchronously — tokens available on first paint */}
+      <style
+        id={`lucent-tokens-${id}`}
+        dangerouslySetInnerHTML={{ __html: css }}
+      />
       {children}
     </LucentContext.Provider>
   );
