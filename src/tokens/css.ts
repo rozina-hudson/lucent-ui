@@ -1,11 +1,13 @@
 import type { LucentTokens } from './types.js';
 
 // Converts a camelCase token key to a CSS custom property name.
-// e.g. "bgBase" → "--lucent-bg-base"
+// e.g. "bgBase" → "--lucent-bg-base", "space3" → "--lucent-space-3"
 function tokenToCssVar(key: string): string {
   return (
     '--lucent-' +
-    key.replace(/([A-Z])/g, (match) => `-${match.toLowerCase()}`)
+    key
+      .replace(/([A-Z])/g, (match) => `-${match.toLowerCase()}`)
+      .replace(/([a-z])(\d)/g, (_, a, b) => `${a}-${b}`)
   );
 }
 
