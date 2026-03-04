@@ -18,6 +18,7 @@
     "dist"
   ],
   "scripts": {
+    "dev": "vite --config vite.dev.config.ts",
     "build": "vite build",
     "prepublishOnly": "pnpm build"
   },
