@@ -58,7 +58,7 @@ export function PageLayout({
       )}
 
       {/* Body: sidebar + main */}
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden', paddingRight: 'var(--lucent-space-3)', paddingBottom: 'var(--lucent-space-3)' }}>
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         {/* Sidebar — no border-right */}
         {sidebar != null && (
           <div
@@ -81,6 +81,7 @@ export function PageLayout({
             flex: 1,
             overflowY: 'auto',
             minWidth: 0,
+            margin: '0 var(--lucent-space-3) var(--lucent-space-3) 0',
             border: '1px solid var(--lucent-border-default)',
             borderRadius: 'var(--lucent-radius-lg)',
             boxShadow: 'var(--lucent-shadow-sm)',
