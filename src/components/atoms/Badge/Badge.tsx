@@ -12,7 +12,7 @@ export interface BadgeProps {
 
 const variantStyles: Record<BadgeVariant, { bg: string; color: string; border: string }> = {
   neutral: { bg: 'var(--lucent-bg-muted)', color: 'var(--lucent-text-secondary)', border: 'var(--lucent-border-default)' },
-  accent:  { bg: 'var(--lucent-accent-subtle)', color: 'var(--lucent-accent-active)', border: 'var(--lucent-accent-subtle)' },
+  accent:  { bg: 'var(--lucent-accent-default)', color: 'var(--lucent-text-on-accent)', border: 'var(--lucent-accent-default)' },
   success: { bg: 'var(--lucent-success-subtle)', color: 'var(--lucent-success-text)', border: 'var(--lucent-success-subtle)' },
   warning: { bg: 'var(--lucent-warning-subtle)', color: 'var(--lucent-warning-text)', border: 'var(--lucent-warning-subtle)' },
   danger:  { bg: 'var(--lucent-danger-subtle)', color: 'var(--lucent-danger-text)', border: 'var(--lucent-danger-subtle)' },

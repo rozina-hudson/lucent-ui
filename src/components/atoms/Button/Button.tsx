@@ -15,7 +15,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 const variantStyles: Record<ButtonVariant, CSSProperties> = {
   primary: {
     background: 'var(--lucent-accent-default)',
-    color: 'var(--lucent-text-inverse)',
+    color: 'var(--lucent-text-on-accent)',
     border: '1px solid var(--lucent-accent-default)',
   },
   secondary: {
@@ -59,7 +59,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           fontWeight: 'var(--lucent-font-weight-medium)',
           lineHeight: 1,
           letterSpacing: '0.01em',
-          borderRadius: 'var(--lucent-radius-md)',
+          borderRadius: 'var(--lucent-radius-lg)',
           cursor: isDisabled ? 'not-allowed' : 'pointer',
           opacity: isDisabled ? 0.5 : 1,
           width: fullWidth ? '100%' : undefined,

@@ -56,7 +56,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               color: 'var(--lucent-text-primary)',
               background: 'var(--lucent-surface-default)',
               border: `1px solid ${hasError ? 'var(--lucent-danger-default)' : 'var(--lucent-border-default)'}`,
-              borderRadius: 'var(--lucent-radius-md)',
+              borderRadius: 'var(--lucent-radius-lg)',
               outline: 'none',
               boxSizing: 'border-box',
               transition: `border-color var(--lucent-duration-fast) var(--lucent-easing-default)`,

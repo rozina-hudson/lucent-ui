@@ -35,13 +35,14 @@ export const lightTokens: LucentTokens = {
   textSecondary: '#6b7280',
   textDisabled: '#9ca3af',
   textInverse: '#ffffff',
-  textOnAccent: '#ffffff',
+  textOnAccent: '#ffffff', // auto-recomputed by LucentProvider via getContrastText
 
-  // Accent (gold — matches lucentui.ai brand)
-  accentDefault: '#e9c96b',
-  accentHover: '#ddb84e',
-  accentActive: '#c9a33b',
-  accentSubtle: '#fef9ec',
+  // Accent (monochrome default — near-black for universal, high-contrast out of the box)
+  // Use `brandTokens` to opt in to the gold palette.
+  accentDefault: '#111827',
+  accentHover: '#1f2937',
+  accentActive: '#374151',
+  accentSubtle: '#f3f4f6',
 
   // Status
   successDefault: '#16a34a',
@@ -59,5 +60,5 @@ export const lightTokens: LucentTokens = {
   infoText: '#1d4ed8',
 
   // Focus
-  focusRing: '#e9c96b',
+  focusRing: '#111827',
 };

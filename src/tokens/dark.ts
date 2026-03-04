@@ -35,13 +35,14 @@ export const darkTokens: LucentTokens = {
   textSecondary: '#9ca3af',
   textDisabled: '#4a4d57',
   textInverse: '#0b0d12',
-  textOnAccent: '#0b0d12',
+  textOnAccent: '#111827', // auto-recomputed by LucentProvider via getContrastText
 
-  // Accent
-  accentDefault: '#e9c96b',
-  accentHover: '#fde99a',
-  accentActive: '#ddb84e',
-  accentSubtle: 'rgb(233 201 107 / 0.1)',
+  // Accent (monochrome default — near-white for high contrast on dark surfaces)
+  // Use `brandTokens` to opt in to the gold palette.
+  accentDefault: '#f9fafb',
+  accentHover: '#e5e7eb',
+  accentActive: '#d1d5db',
+  accentSubtle: 'rgb(249 250 251 / 0.1)',
 
   // Status
   successDefault: '#22c55e',
@@ -59,5 +60,5 @@ export const darkTokens: LucentTokens = {
   infoText: '#60a5fa',
 
   // Focus
-  focusRing: '#e9c96b',
+  focusRing: '#f9fafb',
 };
