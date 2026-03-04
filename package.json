@@ -17,6 +17,7 @@
   "bin": {
     "lucent-mcp": "./dist-server/server/index.js"
   },
+  "sideEffects": false,
   "files": [
     "dist",
     "dist-server"
@@ -25,7 +26,7 @@
     "dev": "vite --config vite.dev.config.ts",
     "build": "vite build",
     "build:server": "tsc -p server/tsconfig.json",
-    "prepublishOnly": "pnpm build && pnpm build:server"
+    "prepublishOnly": "tsc --noEmit && pnpm build && pnpm build:server"
   },
   "keywords": [
     "react",
