@@ -1,7 +1,7 @@
 import {
   createContext,
   useContext,
-  useEffect,
+  useLayoutEffect,
   useId,
   type ReactNode,
 } from 'react';
@@ -28,8 +28,8 @@ export interface LucentProviderProps {
 
 /**
  * Wraps your app (or a subtree) and injects Lucent design tokens
- * as CSS custom properties. Renders a <style> tag inline so tokens
- * are available on the first paint — no useEffect flash.
+ * as CSS custom properties into <head>. Uses useLayoutEffect so
+ * styles are applied synchronously before first paint.
  *
  * @example
  * <LucentProvider theme="dark">
@@ -49,20 +49,24 @@ export function LucentProvider({
 
   const css = makeLibraryCSS(tokens, ':root');
 
-  // Clean up the style tag on unmount
-  useEffect(() => {
+  // useLayoutEffect fires synchronously after DOM mutations, before browser paint —
+  // so CSS variables are in <head> before any component renders visually.
+  useLayoutEffect(() => {
+    let el = document.getElementById(`lucent-tokens-${id}`) as HTMLStyleElement | null;
+    if (!el) {
+      el = document.createElement('style');
+      el.id = `lucent-tokens-${id}`;
+      document.head.appendChild(el);
+    }
+    el.textContent = css;
+
     return () => {
       document.getElementById(`lucent-tokens-${id}`)?.remove();
     };
-  }, [id]);
+  }, [id, css]);
 
   return (
     <LucentContext.Provider value={{ theme, tokens }}>
-      {/* Inline <style> renders synchronously — tokens available on first paint */}
-      <style
-        id={`lucent-tokens-${id}`}
-        dangerouslySetInnerHTML={{ __html: css }}
-      />
       {children}
     </LucentContext.Provider>
   );
