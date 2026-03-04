@@ -1,0 +1,60 @@
+name: Manifest feedback
+description: A COMPONENT_MANIFEST is incorrect, incomplete, or misleading for AI tools
+labels: [type: manifest, area: ai]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The manifest is what AI assistants use to generate code. If it's wrong, the AI will be wrong too.
+        Please be as specific as possible about what the manifest says vs. what it should say.
+
+  - type: input
+    id: component
+    attributes:
+      label: Component
+      placeholder: e.g. Button, FormField
+    validations:
+      required: true
+
+  - type: dropdown
+    id: field
+    attributes:
+      label: Affected field
+      options:
+        - props
+        - usageExamples
+        - designIntent
+        - compositionGraph
+        - description
+        - accessibility
+        - other
+    validations:
+      required: true
+
+  - type: textarea
+    id: current
+    attributes:
+      label: What the manifest currently says
+      render: ts
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What it should say
+      render: ts
+    validations:
+      required: true
+
+  - type: textarea
+    id: ai_impact
+    attributes:
+      label: How did this affect AI-generated output?
+      description: Paste any bad code the AI generated because of this manifest, if applicable.
+      render: tsx
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Additional context
