@@ -1,12 +1,15 @@
+import type { CSSProperties } from 'react';
+
 export type DividerOrientation = 'horizontal' | 'vertical';
 
 export interface DividerProps {
   orientation?: DividerOrientation;
   label?: string;
   spacing?: string;
+  style?: CSSProperties;
 }
 
-export function Divider({ orientation = 'horizontal', label, spacing = 'var(--lucent-space-4)' }: DividerProps) {
+export function Divider({ orientation = 'horizontal', label, spacing = 'var(--lucent-space-4)', style }: DividerProps) {
   if (orientation === 'vertical') {
     return (
       <span
@@ -19,6 +22,7 @@ export function Divider({ orientation = 'horizontal', label, spacing = 'var(--lu
           background: 'var(--lucent-border-default)',
           margin: `0 ${spacing}`,
           flexShrink: 0,
+          ...style,
         }}
       />
     );
@@ -34,6 +38,7 @@ export function Divider({ orientation = 'horizontal', label, spacing = 'var(--lu
           alignItems: 'center',
           gap: 'var(--lucent-space-3)',
           margin: `${spacing} 0`,
+          ...style,
         }}
       >
         <span style={{ flex: 1, height: '1px', background: 'var(--lucent-border-default)' }} />
@@ -60,6 +65,7 @@ export function Divider({ orientation = 'horizontal', label, spacing = 'var(--lu
         borderTop: '1px solid var(--lucent-border-default)',
         margin: `${spacing} 0`,
         width: '100%',
+        ...style,
       }}
     />
   );
