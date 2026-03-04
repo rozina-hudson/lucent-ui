@@ -15,6 +15,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, helperText, errorText, leftElement, rightElement, id, style, ...rest }, ref) => {
     const inputId = id ?? `lucent-input-${Math.random().toString(36).slice(2, 7)}`;
     const hasError = Boolean(errorText);
+    const isDisabled = Boolean(rest.disabled);
 
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--lucent-space-1)', width: '100%' }}>
@@ -35,7 +36,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           {leftElement && (
             <span style={{
               position: 'absolute', left: 'var(--lucent-space-3)',
-              color: 'var(--lucent-text-secondary)', display: 'flex', alignItems: 'center',
+              color: isDisabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-secondary)',
+              display: 'flex', alignItems: 'center',
+              pointerEvents: 'none',
             }}>
               {leftElement}
             </span>
@@ -53,9 +56,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               padding: `0 ${rightElement ? 'var(--lucent-space-10)' : 'var(--lucent-space-3)'} 0 ${leftElement ? 'var(--lucent-space-10)' : 'var(--lucent-space-3)'}`,
               fontSize: 'var(--lucent-font-size-md)',
               fontFamily: 'var(--lucent-font-family-base)',
-              color: 'var(--lucent-text-primary)',
-              background: 'var(--lucent-surface-default)',
-              border: `1px solid ${hasError ? 'var(--lucent-danger-default)' : 'var(--lucent-border-default)'}`,
+              color: isDisabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-primary)',
+              background: isDisabled ? 'var(--lucent-bg-muted)' : 'var(--lucent-surface-default)',
+              border: `1px solid ${isDisabled ? 'transparent' : hasError ? 'var(--lucent-danger-default)' : 'var(--lucent-border-default)'}`,
+              cursor: isDisabled ? 'not-allowed' : undefined,
               borderRadius: 'var(--lucent-radius-lg)',
               outline: 'none',
               boxSizing: 'border-box',
@@ -97,7 +101,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           {rightElement && (
             <span style={{
               position: 'absolute', right: 'var(--lucent-space-3)',
-              color: 'var(--lucent-text-secondary)', display: 'flex', alignItems: 'center',
+              color: isDisabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-secondary)',
+              display: 'flex', alignItems: 'center',
             }}>
               {rightElement}
             </span>

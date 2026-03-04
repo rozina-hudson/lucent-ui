@@ -1,6 +1,7 @@
 // Lucent UI — public API
 
 export * from './components/atoms/index.js';
+export * from './components/molecules/index.js';
 
 export { LucentProvider, useLucent } from './provider/index.js';
 export type { LucentProviderProps } from './provider/index.js';

@@ -14,6 +14,13 @@ import { Select } from '../src/components/atoms/Select/index.js';
 import { Tag } from '../src/components/atoms/Tag/index.js';
 import { Tooltip } from '../src/components/atoms/Tooltip/index.js';
 import { Icon } from '../src/components/atoms/Icon/index.js';
+import { Text } from '../src/components/atoms/Text/index.js';
+import { FormField } from '../src/components/molecules/FormField/index.js';
+import { SearchInput } from '../src/components/molecules/SearchInput/index.js';
+import { Card } from '../src/components/molecules/Card/index.js';
+import { Alert } from '../src/components/molecules/Alert/index.js';
+import { EmptyState } from '../src/components/molecules/EmptyState/index.js';
+import { Skeleton } from '../src/components/molecules/Skeleton/index.js';
 import type { LucentTokens, Theme } from '../src/index.js';
 
 type AccentPreset = 'default' | 'gold' | 'indigo';
@@ -81,6 +88,15 @@ function Inner({
   const [toggled, setToggled] = useState(false);
   const [selectVal, setSelectVal] = useState('');
   const [tags, setTags] = useState(['React', 'TypeScript', 'Design Systems']);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [alertDismissed, setAlertDismissed] = useState(false);
+
+  const allFruits = ['Apple', 'Apricot', 'Banana', 'Blueberry', 'Cherry', 'Grape', 'Mango', 'Orange', 'Peach', 'Pear', 'Pineapple', 'Strawberry'];
+  const searchResults = searchQuery.length > 0
+    ? allFruits
+        .filter(f => f.toLowerCase().includes(searchQuery.toLowerCase()))
+        .map((f, i) => ({ id: i, label: f }))
+    : [];
 
   return (
     <div style={{ background: tokens.bgBase, color: tokens.textPrimary, fontFamily: tokens.fontFamilyBase, minHeight: '100vh', padding: tokens.space8 }}>
@@ -88,7 +104,7 @@ function Inner({
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: tokens.space8, flexWrap: 'wrap', gap: tokens.space4 }}>
         <div>
           <h1 style={{ fontSize: tokens.fontSize2xl, fontWeight: tokens.fontWeightBold, margin: 0 }}>Lucent UI — Component Preview</h1>
-          <p style={{ color: tokens.textSecondary, margin: `${tokens.space1} 0 0`, fontSize: tokens.fontSizeSm }}>Atoms Wave 1 + 2 · {theme} mode · {accentLabel[accent]}</p>
+          <p style={{ color: tokens.textSecondary, margin: `${tokens.space1} 0 0`, fontSize: tokens.fontSizeSm }}>Molecules Wave 1 · Atoms Wave 1 + 2 · {theme} mode · {accentLabel[accent]}</p>
         </div>
         <div style={{ display: 'flex', gap: tokens.space2, alignItems: 'center', flexWrap: 'wrap' }}>
           {(['default', 'gold', 'indigo'] as AccentPreset[]).map(p => (
@@ -115,6 +131,216 @@ function Inner({
           </Button>
         </div>
       </div>
+
+      {/* ── Molecules ── */}
+
+      {/* Text */}
+      <Section title="Text" tokens={tokens}>
+        <Row label="Sizes" tokens={tokens}>
+          <Text as="span" size="xs">xs — Extra small</Text>
+          <Text as="span" size="sm">sm — Small</Text>
+          <Text as="span" size="md">md — Medium (base)</Text>
+          <Text as="span" size="lg">lg — Large</Text>
+          <Text as="span" size="xl">xl — X-Large</Text>
+          <Text as="span" size="2xl">2xl — 2X-Large</Text>
+          <Text as="span" size="3xl">3xl — 3X-Large</Text>
+        </Row>
+        <Row label="Weights" tokens={tokens}>
+          <Text as="span" weight="regular">Regular</Text>
+          <Text as="span" weight="medium">Medium</Text>
+          <Text as="span" weight="semibold">Semibold</Text>
+          <Text as="span" weight="bold">Bold</Text>
+        </Row>
+        <Row label="Colors" tokens={tokens}>
+          <Text as="span" color="primary">Primary</Text>
+          <Text as="span" color="secondary">Secondary</Text>
+          <Text as="span" color="disabled">Disabled</Text>
+          <Text as="span" color="success">Success</Text>
+          <Text as="span" color="warning">Warning</Text>
+          <Text as="span" color="danger">Danger</Text>
+          <Text as="span" color="info">Info</Text>
+        </Row>
+        <Row label="Family" tokens={tokens}>
+          <Text as="span" size="sm">base — DM Sans body text</Text>
+          <Text as="code" family="mono" size="sm">mono — const hello = 'world';</Text>
+          <Text as="span" family="display" size="lg" weight="semibold">display — Unbounded heading</Text>
+        </Row>
+        <Row label="Truncate" tokens={tokens}>
+          <Text as="span" truncate style={{ maxWidth: 180 }}>This text is truncated because it exceeds the max-width container</Text>
+        </Row>
+      </Section>
+
+      {/* FormField */}
+      <Section title="FormField" tokens={tokens}>
+        <Row label="Basic" tokens={tokens}>
+          <div style={{ width: 280 }}>
+            <FormField label="Email address" htmlFor="ff-email">
+              <Input id="ff-email" type="email" placeholder="you@example.com" />
+            </FormField>
+          </div>
+        </Row>
+        <Row label="Required + helper" tokens={tokens}>
+          <div style={{ width: 280 }}>
+            <FormField label="Username" htmlFor="ff-user" required helperText="Letters and numbers only, 3–20 chars">
+              <Input id="ff-user" placeholder="yourname" />
+            </FormField>
+          </div>
+        </Row>
+        <Row label="Error state" tokens={tokens}>
+          <div style={{ width: 280 }}>
+            <FormField label="Password" htmlFor="ff-pw" required errorMessage="Must be at least 8 characters">
+              <Input id="ff-pw" type="password" defaultValue="short" />
+            </FormField>
+          </div>
+        </Row>
+        <Row label="Wrapping Select" tokens={tokens}>
+          <div style={{ width: 280 }}>
+            <FormField label="Country" htmlFor="ff-country">
+              <Select
+                id="ff-country"
+                placeholder="Choose a country"
+                options={[
+                  { value: 'us', label: 'United States' },
+                  { value: 'gb', label: 'United Kingdom' },
+                  { value: 'ca', label: 'Canada' },
+                ]}
+              />
+            </FormField>
+          </div>
+        </Row>
+      </Section>
+
+      {/* SearchInput */}
+      <Section title="SearchInput" tokens={tokens}>
+        <Row label="With results dropdown" tokens={tokens}>
+          <div style={{ width: 320 }}>
+            <SearchInput
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder="Search fruits…"
+              results={searchResults}
+              onResultSelect={(r) => { setSearchQuery(r.label); }}
+            />
+          </div>
+        </Row>
+        <Row label="Loading state" tokens={tokens}>
+          <div style={{ width: 320 }}>
+            <SearchInput value="pineapple" onChange={() => {}} isLoading />
+          </div>
+        </Row>
+        <Row label="Disabled" tokens={tokens}>
+          <div style={{ width: 320 }}>
+            <SearchInput value="" onChange={() => {}} disabled placeholder="Search disabled…" />
+          </div>
+        </Row>
+      </Section>
+
+      {/* Card */}
+      <Section title="Card" tokens={tokens}>
+        <Row label="Body only" tokens={tokens}>
+          <Card style={{ width: 280 }}>
+            <Text size="sm" color="secondary">A simple card with body content only.</Text>
+          </Card>
+        </Row>
+        <Row label="Header + footer" tokens={tokens}>
+          <Card
+            style={{ width: 280 }}
+            header={<Text family="display" weight="semibold">Card title</Text>}
+            footer={
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: tokens.space2 }}>
+                <Button variant="ghost" size="sm">Cancel</Button>
+                <Button variant="primary" size="sm">Save</Button>
+              </div>
+            }
+          >
+            <Text size="sm" color="secondary">Edit your profile information below.</Text>
+          </Card>
+        </Row>
+        <Row label="Sizes" tokens={tokens}>
+          <Card padding="sm" shadow="none" radius="sm" style={{ width: 160 }}>
+            <Text size="xs">sm padding, no shadow</Text>
+          </Card>
+          <Card padding="lg" shadow="lg" radius="lg" style={{ width: 160 }}>
+            <Text size="xs">lg padding + shadow</Text>
+          </Card>
+        </Row>
+      </Section>
+
+      {/* Alert */}
+      <Section title="Alert" tokens={tokens}>
+        <Row label="All variants" tokens={tokens}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.space3, width: '100%' }}>
+            <Alert variant="info" title="Did you know?">You can customize the accent color using token overrides.</Alert>
+            <Alert variant="success" title="Changes saved">Your profile has been updated successfully.</Alert>
+            <Alert variant="warning" title="Approaching limit">You've used 80% of your monthly quota.</Alert>
+            <Alert variant="danger" title="Payment failed" onDismiss={alertDismissed ? undefined : () => setAlertDismissed(true)}>
+              {alertDismissed ? 'Dismissed! (re-renders on theme toggle)' : 'Check your card details and try again.'}
+            </Alert>
+          </div>
+        </Row>
+        <Row label="Body only (no title)" tokens={tokens}>
+          <div style={{ width: '100%' }}>
+            <Alert variant="info">Your session expires in 5 minutes.</Alert>
+          </div>
+        </Row>
+      </Section>
+
+      {/* EmptyState */}
+      <Section title="EmptyState" tokens={tokens}>
+        <Row label="With illustration + CTA" tokens={tokens}>
+          <Card style={{ width: 360 }}>
+            <EmptyState
+              illustration={
+                <Icon size="xl">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx={11} cy={11} r={8} />
+                    <path d="M21 21l-4.35-4.35" />
+                  </svg>
+                </Icon>
+              }
+              title="No results found"
+              description="Try adjusting your search or filters to find what you're looking for."
+              action={<Button variant="secondary" size="sm">Clear filters</Button>}
+            />
+          </Card>
+        </Row>
+        <Row label="Minimal (title only)" tokens={tokens}>
+          <Card style={{ width: 280 }}>
+            <EmptyState title="Nothing here yet" />
+          </Card>
+        </Row>
+      </Section>
+
+      {/* Skeleton */}
+      <Section title="Skeleton" tokens={tokens}>
+        <Row label="Text lines" tokens={tokens}>
+          <div style={{ width: 280 }}>
+            <Skeleton variant="text" lines={3} />
+          </div>
+        </Row>
+        <Row label="Shapes" tokens={tokens}>
+          <Skeleton variant="circle" width={40} height={40} />
+          <Skeleton variant="rectangle" width={120} height={40} />
+          <Skeleton variant="text" width={160} />
+        </Row>
+        <Row label="Card placeholder" tokens={tokens}>
+          <Card style={{ width: 280 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.space3 }}>
+              <Skeleton variant="rectangle" height={120} />
+              <div style={{ display: 'flex', gap: tokens.space2, alignItems: 'center' }}>
+                <Skeleton variant="circle" width={32} height={32} />
+                <Skeleton variant="text" width="60%" />
+              </div>
+              <Skeleton variant="text" lines={2} />
+            </div>
+          </Card>
+        </Row>
+        <Row label="No animation" tokens={tokens}>
+          <Skeleton variant="rectangle" width={200} height={32} animate={false} />
+        </Row>
+      </Section>
+
+      <Divider style={{ marginBottom: tokens.space6 }} />
 
       {/* ── Wave 2 ── */}
 

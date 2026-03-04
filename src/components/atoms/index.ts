@@ -12,3 +12,4 @@ export * from './Select/index.js';
 export * from './Tag/index.js';
 export * from './Tooltip/index.js';
 export * from './Icon/index.js';
+export * from './Text/index.js';
