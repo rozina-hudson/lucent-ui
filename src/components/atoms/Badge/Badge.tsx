@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 
 export type BadgeVariant = 'neutral' | 'success' | 'warning' | 'danger' | 'info' | 'accent';
 export type BadgeSize = 'sm' | 'md';
@@ -8,6 +8,7 @@ export interface BadgeProps {
   size?: BadgeSize;
   children: ReactNode;
   dot?: boolean;
+  style?: CSSProperties;
 }
 
 const variantStyles: Record<BadgeVariant, { bg: string; color: string; border: string }> = {
@@ -24,7 +25,7 @@ const sizeStyles: Record<BadgeSize, { fontSize: string; padding: string; height:
   md: { fontSize: 'var(--lucent-font-size-sm)', padding: '0 var(--lucent-space-2)', height: '22px' },
 };
 
-export function Badge({ variant = 'neutral', size = 'md', dot = false, children }: BadgeProps) {
+export function Badge({ variant = 'neutral', size = 'md', dot = false, children, style }: BadgeProps) {
   const v = variantStyles[variant];
   const s = sizeStyles[size];
 
@@ -45,6 +46,7 @@ export function Badge({ variant = 'neutral', size = 'md', dot = false, children 
       border: `1px solid ${v.border}`,
       whiteSpace: 'nowrap',
       boxSizing: 'border-box',
+      ...style,
     }}>
       {dot && (
         <span style={{

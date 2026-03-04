@@ -8,10 +8,14 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: ButtonSize;
   loading?: boolean;
   fullWidth?: boolean;
+  /** When true, spaces content to the edges (justifyContent: space-between). Useful with fullWidth + rightIcon/chevron. */
+  spread?: boolean;
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
   /** Appends a chevron-down icon after the label (or rightIcon). Useful for dropdown triggers. */
   chevron?: boolean;
+  /** Disables the built-in hover background/border overrides. Use when passing custom colours via style. */
+  disableHoverStyles?: boolean;
 }
 
 const variantStyles: Record<ButtonVariant, CSSProperties> = {
@@ -44,7 +48,7 @@ const sizeStyles: Record<ButtonSize, CSSProperties> = {
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = 'primary', size = 'md', loading = false, fullWidth = false, leftIcon, rightIcon, chevron = false, children, disabled, style, ...rest }, ref) => {
+  ({ variant = 'primary', size = 'md', loading = false, fullWidth = false, spread = false, leftIcon, rightIcon, chevron = false, disableHoverStyles = false, children, disabled, style, ...rest }, ref) => {
     const isDisabled = disabled ?? loading;
 
     return (
@@ -55,7 +59,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         style={{
           display: 'inline-flex',
           alignItems: 'center',
-          justifyContent: 'center',
+          justifyContent: spread ? 'space-between' : 'center',
           gap: 'var(--lucent-space-2)',
           fontFamily: 'var(--lucent-font-family-base)',
           fontWeight: 'var(--lucent-font-weight-medium)',
@@ -79,11 +83,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           }),
         }}
         onMouseEnter={(e) => {
-          if (!isDisabled) applyHover(e.currentTarget, variant);
+          if (!isDisabled && !disableHoverStyles) applyHover(e.currentTarget, variant);
           rest.onMouseEnter?.(e);
         }}
         onMouseLeave={(e) => {
-          if (!isDisabled) removeHover(e.currentTarget, variant);
+          if (!isDisabled && !disableHoverStyles) removeHover(e.currentTarget, variant);
           rest.onMouseLeave?.(e);
         }}
         onMouseDown={(e) => {
