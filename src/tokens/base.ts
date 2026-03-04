@@ -4,6 +4,7 @@ export const typographyTokens: TypographyTokens = {
   fontFamilyBase:
     '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
   fontFamilyMono: '"DM Mono", "Fira Code", "Cascadia Code", monospace',
+  fontFamilyDisplay: '"Unbounded", "DM Sans", sans-serif',
   fontSizeXs: '0.75rem',
   fontSizeSm: '0.875rem',
   fontSizeMd: '1rem',

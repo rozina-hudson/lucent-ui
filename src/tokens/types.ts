@@ -15,6 +15,7 @@ export interface ColorScale {
 export interface TypographyTokens {
   fontFamilyBase: string;
   fontFamilyMono: string;
+  fontFamilyDisplay: string;
   fontSizeXs: string;
   fontSizeSm: string;
   fontSizeMd: string;
