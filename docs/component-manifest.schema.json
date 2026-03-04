@@ -1,0 +1,181 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lucentui.ai/spec/component-manifest.schema.json",
+  "title": "ComponentManifest",
+  "description": "COMPONENT_MANIFEST Spec v1.0.0 — machine-readable descriptor for a UI component, designed for AI coding assistants and design system tooling.",
+  "type": "object",
+  "required": ["id", "name", "tier", "domain", "description", "props", "usageExamples", "compositionGraph", "designIntent", "specVersion"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Kebab-case unique identifier used by tooling for lookups.",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "examples": ["button", "form-field", "data-table"]
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name shown in documentation and tooling.",
+      "minLength": 1,
+      "examples": ["Button", "FormField", "DataTable"]
+    },
+    "tier": {
+      "type": "string",
+      "description": "Position of the component in the design system hierarchy.",
+      "enum": ["atom", "molecule", "block", "flow", "overlay"]
+    },
+    "domain": {
+      "type": "string",
+      "description": "Product domain this component belongs to. Use \"neutral\" for general-purpose components.",
+      "minLength": 1,
+      "examples": ["neutral", "billing", "auth", "onboarding"]
+    },
+    "description": {
+      "type": "string",
+      "description": "One-sentence description written for an AI audience — precise, not marketing copy.",
+      "minLength": 1
+    },
+    "props": {
+      "type": "array",
+      "description": "Full prop API for the component.",
+      "items": { "$ref": "#/$defs/PropDescriptor" }
+    },
+    "usageExamples": {
+      "type": "array",
+      "description": "Code examples an AI can use to generate correct usage. Must include at least one.",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/UsageExample" }
+    },
+    "compositionGraph": {
+      "type": "array",
+      "description": "Sub-components this component is composed from. Atoms must use an empty array.",
+      "items": { "$ref": "#/$defs/CompositionNode" }
+    },
+    "designIntent": {
+      "type": "string",
+      "description": "The 'why' behind visual and interaction decisions. The key field for AI-legibility — conveys context that prop types alone cannot.",
+      "minLength": 1
+    },
+    "accessibility": { "$ref": "#/$defs/AccessibilityDescriptor" },
+    "specVersion": {
+      "type": "string",
+      "description": "Spec version this manifest conforms to. Format: MAJOR.MINOR (e.g. \"1.0\").",
+      "pattern": "^\\d+\\.\\d+$",
+      "examples": ["1.0"]
+    }
+  },
+  "$defs": {
+    "PropDescriptor": {
+      "type": "object",
+      "description": "Describes a single prop in a component's public API.",
+      "required": ["name", "type", "required", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Prop name as it appears in the component API.",
+          "minLength": 1
+        },
+        "type": {
+          "type": "string",
+          "description": "TypeScript type or well-known type name.",
+          "minLength": 1,
+          "examples": ["string", "number", "boolean", "ReactNode", "function", "enum", "object", "array", "ref"]
+        },
+        "required": {
+          "type": "boolean",
+          "description": "Whether the prop is required."
+        },
+        "default": {
+          "type": "string",
+          "description": "Default value as a string representation (e.g. \"false\", \"\\\"primary\\\"\")."
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable description for AI and documentation.",
+          "minLength": 1
+        },
+        "enumValues": {
+          "type": "array",
+          "description": "Allowed values when type is \"enum\".",
+          "items": { "type": "string" },
+          "minItems": 1
+        }
+      }
+    },
+    "UsageExample": {
+      "type": "object",
+      "description": "A copy-paste code snippet demonstrating component usage.",
+      "required": ["title", "code"],
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Short label identifying this example.",
+          "minLength": 1
+        },
+        "code": {
+          "type": "string",
+          "description": "JSX or TSX code string.",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional description of what this example demonstrates."
+        }
+      }
+    },
+    "CompositionNode": {
+      "type": "object",
+      "description": "A sub-component used in the composition of this component.",
+      "required": ["componentId", "componentName", "role", "required"],
+      "additionalProperties": false,
+      "properties": {
+        "componentId": {
+          "type": "string",
+          "description": "The id of the sub-component (kebab-case).",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "componentName": {
+          "type": "string",
+          "description": "Human-readable name of the sub-component.",
+          "minLength": 1
+        },
+        "role": {
+          "type": "string",
+          "description": "How this sub-component is used in the composition.",
+          "minLength": 1
+        },
+        "required": {
+          "type": "boolean",
+          "description": "Whether this sub-component is always present (true) or conditional (false)."
+        }
+      }
+    },
+    "AccessibilityDescriptor": {
+      "type": "object",
+      "description": "Accessibility metadata for the component.",
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "type": "string",
+          "description": "ARIA role applied to the root element."
+        },
+        "ariaAttributes": {
+          "type": "array",
+          "description": "ARIA attributes used by this component.",
+          "items": { "type": "string" }
+        },
+        "keyboardInteractions": {
+          "type": "array",
+          "description": "Keyboard interactions supported by this component.",
+          "items": { "type": "string" }
+        },
+        "notes": {
+          "type": "string",
+          "description": "Plain-English notes for screen reader behaviour."
+        }
+      }
+    }
+  }
+}

@@ -5,7 +5,7 @@ export const ButtonManifest: ComponentManifest = {
   name: 'Button',
   tier: 'atom',
   domain: 'neutral',
-  specVersion: '0.1',
+  specVersion: '1.0',
   description:
     'A clickable control that triggers an action. The primary interactive primitive in Lucent UI.',
   designIntent:
