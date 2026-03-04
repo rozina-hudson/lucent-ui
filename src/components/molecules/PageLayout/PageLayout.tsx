@@ -10,6 +10,8 @@ export interface PageLayoutProps {
   headerHeight?: number | string;
   /** Collapse the sidebar to zero width */
   sidebarCollapsed?: boolean;
+  /** Style overrides for the main content card (border, borderRadius, boxShadow, etc.) */
+  mainStyle?: CSSProperties;
   style?: CSSProperties;
 }
 
@@ -24,6 +26,7 @@ export function PageLayout({
   sidebarWidth = 240,
   headerHeight = 48,
   sidebarCollapsed = false,
+  mainStyle,
   style,
 }: PageLayoutProps) {
   const headerH = toCss(headerHeight);
@@ -40,14 +43,13 @@ export function PageLayout({
         ...style,
       }}
     >
-      {/* Header */}
+      {/* Header — no border, floats above the body */}
       {header != null && (
         <div
           style={{
             flexShrink: 0,
             height: headerH,
             zIndex: 10,
-            borderBottom: '1px solid var(--lucent-border-default)',
             background: 'var(--lucent-surface-default)',
           }}
         >
@@ -56,8 +58,8 @@ export function PageLayout({
       )}
 
       {/* Body: sidebar + main */}
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-        {/* Sidebar */}
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden', paddingRight: 'var(--lucent-space-3)', paddingBottom: 'var(--lucent-space-3)' }}>
+        {/* Sidebar — no border-right */}
         {sidebar != null && (
           <div
             style={{
@@ -65,7 +67,6 @@ export function PageLayout({
               flexShrink: 0,
               overflow: 'hidden',
               overflowY: sidebarCollapsed ? 'hidden' : 'auto',
-              borderRight: '1px solid var(--lucent-border-default)',
               background: 'var(--lucent-surface-default)',
               transition: 'width 200ms var(--lucent-easing-default)',
             }}
@@ -74,12 +75,17 @@ export function PageLayout({
           </div>
         )}
 
-        {/* Main content */}
+        {/* Main content — card with border, radius, shadow */}
         <main
           style={{
             flex: 1,
             overflowY: 'auto',
             minWidth: 0,
+            border: '1px solid var(--lucent-border-default)',
+            borderRadius: 'var(--lucent-radius-lg)',
+            boxShadow: 'var(--lucent-shadow-sm)',
+            background: 'var(--lucent-surface-default)',
+            ...mainStyle,
           }}
         >
           {children}
