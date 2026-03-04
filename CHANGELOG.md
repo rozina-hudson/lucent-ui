@@ -1,5 +1,11 @@
 # lucent-ui
 
+## 0.2.0
+
+### Minor Changes
+
+- 7ab4a98: Add Breadcrumb, Tabs, Collapsible, NavLink, and PageLayout components
+
 ## 0.1.1
 
 ### Patch Changes
