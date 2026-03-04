@@ -291,6 +291,9 @@
     animation: fade-up 0.4s ease both;
   }
 </style>
+
+<!-- Cloudflare Turnstile (bot protection) — loads async, no layout blocking -->
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
 
@@ -337,10 +340,26 @@
   <!-- Email capture -->
   <div class="form-wrap" id="form-wrap">
     <input class="email-input" id="email-input" type="email" placeholder="your@email.com" autocomplete="off"/>
-    <button class="submit-btn" onclick="handleSubmit()">Notify me</button>
+    <button class="submit-btn" id="submit-btn" onclick="handleSubmit()">Notify me</button>
   </div>
+
+  <!--
+    Cloudflare Turnstile widget.
+    Replace REPLACE_WITH_YOUR_TURNSTILE_SITE_KEY with your Site Key from:
+    https://dash.cloudflare.com → Turnstile → Add site
+    Use appearance="interaction-only" so it's invisible unless a challenge is needed.
+  -->
+  <div
+    class="cf-turnstile"
+    data-sitekey="0x4AAAAAACl3dxrYdL-dCqgj"
+    data-callback="onTurnstileSuccess"
+    data-expired-callback="onTurnstileExpired"
+    data-appearance="interaction-only"
+    style="margin-bottom: 4px;">
+  </div>
+
   <p class="success" id="success-msg">✦ &nbsp; You're on the list</p>
-  <p class="form-note">Early access · No spam · Unsubscribe anytime</p>
+  <p class="form-note" id="form-note">Early access · No spam · Unsubscribe anytime</p>
 
   <!-- Pills -->
   <div class="pills">
@@ -360,17 +379,78 @@
 </footer>
 
 <script>
-  function handleSubmit() {
+  let _turnstileToken = null;
+
+  // Called by Turnstile when the challenge resolves silently
+  function onTurnstileSuccess(token) {
+    _turnstileToken = token;
+  }
+
+  // Called when the token expires — clears it so we don't submit a stale token
+  function onTurnstileExpired() {
+    _turnstileToken = null;
+    if (typeof turnstile !== 'undefined') turnstile.reset();
+  }
+
+  async function handleSubmit() {
     const input = document.getElementById('email-input');
     const wrap  = document.getElementById('form-wrap');
     const msg   = document.getElementById('success-msg');
-    if (!input.value || !input.value.includes('@')) {
+    const note  = document.getElementById('form-note');
+    const btn   = document.getElementById('submit-btn');
+
+    // Basic email format check
+    if (!input.value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value)) {
       input.style.borderColor = '#e9c96b';
-      setTimeout(() => input.style.borderColor = '', 1000);
+      setTimeout(() => input.style.borderColor = '', 1200);
       return;
     }
-    wrap.style.display = 'none';
-    msg.style.display  = 'block';
+
+    // Disable button while submitting
+    btn.disabled = true;
+    btn.textContent = '...';
+
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: input.value, token: _turnstileToken }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        wrap.style.display = 'none';
+        // Hide Turnstile widget too
+        const widget = document.querySelector('.cf-turnstile');
+        if (widget) widget.style.display = 'none';
+        note.style.display = 'none';
+        msg.style.display  = 'block';
+      } else {
+        // Show the server error underneath the form
+        note.textContent = data.error ?? 'Something went wrong. Please try again.';
+        note.style.color = '#e9c96b';
+        btn.disabled    = false;
+        btn.textContent = 'Notify me';
+        input.style.borderColor = '#e9c96b';
+        setTimeout(() => {
+          input.style.borderColor = '';
+          note.textContent = 'Early access · No spam · Unsubscribe anytime';
+          note.style.color = '';
+        }, 3000);
+        // Reset Turnstile
+        if (typeof turnstile !== 'undefined') turnstile.reset();
+      }
+    } catch (err) {
+      note.textContent = 'Network error. Please try again.';
+      note.style.color = '#e9c96b';
+      btn.disabled    = false;
+      btn.textContent = 'Notify me';
+      setTimeout(() => {
+        note.textContent = 'Early access · No spam · Unsubscribe anytime';
+        note.style.color = '';
+      }, 3000);
+    }
   }
 
   // Allow enter key
