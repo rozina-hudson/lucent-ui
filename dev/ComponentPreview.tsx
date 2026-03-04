@@ -24,6 +24,8 @@ import { Skeleton } from '../src/components/molecules/Skeleton/index.js';
 import { Breadcrumb } from '../src/components/molecules/Breadcrumb/index.js';
 import { Tabs } from '../src/components/molecules/Tabs/index.js';
 import { Collapsible } from '../src/components/molecules/Collapsible/index.js';
+import { NavLink } from '../src/components/atoms/NavLink/index.js';
+import { PageLayout } from '../src/components/molecules/PageLayout/index.js';
 import type { LucentTokens, Theme } from '../src/index.js';
 
 type AccentPreset = 'default' | 'gold' | 'indigo';
@@ -41,6 +43,14 @@ const accentLabel: Record<AccentPreset, string> = {
   gold: 'Gold (brandTokens)',
   indigo: 'Indigo',
 };
+
+function NavIcon() {
+  return (
+    <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" />
+    </svg>
+  );
+}
 
 function StarIcon() {
   return (
@@ -693,6 +703,51 @@ function Inner({
             <Collapsible defaultOpen trigger={<Text weight="medium">Expanded by default</Text>}>
               <Text color="secondary">This section starts expanded.</Text>
             </Collapsible>
+          </div>
+        </Row>
+      </Section>
+
+      <Section title="NavLink" tokens={tokens}>
+        <Row label="States" tokens={tokens}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.space1, width: 220 }}>
+            <NavLink href="#" icon={<NavIcon />}>Dashboard</NavLink>
+            <NavLink href="#" icon={<NavIcon />} isActive>Components</NavLink>
+            <NavLink href="#" icon={<NavIcon />}>Settings</NavLink>
+            <NavLink href="#" icon={<NavIcon />} disabled>Disabled</NavLink>
+          </div>
+        </Row>
+        <Row label="Without icons" tokens={tokens}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.space1, width: 220 }}>
+            <NavLink href="#">Overview</NavLink>
+            <NavLink href="#" isActive>API Reference</NavLink>
+            <NavLink href="#">Examples</NavLink>
+          </div>
+        </Row>
+      </Section>
+
+      <Section title="PageLayout" tokens={tokens}>
+        <Row label="With header + sidebar" tokens={tokens}>
+          <div style={{ width: '100%', height: 320, border: `1px solid ${tokens.borderDefault}`, borderRadius: tokens.radiusMd, overflow: 'hidden' }}>
+            <PageLayout
+              headerHeight={44}
+              sidebarWidth={180}
+              header={
+                <div style={{ height: '100%', display: 'flex', alignItems: 'center', padding: `0 ${tokens.space4}` }}>
+                  <Text weight="semibold">My App</Text>
+                </div>
+              }
+              sidebar={
+                <div style={{ padding: tokens.space3, display: 'flex', flexDirection: 'column', gap: tokens.space1 }}>
+                  <NavLink href="#" isActive>Dashboard</NavLink>
+                  <NavLink href="#">Components</NavLink>
+                  <NavLink href="#">Settings</NavLink>
+                </div>
+              }
+            >
+              <div style={{ padding: tokens.space5 }}>
+                <Text color="secondary">Main scrollable content area.</Text>
+              </div>
+            </PageLayout>
           </div>
         </Row>
       </Section>
