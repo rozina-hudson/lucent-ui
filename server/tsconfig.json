@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "outDir": "../dist-server",
+    "rootDir": "..",
+    "strict": true,
+    "exactOptionalPropertyTypes": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true
+  },
+  "include": [
+    "./**/*.ts",
+    "../src/manifest/**/*.ts",
+    "../src/components/**/*.manifest.ts"
+  ]
+}
