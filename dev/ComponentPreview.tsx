@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { LucentProvider, useLucent } from '../src/index.js';
+import { LucentProvider, useLucent, brandTokens } from '../src/index.js';
 import { Button } from '../src/components/atoms/Button/index.js';
 import { Input } from '../src/components/atoms/Input/index.js';
 import { Textarea } from '../src/components/atoms/Textarea/index.js';
@@ -7,34 +7,288 @@ import { Badge } from '../src/components/atoms/Badge/index.js';
 import { Avatar } from '../src/components/atoms/Avatar/index.js';
 import { Spinner } from '../src/components/atoms/Spinner/index.js';
 import { Divider } from '../src/components/atoms/Divider/index.js';
-import type { Theme } from '../src/index.js';
+import { Checkbox } from '../src/components/atoms/Checkbox/index.js';
+import { Radio, RadioGroup } from '../src/components/atoms/Radio/index.js';
+import { Toggle } from '../src/components/atoms/Toggle/index.js';
+import { Select } from '../src/components/atoms/Select/index.js';
+import { Tag } from '../src/components/atoms/Tag/index.js';
+import { Tooltip } from '../src/components/atoms/Tooltip/index.js';
+import { Icon } from '../src/components/atoms/Icon/index.js';
+import type { LucentTokens, Theme } from '../src/index.js';
+
+type AccentPreset = 'default' | 'gold' | 'indigo';
+
+const indigoTokens: Partial<LucentTokens> = {
+  accentDefault: '#4f46e5',
+  accentHover: '#4338ca',
+  accentActive: '#3730a3',
+  accentSubtle: '#eef2ff',
+  focusRing: '#4f46e5',
+};
+
+const accentLabel: Record<AccentPreset, string> = {
+  default: 'Default (monochrome)',
+  gold: 'Gold (brandTokens)',
+  indigo: 'Indigo',
+};
+
+function StarIcon() {
+  return (
+    <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+    </svg>
+  );
+}
 
 export function ComponentPreview() {
   const [theme, setTheme] = useState<Theme>('light');
+  const [accent, setAccent] = useState<AccentPreset>('default');
+
+  const tokenOverrides =
+    accent === 'gold' ? brandTokens :
+    accent === 'indigo' ? indigoTokens :
+    undefined;
+
   return (
-    <LucentProvider theme={theme}>
-      <Inner theme={theme} onToggle={() => setTheme(t => t === 'light' ? 'dark' : 'light')} />
+    <LucentProvider theme={theme} tokens={tokenOverrides}>
+      <Inner
+        theme={theme}
+        accent={accent}
+        onToggleTheme={() => setTheme(t => t === 'light' ? 'dark' : 'light')}
+        onSetAccent={setAccent}
+      />
     </LucentProvider>
   );
 }
 
-function Inner({ theme, onToggle }: { theme: Theme; onToggle: () => void }) {
+function Inner({
+  theme,
+  accent,
+  onToggleTheme,
+  onSetAccent,
+}: {
+  theme: Theme;
+  accent: AccentPreset;
+  onToggleTheme: () => void;
+  onSetAccent: (p: AccentPreset) => void;
+}) {
   const { tokens } = useLucent();
   const [inputVal, setInputVal] = useState('');
   const [textareaVal, setTextareaVal] = useState('');
+  const [checked, setChecked] = useState(false);
+  const [radio, setRadio] = useState('option1');
+  const [radioSize, setRadioSize] = useState('m');
+  const [toggled, setToggled] = useState(false);
+  const [selectVal, setSelectVal] = useState('');
+  const [tags, setTags] = useState(['React', 'TypeScript', 'Design Systems']);
 
   return (
     <div style={{ background: tokens.bgBase, color: tokens.textPrimary, fontFamily: tokens.fontFamilyBase, minHeight: '100vh', padding: tokens.space8 }}>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: tokens.space8 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: tokens.space8, flexWrap: 'wrap', gap: tokens.space4 }}>
         <div>
           <h1 style={{ fontSize: tokens.fontSize2xl, fontWeight: tokens.fontWeightBold, margin: 0 }}>Lucent UI — Component Preview</h1>
-          <p style={{ color: tokens.textSecondary, margin: `${tokens.space1} 0 0`, fontSize: tokens.fontSizeSm }}>Atoms Wave 1 · {theme} mode</p>
+          <p style={{ color: tokens.textSecondary, margin: `${tokens.space1} 0 0`, fontSize: tokens.fontSizeSm }}>Atoms Wave 1 + 2 · {theme} mode · {accentLabel[accent]}</p>
         </div>
-        <Button variant="secondary" size="sm" onClick={onToggle}>
-          Switch to {theme === 'light' ? 'dark' : 'light'}
-        </Button>
+        <div style={{ display: 'flex', gap: tokens.space2, alignItems: 'center', flexWrap: 'wrap' }}>
+          {(['default', 'gold', 'indigo'] as AccentPreset[]).map(p => (
+            <button
+              key={p}
+              onClick={() => onSetAccent(p)}
+              style={{
+                padding: `${tokens.space1} ${tokens.space3}`,
+                border: `1px solid ${accent === p ? tokens.accentDefault : tokens.borderDefault}`,
+                borderRadius: tokens.radiusMd,
+                background: accent === p ? tokens.accentDefault : tokens.surfaceDefault,
+                color: accent === p ? tokens.textOnAccent : tokens.textPrimary,
+                fontFamily: tokens.fontFamilyBase,
+                fontSize: tokens.fontSizeSm,
+                fontWeight: accent === p ? tokens.fontWeightSemibold : tokens.fontWeightRegular,
+                cursor: 'pointer',
+              }}
+            >
+              {accentLabel[p]}
+            </button>
+          ))}
+          <Button variant="secondary" size="sm" onClick={onToggleTheme}>
+            {theme === 'light' ? 'Dark' : 'Light'} mode
+          </Button>
+        </div>
       </div>
+
+      {/* ── Wave 2 ── */}
+
+      {/* Checkbox */}
+      <Section title="Checkbox" tokens={tokens}>
+        <Row label="Controlled" tokens={tokens}>
+          <Checkbox label="Accept terms" checked={checked} onChange={e => setChecked(e.target.checked)} />
+          <Checkbox label="Indeterminate" indeterminate />
+          <Checkbox label="Disabled" disabled />
+          <Checkbox label="Disabled checked" disabled checked />
+        </Row>
+        <Row label="Sizes" tokens={tokens}>
+          <Checkbox size="sm" label="Small" defaultChecked />
+          <Checkbox size="md" label="Medium" defaultChecked />
+        </Row>
+      </Section>
+
+      {/* Radio */}
+      <Section title="Radio" tokens={tokens}>
+        <Row label="Vertical group (default)" tokens={tokens}>
+          <RadioGroup name="plan" value={radio} onChange={setRadio}>
+            <Radio value="option1" label="Free — up to 3 projects" />
+            <Radio value="option2" label="Pro — unlimited projects" />
+            <Radio value="option3" label="Enterprise — custom limits" />
+          </RadioGroup>
+        </Row>
+        <Row label="Horizontal group" tokens={tokens}>
+          <RadioGroup name="size-demo" value={radioSize} onChange={setRadioSize} orientation="horizontal">
+            <Radio value="s" label="S" />
+            <Radio value="m" label="M" />
+            <Radio value="l" label="L" />
+            <Radio value="xl" label="XL" />
+          </RadioGroup>
+        </Row>
+        <Row label="Group disabled" tokens={tokens}>
+          <RadioGroup name="disabled-demo" value="a" onChange={() => {}} disabled>
+            <Radio value="a" label="Option A" />
+            <Radio value="b" label="Option B" />
+          </RadioGroup>
+        </Row>
+      </Section>
+
+      {/* Toggle */}
+      <Section title="Toggle" tokens={tokens}>
+        <Row label="Controlled" tokens={tokens}>
+          <Toggle label="Dark mode" checked={toggled} onChange={e => setToggled(e.target.checked)} />
+        </Row>
+        <Row label="Sizes" tokens={tokens}>
+          <Toggle size="sm" label="Small" defaultChecked />
+          <Toggle size="md" label="Medium" defaultChecked />
+          <Toggle size="lg" label="Large" defaultChecked />
+        </Row>
+        <Row label="Disabled" tokens={tokens}>
+          <Toggle disabled label="Disabled off" />
+          <Toggle disabled defaultChecked label="Disabled on" />
+        </Row>
+      </Section>
+
+      {/* Select */}
+      <Section title="Select" tokens={tokens}>
+        <Row label="Default" tokens={tokens}>
+          <div style={{ width: 280 }}>
+            <Select
+              label="Country"
+              placeholder="Choose a country"
+              options={[
+                { value: 'us', label: 'United States' },
+                { value: 'gb', label: 'United Kingdom' },
+                { value: 'ca', label: 'Canada' },
+                { value: 'au', label: 'Australia' },
+              ]}
+              value={selectVal}
+              onChange={e => setSelectVal(e.target.value)}
+            />
+          </div>
+        </Row>
+        <Row label="Sizes" tokens={tokens}>
+          {(['sm', 'md', 'lg'] as const).map(s => (
+            <div key={s} style={{ width: 180 }}>
+              <Select
+                size={s}
+                options={[{ value: 'a', label: `Size ${s}` }, { value: 'b', label: 'Option B' }]}
+                defaultValue="a"
+              />
+            </div>
+          ))}
+        </Row>
+        <Row label="With error" tokens={tokens}>
+          <div style={{ width: 280 }}>
+            <Select
+              label="Role"
+              placeholder="Select a role"
+              options={[{ value: 'admin', label: 'Admin' }, { value: 'member', label: 'Member' }]}
+              errorText="Please select a role to continue"
+            />
+          </div>
+        </Row>
+      </Section>
+
+      {/* Tag */}
+      <Section title="Tag" tokens={tokens}>
+        <Row label="Dismissible" tokens={tokens}>
+          {tags.map(t => (
+            <Tag key={t} onDismiss={() => setTags(prev => prev.filter(x => x !== t))}>{t}</Tag>
+          ))}
+          {tags.length === 0 && <span style={{ fontSize: tokens.fontSizeSm, color: tokens.textSecondary }}>All tags dismissed — refresh to reset</span>}
+        </Row>
+        <Row label="Variants (static)" tokens={tokens}>
+          <Tag variant="neutral">Neutral</Tag>
+          <Tag variant="accent">Accent</Tag>
+          <Tag variant="success">Success</Tag>
+          <Tag variant="warning">Warning</Tag>
+          <Tag variant="danger">Danger</Tag>
+          <Tag variant="info">Info</Tag>
+        </Row>
+        <Row label="Sizes" tokens={tokens}>
+          <Tag size="sm" onDismiss={() => {}}>Small</Tag>
+          <Tag size="md" onDismiss={() => {}}>Medium</Tag>
+        </Row>
+      </Section>
+
+      {/* Tooltip */}
+      <Section title="Tooltip" tokens={tokens}>
+        <Row label="Placements" tokens={tokens}>
+          <Tooltip content="Tooltip on top" placement="top">
+            <Button variant="secondary" size="sm">Top</Button>
+          </Tooltip>
+          <Tooltip content="Tooltip on bottom" placement="bottom">
+            <Button variant="secondary" size="sm">Bottom</Button>
+          </Tooltip>
+          <Tooltip content="Tooltip on left" placement="left">
+            <Button variant="secondary" size="sm">Left</Button>
+          </Tooltip>
+          <Tooltip content="Tooltip on right" placement="right">
+            <Button variant="secondary" size="sm">Right</Button>
+          </Tooltip>
+        </Row>
+        <Row label="No delay" tokens={tokens}>
+          <Tooltip content="Instant tooltip" delay={0}>
+            <Button variant="ghost" size="sm">Hover me (instant)</Button>
+          </Tooltip>
+        </Row>
+      </Section>
+
+      {/* Icon */}
+      <Section title="Icon" tokens={tokens}>
+        <Row label="Sizes" tokens={tokens}>
+          {(['xs', 'sm', 'md', 'lg', 'xl'] as const).map(s => (
+            <Tooltip key={s} content={s} delay={0}>
+              <Icon size={s} label={`${s} icon`}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx={12} cy={12} r={10} />
+                  <path d="M12 8v4l3 3" />
+                </svg>
+              </Icon>
+            </Tooltip>
+          ))}
+        </Row>
+        <Row label="Coloured" tokens={tokens}>
+          <Icon size="lg" color="var(--lucent-success-default)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
+          </Icon>
+          <Icon size="lg" color="var(--lucent-danger-default)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><circle cx={12} cy={12} r={10} /><path d="M15 9l-6 6M9 9l6 6" /></svg>
+          </Icon>
+          <Icon size="lg" color="var(--lucent-warning-default)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /><line x1={12} y1={9} x2={12} y2={13} /><line x1={12} y1={17} x2="12.01" y2={17} /></svg>
+          </Icon>
+        </Row>
+      </Section>
+
+      <Divider style={{ marginBottom: tokens.space6 }} />
+
+      {/* ── Wave 1 ── */}
 
       {/* Button */}
       <Section title="Button" tokens={tokens}>
@@ -48,6 +302,12 @@ function Inner({ theme, onToggle }: { theme: Theme; onToggle: () => void }) {
           <Button size="sm">Small</Button>
           <Button size="md">Medium</Button>
           <Button size="lg">Large</Button>
+        </Row>
+        <Row label="Icons" tokens={tokens}>
+          <Button leftIcon={<StarIcon />}>With prefix</Button>
+          <Button variant="secondary" rightIcon={<StarIcon />}>With suffix</Button>
+          <Button variant="secondary" chevron>Dropdown</Button>
+          <Button leftIcon={<StarIcon />} chevron>Both</Button>
         </Row>
         <Row label="States" tokens={tokens}>
           <Button loading>Loading</Button>

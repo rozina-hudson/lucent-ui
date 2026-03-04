@@ -8,6 +8,7 @@ import {
 import { lightTokens } from '../tokens/light.js';
 import { darkTokens } from '../tokens/dark.js';
 import { makeLibraryCSS } from '../tokens/css.js';
+import { getContrastText } from '../tokens/contrast.js';
 import type { LucentTokens, Theme } from '../tokens/types.js';
 
 interface LucentContextValue {
@@ -43,11 +44,20 @@ export function LucentProvider({
 }: LucentProviderProps) {
   const id = useId().replace(/:/g, '');
   const baseTokens = theme === 'dark' ? darkTokens : lightTokens;
-  const tokens: LucentTokens = tokenOverrides
+  const merged: LucentTokens = tokenOverrides
     ? { ...baseTokens, ...tokenOverrides }
     : baseTokens;
+  // Auto-compute textOnAccent from the resolved accent color unless the consumer
+  // explicitly overrides it. This guarantees WCAG AA contrast on accent surfaces
+  // regardless of which accent color is in use.
+  const tokens: LucentTokens = {
+    ...merged,
+    textOnAccent: tokenOverrides?.textOnAccent ?? getContrastText(merged.accentDefault),
+  };
 
-  const css = makeLibraryCSS(tokens, ':root');
+  // Set the root font size once so all rem-based tokens resolve to the intended scale.
+  // 13px base: fontSizeMd (1rem) = 13px, fontSizeSm (0.875rem) ≈ 11px, etc.
+  const css = 'html { font-size: 13px; }\n' + makeLibraryCSS(tokens, ':root');
 
   // useLayoutEffect fires synchronously after DOM mutations, before browser paint —
   // so CSS variables are in <head> before any component renders visually.

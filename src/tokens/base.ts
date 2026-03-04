@@ -2,7 +2,7 @@ import type { TypographyTokens, SpacingTokens, RadiusTokens, ShadowTokens, Motio
 
 export const typographyTokens: TypographyTokens = {
   fontFamilyBase:
-    'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
   fontFamilyMono: '"DM Mono", "Fira Code", "Cascadia Code", monospace',
   fontSizeXs: '0.75rem',
   fontSizeSm: '0.875rem',

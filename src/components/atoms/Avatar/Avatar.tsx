@@ -65,9 +65,8 @@ export function Avatar({ src, alt, size = 'md', initials, style, ...rest }: Avat
       aria-label={alt}
       style={{
         ...base,
-        background: 'var(--lucent-accent-subtle)',
-        border: '1px solid var(--lucent-accent-default)',
-        color: 'var(--lucent-accent-active)',
+        background: 'var(--lucent-accent-default)',
+        color: 'var(--lucent-text-on-accent)',
         fontSize: fontSizes[size],
         fontWeight: 'var(--lucent-font-weight-semibold)',
         fontFamily: 'var(--lucent-font-family-base)',
