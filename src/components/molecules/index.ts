@@ -4,3 +4,6 @@ export * from './Card/index.js';
 export * from './Alert/index.js';
 export * from './EmptyState/index.js';
 export * from './Skeleton/index.js';
+export * from './Breadcrumb/index.js';
+export * from './Tabs/index.js';
+export * from './Collapsible/index.js';
