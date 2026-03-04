@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Before opening a request, check the [project board](https://github.com/users/rozinashopify/projects/3) to see if the component is already planned.
+        Before opening a request, check the [project board](https://github.com/users/rozina-hudson/projects/3) to see if the component is already planned.
 
   - type: input
     id: name

@@ -1,6 +1,6 @@
 # Lucent UI
 
-[![CI](https://github.com/rozinashopify/lucent-ui/actions/workflows/ci.yml/badge.svg)](https://github.com/rozinashopify/lucent-ui/actions/workflows/ci.yml)
+[![CI](https://github.com/rozina-hudson/lucent-ui/actions/workflows/ci.yml/badge.svg)](https://github.com/rozina-hudson/lucent-ui/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/lucent-ui)](https://www.npmjs.com/package/lucent-ui)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 

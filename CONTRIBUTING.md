@@ -119,4 +119,4 @@ Use the issue templates in `.github/ISSUE_TEMPLATE/`:
 
 ## Questions?
 
-Open a [GitHub Discussion](https://github.com/rozinashopify/lucent-ui/discussions) or file an issue.
+Open a [GitHub Discussion](https://github.com/rozina-hudson/lucent-ui/discussions) or file an issue.
