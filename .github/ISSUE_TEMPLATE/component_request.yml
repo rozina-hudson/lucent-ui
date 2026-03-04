@@ -1,0 +1,66 @@
+name: Component request
+description: Propose a new component for the library
+labels: [type: feature, area: components]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before opening a request, check the [project board](https://github.com/users/rozinashopify/projects/3) to see if the component is already planned.
+
+  - type: input
+    id: name
+    attributes:
+      label: Component name
+      placeholder: e.g. Modal, DatePicker
+    validations:
+      required: true
+
+  - type: dropdown
+    id: tier
+    attributes:
+      label: Tier
+      description: Where does this component sit in the hierarchy?
+      options:
+        - atom (indivisible primitive)
+        - molecule (composed from atoms)
+        - block (page-section level)
+        - overlay (layers above content)
+        - flow (multi-step / stateful)
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: One-sentence description
+      description: Written for an AI audience — precise, not marketing copy.
+      placeholder: A modal dialog that interrupts the user to confirm a destructive action.
+    validations:
+      required: true
+
+  - type: textarea
+    id: use_cases
+    attributes:
+      label: Use cases
+      description: When would you reach for this component?
+    validations:
+      required: true
+
+  - type: textarea
+    id: props
+    attributes:
+      label: Proposed props (optional)
+      description: A rough sketch of the prop API.
+      render: ts
+
+  - type: textarea
+    id: design_intent
+    attributes:
+      label: Design intent (optional)
+      description: When to use each variant, when NOT to use this component, and any pairing rules.
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Additional context
+      description: Reference designs, similar components in other libraries, etc.

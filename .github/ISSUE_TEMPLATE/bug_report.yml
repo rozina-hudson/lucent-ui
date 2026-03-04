@@ -1,0 +1,60 @@
+name: Bug report
+description: Something isn't working as expected
+labels: [type: bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please fill in as much detail as possible.
+
+  - type: input
+    id: component
+    attributes:
+      label: Component
+      placeholder: e.g. Button, FormField
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: A clear description of the bug.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: A code snippet or link to a sandbox that reproduces the issue.
+      render: tsx
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: lucent-ui version
+      placeholder: e.g. 0.1.0
+    validations:
+      required: true
+
+  - type: input
+    id: react_version
+    attributes:
+      label: React version
+      placeholder: e.g. 18.3.1
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Additional context
+      description: Screenshots, error messages, or anything else that might help.
