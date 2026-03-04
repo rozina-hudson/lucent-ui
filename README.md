@@ -54,7 +54,13 @@ console.log(ButtonManifest);
 
 ## MCP Server
 
-Connect Lucent UI's manifest layer to your AI coding tool:
+Connect Lucent UI's manifest layer to your AI coding tool. The server exposes three tools:
+
+- **`list_components`** — all component names + tiers
+- **`get_component_manifest(componentName)`** — full manifest JSON for a component
+- **`search_components(query)`** — components matching a description
+
+### Cursor
 
 ```json
 // .cursor/mcp.json
@@ -67,6 +73,27 @@ Connect Lucent UI's manifest layer to your AI coding tool:
     }
   }
 }
+```
+
+### Claude Desktop
+
+```json
+// ~/Library/Application Support/Claude/claude_desktop_config.json
+{
+  "mcpServers": {
+    "lucent-ui": {
+      "command": "npx",
+      "args": ["lucent-mcp"],
+      "env": { "LUCENT_API_KEY": "your-key" }
+    }
+  }
+}
+```
+
+### Run locally
+
+```bash
+node dist-server/server/index.js
 ```
 
 ---
