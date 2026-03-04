@@ -21,6 +21,9 @@ import { Card } from '../src/components/molecules/Card/index.js';
 import { Alert } from '../src/components/molecules/Alert/index.js';
 import { EmptyState } from '../src/components/molecules/EmptyState/index.js';
 import { Skeleton } from '../src/components/molecules/Skeleton/index.js';
+import { Breadcrumb } from '../src/components/molecules/Breadcrumb/index.js';
+import { Tabs } from '../src/components/molecules/Tabs/index.js';
+import { Collapsible } from '../src/components/molecules/Collapsible/index.js';
 import type { LucentTokens, Theme } from '../src/index.js';
 
 type AccentPreset = 'default' | 'gold' | 'indigo';
@@ -636,6 +639,60 @@ function Inner({
             <span style={{ color: tokens.textSecondary, fontSize: tokens.fontSizeSm }}>About</span>
             <Divider orientation="vertical" />
             <span style={{ color: tokens.textSecondary, fontSize: tokens.fontSizeSm }}>Contact</span>
+          </div>
+        </Row>
+      </Section>
+
+      <Section title="Breadcrumb" tokens={tokens}>
+        <Row label="Default" tokens={tokens}>
+          <Breadcrumb
+            items={[
+              { label: 'Home', href: '#' },
+              { label: 'Settings', href: '#' },
+              { label: 'Profile' },
+            ]}
+          />
+        </Row>
+        <Row label="Custom separator" tokens={tokens}>
+          <Breadcrumb
+            separator="›"
+            items={[
+              { label: 'Dashboard', href: '#' },
+              { label: 'Projects', href: '#' },
+              { label: 'lucent-ui' },
+            ]}
+          />
+        </Row>
+      </Section>
+
+      <Section title="Tabs" tokens={tokens}>
+        <Row label="Default" tokens={tokens}>
+          <div style={{ width: '100%' }}>
+            <Tabs
+              tabs={[
+                { value: 'overview', label: 'Overview', content: <Text size="sm" color="secondary">Overview content goes here.</Text> },
+                { value: 'api', label: 'API', content: <Text size="sm" color="secondary">API reference content.</Text> },
+                { value: 'examples', label: 'Examples', content: <Text size="sm" color="secondary">Usage examples.</Text> },
+                { value: 'disabled', label: 'Disabled', content: null, disabled: true },
+              ]}
+            />
+          </div>
+        </Row>
+      </Section>
+
+      <Section title="Collapsible" tokens={tokens}>
+        <Row label="Default" tokens={tokens}>
+          <div style={{ width: '100%', maxWidth: 400, borderBottom: `1px solid ${tokens.borderDefault}` }}>
+            <Collapsible trigger={<Text weight="medium">Advanced options</Text>}>
+              <Text color="secondary">Hidden content that expands when you click the trigger above. Can contain any ReactNode.</Text>
+            </Collapsible>
+          </div>
+        </Row>
+        <Row label="Default open" tokens={tokens}>
+          <div style={{ width: '100%', maxWidth: 400, borderBottom: `1px solid ${tokens.borderDefault}` }}>
+            <Collapsible defaultOpen trigger={<Text weight="medium">Expanded by default</Text>}>
+              <Text color="secondary">This section starts expanded.</Text>
+            </Collapsible>
           </div>
         </Row>
       </Section>
