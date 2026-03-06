@@ -1,6 +1,6 @@
 {
   "name": "lucent-ui",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "An AI-first React component library with machine-readable manifests.",
   "type": "module",
   "main": "./dist/index.cjs",
