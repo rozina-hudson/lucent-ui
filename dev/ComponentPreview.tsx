@@ -26,7 +26,14 @@ import { Tabs } from '../src/components/molecules/Tabs/index.js';
 import { Collapsible } from '../src/components/molecules/Collapsible/index.js';
 import { NavLink } from '../src/components/atoms/NavLink/index.js';
 import { PageLayout } from '../src/components/molecules/PageLayout/index.js';
-import type { LucentTokens, Theme } from '../src/index.js';
+import { DataTable } from '../src/components/molecules/DataTable/index.js';
+import { CommandPalette } from '../src/components/molecules/CommandPalette/index.js';
+import { MultiSelect } from '../src/components/molecules/MultiSelect/index.js';
+import { DatePicker } from '../src/components/molecules/DatePicker/index.js';
+import { DateRangePicker } from '../src/components/molecules/DateRangePicker/index.js';
+import { FileUpload } from '../src/components/molecules/FileUpload/index.js';
+import { Timeline } from '../src/components/molecules/Timeline/index.js';
+import type { LucentTokens, Theme, UploadFile } from '../src/index.js';
 
 type AccentPreset = 'default' | 'gold' | 'indigo';
 
@@ -748,6 +755,135 @@ function Inner({
                 <Text color="secondary">Main scrollable content area.</Text>
               </div>
             </PageLayout>
+          </div>
+        </Row>
+      </Section>
+
+      {/* ── Molecules Wave 2 ── */}
+
+      <Section title="DataTable" tokens={tokens}>
+        <Row label="Sortable + paginated" tokens={tokens}>
+          <DataTable
+            style={{ width: '100%' }}
+            pageSize={5}
+            columns={[
+              { key: 'name', header: 'Name', sortable: true },
+              { key: 'role', header: 'Role', sortable: true },
+              { key: 'status', header: 'Status', render: (row: { name: string; role: string; status: string }) => <Badge variant={row.status === 'Active' ? 'success' : 'neutral'}>{row.status}</Badge> },
+            ]}
+            rows={[
+              { name: 'Alice', role: 'Engineer', status: 'Active' },
+              { name: 'Bob', role: 'Designer', status: 'Active' },
+              { name: 'Carol', role: 'Product', status: 'Away' },
+              { name: 'Dan', role: 'Engineer', status: 'Active' },
+              { name: 'Eve', role: 'Marketing', status: 'Away' },
+              { name: 'Frank', role: 'Engineer', status: 'Active' },
+              { name: 'Grace', role: 'Designer', status: 'Away' },
+            ]}
+          />
+        </Row>
+        <Row label="Empty state" tokens={tokens}>
+          <DataTable columns={[{ key: 'name', header: 'Name' }]} rows={[]} style={{ width: 320 }} />
+        </Row>
+      </Section>
+
+      <Section title="CommandPalette" tokens={tokens}>
+        <Row label="⌘K to open" tokens={tokens}>
+          <CommandPalette
+            commands={[
+              { id: 'new', label: 'New document', description: 'Create a blank document', group: 'Create', onSelect: () => {} },
+              { id: 'open', label: 'Open file…', description: 'Browse and open a file', group: 'Create', onSelect: () => {} },
+              { id: 'settings', label: 'Settings', description: 'Open app settings', group: 'Navigate', onSelect: () => {} },
+              { id: 'logout', label: 'Log out', group: 'Account', onSelect: () => {} },
+            ]}
+          />
+          <Text size="sm" color="secondary">Press <kbd style={{ padding: '1px 5px', borderRadius: tokens.radiusSm, border: `1px solid ${tokens.borderDefault}`, fontFamily: tokens.fontFamilyMono, fontSize: tokens.fontSizeXs }}>⌘K</kbd> to open the palette</Text>
+        </Row>
+      </Section>
+
+      <Section title="MultiSelect" tokens={tokens}>
+        <Row label="Default" tokens={tokens}>
+          <div style={{ width: 320 }}>
+            <MultiSelect
+              options={['React', 'Vue', 'Svelte', 'Angular', 'Solid'].map(v => ({ value: v.toLowerCase(), label: v }))}
+              placeholder="Select frameworks…"
+            />
+          </div>
+        </Row>
+        <Row label="Max 2 selections" tokens={tokens}>
+          <div style={{ width: 320 }}>
+            <MultiSelect
+              options={['TypeScript', 'Rust', 'Go', 'Python', 'Elixir'].map(v => ({ value: v.toLowerCase(), label: v }))}
+              max={2}
+              placeholder="Pick up to 2 languages"
+            />
+          </div>
+        </Row>
+        <Row label="Disabled" tokens={tokens}>
+          <div style={{ width: 320 }}>
+            <MultiSelect
+              options={[{ value: 'a', label: 'Option A' }]}
+              disabled
+              placeholder="Disabled"
+            />
+          </div>
+        </Row>
+      </Section>
+
+      <Section title="DatePicker" tokens={tokens}>
+        <Row label="Single date" tokens={tokens}>
+          <DatePicker onChange={() => {}} />
+        </Row>
+        <Row label="With min (today)" tokens={tokens}>
+          <DatePicker min={new Date()} placeholder="Future dates only" onChange={() => {}} />
+        </Row>
+        <Row label="Disabled" tokens={tokens}>
+          <DatePicker disabled />
+        </Row>
+      </Section>
+
+      <Section title="DateRangePicker" tokens={tokens}>
+        <Row label="Default" tokens={tokens}>
+          <DateRangePicker onChange={() => {}} />
+        </Row>
+        <Row label="Disabled" tokens={tokens}>
+          <DateRangePicker disabled />
+        </Row>
+      </Section>
+
+      <Section title="FileUpload" tokens={tokens}>
+        <Row label="Single file" tokens={tokens}>
+          <div style={{ width: '100%', maxWidth: 480 }}>
+            <FileUpload accept="image/*,.pdf" maxSize={5 * 1024 * 1024} onChange={() => {}} />
+          </div>
+        </Row>
+        <Row label="Multiple files" tokens={tokens}>
+          <div style={{ width: '100%', maxWidth: 480 }}>
+            <FileUpload
+              multiple
+              value={[
+                { id: '1', file: new File([''], 'design.figma'), progress: 100 },
+                { id: '2', file: new File([''], 'spec.pdf'), progress: 60 },
+                { id: '3', file: new File([''], 'error.png'), error: 'Upload failed — server error' },
+              ] as UploadFile[]}
+              onChange={() => {}}
+            />
+          </div>
+        </Row>
+      </Section>
+
+      <Section title="Timeline" tokens={tokens}>
+        <Row label="Event log" tokens={tokens}>
+          <div style={{ width: '100%', maxWidth: 480 }}>
+            <Timeline
+              items={[
+                { id: '1', title: 'Order placed', date: 'Mar 1, 2026', status: 'success' },
+                { id: '2', title: 'Payment processed', date: 'Mar 1, 2026', status: 'success' },
+                { id: '3', title: 'Shipped', date: 'Mar 2, 2026', description: 'FedEx tracking: 7489201837' },
+                { id: '4', title: 'Delivery failed', date: 'Mar 4, 2026', status: 'danger', description: 'No one home — will retry tomorrow.' },
+                { id: '5', title: 'Awaiting re-delivery', date: 'Mar 5, 2026', status: 'warning' },
+              ]}
+            />
           </div>
         </Row>
       </Section>
