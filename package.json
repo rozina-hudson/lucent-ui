@@ -15,19 +15,22 @@
     "./styles": "./dist/index.css"
   },
   "bin": {
-    "lucent-mcp": "./dist-server/server/index.js"
+    "lucent-mcp": "./dist-server/server/index.js",
+    "lucent-manifest": "./dist-cli/cli/index.js"
   },
   "sideEffects": false,
   "files": [
     "dist",
-    "dist-server"
+    "dist-server",
+    "dist-cli"
   ],
   "scripts": {
     "dev": "vite --config vite.dev.config.ts",
     "build": "vite build",
     "build:server": "tsc -p server/tsconfig.json",
+    "build:cli": "tsc -p cli/tsconfig.json && cp cli/template.manifest.json dist-cli/cli/template.manifest.json",
     "test": "echo \"No tests yet\" && exit 0",
-    "prepublishOnly": "tsc --noEmit && pnpm build && pnpm build:server",
+    "prepublishOnly": "tsc --noEmit && pnpm build && pnpm build:server && pnpm build:cli",
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release": "pnpm prepublishOnly && changeset publish"
