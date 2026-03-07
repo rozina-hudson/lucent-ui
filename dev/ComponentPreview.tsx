@@ -27,6 +27,7 @@ import { Collapsible } from '../src/components/molecules/Collapsible/index.js';
 import { NavLink } from '../src/components/atoms/NavLink/index.js';
 import { Slider } from '../src/components/atoms/Slider/index.js';
 import { CodeBlock } from '../src/components/atoms/CodeBlock/index.js';
+import { Table } from '../src/components/atoms/Table/index.js';
 import { PageLayout } from '../src/components/molecules/PageLayout/index.js';
 import { DataTable } from '../src/components/molecules/DataTable/index.js';
 import { CommandPalette } from '../src/components/molecules/CommandPalette/index.js';
@@ -494,6 +495,64 @@ function Inner({
           <div style={{ width: '100%' }}>
             <CodeBlock showCopyButton={false} language="bash" code="npm install lucent-ui" />
           </div>
+        </Row>
+      </Section>
+
+      {/* Table */}
+      <Section title="Table" tokens={tokens}>
+        <Row label="Basic" tokens={tokens}>
+          <Table>
+            <Table.Head>
+              <Table.Row>
+                <Table.Cell as="th">Prop</Table.Cell>
+                <Table.Cell as="th">Type</Table.Cell>
+                <Table.Cell as="th">Default</Table.Cell>
+                <Table.Cell as="th">Description</Table.Cell>
+              </Table.Row>
+            </Table.Head>
+            <Table.Body>
+              {[
+                ['variant', '"primary" | "secondary" | "ghost" | "danger"', '"primary"', 'Visual style of the button'],
+                ['size', '"sm" | "md" | "lg"', '"md"', 'Controls height and padding'],
+                ['disabled', 'boolean', 'false', 'Prevents interaction'],
+                ['loading', 'boolean', 'false', 'Shows a spinner, disables click'],
+              ].map(([prop, type, def, desc]) => (
+                <Table.Row key={prop}>
+                  <Table.Cell style={{ fontFamily: 'var(--lucent-font-family-mono)', fontSize: 'var(--lucent-font-size-xs)' }}>{prop}</Table.Cell>
+                  <Table.Cell style={{ fontFamily: 'var(--lucent-font-family-mono)', fontSize: 'var(--lucent-font-size-xs)', color: 'var(--lucent-text-secondary)' }}>{type}</Table.Cell>
+                  <Table.Cell style={{ fontFamily: 'var(--lucent-font-family-mono)', fontSize: 'var(--lucent-font-size-xs)' }}>{def}</Table.Cell>
+                  <Table.Cell>{desc}</Table.Cell>
+                </Table.Row>
+              ))}
+            </Table.Body>
+          </Table>
+        </Row>
+        <Row label="Striped" tokens={tokens}>
+          <Table striped>
+            <Table.Head>
+              <Table.Row>
+                <Table.Cell as="th">Name</Table.Cell>
+                <Table.Cell as="th">Role</Table.Cell>
+                <Table.Cell as="th">Status</Table.Cell>
+              </Table.Row>
+            </Table.Head>
+            <Table.Body>
+              {[
+                ['Alice', 'Engineer', 'Active'],
+                ['Bob', 'Designer', 'Away'],
+                ['Carol', 'Product', 'Active'],
+                ['Dan', 'Engineer', 'Active'],
+              ].map(([name, role, status]) => (
+                <Table.Row key={name}>
+                  <Table.Cell>{name}</Table.Cell>
+                  <Table.Cell>{role}</Table.Cell>
+                  <Table.Cell>
+                    <Badge variant={status === 'Active' ? 'success' : 'neutral'}>{status}</Badge>
+                  </Table.Cell>
+                </Table.Row>
+              ))}
+            </Table.Body>
+          </Table>
         </Row>
       </Section>
 

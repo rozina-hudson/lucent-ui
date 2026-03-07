@@ -16,3 +16,4 @@ export * from './Text/index.js';
 export * from './NavLink/index.js';
 export * from './Slider/index.js';
 export * from './CodeBlock/index.js';
+export * from './Table/index.js';
