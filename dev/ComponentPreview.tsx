@@ -25,6 +25,7 @@ import { Breadcrumb } from '../src/components/molecules/Breadcrumb/index.js';
 import { Tabs } from '../src/components/molecules/Tabs/index.js';
 import { Collapsible } from '../src/components/molecules/Collapsible/index.js';
 import { NavLink } from '../src/components/atoms/NavLink/index.js';
+import { Slider } from '../src/components/atoms/Slider/index.js';
 import { PageLayout } from '../src/components/molecules/PageLayout/index.js';
 import { DataTable } from '../src/components/molecules/DataTable/index.js';
 import { CommandPalette } from '../src/components/molecules/CommandPalette/index.js';
@@ -106,6 +107,7 @@ function Inner({
   const [radio, setRadio] = useState('option1');
   const [radioSize, setRadioSize] = useState('m');
   const [toggled, setToggled] = useState(false);
+  const [sliderValue, setSliderValue] = useState(40);
   const [selectVal, setSelectVal] = useState('');
   const [tags, setTags] = useState(['React', 'TypeScript', 'Design Systems']);
   const [searchQuery, setSearchQuery] = useState('');
@@ -416,6 +418,27 @@ function Inner({
         <Row label="Disabled" tokens={tokens}>
           <Toggle disabled label="Disabled off" />
           <Toggle disabled defaultChecked label="Disabled on" />
+        </Row>
+      </Section>
+
+      {/* Slider */}
+      <Section title="Slider" tokens={tokens}>
+        <Row label="Controlled" tokens={tokens}>
+          <div style={{ width: 280 }}>
+            <Slider label="Volume" showValue value={sliderValue} onChange={e => setSliderValue(Number(e.target.value))} />
+          </div>
+        </Row>
+        <Row label="Sizes" tokens={tokens}>
+          <div style={{ width: 280, display: 'flex', flexDirection: 'column', gap: 'var(--lucent-space-4)' }}>
+            <Slider size="sm" label="Small" showValue defaultValue={30} />
+            <Slider size="md" label="Medium" showValue defaultValue={50} />
+            <Slider size="lg" label="Large" showValue defaultValue={70} />
+          </div>
+        </Row>
+        <Row label="Disabled" tokens={tokens}>
+          <div style={{ width: 280 }}>
+            <Slider label="Locked" disabled defaultValue={40} showValue />
+          </div>
         </Row>
       </Section>
 

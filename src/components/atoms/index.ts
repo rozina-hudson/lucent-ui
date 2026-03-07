@@ -14,3 +14,4 @@ export * from './Tooltip/index.js';
 export * from './Icon/index.js';
 export * from './Text/index.js';
 export * from './NavLink/index.js';
+export * from './Slider/index.js';
