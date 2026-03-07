@@ -1,5 +1,11 @@
 # lucent-ui
 
+## 0.4.2
+
+### Patch Changes
+
+- Add missing component manifests for NavLink, Breadcrumb, Tabs, and Collapsible.
+
 ## 0.4.1
 
 ### Patch Changes
