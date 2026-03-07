@@ -757,6 +757,73 @@ function Inner({
             </PageLayout>
           </div>
         </Row>
+        <Row label="With status bar footer" tokens={tokens}>
+          <div style={{ width: '100%', height: 320, border: `1px solid ${tokens.borderDefault}`, borderRadius: tokens.radiusMd, overflow: 'hidden' }}>
+            <PageLayout
+              headerHeight={44}
+              sidebarWidth={180}
+              header={
+                <div style={{ height: '100%', display: 'flex', alignItems: 'center', padding: `0 ${tokens.space4}` }}>
+                  <Text weight="semibold">My App</Text>
+                </div>
+              }
+              sidebar={
+                <div style={{ padding: tokens.space3, display: 'flex', flexDirection: 'column', gap: tokens.space1 }}>
+                  <NavLink href="#" isActive>Dashboard</NavLink>
+                  <NavLink href="#">Components</NavLink>
+                  <NavLink href="#">Settings</NavLink>
+                </div>
+              }
+              footer={
+                <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: `0 ${tokens.space3}`, borderTop: `1px solid ${tokens.borderDefault}` }}>
+                  <Text size="xs" color="secondary">main</Text>
+                  <div style={{ display: 'flex', gap: tokens.space4 }}>
+                    <Text size="xs" color="secondary">Ln 42, Col 7</Text>
+                    <Text size="xs" color="secondary">UTF-8</Text>
+                    <Text size="xs" color="info">Ready</Text>
+                  </div>
+                </div>
+              }
+            >
+              <div style={{ padding: tokens.space5 }}>
+                <Text color="secondary">Main scrollable content area.</Text>
+              </div>
+            </PageLayout>
+          </div>
+        </Row>
+        <Row label="With header + sidebar + right panel" tokens={tokens}>
+          <div style={{ width: '100%', height: 320, border: `1px solid ${tokens.borderDefault}`, borderRadius: tokens.radiusMd, overflow: 'hidden' }}>
+            <PageLayout
+              headerHeight={44}
+              sidebarWidth={160}
+              rightSidebarWidth={160}
+              header={
+                <div style={{ height: '100%', display: 'flex', alignItems: 'center', padding: `0 ${tokens.space4}` }}>
+                  <Text weight="semibold">My App</Text>
+                </div>
+              }
+              sidebar={
+                <div style={{ padding: tokens.space3, display: 'flex', flexDirection: 'column', gap: tokens.space1 }}>
+                  <NavLink href="#" isActive>Dashboard</NavLink>
+                  <NavLink href="#">Components</NavLink>
+                  <NavLink href="#">Settings</NavLink>
+                </div>
+              }
+              rightSidebar={
+                <div style={{ padding: tokens.space3, display: 'flex', flexDirection: 'column', gap: tokens.space2 }}>
+                  <Text size="xs" weight="semibold" color="secondary">Details</Text>
+                  <Text size="xs" color="secondary">Status: Active</Text>
+                  <Text size="xs" color="secondary">Owner: You</Text>
+                  <Text size="xs" color="secondary">Updated: today</Text>
+                </div>
+              }
+            >
+              <div style={{ padding: tokens.space5 }}>
+                <Text color="secondary">Main scrollable content area.</Text>
+              </div>
+            </PageLayout>
+          </div>
+        </Row>
       </Section>
 
       {/* ── Molecules Wave 2 ── */}
