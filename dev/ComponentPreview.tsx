@@ -445,7 +445,7 @@ function Inner({
 
       {/* CodeBlock */}
       <Section title="CodeBlock" tokens={tokens}>
-        <Row label="With language label" tokens={tokens}>
+        <Row label="Single snippet" tokens={tokens}>
           <div style={{ width: '100%' }}>
             <CodeBlock
               language="tsx"
@@ -453,17 +453,46 @@ function Inner({
             />
           </div>
         </Row>
-        <Row label="No copy button" tokens={tokens}>
+        <Row label="Tabbed (package manager)" tokens={tokens}>
           <div style={{ width: '100%' }}>
-            <CodeBlock showCopyButton={false} language="bash" code={`npm install lucent-ui`} />
+            <CodeBlock
+              tabs={[
+                { label: 'pnpm', code: 'pnpm add lucent-ui', language: 'bash' },
+                { label: 'npm',  code: 'npm install lucent-ui', language: 'bash' },
+                { label: 'yarn', code: 'yarn add lucent-ui', language: 'bash' },
+                { label: 'bun',  code: 'bun add lucent-ui', language: 'bash' },
+              ]}
+            />
           </div>
         </Row>
-        <Row label="Long lines (scroll)" tokens={tokens}>
-          <div style={{ width: '100%', maxWidth: 400 }}>
+        <Row label="AI prompt (variant=prompt)" tokens={tokens}>
+          <div style={{ width: '100%' }}>
             <CodeBlock
-              language="json"
-              code={`{"id":"lucent-button","name":"Button","tier":"atom","domain":"neutral","specVersion":"0.1","description":"A clickable action trigger."}`}
+              variant="prompt"
+              helperText="Paste this into a Claude conversation or claude.ai:"
+              tabs={[
+                {
+                  label: 'Claude',
+                  icon: '♦',
+                  code: '"Add a Button from lucent-ui with variant=\\"primary\\". It should trigger form submission and show a loading state while the request is in flight."',
+                },
+                {
+                  label: 'Cursor',
+                  icon: '↖',
+                  code: '@lucent-ui Add a primary Button with an onClick handler that triggers form submission and shows a loading spinner.',
+                },
+                {
+                  label: 'VS Code',
+                  icon: '↺',
+                  code: 'Use lucent-ui Button component: variant="primary", loading state tied to form submit handler.',
+                },
+              ]}
             />
+          </div>
+        </Row>
+        <Row label="No copy button" tokens={tokens}>
+          <div style={{ width: '100%' }}>
+            <CodeBlock showCopyButton={false} language="bash" code="npm install lucent-ui" />
           </div>
         </Row>
       </Section>
