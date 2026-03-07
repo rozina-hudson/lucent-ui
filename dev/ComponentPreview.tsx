@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { LucentProvider, useLucent, brandTokens } from '../src/index.js';
+import { adjustLightness, getThemeComplementBorderColor, deriveBorderVariants } from '../src/tokens/color.js';
 import { Button } from '../src/components/atoms/Button/index.js';
 import { Input } from '../src/components/atoms/Input/index.js';
 import { Textarea } from '../src/components/atoms/Textarea/index.js';
@@ -73,19 +74,34 @@ function StarIcon() {
 export function ComponentPreview() {
   const [theme, setTheme] = useState<Theme>('light');
   const [accent, setAccent] = useState<AccentPreset>('default');
+  const [overrides, setOverrides] = useState<Partial<LucentTokens>>({});
 
-  const tokenOverrides =
+  const tokenPreset =
     accent === 'gold' ? brandTokens :
     accent === 'indigo' ? indigoTokens :
     undefined;
 
+  const mergedTokens: Partial<LucentTokens> = {
+    ...(tokenPreset || {}),
+    ...overrides,
+  };
+
+  const handleTokenChange = (key: keyof LucentTokens, value: string) => {
+    setOverrides(prev => ({ ...prev, [key]: value }));
+  };
+
+  const clearOverrides = () => setOverrides({});
+
   return (
-    <LucentProvider theme={theme} tokens={tokenOverrides}>
+    <LucentProvider theme={theme} tokens={mergedTokens}>
       <Inner
         theme={theme}
         accent={accent}
+        overrides={overrides}
         onToggleTheme={() => setTheme(t => t === 'light' ? 'dark' : 'light')}
         onSetAccent={setAccent}
+        onChangeOverride={handleTokenChange}
+        clearOverrides={clearOverrides}
       />
     </LucentProvider>
   );
@@ -94,17 +110,25 @@ export function ComponentPreview() {
 function Inner({
   theme,
   accent,
+  overrides,
   onToggleTheme,
   onSetAccent,
+  onChangeOverride,
+  clearOverrides,
 }: {
   theme: Theme;
   accent: AccentPreset;
+  overrides: Partial<LucentTokens>;
   onToggleTheme: () => void;
   onSetAccent: (p: AccentPreset) => void;
+  onChangeOverride: (key: keyof LucentTokens, value: string) => void;
+  clearOverrides: () => void;
 }) {
   const { tokens } = useLucent();
   const [inputVal, setInputVal] = useState('');
   const [textareaVal, setTextareaVal] = useState('');
+  const [deriveAccent, setDeriveAccent] = useState(true);
+  const [deriveBorder, setDeriveBorder] = useState(true);
   const [checked, setChecked] = useState(false);
   const [radio, setRadio] = useState('option1');
   const [radioSize, setRadioSize] = useState('m');
@@ -115,6 +139,126 @@ function Inner({
   const [searchQuery, setSearchQuery] = useState('');
   const [alertDismissed, setAlertDismissed] = useState(false);
 
+  // font scale slider (percentage of base)
+  const [fontScalePercent, setFontScalePercent] = useState(100);
+  const baseFontSizesRef = useRef<Record<string, string>>({});
+
+  // spacing scale slider
+  const [spaceScalePercent, setSpaceScalePercent] = useState(100);
+  const baseSpaceRef = useRef<Record<string, string>>({});
+
+  const [radiusPx, setRadiusPx] = useState(() => {
+    const raw = tokens.radiusLg;
+    if (raw.endsWith('px')) return parseInt(raw);
+    if (raw.endsWith('rem')) return Math.round(parseFloat(raw) * 16);
+    return 0;
+  });
+
+  // track border colors per theme for context-aware derivation
+  const borderColorsRef = useRef<{ light: string; dark: string }>({ light: '', dark: '' });
+
+  // when deriveAccent toggled on or base color/theme changes, update other tokens
+  useEffect(() => {
+    if (deriveAccent) {
+      const base = tokens.accentDefault;
+      const hover = theme === 'light' ? adjustLightness(base, -0.08) : adjustLightness(base, 0.08);
+      const active = theme === 'light' ? adjustLightness(base, -0.12) : adjustLightness(base, 0.12);
+      const subtle = theme === 'light' ? adjustLightness(base, 0.8) : adjustLightness(base, -0.8);
+      const border = theme === 'light' ? adjustLightness(base, -0.15) : adjustLightness(base, 0.15);
+      onChangeOverride('accentHover', hover);
+      onChangeOverride('accentActive', active);
+      onChangeOverride('accentSubtle', subtle);
+      onChangeOverride('accentBorder', border);
+    }
+  }, [deriveAccent, theme, tokens.accentDefault]);
+
+  // when deriveBorder toggled on or base color/theme changes, update other tokens
+  useEffect(() => {
+    if (deriveBorder) {
+      const base = tokens.borderDefault;
+      const variants = deriveBorderVariants(base);
+      onChangeOverride('borderSubtle', variants.subtle);
+      onChangeOverride('borderStrong', variants.strong);
+    }
+  }, [deriveBorder, tokens.borderDefault]);
+
+  // when theme changes, switch to the complementary border color for that theme
+  useEffect(() => {
+    if (deriveBorder) {
+      const colorKey = theme === 'light' ? 'light' : 'dark';
+      const otherKey = theme === 'light' ? 'dark' : 'light';
+
+      // if we have a color stored for the current theme, use it
+      if (borderColorsRef.current[colorKey]) {
+        onChangeOverride('borderDefault', borderColorsRef.current[colorKey]);
+      } else {
+        // first time in this theme, compute complement of the other theme's color
+        const currentColor = tokens.borderDefault;
+        const complement = getThemeComplementBorderColor(currentColor);
+        borderColorsRef.current[colorKey] = complement;
+        onChangeOverride('borderDefault', complement);
+      }
+    }
+  }, [theme, deriveBorder]);
+
+  // keep slider in sync if token changes externally
+  useEffect(() => {
+    const raw = tokens.radiusLg;
+    const px = raw.endsWith('px') ? parseInt(raw) : raw.endsWith('rem') ? Math.round(parseFloat(raw) * 16) : 0;
+    setRadiusPx(px);
+  }, [tokens.radiusLg, tokens.radiusMd, tokens.radiusSm, tokens.radiusXl, tokens.radiusFull]);
+
+  // remember original font sizes once, then keep scale state updated
+  useEffect(() => {
+    if (Object.keys(baseFontSizesRef.current).length === 0) {
+      [
+        'fontSizeXs','fontSizeSm','fontSizeMd','fontSizeLg','fontSizeXl','fontSize2xl','fontSize3xl'
+      ].forEach(k => {
+        baseFontSizesRef.current[k] = tokens[k as keyof typeof tokens] as string;
+      });
+    }
+
+    if (Object.keys(baseSpaceRef.current).length === 0) {
+      Object.keys(tokens)
+        .filter(k => k.startsWith('space'))
+        .forEach(k => {
+          baseSpaceRef.current[k] = tokens[k as keyof typeof tokens] as string;
+        });
+    }
+  }, [tokens]);
+
+  useEffect(() => {
+    // if any font token changes outside the slider, recompute percent
+    const raw = tokens.fontSizeMd;
+    const baseRaw = baseFontSizesRef.current.fontSizeMd;
+    if (baseRaw) {
+      const num = parseFloat(raw);
+      const baseNum = parseFloat(baseRaw);
+      const percent = Math.round((num / baseNum) * 100);
+      setFontScalePercent(percent);
+    }
+  }, [
+    tokens.fontSizeXs,
+    tokens.fontSizeSm,
+    tokens.fontSizeMd,
+    tokens.fontSizeLg,
+    tokens.fontSizeXl,
+    tokens.fontSize2xl,
+    tokens.fontSize3xl,
+  ]);
+
+  useEffect(() => {
+    // keep spacing slider in sync when spacing tokens change externally
+    const raw = tokens.space4; // use mid-level token as reference
+    const baseRaw = baseSpaceRef.current.space4;
+    if (baseRaw) {
+      const num = parseFloat(raw);
+      const baseNum = parseFloat(baseRaw);
+      const percent = Math.round((num / baseNum) * 100);
+      setSpaceScalePercent(percent);
+    }
+  }, [tokens]);
+
   const allFruits = ['Apple', 'Apricot', 'Banana', 'Blueberry', 'Cherry', 'Grape', 'Mango', 'Orange', 'Peach', 'Pear', 'Pineapple', 'Strawberry'];
   const searchResults = searchQuery.length > 0
     ? allFruits
@@ -123,36 +267,191 @@ function Inner({
     : [];
 
   return (
-    <div style={{ background: tokens.bgBase, color: tokens.textPrimary, fontFamily: tokens.fontFamilyBase, minHeight: '100vh', padding: tokens.space8 }}>
+    <div style={{ background: tokens.bgBase, color: tokens.textPrimary, fontFamily: tokens.fontFamilyBase, minHeight: '100vh', padding: tokens.space8, paddingRight: '280px' }}>
       {/* Header */}
+      {/* Customizer sidebar */}
+      <div style={{
+        position: 'fixed',
+        right: 0,
+        top: 0,
+        bottom: 0,
+        width: 240,
+        overflowY: 'auto',
+        padding: tokens.space4,
+        background: tokens.surfaceDefault,
+        borderLeft: `1px solid ${tokens.borderDefault}`,
+        zIndex: 1000,
+      }}>
+        <h2 style={{ fontSize: tokens.fontSizeLg, fontWeight: tokens.fontWeightSemibold, marginTop: 0 }}>Customizer</h2>
+        <div style={{ marginBottom: tokens.space6 }}>
+          <Toggle label="Dark mode" checked={theme === 'dark'} onChange={onToggleTheme} />
+          <div style={{ marginTop: tokens.space4, display: 'flex', flexDirection: 'column', gap: tokens.space2 }}>
+            {(['default', 'gold', 'indigo'] as AccentPreset[]).map(p => (
+              <button
+                key={p}
+                onClick={() => onSetAccent(p)}
+                style={{
+                  padding: `${tokens.space1} ${tokens.space3}`,
+                  border: `1px solid ${accent === p ? tokens.accentDefault : tokens.borderDefault}`,
+                  borderRadius: tokens.radiusMd,
+                  background: accent === p ? tokens.accentDefault : tokens.surfaceDefault,
+                  color: accent === p ? tokens.textOnAccent : tokens.textPrimary,
+                  fontFamily: tokens.fontFamilyBase,
+                  fontSize: tokens.fontSizeSm,
+                  fontWeight: accent === p ? tokens.fontWeightSemibold : tokens.fontWeightRegular,
+                  cursor: 'pointer',
+                }}
+              >
+                {accentLabel[p]}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div style={{ marginBottom: tokens.space4 }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: tokens.space2 }}>
+            <input
+              type="checkbox"
+              checked={deriveAccent}
+              onChange={e => setDeriveAccent(e.target.checked)}
+            />
+            <span style={{ fontSize: tokens.fontSizeSm }}>Derive variants from accentDefault</span>
+          </label>
+        </div>
+        {(deriveAccent ? ['accentDefault'] : ['accentDefault', 'accentHover', 'accentActive', 'accentSubtle', 'accentBorder']).map(key => (
+          <div key={key} style={{ marginBottom: tokens.space4 }}>
+            <Input
+              type="color"
+              label={key}
+              value={tokens[key as keyof typeof tokens] as string}
+              onChange={e => {
+                const val = e.target.value;
+                onChangeOverride(key as keyof LucentTokens, val);
+                if (deriveAccent && key === 'accentDefault') {
+                  // compute derived tokens
+                  const base = val;
+                  const hover = theme === 'light' ? adjustLightness(base, -0.08) : adjustLightness(base, 0.08);
+                  const active = theme === 'light' ? adjustLightness(base, -0.12) : adjustLightness(base, 0.12);
+                  const subtle = theme === 'light' ? adjustLightness(base, 0.8) : adjustLightness(base, -0.8);
+                  const border = theme === 'light' ? adjustLightness(base, -0.15) : adjustLightness(base, 0.15);
+                  onChangeOverride('accentHover', hover);
+                  onChangeOverride('accentActive', active);
+                  onChangeOverride('accentSubtle', subtle);
+                  onChangeOverride('accentBorder', border);
+                }
+              }}
+            />
+          </div>
+        ))}
+
+        {/* border color pickers */}
+        <div style={{ marginTop: tokens.space6, marginBottom: tokens.space4, paddingTop: tokens.space4, borderTop: `1px solid ${tokens.borderDefault}` }}>
+          <span style={{ fontSize: tokens.fontSizeSm, fontWeight: tokens.fontWeightSemibold, display: 'block', marginBottom: tokens.space3 }}>Border Colors</span>
+        </div>
+        <div style={{ marginBottom: tokens.space4 }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: tokens.space2 }}>
+            <input
+              type="checkbox"
+              checked={deriveBorder}
+              onChange={e => setDeriveBorder(e.target.checked)}
+            />
+            <span style={{ fontSize: tokens.fontSizeSm }}>Derive variants from borderDefault</span>
+          </label>
+        </div>
+        {(deriveBorder ? ['borderDefault'] : ['borderDefault', 'borderSubtle', 'borderStrong']).map(key => (
+          <div key={key} style={{ marginBottom: tokens.space4 }}>
+            <Input
+              type="color"
+              label={key}
+              value={tokens[key as keyof typeof tokens] as string}
+              onChange={e => {
+                const val = e.target.value;
+                onChangeOverride(key as keyof LucentTokens, val);
+                if (deriveBorder && key === 'borderDefault') {
+                  // store this color for the current theme
+                  const colorKey = theme === 'light' ? 'light' : 'dark';
+                  borderColorsRef.current[colorKey] = val;
+
+                  // compute derived variants from the chosen color
+                  const variants = deriveBorderVariants(val);
+                  onChangeOverride('borderSubtle', variants.subtle);
+                  onChangeOverride('borderStrong', variants.strong);
+                }
+              }}
+            />
+          </div>
+        ))}
+
+        {/* font size scale slider */}
+        <div style={{ marginBottom: tokens.space4 }}>
+          <label style={{ display: 'flex', flexDirection: 'column', gap: tokens.space1 }}>
+            <span style={{ fontSize: tokens.fontSizeSm }}>Font scale ({fontScalePercent}%)</span>
+            <input
+              type="range"
+              min={50}
+              max={150}
+              value={fontScalePercent}
+              onChange={e => {
+                const pct = parseInt(e.target.value);
+                setFontScalePercent(pct);
+                const scale = pct / 100;
+                Object.entries(baseFontSizesRef.current).forEach(([key, val]) => {
+                  const num = parseFloat(val);
+                  const unit = val.replace(/[\d.]/g, '');
+                  onChangeOverride(key as keyof LucentTokens, `${num * scale}${unit}`);
+                });
+              }}
+            />
+          </label>
+        </div>
+
+        {/* spacing scale slider */}
+        <div style={{ marginBottom: tokens.space4 }}>
+          <label style={{ display: 'flex', flexDirection: 'column', gap: tokens.space1 }}>
+            <span style={{ fontSize: tokens.fontSizeSm }}>Spacing scale ({spaceScalePercent}%)</span>
+            <input
+              type="range"
+              min={50}
+              max={150}
+              value={spaceScalePercent}
+              onChange={e => {
+                const pct = parseInt(e.target.value);
+                setSpaceScalePercent(pct);
+                const scale = pct / 100;
+                Object.entries(baseSpaceRef.current).forEach(([key, val]) => {
+                  const num = parseFloat(val);
+                  const unit = val.replace(/[\d.]/g, '');
+                  onChangeOverride(key as keyof LucentTokens, `${num * scale}${unit}`);
+                });
+              }}
+            />
+          </label>
+        </div>
+
+        <div style={{ marginBottom: tokens.space4 }}>
+          <label style={{ display: 'flex', flexDirection: 'column', gap: tokens.space1 }}>
+            <span style={{ fontSize: tokens.fontSizeSm }}>Border radius ({radiusPx}px)</span>
+            <input
+              type="range"
+              min={0}
+              max={32}
+              value={radiusPx}
+              onChange={e => {
+                const v = parseInt(e.target.value);
+                setRadiusPx(v);
+                ['radiusSm','radiusMd','radiusLg','radiusXl','radiusFull'].forEach(k =>
+                  onChangeOverride(k as keyof LucentTokens, `${v}px`)
+                );
+              }}
+            />
+          </label>
+        </div>
+
+        <Button size="sm" onClick={clearOverrides}>Reset</Button>
+      </div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: tokens.space8, flexWrap: 'wrap', gap: tokens.space4 }}>
         <div>
           <h1 style={{ fontSize: tokens.fontSize2xl, fontWeight: tokens.fontWeightBold, margin: 0 }}>Lucent UI — Component Preview</h1>
           <p style={{ color: tokens.textSecondary, margin: `${tokens.space1} 0 0`, fontSize: tokens.fontSizeSm }}>Molecules Wave 1 · Atoms Wave 1 + 2 · {theme} mode · {accentLabel[accent]}</p>
-        </div>
-        <div style={{ display: 'flex', gap: tokens.space2, alignItems: 'center', flexWrap: 'wrap' }}>
-          {(['default', 'gold', 'indigo'] as AccentPreset[]).map(p => (
-            <button
-              key={p}
-              onClick={() => onSetAccent(p)}
-              style={{
-                padding: `${tokens.space1} ${tokens.space3}`,
-                border: `1px solid ${accent === p ? tokens.accentDefault : tokens.borderDefault}`,
-                borderRadius: tokens.radiusMd,
-                background: accent === p ? tokens.accentDefault : tokens.surfaceDefault,
-                color: accent === p ? tokens.textOnAccent : tokens.textPrimary,
-                fontFamily: tokens.fontFamilyBase,
-                fontSize: tokens.fontSizeSm,
-                fontWeight: accent === p ? tokens.fontWeightSemibold : tokens.fontWeightRegular,
-                cursor: 'pointer',
-              }}
-            >
-              {accentLabel[p]}
-            </button>
-          ))}
-          <Button variant="secondary" size="sm" onClick={onToggleTheme}>
-            {theme === 'light' ? 'Dark' : 'Light'} mode
-          </Button>
         </div>
       </div>
 
@@ -680,6 +979,7 @@ function Inner({
           <Button variant="secondary">Secondary</Button>
           <Button variant="ghost">Ghost</Button>
           <Button variant="danger">Danger</Button>
+          <Button variant="primary" bordered={false}>Flat</Button>
         </Row>
         <Row label="Sizes" tokens={tokens}>
           <Button size="sm">Small</Button>
@@ -713,7 +1013,7 @@ function Inner({
         </Row>
         <Row label="Error state" tokens={tokens}>
           <div style={{ width: 280 }}>
-            <Input label="Password" type="password" errorText="Must be at least 8 characters" value="short" />
+            <Input label="Password" type="password" errorText="Must be at least 8 characters" defaultValue="short" />
           </div>
         </Row>
       </Section>

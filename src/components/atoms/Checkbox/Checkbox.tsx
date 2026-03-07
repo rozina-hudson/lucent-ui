@@ -91,7 +91,11 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
     const boxStyle: CSSProperties = {
       width: px,
       height: px,
-      borderRadius: 'var(--lucent-radius-sm)',
+      // fixed corner so global radius overrides (e.g. via customizer) don't
+      // turn checkboxes into circles. the design spec keeps them slightly
+      // rounded regardless of theming.
+      // bumping up a bit to keep the box from feeling too sharp.
+      borderRadius: '4px',
       border: `1.5px solid ${disabled ? 'transparent' : isChecked || indeterminate ? 'var(--lucent-accent-default)' : 'var(--lucent-border-strong)'}`,
       background: disabled ? 'var(--lucent-bg-muted)' : isChecked || indeterminate ? 'var(--lucent-accent-default)' : 'var(--lucent-surface-default)',
       display: 'inline-flex',

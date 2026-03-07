@@ -9,6 +9,7 @@ import { lightTokens } from '../tokens/light.js';
 import { darkTokens } from '../tokens/dark.js';
 import { makeLibraryCSS } from '../tokens/css.js';
 import { getContrastText } from '../tokens/contrast.js';
+import { adjustLightness } from '../tokens/color.js';
 import type { LucentTokens, Theme } from '../tokens/types.js';
 
 interface LucentContextValue {
@@ -47,12 +48,34 @@ export function LucentProvider({
   const merged: LucentTokens = tokenOverrides
     ? { ...baseTokens, ...tokenOverrides }
     : baseTokens;
+
   // Auto-compute textOnAccent from the resolved accent color unless the consumer
   // explicitly overrides it. This guarantees WCAG AA contrast on accent surfaces
   // regardless of which accent color is in use.
+  //
+  // We also derive a slightly tweaked border colour for the primary/accent
+  // variant so that when people supply a custom accent the border still has
+  // enough contrast against the surrounding surface in both light & dark
+  // themes.  The consumer can still override `accentBorder` if they really
+  // want to pick a specific value; this computation only applies when the
+  // token is _not_ provided.
+  const computedBorder = (() => {
+    // fast path: use provided override
+    if (tokenOverrides?.accentBorder) {
+      return tokenOverrides.accentBorder;
+    }
+    // light theme: darken the accent a little so the border isn't lost on a
+    // white surface; dark theme: lighten the accent so it isn't invisible on
+    // a nearly‑black surface.
+    return theme === 'light'
+      ? adjustLightness(merged.accentDefault, -0.15)
+      : adjustLightness(merged.accentDefault, 0.15);
+  })();
+
   const tokens: LucentTokens = {
     ...merged,
     textOnAccent: tokenOverrides?.textOnAccent ?? getContrastText(merged.accentDefault),
+    accentBorder: computedBorder,
   };
 
   // Set the root font size once so all rem-based tokens resolve to the intended scale.

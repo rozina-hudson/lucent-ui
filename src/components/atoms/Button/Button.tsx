@@ -16,13 +16,15 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   chevron?: boolean;
   /** Disables the built-in hover background/border overrides. Use when passing custom colours via style. */
   disableHoverStyles?: boolean;
+  /** If false, the component renders without any border. Useful when you want a solid "flat" look. */
+  bordered?: boolean;
 }
 
 const variantStyles: Record<ButtonVariant, CSSProperties> = {
   primary: {
     background: 'var(--lucent-accent-default)',
     color: 'var(--lucent-text-on-accent)',
-    border: '1px solid var(--lucent-accent-default)',
+    border: '1px solid var(--lucent-accent-border)',
   },
   secondary: {
     background: 'var(--lucent-surface-default)',
@@ -48,7 +50,7 @@ const sizeStyles: Record<ButtonSize, CSSProperties> = {
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = 'primary', size = 'md', loading = false, fullWidth = false, spread = false, leftIcon, rightIcon, chevron = false, disableHoverStyles = false, children, disabled, style, ...rest }, ref) => {
+  ({ variant = 'primary', size = 'md', loading = false, fullWidth = false, spread = false, leftIcon, rightIcon, chevron = false, disableHoverStyles = false, bordered = true, children, disabled, style, ...rest }, ref) => {
     const isDisabled = disabled ?? loading;
 
     return (
@@ -81,13 +83,15 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             color: 'var(--lucent-text-disabled)',
             borderColor: 'transparent',
           }),
+          // hide border entirely when bordered prop is false
+          ...(bordered === false && { border: 'none' }),
         }}
         onMouseEnter={(e) => {
-          if (!isDisabled && !disableHoverStyles) applyHover(e.currentTarget, variant);
+          if (!isDisabled && !disableHoverStyles) applyHover(e.currentTarget, variant, bordered);
           rest.onMouseEnter?.(e);
         }}
         onMouseLeave={(e) => {
-          if (!isDisabled && !disableHoverStyles) removeHover(e.currentTarget, variant);
+          if (!isDisabled && !disableHoverStyles) removeHover(e.currentTarget, variant, bordered);
           rest.onMouseLeave?.(e);
         }}
         onMouseDown={(e) => {
@@ -119,31 +123,31 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
 Button.displayName = 'Button';
 
-function applyHover(el: HTMLButtonElement, variant: ButtonVariant) {
+function applyHover(el: HTMLButtonElement, variant: ButtonVariant, bordered?: boolean) {
   if (variant === 'primary') {
     el.style.background = 'var(--lucent-accent-hover)';
-    el.style.borderColor = 'var(--lucent-accent-hover)';
+    if (bordered !== false) el.style.borderColor = 'var(--lucent-accent-border)';
   } else if (variant === 'secondary') {
     el.style.background = 'var(--lucent-bg-subtle)';
   } else if (variant === 'ghost') {
     el.style.background = 'var(--lucent-bg-muted)';
   } else if (variant === 'danger') {
     el.style.background = 'var(--lucent-danger-hover)';
-    el.style.borderColor = 'var(--lucent-danger-hover)';
+    if (bordered !== false) el.style.borderColor = 'var(--lucent-danger-hover)';
   }
 }
 
-function removeHover(el: HTMLButtonElement, variant: ButtonVariant) {
+function removeHover(el: HTMLButtonElement, variant: ButtonVariant, bordered?: boolean) {
   if (variant === 'primary') {
     el.style.background = 'var(--lucent-accent-default)';
-    el.style.borderColor = 'var(--lucent-accent-default)';
+    if (bordered !== false) el.style.borderColor = 'var(--lucent-accent-border)';
   } else if (variant === 'secondary') {
     el.style.background = 'var(--lucent-surface-default)';
   } else if (variant === 'ghost') {
     el.style.background = 'transparent';
   } else if (variant === 'danger') {
     el.style.background = 'var(--lucent-danger-default)';
-    el.style.borderColor = 'var(--lucent-danger-default)';
+    if (bordered !== false) el.style.borderColor = 'var(--lucent-danger-default)';
   }
 }
 
