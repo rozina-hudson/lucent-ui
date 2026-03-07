@@ -102,6 +102,11 @@ export interface SemanticColorTokens {
   accentHover: string;
   accentActive: string;
   accentSubtle: string;
+  // A slightly adjusted border color that pairs with `accentDefault`.
+  // Calculated automatically by `LucentProvider` so that a custom accent
+  // colour looks good on either light or dark backgrounds.
+  // Consumers may still override if they want precise control.
+  accentBorder: string;
   // Status
   successDefault: string;
   successSubtle: string;

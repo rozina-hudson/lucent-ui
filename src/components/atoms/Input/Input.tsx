@@ -1,6 +1,14 @@
 import { forwardRef, type InputHTMLAttributes, type ReactNode } from 'react';
 
-export type InputType = 'text' | 'number' | 'password' | 'email' | 'tel' | 'url' | 'search';
+export type InputType =
+  | 'text'
+  | 'number'
+  | 'password'
+  | 'email'
+  | 'tel'
+  | 'url'
+  | 'search'
+  | 'color';
 
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
   type?: InputType;

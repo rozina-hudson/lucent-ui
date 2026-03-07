@@ -43,6 +43,8 @@ export const darkTokens: LucentTokens = {
   accentHover: '#e5e7eb',
   accentActive: '#d1d5db',
   accentSubtle: 'rgb(249 250 251 / 0.1)',
+  // placeholder — actual value is recomputed in LucentProvider
+  accentBorder: '#f9fafb',
 
   // Status
   successDefault: '#22c55e',

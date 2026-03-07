@@ -84,7 +84,15 @@ Only the tokens you include in the manifest are overridden — everything else f
 
 ### Theme-specific overrides
 
-You can supply only `light`, only `dark`, or both:
+You can supply only `light`, only `dark`, or both.  In many cases you
+only need to override the **accent** colour – Lucent will automatically
+compute a sensible border shade and ensure text on accent surfaces meets
+WCAG contrast in both light and dark mode.  This makes it hard to pick a
+combination that looks bad on one theme or the other.
+
+If you do want fine‑grained control you can still override the derived
+value (`accentBorder`) yourself; otherwise just set `accentDefault` and
+possibly hover/active/subtle variants.
 
 ```json
 {
@@ -97,11 +105,11 @@ You can supply only `light`, only `dark`, or both:
       "accentActive": "#5b21b6",
       "accentSubtle": "#f5f3ff",
       "focusRing": "#7c3aed"
+      // ``accentBorder`` is calculated automatically, no need to include it
     }
   }
 }
 ```
-
 ---
 
 ## Token reference

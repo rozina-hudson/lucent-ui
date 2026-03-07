@@ -3,6 +3,7 @@ import {
   type CSSProperties, type KeyboardEvent,
 } from 'react';
 import { Text } from '../../atoms/Text/index.js';
+import { Checkbox } from '../../atoms/Checkbox/index.js';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -263,25 +264,14 @@ export function MultiSelect({
                     opacity: isDisabled || wouldExceedMax ? 0.5 : 1,
                   }}
                 >
-                  {/* Checkbox indicator */}
-                  <span style={{
-                    flexShrink: 0,
-                    width: 16,
-                    height: 16,
-                    borderRadius: 'var(--lucent-radius-sm)',
-                    border: `1.5px solid ${isSelected ? 'var(--lucent-accent-default)' : 'var(--lucent-border-strong)'}`,
-                    background: isSelected ? 'var(--lucent-accent-default)' : 'transparent',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'background var(--lucent-duration-fast), border-color var(--lucent-duration-fast)',
-                  }}>
-                    {isSelected && (
-                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden>
-                        <path d="M2 5l2.5 2.5L8 3" stroke="var(--lucent-text-on-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    )}
-                  </span>
+                  <Checkbox
+                    checked={isSelected}
+                    disabled={isDisabled || wouldExceedMax}
+                    size="md"
+                    style={{ margin: 0, pointerEvents: 'none' }}
+                    aria-hidden
+                    readOnly
+                  />
                   <Text size="sm">{opt.label}</Text>
                 </div>
               );
