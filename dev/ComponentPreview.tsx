@@ -26,6 +26,7 @@ import { Tabs } from '../src/components/molecules/Tabs/index.js';
 import { Collapsible } from '../src/components/molecules/Collapsible/index.js';
 import { NavLink } from '../src/components/atoms/NavLink/index.js';
 import { Slider } from '../src/components/atoms/Slider/index.js';
+import { CodeBlock } from '../src/components/atoms/CodeBlock/index.js';
 import { PageLayout } from '../src/components/molecules/PageLayout/index.js';
 import { DataTable } from '../src/components/molecules/DataTable/index.js';
 import { CommandPalette } from '../src/components/molecules/CommandPalette/index.js';
@@ -438,6 +439,31 @@ function Inner({
         <Row label="Disabled" tokens={tokens}>
           <div style={{ width: 280 }}>
             <Slider label="Locked" disabled defaultValue={40} showValue />
+          </div>
+        </Row>
+      </Section>
+
+      {/* CodeBlock */}
+      <Section title="CodeBlock" tokens={tokens}>
+        <Row label="With language label" tokens={tokens}>
+          <div style={{ width: '100%' }}>
+            <CodeBlock
+              language="tsx"
+              code={`import { Button } from 'lucent-ui';\n\nexport function App() {\n  return <Button variant="primary">Save changes</Button>;\n}`}
+            />
+          </div>
+        </Row>
+        <Row label="No copy button" tokens={tokens}>
+          <div style={{ width: '100%' }}>
+            <CodeBlock showCopyButton={false} language="bash" code={`npm install lucent-ui`} />
+          </div>
+        </Row>
+        <Row label="Long lines (scroll)" tokens={tokens}>
+          <div style={{ width: '100%', maxWidth: 400 }}>
+            <CodeBlock
+              language="json"
+              code={`{"id":"lucent-button","name":"Button","tier":"atom","domain":"neutral","specVersion":"0.1","description":"A clickable action trigger."}`}
+            />
           </div>
         </Row>
       </Section>
