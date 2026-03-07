@@ -1,5 +1,16 @@
 # lucent-ui
 
+## 0.4.1
+
+### Patch Changes
+
+- Extend `PageLayout` with right panel and footer slot.
+
+  - Add `rightSidebar` / `rightSidebarWidth` / `rightSidebarCollapsed` props — renders an `<aside>` as a structural sibling of `<main>` in the body row
+  - Add `footer` / `footerHeight` props — renders a narrow status-bar below the body row (default 28px), suited for connection indicators, branch names, or keyboard shortcut hints
+  - `<main>` right margin automatically drops to zero when `rightSidebar` is present
+  - Add `PageLayout.manifest.ts` documenting all props, design intent, and accessibility notes
+
 ## 0.4.0
 
 ### Minor Changes
