@@ -26,6 +26,7 @@ import { Tabs } from '../src/components/molecules/Tabs/index.js';
 import { Collapsible } from '../src/components/molecules/Collapsible/index.js';
 import { NavLink } from '../src/components/atoms/NavLink/index.js';
 import { Slider } from '../src/components/atoms/Slider/index.js';
+import { CodeBlock } from '../src/components/atoms/CodeBlock/index.js';
 import { PageLayout } from '../src/components/molecules/PageLayout/index.js';
 import { DataTable } from '../src/components/molecules/DataTable/index.js';
 import { CommandPalette } from '../src/components/molecules/CommandPalette/index.js';
@@ -438,6 +439,60 @@ function Inner({
         <Row label="Disabled" tokens={tokens}>
           <div style={{ width: 280 }}>
             <Slider label="Locked" disabled defaultValue={40} showValue />
+          </div>
+        </Row>
+      </Section>
+
+      {/* CodeBlock */}
+      <Section title="CodeBlock" tokens={tokens}>
+        <Row label="Single snippet" tokens={tokens}>
+          <div style={{ width: '100%' }}>
+            <CodeBlock
+              language="tsx"
+              code={`import { Button } from 'lucent-ui';\n\nexport function App() {\n  return <Button variant="primary">Save changes</Button>;\n}`}
+            />
+          </div>
+        </Row>
+        <Row label="Tabbed (package manager)" tokens={tokens}>
+          <div style={{ width: '100%' }}>
+            <CodeBlock
+              tabs={[
+                { label: 'pnpm', code: 'pnpm add lucent-ui', language: 'bash' },
+                { label: 'npm',  code: 'npm install lucent-ui', language: 'bash' },
+                { label: 'yarn', code: 'yarn add lucent-ui', language: 'bash' },
+                { label: 'bun',  code: 'bun add lucent-ui', language: 'bash' },
+              ]}
+            />
+          </div>
+        </Row>
+        <Row label="AI prompt (variant=prompt)" tokens={tokens}>
+          <div style={{ width: '100%' }}>
+            <CodeBlock
+              variant="prompt"
+              helperText="Paste this into a Claude conversation or claude.ai:"
+              tabs={[
+                {
+                  label: 'Claude',
+                  icon: '♦',
+                  code: '"Add a Button from lucent-ui with variant=\\"primary\\". It should trigger form submission and show a loading state while the request is in flight."',
+                },
+                {
+                  label: 'Cursor',
+                  icon: '↖',
+                  code: '@lucent-ui Add a primary Button with an onClick handler that triggers form submission and shows a loading spinner.',
+                },
+                {
+                  label: 'VS Code',
+                  icon: '↺',
+                  code: 'Use lucent-ui Button component: variant="primary", loading state tied to form submit handler.',
+                },
+              ]}
+            />
+          </div>
+        </Row>
+        <Row label="No copy button" tokens={tokens}>
+          <div style={{ width: '100%' }}>
+            <CodeBlock showCopyButton={false} language="bash" code="npm install lucent-ui" />
           </div>
         </Row>
       </Section>

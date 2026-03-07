@@ -15,3 +15,4 @@ export * from './Icon/index.js';
 export * from './Text/index.js';
 export * from './NavLink/index.js';
 export * from './Slider/index.js';
+export * from './CodeBlock/index.js';
