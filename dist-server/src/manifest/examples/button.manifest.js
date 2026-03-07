@@ -3,7 +3,7 @@ export const ButtonManifest = {
     name: 'Button',
     tier: 'atom',
     domain: 'neutral',
-    specVersion: '0.1',
+    specVersion: '1.0',
     description: 'A clickable control that triggers an action. The primary interactive primitive in Lucent UI.',
     designIntent: 'Buttons communicate available actions. Variant conveys hierarchy: use "primary" for the ' +
         'single most important action in a view, "secondary" for supporting actions, "ghost" for ' +
