@@ -1,5 +1,11 @@
 # lucent-ui
 
+## 0.5.0
+
+### Minor Changes
+
+- 3acd078: Add border color picker with theme-aware derivation to customizer. Export new color utility functions for theme-specific color transformation: `getThemeComplementBorderColor` and `deriveBorderVariants`.
+
 ## 0.4.2
 
 ### Patch Changes
