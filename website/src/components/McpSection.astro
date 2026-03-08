@@ -1,0 +1,230 @@
+---
+---
+
+<section class="section mcp-section" id="mcp">
+  <div class="bg-grid"></div>
+  <div class="section-inner mcp-inner">
+
+    <div class="mcp-copy">
+      <span class="section-label">MCP Server</span>
+      <h2 class="section-title">
+        Connect your AI<br>in <em>one line.</em>
+      </h2>
+      <p class="section-body">
+        Lucent UI ships an MCP (Model Context Protocol) server. Point your AI assistant
+        at it and it gains full access to every component manifest, theme anchors spec,
+        and usage examples — without touching your project source.
+      </p>
+
+      <div class="ai-tools">
+        <div class="ai-tool">
+          <div class="ai-icon ai-icon--claude">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L3 7v10l9 5 9-5V7L12 2z" fill="currentColor" opacity="0.9"/>
+            </svg>
+          </div>
+          <span>Claude</span>
+        </div>
+        <div class="ai-tool">
+          <div class="ai-icon ai-icon--cursor">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="3" width="18" height="18" rx="3" fill="currentColor" opacity="0.9"/>
+            </svg>
+          </div>
+          <span>Cursor</span>
+        </div>
+        <div class="ai-tool">
+          <div class="ai-icon ai-icon--copilot">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="9" fill="currentColor" opacity="0.9"/>
+            </svg>
+          </div>
+          <span>GitHub Copilot</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="mcp-code-wrap">
+      <!-- Claude / Cursor tab -->
+      <div class="code-card">
+        <div class="code-card-header">
+          <span class="code-card-title">claude_desktop_config.json</span>
+          <span class="code-card-sub">or cursor settings.json</span>
+        </div>
+        <div class="code-block">
+<span class="dim">// Add to mcpServers:</span>
+&#123;
+  <span class="key">"mcpServers"</span>: &#123;
+    <span class="key">"lucent-ui"</span>: &#123;
+      <span class="key">"command"</span>: <span class="str">"npx"</span>,
+      <span class="key">"args"</span>: [<span class="str">"lucent-ui-mcp"</span>]
+    &#125;
+  &#125;
+&#125;
+        </div>
+      </div>
+
+      <!-- What the AI gets -->
+      <div class="mcp-features">
+        <div class="mcp-feature">
+          <span class="mcp-feature-dot"></span>
+          <div>
+            <div class="mcp-feature-title">Component manifests</div>
+            <div class="mcp-feature-body">All props, variants, design intent, and usage examples for every component</div>
+          </div>
+        </div>
+        <div class="mcp-feature">
+          <span class="mcp-feature-dot"></span>
+          <div>
+            <div class="mcp-feature-title">ThemeAnchors spec</div>
+            <div class="mcp-feature-body">Machine-readable guidance so the AI generates correct <code class="inline-code">createTheme()</code> calls</div>
+          </div>
+        </div>
+        <div class="mcp-feature">
+          <span class="mcp-feature-dot"></span>
+          <div>
+            <div class="mcp-feature-title">Zero hallucinations</div>
+            <div class="mcp-feature-body">The AI only uses prop names and values that actually exist in the library</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .mcp-section {
+    border-top: 1px solid var(--border);
+  }
+
+  .mcp-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .mcp-inner { grid-template-columns: 1fr; gap: 48px; }
+  }
+
+  .ai-tools {
+    display: flex;
+    gap: 12px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+  }
+
+  .ai-tool {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 10px 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--paper);
+  }
+
+  .ai-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .ai-icon--claude  { background: #d97757; color: #fff; }
+  .ai-icon--cursor  { background: #111; color: #fff; border: 1px solid #333; }
+  .ai-icon--copilot { background: #24292f; color: #fff; }
+
+  .mcp-code-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .code-card {
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .code-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--card2);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+  }
+
+  .code-card-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .code-card-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+  }
+
+  .code-card .code-block {
+    border: none;
+    border-radius: 0;
+    font-size: 11px;
+  }
+
+  .mcp-features {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .mcp-feature {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .mcp-feature-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--gold);
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
+
+  .mcp-feature-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--paper);
+    margin-bottom: 4px;
+  }
+
+  .mcp-feature-body {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .inline-code {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--gold);
+  }
+</style>

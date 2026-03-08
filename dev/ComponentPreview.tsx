@@ -37,9 +37,21 @@ import { DatePicker } from '../src/components/molecules/DatePicker/index.js';
 import { DateRangePicker } from '../src/components/molecules/DateRangePicker/index.js';
 import { FileUpload } from '../src/components/molecules/FileUpload/index.js';
 import { Timeline } from '../src/components/molecules/Timeline/index.js';
-import type { LucentTokens, Theme, UploadFile } from '../src/index.js';
+import type { LucentTokens, Theme, ThemeAnchors, UploadFile } from '../src/index.js';
 
 type AccentPreset = 'default' | 'gold' | 'indigo';
+
+const DEFAULT_ANCHORS: ThemeAnchors = {
+  bgBase:         '#ffffff',
+  surface:        '#f9fafb',
+  borderDefault:  '#e5e7eb',
+  textPrimary:    '#111827',
+  accentDefault:  '#111827',
+  successDefault: '#22c55e',
+  warningDefault: '#f59e0b',
+  dangerDefault:  '#ef4444',
+  infoDefault:    '#3b82f6',
+};
 
 const indigoTokens: Partial<LucentTokens> = {
   accentDefault: '#4f46e5',
@@ -75,6 +87,8 @@ export function ComponentPreview() {
   const [theme, setTheme] = useState<Theme>('light');
   const [accent, setAccent] = useState<AccentPreset>('default');
   const [overrides, setOverrides] = useState<Partial<LucentTokens>>({});
+  const [anchorMode, setAnchorMode] = useState(false);
+  const [anchors, setAnchors] = useState<ThemeAnchors>(DEFAULT_ANCHORS);
 
   const tokenPreset =
     accent === 'gold' ? brandTokens :
@@ -90,17 +104,28 @@ export function ComponentPreview() {
     setOverrides(prev => ({ ...prev, [key]: value }));
   };
 
+  const handleAnchorChange = (key: keyof ThemeAnchors, value: string) => {
+    setAnchors(prev => ({ ...prev, [key]: value }));
+  };
+
   const clearOverrides = () => setOverrides({});
 
   return (
-    <LucentProvider theme={theme} tokens={mergedTokens}>
+    <LucentProvider
+      theme={theme}
+      {...(anchorMode ? { anchors } : { tokens: mergedTokens })}
+    >
       <Inner
         theme={theme}
         accent={accent}
         overrides={overrides}
+        anchorMode={anchorMode}
+        anchors={anchors}
         onToggleTheme={() => setTheme(t => t === 'light' ? 'dark' : 'light')}
         onSetAccent={setAccent}
         onChangeOverride={handleTokenChange}
+        onChangeAnchor={handleAnchorChange}
+        onToggleAnchorMode={() => setAnchorMode(m => !m)}
         clearOverrides={clearOverrides}
       />
     </LucentProvider>
@@ -111,17 +136,25 @@ function Inner({
   theme,
   accent,
   overrides,
+  anchorMode,
+  anchors,
   onToggleTheme,
   onSetAccent,
   onChangeOverride,
+  onChangeAnchor,
+  onToggleAnchorMode,
   clearOverrides,
 }: {
   theme: Theme;
   accent: AccentPreset;
   overrides: Partial<LucentTokens>;
+  anchorMode: boolean;
+  anchors: ThemeAnchors;
   onToggleTheme: () => void;
   onSetAccent: (p: AccentPreset) => void;
   onChangeOverride: (key: keyof LucentTokens, value: string) => void;
+  onChangeAnchor: (key: keyof ThemeAnchors, value: string) => void;
+  onToggleAnchorMode: () => void;
   clearOverrides: () => void;
 }) {
   const { tokens } = useLucent();
@@ -283,6 +316,37 @@ function Inner({
         zIndex: 1000,
       }}>
         <h2 style={{ fontSize: tokens.fontSizeLg, fontWeight: tokens.fontWeightSemibold, marginTop: 0 }}>Customizer</h2>
+
+        {/* Anchor mode — derive full theme from 9 colors */}
+        <div style={{ marginBottom: tokens.space4, padding: tokens.space3, background: anchorMode ? tokens.accentSubtle : tokens.surfaceSecondary, borderRadius: tokens.radiusMd, border: `1px solid ${anchorMode ? tokens.accentBorder : tokens.borderDefault}` }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: tokens.space2, cursor: 'pointer' }}>
+            <input type="checkbox" checked={anchorMode} onChange={onToggleAnchorMode} />
+            <span style={{ fontSize: tokens.fontSizeSm, fontWeight: tokens.fontWeightSemibold, color: anchorMode ? tokens.accentDefault : tokens.textPrimary }}>
+              Anchor mode
+            </span>
+          </label>
+          <p style={{ margin: `${tokens.space1} 0 0`, fontSize: tokens.fontSizeXs, color: tokens.textSecondary, lineHeight: tokens.lineHeightBase }}>
+            {anchorMode ? '9 colors → full theme via createTheme()' : 'Specify 9 colors, derive everything else'}
+          </p>
+        </div>
+
+        {anchorMode ? (
+          <div style={{ marginBottom: tokens.space6 }}>
+            {(Object.keys(DEFAULT_ANCHORS) as (keyof ThemeAnchors)[]).map(key => (
+              <div key={key} style={{ marginBottom: tokens.space3 }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: tokens.space2, fontSize: tokens.fontSizeSm }}>
+                  <input
+                    type="color"
+                    value={anchors[key]}
+                    onChange={e => onChangeAnchor(key, e.target.value)}
+                    style={{ width: 28, height: 28, padding: 0, border: `1px solid ${tokens.borderDefault}`, borderRadius: tokens.radiusSm, cursor: 'pointer', background: 'none' }}
+                  />
+                  <span style={{ color: tokens.textSecondary }}>{key}</span>
+                </label>
+              </div>
+            ))}
+          </div>
+        ) : (<>
         <div style={{ marginBottom: tokens.space6 }}>
           <Toggle label="Dark mode" checked={theme === 'dark'} onChange={onToggleTheme} />
           <div style={{ marginTop: tokens.space4, display: 'flex', flexDirection: 'column', gap: tokens.space2 }}>
@@ -447,6 +511,7 @@ function Inner({
         </div>
 
         <Button size="sm" onClick={clearOverrides}>Reset</Button>
+        </>)}
       </div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: tokens.space8, flexWrap: 'wrap', gap: tokens.space4 }}>
         <div>

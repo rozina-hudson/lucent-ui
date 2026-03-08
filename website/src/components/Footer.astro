@@ -1,0 +1,415 @@
+---
+---
+
+<footer class="footer" id="footer">
+  <div class="bg-grid"></div>
+  <div class="footer-inner">
+
+    <div class="footer-top">
+      <!-- Left: brand -->
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <!-- Diamond mark -->
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M10 2L18 10L10 18L2 10L10 2Z" fill="#e9c96b" opacity="0.9"/>
+            <path d="M10 6L14 10L10 14L6 10L10 6Z" fill="#0b0d12"/>
+          </svg>
+          <span class="footer-wordmark">lucent<span style="color: var(--gold)">ui</span></span>
+        </div>
+        <p class="footer-tagline">
+          The AI-first React component library.<br>
+          Open source. MIT licensed.
+        </p>
+        <div class="footer-links">
+          <a
+            href="https://github.com/rozinaszogyenyi/lucent-ui"
+            target="_blank"
+            rel="noopener"
+            class="footer-link"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.167 6.839 9.49.5.092.682-.217.682-.482
+                0-.237-.009-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.155-1.11-1.462-1.11-1.462
+                -.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832
+                .092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683
+                -.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836a9.59 9.59 0
+                012.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028
+                1.592 1.028 2.683 0 3.842-2.337 4.687-4.565 4.935.359.309.678.919.678 1.852 0 1.336-.012
+                2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
+            </svg>
+            GitHub
+          </a>
+          <a
+            href="https://npmjs.com/package/lucent-ui"
+            target="_blank"
+            rel="noopener"
+            class="footer-link"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M0 0h24v24H0V0zm6.672 19.992V7.508h3.984v9.016h3.008V7.508H17v12.484H6.672z"/>
+            </svg>
+            npm
+          </a>
+        </div>
+      </div>
+
+      <!-- Right: install + CTA -->
+      <div class="footer-cta">
+        <span class="section-label">Get started</span>
+        <h2 class="footer-cta-title">Start building<br>with <em>Lucent UI.</em></h2>
+
+        <!-- Install command -->
+        <div class="install-block">
+          <div class="install-header">
+            <span class="install-label">Terminal</span>
+          </div>
+          <div class="install-body">
+            <span class="install-prompt">$</span>
+            <span class="install-cmd">npm install lucent-ui</span>
+            <button class="install-copy" id="install-copy" aria-label="Copy install command">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick start snippet -->
+        <div class="code-block quick-start">
+<span class="kw">import</span> &#123; LucentProvider, Button &#125; <span class="kw">from</span> <span class="str">'lucent-ui'</span>;
+
+<span class="kw">export default function</span> <span class="key">App</span>() &#123;
+  <span class="kw">return</span> (
+    <span class="dim">&lt;LucentProvider anchors=&#123;yourBrandColors&#125;&gt;</span>
+      <span class="dim">&lt;Button variant=</span><span class="str">"primary"</span><span class="dim">&gt;</span>Hello, world<span class="dim">&lt;/Button&gt;</span>
+    <span class="dim">&lt;/LucentProvider&gt;</span>
+  );
+&#125;
+        </div>
+
+        <!-- Waitlist repeat -->
+        <div class="footer-form-wrap" id="footer-form-wrap">
+          <input
+            class="footer-email"
+            id="footer-email"
+            type="email"
+            placeholder="your@email.com"
+            autocomplete="off"
+          />
+          <button class="footer-submit" id="footer-submit">Join waitlist</button>
+        </div>
+        <p class="footer-form-note" id="footer-form-note">Early access · No spam · Unsubscribe anytime</p>
+        <p class="footer-success" id="footer-success">✦ &nbsp; You're on the list</p>
+
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2025 Lucent UI. MIT License.</span>
+      <span class="footer-version">v0.7.0</span>
+    </div>
+
+  </div>
+</footer>
+
+<style>
+  .footer {
+    position: relative;
+    border-top: 1px solid var(--border);
+    padding: 96px 24px 48px;
+    overflow: hidden;
+  }
+
+  .footer-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+
+  .footer-top {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 80px;
+    margin-bottom: 64px;
+  }
+
+  @media (max-width: 800px) {
+    .footer-top { grid-template-columns: 1fr; gap: 48px; }
+  }
+
+  /* Brand */
+  .footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .footer-wordmark {
+    font-family: 'DM Mono', monospace;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    color: var(--paper);
+  }
+
+  .footer-tagline {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.75;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 20px;
+  }
+
+  .footer-link {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-link:hover { color: var(--gold); }
+
+  /* CTA */
+  .footer-cta-title {
+    font-family: 'DM Mono', monospace;
+    font-weight: 400;
+    font-size: clamp(22px, 3vw, 32px);
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    color: var(--paper);
+    margin-bottom: 32px;
+  }
+
+  .footer-cta-title em {
+    font-style: normal;
+    color: var(--gold);
+  }
+
+  /* Install block */
+  .install-block {
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+
+  .install-header {
+    background: var(--card2);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 14px;
+  }
+
+  .install-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .install-body {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    background: var(--ink);
+  }
+
+  .install-prompt {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    user-select: none;
+  }
+
+  .install-cmd {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--gold);
+    flex: 1;
+  }
+
+  .install-copy {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--muted);
+    padding: 5px 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: color 0.15s, border-color 0.15s;
+  }
+
+  .install-copy:hover { color: var(--gold); border-color: #e9c96b40; }
+
+  .quick-start {
+    font-size: 11px;
+    margin-bottom: 28px;
+  }
+
+  /* Footer form */
+  .footer-form-wrap {
+    display: flex;
+    max-width: 400px;
+    margin-bottom: 10px;
+  }
+
+  .footer-email {
+    flex: 1;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-right: none;
+    border-radius: 2px 0 0 2px;
+    color: var(--paper);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .footer-email::placeholder { color: var(--muted); }
+  .footer-email:focus { border-color: #e9c96b55; }
+
+  .footer-submit {
+    background: var(--gold);
+    border: 1px solid var(--gold);
+    border-radius: 0 2px 2px 0;
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    font-weight: 400;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 12px 18px;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+
+  .footer-submit:hover { background: var(--glow); }
+  .footer-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .footer-form-note {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.14em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .footer-success {
+    display: none;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  /* Bottom bar */
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border);
+    padding-top: 24px;
+  }
+
+  .footer-copy,
+  .footer-version {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+  }
+</style>
+
+<script>
+  // Install copy
+  const installCopy = document.getElementById('install-copy') as HTMLButtonElement;
+  installCopy?.addEventListener('click', () => {
+    navigator.clipboard.writeText('npm install lucent-ui').then(() => {
+      installCopy.style.color = '#e9c96b';
+      installCopy.style.borderColor = '#e9c96b40';
+      setTimeout(() => {
+        installCopy.style.color = '';
+        installCopy.style.borderColor = '';
+      }, 1500);
+    });
+  });
+
+  // Footer email form (same logic as hero, separate DOM IDs)
+  let _footerToken: string | null = null;
+
+  const footerBtn = document.getElementById('footer-submit') as HTMLButtonElement;
+  footerBtn?.addEventListener('click', handleFooterSubmit);
+  (document.getElementById('footer-email') as HTMLInputElement)?.addEventListener('keydown', (e: KeyboardEvent) => {
+    if (e.key === 'Enter') handleFooterSubmit();
+  });
+
+  async function handleFooterSubmit() {
+    const input = document.getElementById('footer-email') as HTMLInputElement;
+    const wrap  = document.getElementById('footer-form-wrap') as HTMLElement;
+    const msg   = document.getElementById('footer-success') as HTMLElement;
+    const note  = document.getElementById('footer-form-note') as HTMLElement;
+
+    if (!input.value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value)) {
+      input.style.borderColor = '#e9c96b';
+      setTimeout(() => { input.style.borderColor = ''; }, 1200);
+      return;
+    }
+
+    footerBtn.disabled = true;
+    footerBtn.textContent = '...';
+
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: input.value, token: _footerToken }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        wrap.style.display = 'none';
+        note.style.display = 'none';
+        msg.style.display  = 'block';
+      } else {
+        note.textContent = data.error ?? 'Something went wrong. Please try again.';
+        note.style.color = '#e9c96b';
+        footerBtn.disabled    = false;
+        footerBtn.textContent = 'Join waitlist';
+        setTimeout(() => {
+          note.textContent = 'Early access · No spam · Unsubscribe anytime';
+          note.style.color = '';
+        }, 3000);
+      }
+    } catch {
+      note.textContent = 'Network error. Please try again.';
+      note.style.color = '#e9c96b';
+      footerBtn.disabled    = false;
+      footerBtn.textContent = 'Join waitlist';
+      setTimeout(() => {
+        note.textContent = 'Early access · No spam · Unsubscribe anytime';
+        note.style.color = '';
+      }, 3000);
+    }
+  }
+</script>

@@ -1,0 +1,334 @@
+---
+---
+
+<section class="hero">
+  <div class="bg-grid"></div>
+  <div class="bg-fade"></div>
+  <div class="bg-glow"></div>
+
+  <div class="hero-content">
+    <!-- Badge -->
+    <div class="badge">
+      <span class="badge-dot"></span>
+      Now in open beta
+    </div>
+
+    <!-- Headline -->
+    <h1>Your AI already knows<br>your <em>design system.</em></h1>
+
+    <!-- Sub -->
+    <p class="sub">
+      Lucent UI is an open-source React component library where every component ships
+      with a machine-readable <span class="mono">COMPONENT_MANIFEST</span> — so AI
+      coding assistants generate correct, on-brand UI the first time.
+    </p>
+
+    <!-- Email form -->
+    <div class="form-wrap" id="form-wrap">
+      <input
+        class="email-input"
+        id="email-input"
+        type="email"
+        placeholder="your@email.com"
+        autocomplete="off"
+      />
+      <button class="submit-btn" id="submit-btn">Get early access</button>
+    </div>
+
+    <!-- Turnstile widget -->
+    <div
+      class="cf-turnstile"
+      data-sitekey="0x4AAAAAACl3dxrYdL-dCqgj"
+      data-callback="onTurnstileSuccess"
+      data-expired-callback="onTurnstileExpired"
+      data-appearance="interaction-only"
+      style="margin-bottom: 4px;">
+    </div>
+
+    <p class="success" id="success-msg">✦ &nbsp; You're on the list</p>
+    <p class="form-note" id="form-note">Early access · No spam · Unsubscribe anytime</p>
+
+    <!-- Feature pills -->
+    <div class="pills">
+      <span class="pill pill-gold">COMPONENT_MANIFEST</span>
+      <span class="pill pill-gold">createTheme()</span>
+      <span class="pill pill-gold">MCP Server</span>
+      <span class="pill">React 18 / 19</span>
+      <span class="pill">Claude · Cursor · Copilot</span>
+      <span class="pill">Open Source</span>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 24px 80px;
+    overflow: hidden;
+  }
+
+  .bg-fade {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 70% at 50% 50%, transparent 0%, var(--ink) 100%);
+    pointer-events: none;
+  }
+
+  .bg-glow {
+    position: absolute;
+    width: 700px;
+    height: 700px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #e9c96b14 0%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    animation: glow-drift 8s ease-in-out infinite;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 680px;
+    width: 100%;
+  }
+
+  /* Badge */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 6px 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 32px;
+    animation: fade-up 0.8s 0.1s ease both;
+  }
+
+  .badge-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--gold);
+    animation: blink 2s ease-in-out infinite;
+  }
+
+  /* Headline */
+  h1 {
+    font-family: 'DM Mono', monospace;
+    font-weight: 400;
+    font-size: clamp(30px, 5vw, 48px);
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+    color: var(--paper);
+    margin-bottom: 24px;
+    animation: fade-up 0.8s 0.15s ease both;
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--gold);
+  }
+
+  /* Sub */
+  .sub {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.75;
+    color: var(--muted);
+    max-width: 520px;
+    margin-bottom: 52px;
+    animation: fade-up 0.8s 0.2s ease both;
+  }
+
+  .mono {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--gold);
+  }
+
+  /* Form */
+  .form-wrap {
+    display: flex;
+    gap: 0;
+    width: 100%;
+    max-width: 440px;
+    animation: fade-up 0.8s 0.3s ease both;
+    margin-bottom: 16px;
+  }
+
+  .email-input {
+    flex: 1;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-right: none;
+    border-radius: 2px 0 0 2px;
+    color: var(--paper);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    padding: 14px 16px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .email-input::placeholder { color: var(--muted); }
+  .email-input:focus { border-color: #e9c96b55; }
+
+  .submit-btn {
+    background: var(--gold);
+    border: 1px solid var(--gold);
+    border-radius: 0 2px 2px 0;
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 14px 22px;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+
+  .submit-btn:hover { background: var(--glow); }
+  .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .form-note {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    color: var(--muted);
+    text-transform: uppercase;
+    animation: fade-up 0.8s 0.35s ease both;
+    margin-bottom: 64px;
+  }
+
+  .success {
+    display: none;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    animation: fade-up 0.4s ease both;
+    margin-bottom: 64px;
+  }
+
+  /* Pills */
+  .pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: fade-up 0.8s 0.4s ease both;
+  }
+
+  .pill {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 5px 12px;
+  }
+
+  .pill-gold {
+    color: var(--gold);
+    border-color: #e9c96b30;
+  }
+
+  /* Scroll indicator */
+  @media (max-width: 600px) {
+    .form-wrap { flex-direction: column; }
+    .email-input { border-right: 1px solid var(--border); border-bottom: none; border-radius: 2px 2px 0 0; }
+    .submit-btn { border-radius: 0 0 2px 2px; }
+  }
+</style>
+
+<script>
+  let _turnstileToken: string | null = null;
+
+  (window as any).onTurnstileSuccess = (token: string) => { _turnstileToken = token; };
+  (window as any).onTurnstileExpired = () => {
+    _turnstileToken = null;
+    if (typeof (window as any).turnstile !== 'undefined') (window as any).turnstile.reset();
+  };
+
+  const btn = document.getElementById('submit-btn') as HTMLButtonElement;
+  btn.addEventListener('click', handleSubmit);
+  (document.getElementById('email-input') as HTMLInputElement).addEventListener('keydown', (e: KeyboardEvent) => {
+    if (e.key === 'Enter') handleSubmit();
+  });
+
+  async function handleSubmit() {
+    const input = document.getElementById('email-input') as HTMLInputElement;
+    const wrap  = document.getElementById('form-wrap') as HTMLElement;
+    const msg   = document.getElementById('success-msg') as HTMLElement;
+    const note  = document.getElementById('form-note') as HTMLElement;
+
+    if (!input.value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value)) {
+      input.style.borderColor = '#e9c96b';
+      setTimeout(() => { input.style.borderColor = ''; }, 1200);
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = '...';
+
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: input.value, token: _turnstileToken }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        wrap.style.display = 'none';
+        (document.querySelector('.cf-turnstile') as HTMLElement | null)?.style && Object.assign((document.querySelector('.cf-turnstile') as HTMLElement).style, { display: 'none' });
+        note.style.display = 'none';
+        msg.style.display  = 'block';
+      } else {
+        note.textContent = data.error ?? 'Something went wrong. Please try again.';
+        note.style.color = '#e9c96b';
+        btn.disabled    = false;
+        btn.textContent = 'Get early access';
+        input.style.borderColor = '#e9c96b';
+        setTimeout(() => {
+          input.style.borderColor = '';
+          note.textContent = 'Early access · No spam · Unsubscribe anytime';
+          note.style.color = '';
+        }, 3000);
+        if (typeof (window as any).turnstile !== 'undefined') (window as any).turnstile.reset();
+      }
+    } catch {
+      note.textContent = 'Network error. Please try again.';
+      note.style.color = '#e9c96b';
+      btn.disabled    = false;
+      btn.textContent = 'Get early access';
+      setTimeout(() => {
+        note.textContent = 'Early access · No spam · Unsubscribe anytime';
+        note.style.color = '';
+      }, 3000);
+    }
+  }
+</script>

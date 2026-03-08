@@ -1,0 +1,229 @@
+---
+import { ButtonManifest } from 'lucent-ui';
+
+// Pull a representative slice of the manifest for the showcase
+const snippet = {
+  id: ButtonManifest.id,
+  name: ButtonManifest.name,
+  tier: ButtonManifest.tier,
+  designIntent: ButtonManifest.designIntent.slice(0, 120) + '…',
+  props: ButtonManifest.props.slice(0, 4).map(p => ({
+    name: p.name,
+    type: p.type,
+    required: p.required,
+    ...(p.default !== undefined && { default: p.default }),
+    ...(p.enumValues  !== undefined && { enumValues: p.enumValues }),
+    description: p.description,
+  })),
+  propCount: ButtonManifest.props.length,
+  exampleCount: ButtonManifest.usageExamples.length,
+};
+---
+
+<section class="section manifest-section" id="manifest">
+  <div class="bg-grid"></div>
+  <div class="section-inner">
+
+    <div class="manifest-layout">
+      <!-- Left: explanation -->
+      <div class="manifest-copy">
+        <span class="section-label">COMPONENT_MANIFEST</span>
+        <h2 class="section-title">
+          AI reads the spec,<br>not the <em>source.</em>
+        </h2>
+        <p class="section-body">
+          Every component in Lucent UI ships with a machine-readable
+          <code class="inline-code">COMPONENT_MANIFEST</code> — a structured JSON object
+          describing props, design intent, usage examples, and accessibility requirements.
+        </p>
+        <p class="section-body" style="margin-top: 16px;">
+          AI coding assistants read the manifest at context time. No prompt engineering,
+          no hallucinated prop names, no incorrect variants — just correct UI, first try.
+        </p>
+
+        <div class="manifest-stats">
+          <div class="stat">
+            <span class="stat-num">{ButtonManifest.props.length}</span>
+            <span class="stat-label">Props documented</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">{ButtonManifest.usageExamples.length}</span>
+            <span class="stat-label">Usage examples</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">1</span>
+            <span class="stat-label">Import, all context</span>
+          </div>
+        </div>
+
+        <div class="callout">
+          <span class="callout-dot"></span>
+          AI reads this at import time. No prompt engineering required.
+        </div>
+      </div>
+
+      <!-- Right: code block -->
+      <div class="manifest-code">
+        <div class="code-header">
+          <span class="code-lang">ButtonManifest</span>
+          <span class="code-badge">Live data · imported at build time</span>
+        </div>
+        <div class="code-block">
+<span class="dim">// ButtonManifest — imported directly from lucent-ui</span>
+<span class="kw">const</span> ButtonManifest = &#123;
+  <span class="key">"id"</span>: <span class="str">"{snippet.id}"</span>,
+  <span class="key">"name"</span>: <span class="str">"{snippet.name}"</span>,
+  <span class="key">"tier"</span>: <span class="str">"{snippet.tier}"</span>,
+  <span class="key">"designIntent"</span>: <span class="str">"{snippet.designIntent}"</span>,
+  <span class="key">"props"</span>: [
+    &#123;
+      <span class="key">"name"</span>: <span class="str">"{snippet.props[0].name}"</span>,
+      <span class="key">"type"</span>: <span class="str">"{snippet.props[0].type}"</span>,
+      <span class="key">"enumValues"</span>: [<span class="str">"primary"</span>, <span class="str">"secondary"</span>, <span class="str">"ghost"</span>, <span class="str">"danger"</span>],
+      <span class="key">"default"</span>: <span class="str">"{snippet.props[0].default}"</span>
+    &#125;,
+    &#123;
+      <span class="key">"name"</span>: <span class="str">"{snippet.props[1].name}"</span>,
+      <span class="key">"type"</span>: <span class="str">"{snippet.props[1].type}"</span>,
+      <span class="key">"enumValues"</span>: [<span class="str">"sm"</span>, <span class="str">"md"</span>, <span class="str">"lg"</span>],
+      <span class="key">"default"</span>: <span class="str">"{snippet.props[1].default}"</span>
+    &#125;,
+    <span class="dim">… {snippet.propCount - 2} more props</span>
+  ],
+  <span class="key">"usageExamples"</span>: [
+    &#123; <span class="key">"title"</span>: <span class="str">"Primary action"</span>, <span class="key">"code"</span>: <span class="str">"&lt;Button variant=\"primary\"&gt;…&lt;/Button&gt;"</span> &#125;,
+    <span class="dim">… {snippet.exampleCount - 1} more examples</span>
+  ],
+  <span class="key">"accessibility"</span>: &#123; <span class="key">"role"</span>: <span class="str">"button"</span>, <span class="key">"ariaAttributes"</span>: [<span class="str">"aria-disabled"</span>, <span class="str">"aria-busy"</span>] &#125;
+&#125;;
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .manifest-section {
+    border-top: 1px solid var(--border);
+  }
+
+  .manifest-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .manifest-layout { grid-template-columns: 1fr; gap: 48px; }
+  }
+
+  .manifest-copy {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .section-body + .section-body { margin-top: 16px; }
+
+  .inline-code {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--gold);
+    background: #e9c96b10;
+    border: 1px solid #e9c96b25;
+    border-radius: 2px;
+    padding: 1px 5px;
+  }
+
+  .manifest-stats {
+    display: flex;
+    gap: 32px;
+    margin-top: 40px;
+    margin-bottom: 32px;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .stat-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .callout {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 10px 14px;
+  }
+
+  .callout-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--gold);
+    flex-shrink: 0;
+    animation: blink 2s ease-in-out infinite;
+  }
+
+  /* Code panel */
+  .manifest-code {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+    padding: 10px 16px;
+  }
+
+  .code-lang {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .code-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .manifest-code .code-block {
+    border-radius: 0 0 4px 4px;
+    font-size: 11px;
+    line-height: 1.8;
+  }
+</style>

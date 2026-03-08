@@ -45,7 +45,7 @@ export function validateManifest(manifest: unknown): ValidationResult {
   }
 
   // tier
-  const validTiers = ['atom', 'molecule', 'block', 'flow', 'overlay'];
+  const validTiers = ['atom', 'molecule', 'block', 'flow', 'overlay', 'provider'];
   if (!validTiers.includes(m['tier'] as string)) {
     errors.push(err('tier', `Must be one of: ${validTiers.join(', ')}`));
   }

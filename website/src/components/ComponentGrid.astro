@@ -1,0 +1,201 @@
+---
+const atoms = [
+  'Button', 'Badge', 'Avatar', 'Input', 'Textarea', 'Spinner',
+  'Divider', 'Checkbox', 'Radio', 'Toggle', 'Select', 'Tag',
+  'Tooltip', 'Icon', 'Text', 'NavLink', 'Slider', 'CodeBlock', 'Table',
+];
+
+const molecules = [
+  'FormField', 'SearchInput', 'Card', 'Alert', 'EmptyState', 'Skeleton',
+  'Breadcrumb', 'Tabs', 'Collapsible', 'PageLayout', 'DataTable',
+  'CommandPalette', 'MultiSelect', 'DatePicker', 'DateRangePicker',
+  'FileUpload', 'Timeline',
+];
+---
+
+<section class="section grid-section" id="components">
+  <div class="section-inner">
+
+    <div class="grid-header">
+      <div>
+        <span class="section-label">Component Library</span>
+        <h2 class="section-title">
+          Everything you need.<br>Nothing you <em>don't.</em>
+        </h2>
+        <p class="section-body">
+          {atoms.length + molecules.length} components across two tiers — atoms for primitives,
+          molecules for composed patterns. Every single one ships with a
+          <code class="inline-code">COMPONENT_MANIFEST</code>.
+        </p>
+      </div>
+      <div class="grid-counts">
+        <div class="count-pill">
+          <span class="count-num">{atoms.length}</span>
+          <span class="count-label">Atoms</span>
+        </div>
+        <div class="count-pill">
+          <span class="count-num">{molecules.length}</span>
+          <span class="count-label">Molecules</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tier-block">
+      <div class="tier-label">
+        <span class="tier-tag">Atoms</span>
+        <span class="tier-desc">Primitive, unstyled-friendly building blocks</span>
+      </div>
+      <div class="component-grid">
+        {atoms.map(name => (
+          <div class="component-card">
+            <span class="component-name">{name}</span>
+            <span class="component-tag">atom</span>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <div class="tier-block">
+      <div class="tier-label">
+        <span class="tier-tag">Molecules</span>
+        <span class="tier-desc">Composed patterns for real product interfaces</span>
+      </div>
+      <div class="component-grid">
+        {molecules.map(name => (
+          <div class="component-card">
+            <span class="component-name">{name}</span>
+            <span class="component-tag">molecule</span>
+          </div>
+        ))}
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .grid-section {
+    border-top: 1px solid var(--border);
+    background: var(--card);
+  }
+
+  .grid-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 40px;
+    margin-bottom: 64px;
+    flex-wrap: wrap;
+  }
+
+  .inline-code {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--gold);
+    background: #e9c96b10;
+    border: 1px solid #e9c96b25;
+    border-radius: 2px;
+    padding: 1px 5px;
+  }
+
+  .grid-counts {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    flex-shrink: 0;
+  }
+
+  .count-pill {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 16px 24px;
+    min-width: 80px;
+  }
+
+  .count-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 32px;
+    font-weight: 400;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .count-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .tier-block {
+    margin-bottom: 48px;
+  }
+
+  .tier-label {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .tier-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid #e9c96b30;
+    border-radius: 2px;
+    padding: 4px 10px;
+  }
+
+  .tier-desc {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--muted);
+  }
+
+  .component-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 8px;
+  }
+
+  .component-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 10px 14px;
+    background: var(--card2);
+    transition: border-color 0.15s;
+  }
+
+  .component-card:hover {
+    border-color: var(--border2);
+  }
+
+  .component-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--paper);
+    letter-spacing: 0.02em;
+  }
+
+  .component-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 7px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    opacity: 0.6;
+  }
+</style>

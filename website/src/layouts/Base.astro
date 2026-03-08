@@ -1,0 +1,161 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Lucent UI — AI-first React component library',
+  description = 'An AI-first React component library. Every component ships with a machine-readable COMPONENT_MANIFEST so AI coding assistants generate correct, on-brand UI the first time.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <!-- OG -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400&family=DM+Sans:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Cloudflare Turnstile (bot protection) -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
+
+<style is:global>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink:    #0b0d12;
+    --paper:  #f0ede6;
+    --gold:   #e9c96b;
+    --glow:   #fde99a;
+    --muted:  #4a4d57;
+    --card:   #111318;
+    --card2:  #13161e;
+    --border: #1c1f2a;
+    --border2: #232737;
+  }
+
+  html, body {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+  }
+
+  /* Shared section structure */
+  .section {
+    position: relative;
+    padding: 96px 24px;
+  }
+
+  .section-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+  }
+
+  .section-title {
+    font-family: 'DM Mono', monospace;
+    font-weight: 400;
+    font-size: clamp(24px, 3.5vw, 36px);
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    color: var(--paper);
+    margin-bottom: 16px;
+  }
+
+  .section-title em {
+    font-style: normal;
+    color: var(--gold);
+  }
+
+  .section-body {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.75;
+    color: var(--muted);
+    max-width: 520px;
+  }
+
+  /* Code blocks */
+  .code-block {
+    background: var(--ink);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 24px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--paper);
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  .code-block .key   { color: #7dd3fc; }
+  .code-block .str   { color: #86efac; }
+  .code-block .num   { color: #fda4af; }
+  .code-block .kw    { color: var(--gold); }
+  .code-block .dim   { color: var(--muted); }
+
+  /* Background grid (reused in multiple sections) */
+  .bg-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 64px 64px;
+    opacity: 0.25;
+    pointer-events: none;
+  }
+
+  /* Fade-up animation */
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+  @keyframes glow-drift {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+    50%       { transform: translate(-50%, -52%) scale(1.08); opacity: 1; }
+  }
+
+  @keyframes glyph-pulse {
+    0%,100% { opacity: 0.07; }
+    50%      { opacity: 0.22; }
+  }
+</style>
