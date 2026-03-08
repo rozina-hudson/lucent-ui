@@ -7,7 +7,9 @@ const DERIVED_FROM: Partial<Record<keyof LucentTokens, keyof LucentTokens>> = {
   borderSubtle: 'borderDefault',
   borderStrong: 'borderDefault',
   bgSubtle: 'bgBase',
-  bgMuted: 'bgBase',
+  surfaceSecondary: 'surface',
+  surfaceRaised: 'surface',
+  surfaceOverlay: 'surface',
   textSecondary: 'textPrimary',
   textDisabled: 'textPrimary',
   accentHover: 'accentDefault',
@@ -16,7 +18,7 @@ const DERIVED_FROM: Partial<Record<keyof LucentTokens, keyof LucentTokens>> = {
 };
 
 const ANCHOR_KEYS = new Set<keyof LucentTokens>([
-  'borderDefault', 'bgBase', 'textPrimary', 'accentDefault',
+  'borderDefault', 'bgBase', 'surface', 'textPrimary', 'accentDefault',
 ]);
 
 export function TokenPreview() {
@@ -85,8 +87,8 @@ function Inner({ theme, overrides, hasOverrides, onToggle, onOverride, onReset }
   const { tokens } = useLucent();
 
   const colorGroups: Record<string, (keyof LucentTokens)[]> = {
-    'Background': ['bgBase', 'bgSubtle', 'bgMuted'],
-    'Surface': ['surfaceDefault', 'surfaceRaised', 'surfaceOverlay'],
+    'Background': ['bgBase', 'bgSubtle'],
+    'Surface': ['surface', 'surfaceSecondary', 'surfaceRaised', 'surfaceOverlay'],
     'Border': ['borderDefault', 'borderSubtle', 'borderStrong'],
     'Text': ['textPrimary', 'textSecondary', 'textDisabled', 'textInverse', 'textOnAccent'],
     'Accent': ['accentDefault', 'accentHover', 'accentActive', 'accentSubtle'],
@@ -265,7 +267,7 @@ function Inner({ theme, overrides, hasOverrides, onToggle, onOverride, onReset }
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: tokens.space6 }}>
               {shadowKeys.map(key => (
                 <div key={key} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: tokens.space3 }}>
-                  <div style={{ width: 80, height: 80, background: tokens.surfaceDefault, borderRadius: tokens.radiusMd, boxShadow: tokens[key as keyof typeof tokens] as string, border: `1px solid ${tokens.borderSubtle}` }} />
+                  <div style={{ width: 80, height: 80, background: tokens.surface, borderRadius: tokens.radiusMd, boxShadow: tokens[key as keyof typeof tokens] as string, border: `1px solid ${tokens.borderSubtle}` }} />
                   <code style={{ fontSize: tokens.fontSizeXs, color: tokens.textSecondary, fontFamily: tokens.fontFamilyMono }}>{key}</code>
                 </div>
               ))}
@@ -303,6 +305,7 @@ function MiniUIPreview({ tokens }: { tokens: ReturnType<typeof useLucent>['token
 
   return (
     <div style={{
+      background: t.surface,
       border: `1px solid ${t.borderDefault}`,
       borderRadius: t.radiusLg,
       overflow: 'hidden',
@@ -313,7 +316,7 @@ function MiniUIPreview({ tokens }: { tokens: ReturnType<typeof useLucent>['token
 
       {/* ── Navbar ── */}
       <div style={{
-        background: t.surfaceDefault,
+        background: t.surface,
         borderBottom: `1px solid ${t.borderDefault}`,
         padding: `${t.space3} ${t.space4}`,
         display: 'flex',
@@ -360,7 +363,7 @@ function MiniUIPreview({ tokens }: { tokens: ReturnType<typeof useLucent>['token
       </div>
 
       {/* ── Body ── */}
-      <div style={{ background: t.bgSubtle, padding: t.space4, display: 'flex', flexDirection: 'column', gap: t.space4 }}>
+      <div style={{ background: t.surface, padding: t.space4, display: 'flex', flexDirection: 'column', gap: t.space4 }}>
 
         {/* Page title row */}
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
@@ -396,7 +399,7 @@ function MiniUIPreview({ tokens }: { tokens: ReturnType<typeof useLucent>['token
             { label: 'Members', value: '6' },
           ].map(({ label, value, accent }) => (
             <div key={label} style={{
-              background: accent ? t.accentDefault : t.surfaceRaised,
+              background: accent ? t.accentDefault : t.surface,
               border: `1px solid ${accent ? 'transparent' : t.borderDefault}`,
               borderRadius: t.radiusMd,
               padding: t.space3,
@@ -423,7 +426,7 @@ function MiniUIPreview({ tokens }: { tokens: ReturnType<typeof useLucent>['token
 
         {/* Card with form */}
         <div style={{
-          background: t.surfaceDefault,
+          background: t.surface,
           border: `1px solid ${t.borderDefault}`,
           borderRadius: t.radiusMd,
           padding: t.space4,
@@ -434,7 +437,7 @@ function MiniUIPreview({ tokens }: { tokens: ReturnType<typeof useLucent>['token
           </div>
           {/* Input */}
           <div style={{
-            background: t.bgBase,
+            background: t.surfaceSecondary,
             border: `1px solid ${t.borderDefault}`,
             borderRadius: t.radiusMd,
             padding: `${t.space2} ${t.space3}`,
@@ -476,7 +479,7 @@ function MiniUIPreview({ tokens }: { tokens: ReturnType<typeof useLucent>['token
 
         {/* List card */}
         <div style={{
-          background: t.surfaceDefault,
+          background: t.surface,
           border: `1px solid ${t.borderDefault}`,
           borderRadius: t.radiusMd,
           overflow: 'hidden',
@@ -528,14 +531,14 @@ function MiniUIPreview({ tokens }: { tokens: ReturnType<typeof useLucent>['token
             );
           })}
           {/* muted footer */}
-          <div style={{ padding: `${t.space2} ${t.space4}`, background: t.bgSubtle }}>
+          <div style={{ padding: `${t.space2} ${t.space4}`, background: t.surfaceSecondary }}>
             <span style={{ fontSize: '10px', color: t.textDisabled }}>Showing 4 of 24 events</span>
           </div>
         </div>
 
         {/* Inline code snippet */}
         <div style={{
-          background: t.bgMuted,
+          background: t.surfaceSecondary,
           border: `1px solid ${t.borderSubtle}`,
           borderRadius: t.radiusMd,
           padding: t.space3,
@@ -566,7 +569,7 @@ function MiniUIPreview({ tokens }: { tokens: ReturnType<typeof useLucent>['token
 function Section({ title, tokens, children }: { title: string; tokens: ReturnType<typeof useLucent>['tokens']; children: React.ReactNode }) {
   return (
     <div style={{
-      background: tokens.surfaceDefault,
+      background: tokens.surface,
       border: `1px solid ${tokens.borderDefault}`,
       borderRadius: tokens.radiusLg,
       padding: tokens.space6,
