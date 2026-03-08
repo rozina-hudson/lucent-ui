@@ -1,5 +1,13 @@
 # lucent-ui
 
+## 0.6.0
+
+### Minor Changes
+
+- feat(DataTable): add per-column searchable multi-select filtering
+
+  Each column can opt in via `filterable: true`, which renders a dropdown filter button above the table. Dropdowns are searchable and multi-select — a search input narrows the option list and checkboxes toggle set membership. A "Clear selection" link clears a single column; "Clear all" clears all active filters. An `onFilterChange` callback receives the current filter map as `Record<string, string[]>`. Filter → sort → paginate is the fixed pipeline order; any filter change resets the page to 0. Fixes stacking context bug where the dropdown panel was obscured by the table wrapper's `overflow: auto` stacking context.
+
 ## 0.5.0
 
 ### Minor Changes

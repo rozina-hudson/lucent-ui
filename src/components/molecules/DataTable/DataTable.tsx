@@ -1,4 +1,4 @@
-import { useState, type CSSProperties, type ReactNode } from 'react';
+import { useState, useEffect, useRef, type CSSProperties, type ReactNode } from 'react';
 import { Text } from '../../atoms/Text/index.js';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -9,6 +9,8 @@ export interface DataTableColumn<T> {
   /** Custom cell renderer — defaults to `String(row[key])` */
   render?: (row: T, index: number) => ReactNode;
   sortable?: boolean;
+  /** Adds a searchable, multi-select dropdown filter above the table for this column */
+  filterable?: boolean;
   width?: string;
   align?: 'left' | 'center' | 'right';
 }
@@ -21,6 +23,11 @@ export interface DataTableProps<T extends object> {
   /** Controlled current page (0-indexed) */
   page?: number;
   onPageChange?: (page: number) => void;
+  /**
+   * Called with the current filter map whenever any filter changes.
+   * Keys are column keys; values are arrays of selected filter strings (empty arrays are omitted).
+   */
+  onFilterChange?: (filters: Record<string, string[]>) => void;
   /** Empty state slot */
   emptyState?: ReactNode;
   style?: CSSProperties;
@@ -70,25 +77,42 @@ export function DataTable<T extends object>({
   pageSize = 10,
   page: controlledPage,
   onPageChange,
+  onFilterChange,
   emptyState,
   style,
 }: DataTableProps<T>) {
   const [sort, setSort] = useState<SortState | null>(null);
   const [internalPage, setInternalPage] = useState(0);
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
+  const [filters, setFilters] = useState<Record<string, string[]>>({});
 
   const isPageControlled = controlledPage !== undefined;
   const currentPage = isPageControlled ? controlledPage! : internalPage;
 
+  const hasFilterableColumns = columns.some(c => c.filterable);
+
+  // Filter (before sort)
+  const filteredRows = hasFilterableColumns
+    ? rows.filter(row => {
+        return columns.every(col => {
+          if (!col.filterable) return true;
+          const term = filters[col.key];
+          if (!term || term.length === 0) return true;
+          const value = String((row as Record<string, unknown>)[col.key] ?? '');
+          return term.includes(value);
+        });
+      })
+    : rows;
+
   // Sort
   const sortedRows = sort
-    ? [...rows].sort((a, b) => {
+    ? [...filteredRows].sort((a, b) => {
         const av = (a as Record<string, unknown>)[sort.key];
         const bv = (b as Record<string, unknown>)[sort.key];
         const cmp = String(av ?? '').localeCompare(String(bv ?? ''), undefined, { numeric: true });
         return sort.dir === 'asc' ? cmp : -cmp;
       })
-    : rows;
+    : filteredRows;
 
   // Paginate
   const paginated = pageSize > 0
@@ -111,6 +135,22 @@ export function DataTable<T extends object>({
     onPageChange?.(0);
   };
 
+  const handleFilter = (key: string, values: string[]) => {
+    const next = { ...filters, [key]: values };
+    if (values.length === 0) delete next[key];
+    setFilters(next);
+    if (!isPageControlled) setInternalPage(0);
+    onPageChange?.(0);
+    onFilterChange?.(next);
+  };
+
+  const handleClearAll = () => {
+    setFilters({});
+    if (!isPageControlled) setInternalPage(0);
+    onPageChange?.(0);
+    onFilterChange?.({});
+  };
+
   // Page number range
   const pageButtons: (number | '…')[] = [];
   if (totalPages <= 7) {
@@ -127,6 +167,19 @@ export function DataTable<T extends object>({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--lucent-space-3)', ...style }}>
+      {/* Filter bar — position:relative + zIndex beats the table wrapper's overflow:auto stacking context */}
+      {hasFilterableColumns && (
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <FilterBar
+            columns={columns}
+            rows={rows}
+            filters={filters}
+            onFilter={handleFilter}
+            onClearAll={handleClearAll}
+          />
+        </div>
+      )}
+
       {/* Table wrapper */}
       <div style={{
         overflowX: 'auto',
@@ -154,6 +207,7 @@ export function DataTable<T extends object>({
                       fontWeight: 'var(--lucent-font-weight-medium)',
                       color: 'var(--lucent-text-secondary)',
                       background: 'var(--lucent-bg-subtle)',
+                      borderBottom: '1px solid var(--lucent-border-default)',
                       cursor: col.sortable ? 'pointer' : 'default',
                       userSelect: 'none',
                       whiteSpace: 'nowrap',
@@ -229,9 +283,11 @@ export function DataTable<T extends object>({
           flexWrap: 'wrap',
         }}>
           <Text color="secondary" size="sm">
-            {sortedRows.length === 1
-              ? '1 row'
-              : `${currentPage * pageSize + 1}–${Math.min((currentPage + 1) * pageSize, sortedRows.length)} of ${sortedRows.length} rows`}
+            {sortedRows.length === 0
+              ? `0 rows${rows.length > 0 ? ` (filtered from ${rows.length})` : ''}`
+              : sortedRows.length === 1
+              ? `1 row${sortedRows.length < rows.length ? ` (filtered from ${rows.length})` : ''}`
+              : `${currentPage * pageSize + 1}–${Math.min((currentPage + 1) * pageSize, sortedRows.length)} of ${sortedRows.length} rows${sortedRows.length < rows.length ? ` (filtered from ${rows.length})` : ''}`}
           </Text>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--lucent-space-1)' }}>
@@ -274,6 +330,286 @@ export function DataTable<T extends object>({
         </div>
       )}
     </div>
+  );
+}
+
+// ─── Filter bar ───────────────────────────────────────────────────────────────
+
+function FilterBar<T extends object>({
+  columns,
+  rows,
+  filters,
+  onFilter,
+  onClearAll,
+}: {
+  columns: DataTableColumn<T>[];
+  rows: T[];
+  filters: Record<string, string[]>;
+  onFilter: (key: string, values: string[]) => void;
+  onClearAll: () => void;
+}) {
+  const filterableColumns = columns.filter(c => c.filterable);
+  const activeCount = Object.keys(filters).length;
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--lucent-space-2)', flexWrap: 'wrap' }}>
+      {filterableColumns.map(col => {
+        const uniqueValues = Array.from(
+          new Set(rows.map(row => String((row as Record<string, unknown>)[col.key] ?? '')))
+        ).sort();
+        return (
+          <FilterDropdown
+            key={col.key}
+            label={col.header}
+            values={uniqueValues}
+            value={filters[col.key] ?? []}
+            onChange={vals => onFilter(col.key, vals)}
+          />
+        );
+      })}
+      {activeCount > 0 && (
+        <button
+          onClick={onClearAll}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            height: 30,
+            padding: '0 var(--lucent-space-2)',
+            border: 'none',
+            borderRadius: 'var(--lucent-radius-md)',
+            background: 'transparent',
+            color: 'var(--lucent-text-secondary)',
+            fontFamily: 'var(--lucent-font-family-base)',
+            fontSize: 'var(--lucent-font-size-xs)',
+            cursor: 'pointer',
+          }}
+        >
+          Clear all
+        </button>
+      )}
+    </div>
+  );
+}
+
+// ─── Filter dropdown ──────────────────────────────────────────────────────────
+
+function FilterDropdown({
+  label,
+  values,
+  value,
+  onChange,
+}: {
+  label: ReactNode;
+  values: string[];
+  value: string[];
+  onChange: (values: string[]) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const [search, setSearch] = useState('');
+  const ref = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const isActive = value.length > 0;
+
+  useEffect(() => {
+    if (!open) { setSearch(''); return; }
+    setTimeout(() => searchRef.current?.focus(), 0);
+    const onMouse = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('mousedown', onMouse);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onMouse);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
+  const filtered = search
+    ? values.filter(v => v.toLowerCase().includes(search.toLowerCase()))
+    : values;
+
+  const toggle = (v: string) =>
+    onChange(value.includes(v) ? value.filter(x => x !== v) : [...value, v]);
+
+  const suffix = value.length === 0 ? null
+    : value.length === 1
+      ? <span style={{ color: 'var(--lucent-text-secondary)', fontWeight: 'var(--lucent-font-weight-regular)' }}>: {value[0]}</span>
+      : <span style={{ color: 'var(--lucent-accent-default)' }}>({value.length})</span>;
+
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 'var(--lucent-space-1)',
+          height: 30,
+          padding: '0 var(--lucent-space-3)',
+          borderRadius: 'var(--lucent-radius-md)',
+          border: `1px solid ${isActive ? 'var(--lucent-accent-default)' : hovered ? 'var(--lucent-border-strong)' : 'var(--lucent-border-default)'}`,
+          background: isActive ? 'var(--lucent-accent-subtle)' : 'var(--lucent-surface-default)',
+          color: isActive ? 'var(--lucent-accent-default)' : 'var(--lucent-text-primary)',
+          fontFamily: 'var(--lucent-font-family-base)',
+          fontSize: 'var(--lucent-font-size-xs)',
+          fontWeight: isActive ? 'var(--lucent-font-weight-medium)' : 'var(--lucent-font-weight-regular)',
+          cursor: 'pointer',
+          outline: 'none',
+          whiteSpace: 'nowrap',
+          transition: 'border-color var(--lucent-duration-fast) var(--lucent-easing-default), background var(--lucent-duration-fast) var(--lucent-easing-default)',
+        }}
+      >
+        {label}
+        {suffix}
+        <svg
+          width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden
+          style={{ transform: open ? 'rotate(180deg)' : 'none', transition: `transform var(--lucent-duration-fast) var(--lucent-easing-default)` }}
+        >
+          <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+
+      {open && (
+        <div style={{
+          position: 'absolute',
+          top: 'calc(100% + 4px)',
+          left: 0,
+          minWidth: 180,
+          maxHeight: 280,
+          display: 'flex',
+          flexDirection: 'column',
+          background: 'var(--lucent-surface-default)',
+          border: '1px solid var(--lucent-border-default)',
+          borderRadius: 'var(--lucent-radius-lg)',
+          boxShadow: '0 4px 16px color-mix(in srgb, var(--lucent-text-primary) 8%, transparent)',
+          zIndex: 50,
+        }}>
+          {/* Search */}
+          <div style={{ padding: 'var(--lucent-space-2)', paddingBottom: 0 }}>
+            <input
+              ref={searchRef}
+              type="text"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search…"
+              style={{
+                width: '100%',
+                boxSizing: 'border-box',
+                height: 26,
+                padding: '0 var(--lucent-space-2)',
+                borderRadius: 'var(--lucent-radius-md)',
+                border: '1px solid var(--lucent-border-default)',
+                background: 'var(--lucent-bg-subtle)',
+                color: 'var(--lucent-text-primary)',
+                fontFamily: 'var(--lucent-font-family-base)',
+                fontSize: 'var(--lucent-font-size-xs)',
+                outline: 'none',
+              }}
+            />
+          </div>
+
+          {/* Clear selection */}
+          {value.length > 0 && (
+            <div style={{ padding: 'var(--lucent-space-1) var(--lucent-space-2) 0' }}>
+              <button
+                onClick={() => onChange([])}
+                style={{
+                  display: 'inline-flex',
+                  padding: '2px var(--lucent-space-2)',
+                  border: 'none',
+                  borderRadius: 'var(--lucent-radius-sm)',
+                  background: 'transparent',
+                  color: 'var(--lucent-text-secondary)',
+                  fontFamily: 'var(--lucent-font-family-base)',
+                  fontSize: 'var(--lucent-font-size-xs)',
+                  cursor: 'pointer',
+                  textDecoration: 'underline',
+                }}
+              >
+                Clear selection
+              </button>
+            </div>
+          )}
+
+          {/* Options */}
+          <div style={{ overflowY: 'auto', padding: 'var(--lucent-space-1)', borderTop: '1px solid var(--lucent-border-subtle)', marginTop: 'var(--lucent-space-2)' }}>
+            {filtered.length === 0 ? (
+              <div style={{
+                padding: 'var(--lucent-space-3)',
+                color: 'var(--lucent-text-disabled)',
+                fontFamily: 'var(--lucent-font-family-base)',
+                fontSize: 'var(--lucent-font-size-xs)',
+                textAlign: 'center',
+              }}>
+                No results
+              </div>
+            ) : (
+              filtered.map(v => (
+                <DropdownOption
+                  key={v}
+                  label={v}
+                  isSelected={value.includes(v)}
+                  onClick={() => toggle(v)}
+                />
+              ))
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DropdownOption({ label, isSelected, onClick }: { label: string; isSelected: boolean; onClick: () => void }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 'var(--lucent-space-2)',
+        width: '100%',
+        textAlign: 'left',
+        padding: 'var(--lucent-space-2) var(--lucent-space-3)',
+        borderRadius: 'var(--lucent-radius-md)',
+        border: 'none',
+        background: hovered ? 'var(--lucent-bg-subtle)' : 'transparent',
+        color: 'var(--lucent-text-primary)',
+        fontFamily: 'var(--lucent-font-family-base)',
+        fontSize: 'var(--lucent-font-size-xs)',
+        fontWeight: isSelected ? 'var(--lucent-font-weight-medium)' : 'var(--lucent-font-weight-regular)',
+        cursor: 'pointer',
+        outline: 'none',
+        whiteSpace: 'nowrap',
+      }}
+    >
+      <span style={{
+        flexShrink: 0,
+        width: 14,
+        height: 14,
+        borderRadius: 'var(--lucent-radius-sm)',
+        border: `1.5px solid ${isSelected ? 'var(--lucent-accent-default)' : 'var(--lucent-border-strong)'}`,
+        background: isSelected ? 'var(--lucent-accent-default)' : 'transparent',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        transition: 'border-color var(--lucent-duration-fast), background var(--lucent-duration-fast)',
+      }}>
+        {isSelected && (
+          <svg width="8" height="8" viewBox="0 0 8 8" fill="none" aria-hidden>
+            <path d="M1 4L3 6L7 2" stroke="var(--lucent-text-on-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        )}
+      </span>
+      {label}
+    </button>
   );
 }
 

@@ -55,6 +55,13 @@ export const ButtonManifest = {
             description: 'Stretches the button to fill its container width.',
         },
         {
+            name: 'bordered',
+            type: 'boolean',
+            required: false,
+            default: 'true',
+            description: 'When false removes the button border entirely, producing a flat look.',
+        },
+        {
             name: 'leftIcon',
             type: 'ReactNode',
             required: false,
@@ -105,6 +112,10 @@ export const ButtonManifest = {
         {
             title: 'Full-width submit',
             code: `<Button variant="primary" type="submit" fullWidth>Sign in</Button>`,
+        },
+        {
+            title: 'Borderless primary',
+            code: `<Button variant="primary" bordered={false}>Flat primary</Button>`,
         },
     ],
     compositionGraph: [],

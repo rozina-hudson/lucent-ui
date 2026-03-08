@@ -7,14 +7,18 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
   domain: 'neutral',
   specVersion: '1.0',
 
-  description: 'A sortable, paginated data table with configurable columns, custom cell renderers, and keyboard-accessible pagination controls.',
+  description: 'A sortable, filterable, paginated data table with configurable columns, custom cell renderers, and keyboard-accessible pagination controls.',
 
   designIntent:
     'DataTable is generic over row type T so TypeScript consumers get full type safety on column keys and renderers. ' +
     'Sorting is client-side and composable — each column opts in via sortable:true; clicking a sorted column cycles asc → desc → unsorted. ' +
+    'Filtering is per-column — each column opts in via filterable:true, which adds a dropdown button above the table. ' +
+    'Each dropdown is searchable and multi-select: a search input filters the option list, and each option is a checkbox that toggles membership in the active set. ' +
+    'Filtering uses set-membership: a row passes if its column value is included in the selected values array. ' +
+    'A "Clear selection" link inside each dropdown clears that column; a "Clear all" button in the bar appears when any filter is active. ' +
+    'Filter → sort → paginate is the fixed pipeline order; any filter change resets the page to 0. ' +
     'Pagination is either controlled (page prop + onPageChange) or uncontrolled (internal state). ' +
     'A pageSize of 0 disables pagination entirely, useful when the parent manages windowing. ' +
-    'Column filtering is intentionally excluded here (see DataTable Filter issue #52) to keep the API focused. ' +
     'Row hover uses bg-subtle, not a border change, so the visual weight stays low for dense data views.',
 
   props: [
@@ -22,7 +26,7 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
       name: 'columns',
       type: 'array',
       required: true,
-      description: 'Column definitions. Each column has a key, header, optional render function, optional sortable flag, optional width, and optional text align.',
+      description: 'Column definitions. Each column has a key, header, optional render function, optional sortable flag, optional filterable flag (renders a text filter input below the header), optional width, and optional text align.',
     },
     {
       name: 'rows',
@@ -47,7 +51,13 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
       name: 'onPageChange',
       type: 'function',
       required: false,
-      description: 'Called with the new page index whenever the page changes (from pagination controls or after a sort reset).',
+      description: 'Called with the new page index whenever the page changes (from pagination controls or after a sort/filter reset).',
+    },
+    {
+      name: 'onFilterChange',
+      type: 'function',
+      required: false,
+      description: 'Called with the current filter map (Record<string, string[]>) whenever any column filter changes. Keys are column keys; columns with no selection are omitted from the map.',
     },
     {
       name: 'emptyState',
@@ -73,6 +83,18 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
     { key: 'status', header: 'Status', render: (row) => <Badge>{row.status}</Badge> },
   ]}
   rows={users}
+/>`,
+    },
+    {
+      title: 'Sortable + filterable table',
+      code: `<DataTable
+  columns={[
+    { key: 'name', header: 'Name', sortable: true, filterable: true },
+    { key: 'role', header: 'Role', filterable: true },
+    { key: 'status', header: 'Status', render: (row) => <Badge>{row.status}</Badge> },
+  ]}
+  rows={users}
+  onFilterChange={(filters) => console.log(filters)}
 />`,
     },
     {

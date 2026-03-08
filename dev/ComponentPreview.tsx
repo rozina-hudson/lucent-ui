@@ -1286,6 +1286,26 @@ function Inner({
             ]}
           />
         </Row>
+        <Row label="Sortable + filterable + paginated" tokens={tokens}>
+          <DataTable
+            style={{ width: '100%' }}
+            pageSize={5}
+            columns={[
+              { key: 'name', header: 'Name', sortable: true, filterable: true },
+              { key: 'role', header: 'Role', sortable: true, filterable: true },
+              { key: 'status', header: 'Status', render: (row: { name: string; role: string; status: string }) => <Badge variant={row.status === 'Active' ? 'success' : 'neutral'}>{row.status}</Badge> },
+            ]}
+            rows={[
+              { name: 'Alice', role: 'Engineer', status: 'Active' },
+              { name: 'Bob', role: 'Designer', status: 'Active' },
+              { name: 'Carol', role: 'Product', status: 'Away' },
+              { name: 'Dan', role: 'Engineer', status: 'Active' },
+              { name: 'Eve', role: 'Marketing', status: 'Away' },
+              { name: 'Frank', role: 'Engineer', status: 'Active' },
+              { name: 'Grace', role: 'Designer', status: 'Away' },
+            ]}
+          />
+        </Row>
         <Row label="Empty state" tokens={tokens}>
           <DataTable columns={[{ key: 'name', header: 'Name' }]} rows={[]} style={{ width: 320 }} />
         </Row>
