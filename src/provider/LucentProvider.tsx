@@ -10,6 +10,7 @@ import { darkTokens } from '../tokens/dark.js';
 import { makeLibraryCSS } from '../tokens/css.js';
 import { getContrastText } from '../tokens/contrast.js';
 import { adjustLightness } from '../tokens/color.js';
+import { deriveTokens } from '../tokens/derive.js';
 import type { LucentTokens, Theme } from '../tokens/types.js';
 
 interface LucentContextValue {
@@ -49,6 +50,11 @@ export function LucentProvider({
     ? { ...baseTokens, ...tokenOverrides }
     : baseTokens;
 
+  // Derive variant tokens from any anchor overrides the consumer provided.
+  // Only fills keys that are absent from tokenOverrides — never clobbers
+  // explicit user values. Skipped entirely when no overrides are passed.
+  const derived = tokenOverrides ? deriveTokens(tokenOverrides, merged, theme) : {};
+
   // Auto-compute textOnAccent from the resolved accent color unless the consumer
   // explicitly overrides it. This guarantees WCAG AA contrast on accent surfaces
   // regardless of which accent color is in use.
@@ -74,6 +80,7 @@ export function LucentProvider({
 
   const tokens: LucentTokens = {
     ...merged,
+    ...derived,
     textOnAccent: tokenOverrides?.textOnAccent ?? getContrastText(merged.accentDefault),
     accentBorder: computedBorder,
   };

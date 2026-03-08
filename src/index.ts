@@ -6,7 +6,7 @@ export * from './components/molecules/index.js';
 export { LucentProvider, useLucent } from './provider/index.js';
 export type { LucentProviderProps } from './provider/index.js';
 
-export { lightTokens, darkTokens, makeLibraryCSS, getContrastText, brandTokens } from './tokens/index.js';
+export { lightTokens, darkTokens, makeLibraryCSS, getContrastText, brandTokens, deriveTokens, deriveDarkFromLight } from './tokens/index.js';
 export type { LucentTokens, Theme } from './tokens/index.js';
 
 export {
