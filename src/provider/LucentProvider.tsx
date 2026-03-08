@@ -11,7 +11,8 @@ import { makeLibraryCSS } from '../tokens/css.js';
 import { getContrastText } from '../tokens/contrast.js';
 import { adjustLightness } from '../tokens/color.js';
 import { deriveTokens } from '../tokens/derive.js';
-import type { LucentTokens, Theme } from '../tokens/types.js';
+import { createTheme } from '../tokens/createTheme.js';
+import type { LucentTokens, Theme, ThemeAnchors } from '../tokens/types.js';
 
 interface LucentContextValue {
   theme: Theme;
@@ -25,7 +26,17 @@ const LucentContext = createContext<LucentContextValue>({
 
 export interface LucentProviderProps {
   theme?: Theme;
+  /**
+   * Full or partial token overrides. Individual tokens can be set here and
+   * any missing variant tokens will be derived automatically.
+   */
   tokens?: Partial<LucentTokens>;
+  /**
+   * Shorthand for specifying only the 9 anchor colors and letting the library
+   * derive the full token set automatically. When provided, `tokens` is ignored.
+   * Equivalent to passing `tokens={createTheme(anchors, theme)}`.
+   */
+  anchors?: ThemeAnchors;
   children: ReactNode;
 }
 
@@ -35,58 +46,67 @@ export interface LucentProviderProps {
  * styles are applied synchronously before first paint.
  *
  * @example
- * <LucentProvider theme="dark">
+ * // Minimal: 9 anchor colors → full theme
+ * <LucentProvider anchors={{ bgBase: '#fff', accentDefault: '#6366f1', ... }}>
+ *   <App />
+ * </LucentProvider>
+ *
+ * @example
+ * // Full control via partial overrides
+ * <LucentProvider theme="dark" tokens={{ accentDefault: '#f59e0b' }}>
  *   <App />
  * </LucentProvider>
  */
 export function LucentProvider({
   theme = 'light',
   tokens: tokenOverrides,
+  anchors,
   children,
 }: LucentProviderProps) {
   const id = useId().replace(/:/g, '');
-  const baseTokens = theme === 'dark' ? darkTokens : lightTokens;
-  const merged: LucentTokens = tokenOverrides
-    ? { ...baseTokens, ...tokenOverrides }
-    : baseTokens;
 
-  // Derive variant tokens from any anchor overrides the consumer provided.
-  // Only fills keys that are absent from tokenOverrides — never clobbers
-  // explicit user values. Skipped entirely when no overrides are passed.
-  const derived = tokenOverrides ? deriveTokens(tokenOverrides, merged, theme) : {};
-
-  // Auto-compute textOnAccent from the resolved accent color unless the consumer
-  // explicitly overrides it. This guarantees WCAG AA contrast on accent surfaces
-  // regardless of which accent color is in use.
-  //
-  // We also derive a slightly tweaked border colour for the primary/accent
-  // variant so that when people supply a custom accent the border still has
-  // enough contrast against the surrounding surface in both light & dark
-  // themes.  The consumer can still override `accentBorder` if they really
-  // want to pick a specific value; this computation only applies when the
-  // token is _not_ provided.
-  const computedBorder = (() => {
-    // fast path: use provided override
-    if (tokenOverrides?.accentBorder) {
-      return tokenOverrides.accentBorder;
+  // When anchors are provided, delegate fully to createTheme() which handles
+  // all derivation in one pass. The tokens/overrides path is skipped.
+  const tokens: LucentTokens = (() => {
+    if (anchors) {
+      return createTheme(anchors, theme);
     }
-    // light theme: darken the accent a little so the border isn't lost on a
-    // white surface; dark theme: lighten the accent so it isn't invisible on
-    // a nearly‑black surface.
-    return theme === 'light'
-      ? adjustLightness(merged.accentDefault, -0.15)
-      : adjustLightness(merged.accentDefault, 0.15);
+
+    const baseTokens = theme === 'dark' ? darkTokens : lightTokens;
+    const merged: LucentTokens = tokenOverrides
+      ? { ...baseTokens, ...tokenOverrides }
+      : baseTokens;
+
+    // Derive variant tokens from any anchor overrides the consumer provided.
+    // Only fills keys that are absent from tokenOverrides — never clobbers
+    // explicit user values. Skipped entirely when no overrides are passed.
+    const derived = tokenOverrides ? deriveTokens(tokenOverrides, merged, theme) : {};
+
+    // Auto-compute textOnAccent from the resolved accent color unless the consumer
+    // explicitly overrides it. This guarantees WCAG AA contrast on accent surfaces
+    // regardless of which accent color is in use.
+    //
+    // We also derive a slightly tweaked border colour for the primary/accent
+    // variant so that when people supply a custom accent the border still has
+    // enough contrast against the surrounding surface in both light & dark
+    // themes.  The consumer can still override `accentBorder` if they really
+    // want to pick a specific value; this computation only applies when the
+    // token is _not_ provided.
+    const computedBorder = tokenOverrides?.accentBorder
+      ?? (theme === 'light'
+        ? adjustLightness(merged.accentDefault, -0.15)
+        : adjustLightness(merged.accentDefault, 0.15));
+
+    return {
+      ...merged,
+      ...derived,
+      textOnAccent: tokenOverrides?.textOnAccent ?? getContrastText(merged.accentDefault),
+      accentBorder: computedBorder,
+    };
   })();
 
-  const tokens: LucentTokens = {
-    ...merged,
-    ...derived,
-    textOnAccent: tokenOverrides?.textOnAccent ?? getContrastText(merged.accentDefault),
-    accentBorder: computedBorder,
-  };
-
   // Set the root font size once so all rem-based tokens resolve to the intended scale.
-  // 13px base: fontSizeMd (1rem) = 13px, fontSizeSm (0.875rem) ≈ 11px, etc.
+  // 14px base: fontSizeMd (1rem) = 14px, fontSizeSm (0.875rem) ≈ 12px, etc.
   const css = 'html { font-size: 14px; }\n' + makeLibraryCSS(tokens, ':root');
 
   // useLayoutEffect fires synchronously after DOM mutations, before browser paint —

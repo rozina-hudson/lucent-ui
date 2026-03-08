@@ -6,8 +6,9 @@
  * - block:    Page-section-level composition (PageHeader, SidebarNav…)
  * - flow:     Multi-step or stateful sequences (Wizard, Onboarding…)
  * - overlay:  Layers above page content (Modal, Drawer, Tooltip…)
+ * - provider: Root configuration wrapper (LucentProvider…)
  */
-export type ComponentTier = 'atom' | 'molecule' | 'block' | 'flow' | 'overlay';
+export type ComponentTier = 'atom' | 'molecule' | 'block' | 'flow' | 'overlay' | 'provider';
 
 /**
  * The domain of a component.

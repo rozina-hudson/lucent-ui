@@ -134,3 +134,35 @@ export interface LucentTokens
     MotionTokens {}
 
 export type Theme = 'light' | 'dark';
+
+/**
+ * The minimal set of color tokens needed to produce a complete theme.
+ * Pass these to `createTheme()` or `<LucentProvider anchors={...}>` and
+ * all variant tokens (hover, active, subtle, text, etc.) are derived
+ * automatically.
+ *
+ * @example
+ * const myTheme = createTheme({
+ *   bgBase:          '#ffffff',
+ *   surface:         '#f9fafb',
+ *   borderDefault:   '#e5e7eb',
+ *   textPrimary:     '#111827',
+ *   accentDefault:   '#6366f1',
+ *   successDefault:  '#22c55e',
+ *   warningDefault:  '#f59e0b',
+ *   dangerDefault:   '#ef4444',
+ *   infoDefault:     '#3b82f6',
+ * });
+ */
+export type ThemeAnchors = Pick<
+  LucentTokens,
+  | 'bgBase'
+  | 'surface'
+  | 'borderDefault'
+  | 'textPrimary'
+  | 'accentDefault'
+  | 'successDefault'
+  | 'warningDefault'
+  | 'dangerDefault'
+  | 'infoDefault'
+>;

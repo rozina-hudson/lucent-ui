@@ -1,5 +1,25 @@
-import { adjustLightness } from './color.js';
+import { adjustLightness, hexToHsl, hslToHex } from './color.js';
 import type { LucentTokens, Theme } from './types.js';
+
+// Fixed lightness targets for status subtle/text variants (Tailwind shade-50 / shade-700 equivalents).
+// Using fixed targets rather than deltas ensures consistent results regardless of which shade the
+// consumer picks for the anchor (e.g. a bright warning yellow at L=0.5 still produces a readable
+// tint at L=0.95 instead of clamping at white).
+const STATUS_L = {
+  subtle: { light: 0.95, dark: 0.12 },
+  text:   { light: 0.28, dark: 0.78 },
+} as const;
+
+function deriveStatusSubtle(anchor: string, isLight: boolean): string {
+  const [h, s] = hexToHsl(anchor);
+  // Reduce saturation for the subtle tint so it reads as a wash, not a mid-tone.
+  return hslToHex(h, s * 0.5, isLight ? STATUS_L.subtle.light : STATUS_L.subtle.dark);
+}
+
+function deriveStatusText(anchor: string, isLight: boolean): string {
+  const [h, s] = hexToHsl(anchor);
+  return hslToHex(h, s, isLight ? STATUS_L.text.light : STATUS_L.text.dark);
+}
 
 /**
  * Derive variant tokens from anchor overrides.
@@ -75,6 +95,39 @@ export function deriveTokens(
       derived.accentActive = adjustLightness(merged.accentDefault, isLight ? +0.13 : -0.14);
     if (!('accentSubtle' in overrides))
       derived.accentSubtle = adjustLightness(merged.accentDefault, isLight ? +0.85 : -0.60);
+  }
+
+  // --- Status tokens ---
+  // Each anchor derives its subtle (pale tint) and text (readable foreground) variants using
+  // fixed lightness targets rather than deltas — consistent regardless of anchor shade chosen.
+  if ('successDefault' in overrides) {
+    if (!('successSubtle' in overrides))
+      derived.successSubtle = deriveStatusSubtle(merged.successDefault, isLight);
+    if (!('successText' in overrides))
+      derived.successText = deriveStatusText(merged.successDefault, isLight);
+  }
+
+  if ('warningDefault' in overrides) {
+    if (!('warningSubtle' in overrides))
+      derived.warningSubtle = deriveStatusSubtle(merged.warningDefault, isLight);
+    if (!('warningText' in overrides))
+      derived.warningText = deriveStatusText(merged.warningDefault, isLight);
+  }
+
+  if ('dangerDefault' in overrides) {
+    if (!('dangerHover' in overrides))
+      derived.dangerHover = adjustLightness(merged.dangerDefault, isLight ? +0.05 : -0.07);
+    if (!('dangerSubtle' in overrides))
+      derived.dangerSubtle = deriveStatusSubtle(merged.dangerDefault, isLight);
+    if (!('dangerText' in overrides))
+      derived.dangerText = deriveStatusText(merged.dangerDefault, isLight);
+  }
+
+  if ('infoDefault' in overrides) {
+    if (!('infoSubtle' in overrides))
+      derived.infoSubtle = deriveStatusSubtle(merged.infoDefault, isLight);
+    if (!('infoText' in overrides))
+      derived.infoText = deriveStatusText(merged.infoDefault, isLight);
   }
 
   return derived;
