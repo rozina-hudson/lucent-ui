@@ -78,15 +78,15 @@ export interface MotionTokens {
 }
 
 export interface SemanticColorTokens {
-  // Backgrounds
+  // Backgrounds — page/layout layer only
   bgBase: string;
   bgSubtle: string;
-  bgMuted: string;
   bgOverlay: string;
-  // Surfaces
-  surfaceDefault: string;
-  surfaceRaised: string;
-  surfaceOverlay: string;
+  // Surfaces — component elevation layer
+  surface: string;          // flat inline components (cards, list items)
+  surfaceSecondary: string; // tinted fill within a surface (striped rows, thead/tfoot, disabled inputs, nested panels)
+  surfaceRaised: string;   // dropdowns, popovers
+  surfaceOverlay: string;  // modals, dialogs
   // Borders
   borderDefault: string;
   borderSubtle: string;

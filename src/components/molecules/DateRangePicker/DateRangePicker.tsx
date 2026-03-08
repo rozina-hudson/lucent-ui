@@ -116,7 +116,7 @@ export function DateRangePicker({
           padding: 'var(--lucent-space-2) var(--lucent-space-3)',
           borderRadius: 'var(--lucent-radius-md)',
           border: `1px solid ${focused ? 'var(--lucent-accent-default)' : 'var(--lucent-border-default)'}`,
-          background: disabled ? 'var(--lucent-bg-muted)' : 'var(--lucent-surface-default)',
+          background: disabled ? 'var(--lucent-surface-secondary)' : 'var(--lucent-surface)',
           color: selected ? 'var(--lucent-text-primary)' : 'var(--lucent-text-secondary)',
           fontFamily: 'var(--lucent-font-family-base)',
           fontSize: 'var(--lucent-font-size-sm)',

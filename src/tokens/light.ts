@@ -14,14 +14,14 @@ export const lightTokens: LucentTokens = {
   ...motionTokens,
   ...lightShadowTokens,
 
-  // Backgrounds
+  // Backgrounds — page/layout layer only
   bgBase: '#ffffff',
   bgSubtle: '#f9fafb',
-  bgMuted: '#f3f4f6',
   bgOverlay: 'rgb(0 0 0 / 0.4)',
 
-  // Surfaces
-  surfaceDefault: '#ffffff',
+  // Surfaces — component elevation layer
+  surface: '#ffffff',
+  surfaceSecondary: '#f3f4f6',
   surfaceRaised: '#ffffff',
   surfaceOverlay: '#ffffff',
 

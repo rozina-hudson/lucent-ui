@@ -97,7 +97,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       // bumping up a bit to keep the box from feeling too sharp.
       borderRadius: '4px',
       border: `1.5px solid ${disabled ? 'transparent' : isChecked || indeterminate ? 'var(--lucent-accent-default)' : 'var(--lucent-border-strong)'}`,
-      background: disabled ? 'var(--lucent-bg-muted)' : isChecked || indeterminate ? 'var(--lucent-accent-default)' : 'var(--lucent-surface-default)',
+      background: disabled ? 'var(--lucent-surface-secondary)' : isChecked || indeterminate ? 'var(--lucent-accent-default)' : 'var(--lucent-surface)',
       display: 'inline-flex',
       alignItems: 'center',
       justifyContent: 'center',

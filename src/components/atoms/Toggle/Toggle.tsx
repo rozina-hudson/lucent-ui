@@ -96,7 +96,7 @@ export function Toggle({
             width: trackW,
             height: trackH,
             borderRadius: trackH / 2,
-            background: disabled ? 'var(--lucent-bg-muted)' : isChecked ? 'var(--lucent-accent-default)' : 'var(--lucent-border-strong)',
+            background: disabled ? 'var(--lucent-surface-secondary)' : isChecked ? 'var(--lucent-accent-default)' : 'var(--lucent-border-strong)',
             flexShrink: 0,
             transition: `background var(--lucent-duration-fast) var(--lucent-easing-default)`,
             animation: popKey > 0 ? `lucent-toggle-pop 240ms ${SPRING} forwards` : undefined,

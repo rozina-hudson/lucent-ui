@@ -37,21 +37,32 @@ export function deriveTokens(
   }
 
   // --- Backgrounds ---
-  // anchor: bgBase  variants: bgSubtle (step 1), bgMuted (step 2)
+  // anchor: bgBase  variant: bgSubtle (layout region tint)
   if ('bgBase' in overrides) {
     if (!('bgSubtle' in overrides))
       derived.bgSubtle = adjustLightness(merged.bgBase, isLight ? -0.02 : +0.02);
-    if (!('bgMuted' in overrides))
-      derived.bgMuted = adjustLightness(merged.bgBase, isLight ? -0.04 : +0.05);
+  }
+
+  // --- Surfaces ---
+  // anchor: surface  variants: surfaceSecondary (tinted fill), surfaceRaised (dropdowns/popovers), surfaceOverlay (modals)
+  // Light: elevation via shadow — secondary is slightly darker tint, raised/overlay stay the same color.
+  // Dark:  elevation via lightness — secondary is slightly lighter, raised/overlay are more elevated.
+  if ('surface' in overrides) {
+    if (!('surfaceSecondary' in overrides))
+      derived.surfaceSecondary = adjustLightness(merged.surface, isLight ? -0.04 : +0.03);
+    if (!('surfaceRaised' in overrides))
+      derived.surfaceRaised = adjustLightness(merged.surface, isLight ? 0 : +0.06);
+    if (!('surfaceOverlay' in overrides))
+      derived.surfaceOverlay = adjustLightness(merged.surface, isLight ? 0 : +0.06);
   }
 
   // --- Text ---
   // anchor: textPrimary  variants: textSecondary (muted), textDisabled (more muted)
   if ('textPrimary' in overrides) {
     if (!('textSecondary' in overrides))
-      derived.textSecondary = adjustLightness(merged.textPrimary, isLight ? +0.33 : -0.30);
+      derived.textSecondary = adjustLightness(merged.textPrimary, isLight ? +0.20 : -0.15);
     if (!('textDisabled' in overrides))
-      derived.textDisabled = adjustLightness(merged.textPrimary, isLight ? +0.52 : -0.63);
+      derived.textDisabled = adjustLightness(merged.textPrimary, isLight ? +0.35 : -0.40);
   }
 
   // --- Accent variants ---

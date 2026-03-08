@@ -134,7 +134,7 @@ export function SearchInput({
               style={{
                 padding: 'var(--lucent-space-2) var(--lucent-space-3)',
                 cursor: 'pointer',
-                background: hoveredIndex === idx ? 'var(--lucent-bg-subtle)' : 'transparent',
+                background: hoveredIndex === idx ? 'var(--lucent-surface-secondary)' : 'transparent',
                 transition: `background var(--lucent-duration-fast) var(--lucent-easing-default)`,
               }}
             >

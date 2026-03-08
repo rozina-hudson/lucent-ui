@@ -206,7 +206,7 @@ export function DataTable<T extends object>({
                       textAlign: col.align ?? 'left',
                       fontWeight: 'var(--lucent-font-weight-medium)',
                       color: 'var(--lucent-text-secondary)',
-                      background: 'var(--lucent-bg-subtle)',
+                      background: 'var(--lucent-surface-secondary)',
                       borderBottom: '1px solid var(--lucent-border-default)',
                       cursor: col.sortable ? 'pointer' : 'default',
                       userSelect: 'none',
@@ -246,8 +246,8 @@ export function DataTable<T extends object>({
                       ? '1px solid var(--lucent-border-subtle)'
                       : 'none',
                     background: hoveredRow === i
-                      ? 'var(--lucent-bg-subtle)'
-                      : 'var(--lucent-surface-default)',
+                      ? 'var(--lucent-surface-secondary)'
+                      : 'var(--lucent-surface)',
                     transition: 'background var(--lucent-duration-fast) var(--lucent-easing-default)',
                   }}
                 >
@@ -452,7 +452,7 @@ function FilterDropdown({
           padding: '0 var(--lucent-space-3)',
           borderRadius: 'var(--lucent-radius-md)',
           border: `1px solid ${isActive ? 'var(--lucent-accent-default)' : hovered ? 'var(--lucent-border-strong)' : 'var(--lucent-border-default)'}`,
-          background: isActive ? 'var(--lucent-accent-subtle)' : 'var(--lucent-surface-default)',
+          background: isActive ? 'var(--lucent-accent-subtle)' : 'var(--lucent-surface)',
           color: isActive ? 'var(--lucent-accent-default)' : 'var(--lucent-text-primary)',
           fontFamily: 'var(--lucent-font-family-base)',
           fontSize: 'var(--lucent-font-size-xs)',
@@ -482,7 +482,7 @@ function FilterDropdown({
           maxHeight: 280,
           display: 'flex',
           flexDirection: 'column',
-          background: 'var(--lucent-surface-default)',
+          background: 'var(--lucent-surface)',
           border: '1px solid var(--lucent-border-default)',
           borderRadius: 'var(--lucent-radius-lg)',
           boxShadow: '0 4px 16px color-mix(in srgb, var(--lucent-text-primary) 8%, transparent)',
@@ -503,7 +503,7 @@ function FilterDropdown({
                 padding: '0 var(--lucent-space-2)',
                 borderRadius: 'var(--lucent-radius-md)',
                 border: '1px solid var(--lucent-border-default)',
-                background: 'var(--lucent-bg-subtle)',
+                background: 'var(--lucent-surface-secondary)',
                 color: 'var(--lucent-text-primary)',
                 fontFamily: 'var(--lucent-font-family-base)',
                 fontSize: 'var(--lucent-font-size-xs)',
@@ -580,7 +580,7 @@ function DropdownOption({ label, isSelected, onClick }: { label: string; isSelec
         padding: 'var(--lucent-space-2) var(--lucent-space-3)',
         borderRadius: 'var(--lucent-radius-md)',
         border: 'none',
-        background: hovered ? 'var(--lucent-bg-subtle)' : 'transparent',
+        background: hovered ? 'var(--lucent-surface-secondary)' : 'transparent',
         color: 'var(--lucent-text-primary)',
         fontFamily: 'var(--lucent-font-family-base)',
         fontSize: 'var(--lucent-font-size-xs)',
@@ -650,7 +650,7 @@ function PaginationButton({
         background: active
           ? 'var(--lucent-accent-default)'
           : hovered && !disabled
-          ? 'var(--lucent-bg-muted)'
+          ? 'var(--lucent-surface-secondary)'
           : 'transparent',
         color: active
           ? 'var(--lucent-text-on-accent)'

@@ -87,7 +87,7 @@ export function LucentProvider({
 
   // Set the root font size once so all rem-based tokens resolve to the intended scale.
   // 13px base: fontSizeMd (1rem) = 13px, fontSizeSm (0.875rem) ≈ 11px, etc.
-  const css = 'html { font-size: 13px; }\n' + makeLibraryCSS(tokens, ':root');
+  const css = 'html { font-size: 14px; }\n' + makeLibraryCSS(tokens, ':root');
 
   // useLayoutEffect fires synchronously after DOM mutations, before browser paint —
   // so CSS variables are in <head> before any component renders visually.

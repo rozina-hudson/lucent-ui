@@ -65,7 +65,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               fontSize: 'var(--lucent-font-size-md)',
               fontFamily: 'var(--lucent-font-family-base)',
               color: isDisabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-primary)',
-              background: isDisabled ? 'var(--lucent-bg-muted)' : 'var(--lucent-surface-default)',
+              background: isDisabled ? 'var(--lucent-surface-secondary)' : 'var(--lucent-surface)',
               border: `1px solid ${isDisabled ? 'transparent' : hasError ? 'var(--lucent-danger-default)' : 'var(--lucent-border-default)'}`,
               cursor: isDisabled ? 'not-allowed' : undefined,
               borderRadius: 'var(--lucent-radius-lg)',

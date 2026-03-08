@@ -124,7 +124,7 @@ export function Radio({ value, label, size = 'md', disabled, id, onChange, check
     height: px,
     borderRadius: '50%',
     border: `1.5px solid ${isDisabled ? 'transparent' : isChecked ? 'var(--lucent-accent-default)' : 'var(--lucent-border-strong)'}`,
-    background: isDisabled ? 'var(--lucent-bg-muted)' : isChecked ? 'var(--lucent-accent-default)' : 'var(--lucent-surface-default)',
+    background: isDisabled ? 'var(--lucent-surface-secondary)' : isChecked ? 'var(--lucent-accent-default)' : 'var(--lucent-surface)',
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',

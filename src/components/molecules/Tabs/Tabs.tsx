@@ -104,7 +104,7 @@ export function Tabs({ tabs, defaultValue, value, onChange, style }: TabsProps) 
                 padding: 'var(--lucent-space-1) var(--lucent-space-3)',
                 borderRadius: 'var(--lucent-radius-md)',
                 background: hoveredIndex === i && !isActive
-                  ? 'var(--lucent-bg-subtle)'
+                  ? 'var(--lucent-surface-secondary)'
                   : 'transparent',
                 transition: 'background var(--lucent-duration-fast) var(--lucent-easing-default)',
               }}>

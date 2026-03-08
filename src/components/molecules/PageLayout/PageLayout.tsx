@@ -67,7 +67,7 @@ export function PageLayout({
             flexShrink: 0,
             height: headerH,
             zIndex: 10,
-            background: 'var(--lucent-surface-default)',
+            background: 'var(--lucent-surface)',
           }}
         >
           {header}
@@ -84,7 +84,7 @@ export function PageLayout({
               flexShrink: 0,
               overflow: 'hidden',
               overflowY: sidebarCollapsed ? 'hidden' : 'auto',
-              background: 'var(--lucent-surface-default)',
+              background: 'var(--lucent-surface)',
               transition: 'width 200ms var(--lucent-easing-default)',
             }}
           >
@@ -104,7 +104,7 @@ export function PageLayout({
             border: '1px solid var(--lucent-border-default)',
             borderRadius: 'var(--lucent-radius-lg)',
             boxShadow: 'var(--lucent-shadow-sm)',
-            background: 'var(--lucent-surface-default)',
+            background: 'var(--lucent-surface)',
             ...mainStyle,
           }}
         >
@@ -119,7 +119,7 @@ export function PageLayout({
               flexShrink: 0,
               overflow: 'hidden',
               overflowY: rightSidebarCollapsed ? 'hidden' : 'auto',
-              background: 'var(--lucent-surface-default)',
+              background: 'var(--lucent-surface)',
               transition: 'width 200ms var(--lucent-easing-default)',
             }}
           >
@@ -135,7 +135,7 @@ export function PageLayout({
             flexShrink: 0,
             height: footerH,
             zIndex: 10,
-            background: 'var(--lucent-surface-default)',
+            background: 'var(--lucent-surface)',
           }}
         >
           {footer}

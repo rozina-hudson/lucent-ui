@@ -65,7 +65,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
               fontSize: sizeFonts[size],
               fontFamily: 'var(--lucent-font-family-base)',
               color: 'var(--lucent-text-primary)',
-              background: 'var(--lucent-surface-default)',
+              background: 'var(--lucent-surface)',
               border: `1px solid ${hasError ? 'var(--lucent-danger-default)' : 'var(--lucent-border-default)'}`,
               borderRadius: 'var(--lucent-radius-lg)',
               outline: 'none',

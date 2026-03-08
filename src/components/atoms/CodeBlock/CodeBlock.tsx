@@ -97,7 +97,7 @@ export function CodeBlock({
       style={copyBtnStyle}
       onMouseEnter={e => {
         if (!copied) {
-          e.currentTarget.style.background = 'var(--lucent-bg-hover)';
+          e.currentTarget.style.background = 'var(--lucent-surface-secondary)';
           e.currentTarget.style.color = 'var(--lucent-text-primary)';
         }
       }}
@@ -128,7 +128,7 @@ export function CodeBlock({
           style={{
             display: 'flex',
             alignItems: 'flex-end',
-            background: 'var(--lucent-surface-default)',
+            background: 'var(--lucent-surface)',
             borderBottom: '1px solid var(--lucent-border-default)',
             padding: '0 var(--lucent-space-2)',
           }}
@@ -188,7 +188,7 @@ export function CodeBlock({
             justifyContent: currentLanguage ? 'space-between' : 'flex-end',
             padding: '0 var(--lucent-space-3)',
             height: 36,
-            background: 'var(--lucent-bg-muted)',
+            background: 'var(--lucent-surface-secondary)',
             borderBottom: '1px solid var(--lucent-border-default)',
           }}
         >
@@ -216,7 +216,7 @@ export function CodeBlock({
             fontSize: 'var(--lucent-font-size-xs)',
             color: 'var(--lucent-text-secondary)',
             fontFamily: 'var(--lucent-font-family-base)',
-            background: 'var(--lucent-bg-muted)',
+            background: 'var(--lucent-surface-secondary)',
             borderBottom: '1px solid var(--lucent-border-default)',
           }}
         >
@@ -232,7 +232,7 @@ export function CodeBlock({
               margin: 0,
               padding: 'var(--lucent-space-4)',
               paddingRight: hasTabs && showCopyButton ? 'var(--lucent-space-16)' : 'var(--lucent-space-4)',
-              background: 'var(--lucent-bg-muted)',
+              background: 'var(--lucent-surface-secondary)',
               overflowX: 'auto',
               lineHeight: 1.65,
             }}
@@ -261,7 +261,7 @@ export function CodeBlock({
             alignItems: 'center',
             gap: 'var(--lucent-space-3)',
             padding: 'var(--lucent-space-3) var(--lucent-space-4)',
-            background: 'var(--lucent-bg-muted)',
+            background: 'var(--lucent-surface-secondary)',
           }}
         >
           <span
