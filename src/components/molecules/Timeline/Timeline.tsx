@@ -30,7 +30,7 @@ const STATUS_COLOR: Record<TimelineItemStatus, string> = {
 };
 
 const STATUS_BG: Record<TimelineItemStatus, string> = {
-  default: 'var(--lucent-bg-muted)',
+  default: 'var(--lucent-surface-secondary)',
   success: 'var(--lucent-success-subtle)',
   warning: 'var(--lucent-warning-subtle)',
   danger: 'var(--lucent-danger-subtle)',

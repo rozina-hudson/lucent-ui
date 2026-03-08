@@ -35,7 +35,7 @@ function Tag({ label, onRemove, disabled }: { label: string; onRemove: () => voi
       gap: 4,
       padding: '2px 6px 2px 8px',
       borderRadius: 'var(--lucent-radius-full)',
-      background: 'var(--lucent-bg-muted)',
+      background: 'var(--lucent-surface-secondary)',
       border: '1px solid var(--lucent-border-default)',
       fontSize: 'var(--lucent-font-size-sm)',
       fontFamily: 'var(--lucent-font-family-base)',
@@ -173,7 +173,7 @@ export function MultiSelect({
           padding: 'var(--lucent-space-1) var(--lucent-space-3)',
           borderRadius: 'var(--lucent-radius-md)',
           border: `1px solid ${borderColor}`,
-          background: disabled ? 'var(--lucent-bg-muted)' : 'var(--lucent-surface-default)',
+          background: disabled ? 'var(--lucent-surface-secondary)' : 'var(--lucent-surface)',
           cursor: disabled ? 'not-allowed' : 'text',
           transition: 'border-color var(--lucent-duration-fast) var(--lucent-easing-default)',
           outline: focused ? `2px solid var(--lucent-focus-ring)` : 'none',
@@ -260,7 +260,7 @@ export function MultiSelect({
                     gap: 'var(--lucent-space-2)',
                     padding: 'var(--lucent-space-2) var(--lucent-space-3)',
                     cursor: isDisabled || wouldExceedMax ? 'not-allowed' : 'pointer',
-                    background: isActive ? 'var(--lucent-bg-subtle)' : 'transparent',
+                    background: isActive ? 'var(--lucent-surface-secondary)' : 'transparent',
                     opacity: isDisabled || wouldExceedMax ? 0.5 : 1,
                   }}
                 >

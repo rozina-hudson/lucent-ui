@@ -27,7 +27,7 @@ const variantStyles: Record<ButtonVariant, CSSProperties> = {
     border: '1px solid var(--lucent-accent-border)',
   },
   secondary: {
-    background: 'var(--lucent-surface-default)',
+    background: 'var(--lucent-surface)',
     color: 'var(--lucent-text-primary)',
     border: '1px solid var(--lucent-border-default)',
   },
@@ -79,7 +79,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           ...variantStyles[variant],
           ...style,
           ...(isDisabled && {
-            background: 'var(--lucent-bg-muted)',
+            background: 'var(--lucent-surface-secondary)',
             color: 'var(--lucent-text-disabled)',
             borderColor: 'transparent',
           }),
@@ -128,9 +128,9 @@ function applyHover(el: HTMLButtonElement, variant: ButtonVariant, bordered?: bo
     el.style.background = 'var(--lucent-accent-hover)';
     if (bordered !== false) el.style.borderColor = 'var(--lucent-accent-border)';
   } else if (variant === 'secondary') {
-    el.style.background = 'var(--lucent-bg-subtle)';
+    el.style.background = 'var(--lucent-surface-secondary)';
   } else if (variant === 'ghost') {
-    el.style.background = 'var(--lucent-bg-muted)';
+    el.style.background = 'var(--lucent-surface-secondary)';
   } else if (variant === 'danger') {
     el.style.background = 'var(--lucent-danger-hover)';
     if (bordered !== false) el.style.borderColor = 'var(--lucent-danger-hover)';
@@ -142,7 +142,7 @@ function removeHover(el: HTMLButtonElement, variant: ButtonVariant, bordered?: b
     el.style.background = 'var(--lucent-accent-default)';
     if (bordered !== false) el.style.borderColor = 'var(--lucent-accent-border)';
   } else if (variant === 'secondary') {
-    el.style.background = 'var(--lucent-surface-default)';
+    el.style.background = 'var(--lucent-surface)';
   } else if (variant === 'ghost') {
     el.style.background = 'transparent';
   } else if (variant === 'danger') {

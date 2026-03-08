@@ -65,7 +65,7 @@ function NavButton({ dir, onClick, disabled }: { dir: 'prev' | 'next'; onClick: 
         width: 28, height: 28,
         border: 'none',
         borderRadius: 'var(--lucent-radius-md)',
-        background: hovered && !disabled ? 'var(--lucent-bg-muted)' : 'transparent',
+        background: hovered && !disabled ? 'var(--lucent-surface-secondary)' : 'transparent',
         color: disabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-secondary)',
         cursor: disabled ? 'not-allowed' : 'pointer',
         transition: 'background var(--lucent-duration-fast)',
@@ -161,7 +161,7 @@ function Calendar({
                   : inRange
                   ? 'var(--lucent-accent-subtle)'
                   : hoveredDay === day && !isDisabled
-                  ? 'var(--lucent-bg-muted)'
+                  ? 'var(--lucent-surface-secondary)'
                   : 'transparent',
                 color: isSelected
                   ? 'var(--lucent-text-on-accent)'
@@ -247,7 +247,7 @@ export function DatePicker({
           padding: 'var(--lucent-space-2) var(--lucent-space-3)',
           borderRadius: 'var(--lucent-radius-md)',
           border: `1px solid ${focused ? 'var(--lucent-accent-default)' : 'var(--lucent-border-default)'}`,
-          background: disabled ? 'var(--lucent-bg-muted)' : 'var(--lucent-surface-default)',
+          background: disabled ? 'var(--lucent-surface-secondary)' : 'var(--lucent-surface)',
           color: selected ? 'var(--lucent-text-primary)' : 'var(--lucent-text-secondary)',
           fontFamily: 'var(--lucent-font-family-base)',
           fontSize: 'var(--lucent-font-size-sm)',

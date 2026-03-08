@@ -52,7 +52,7 @@ export function Card({
       style={{
         display: 'flex',
         flexDirection: 'column',
-        background: 'var(--lucent-surface-default)',
+        background: 'var(--lucent-surface)',
         border: '1px solid var(--lucent-border-default)',
         borderRadius,
         boxShadow: shadowMap[shadow],

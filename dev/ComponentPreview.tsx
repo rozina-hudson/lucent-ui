@@ -278,7 +278,7 @@ function Inner({
         width: 240,
         overflowY: 'auto',
         padding: tokens.space4,
-        background: tokens.surfaceDefault,
+        background: tokens.surface,
         borderLeft: `1px solid ${tokens.borderDefault}`,
         zIndex: 1000,
       }}>
@@ -294,7 +294,7 @@ function Inner({
                   padding: `${tokens.space1} ${tokens.space3}`,
                   border: `1px solid ${accent === p ? tokens.accentDefault : tokens.borderDefault}`,
                   borderRadius: tokens.radiusMd,
-                  background: accent === p ? tokens.accentDefault : tokens.surfaceDefault,
+                  background: accent === p ? tokens.accentDefault : tokens.surface,
                   color: accent === p ? tokens.textOnAccent : tokens.textPrimary,
                   fontFamily: tokens.fontFamilyBase,
                   fontSize: tokens.fontSizeSm,
@@ -1417,7 +1417,7 @@ function Inner({
 
 function Section({ title, tokens, children }: { title: string; tokens: ReturnType<typeof useLucent>['tokens']; children: React.ReactNode }) {
   return (
-    <div style={{ background: tokens.surfaceDefault, border: `1px solid ${tokens.borderDefault}`, borderRadius: tokens.radiusLg, padding: tokens.space6, marginBottom: tokens.space6 }}>
+    <div style={{ background: tokens.surface, border: `1px solid ${tokens.borderDefault}`, borderRadius: tokens.radiusLg, padding: tokens.space6, marginBottom: tokens.space6 }}>
       <h2 style={{ fontSize: tokens.fontSizeLg, fontWeight: tokens.fontWeightSemibold, marginBottom: tokens.space5, marginTop: 0 }}>{title}</h2>
       <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.space4 }}>{children}</div>
     </div>

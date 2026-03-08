@@ -57,7 +57,7 @@ export function NavLink({
         ...style,
       }}
       onMouseEnter={(e: React.MouseEvent<HTMLElement>) => {
-        if (!disabled && !isActive) e.currentTarget.style.background = 'var(--lucent-bg-muted)';
+        if (!disabled && !isActive) e.currentTarget.style.background = 'var(--lucent-surface-secondary)';
       }}
       onMouseLeave={(e: React.MouseEvent<HTMLElement>) => {
         if (!disabled && !isActive) e.currentTarget.style.background = 'transparent';

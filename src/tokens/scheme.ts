@@ -74,13 +74,13 @@ export function deriveDarkFromLight(light: LucentTokens): LucentTokens {
     // ── Backgrounds ─────────────────────────────────────────────────────────
     bgBase: darkBgBase,
     bgSubtle: bgStep(0.02),
-    bgMuted: bgStep(0.05),
     bgOverlay: 'rgb(0 0 0 / 0.6)',
 
     // ── Surfaces: slight elevation steps above bgBase ────────────────────────
-    surfaceDefault: bgStep(0.02),
-    surfaceRaised: bgStep(0.05),
-    surfaceOverlay: bgStep(0.05),
+    surface: bgStep(0.02),
+    surfaceSecondary: bgStep(0.05),
+    surfaceRaised: bgStep(0.08),
+    surfaceOverlay: bgStep(0.08),
 
     // ── Borders ──────────────────────────────────────────────────────────────
     borderDefault: toBorderDark(light.borderDefault),

@@ -221,7 +221,7 @@ export function CommandPalette({
             padding: '2px 6px',
             borderRadius: 'var(--lucent-radius-sm)',
             border: '1px solid var(--lucent-border-default)',
-            background: 'var(--lucent-bg-muted)',
+            background: 'var(--lucent-surface-secondary)',
             fontFamily: 'var(--lucent-font-family-mono)',
             fontSize: 'var(--lucent-font-size-xs)',
             color: 'var(--lucent-text-secondary)',
@@ -277,7 +277,7 @@ export function CommandPalette({
                         gap: 'var(--lucent-space-3)',
                         padding: 'var(--lucent-space-2) var(--lucent-space-4)',
                         cursor: isDisabled ? 'not-allowed' : 'pointer',
-                        background: isActive ? 'var(--lucent-bg-muted)' : 'transparent',
+                        background: isActive ? 'var(--lucent-surface-secondary)' : 'transparent',
                         transition: 'background var(--lucent-duration-fast) var(--lucent-easing-default)',
                         opacity: isDisabled ? 0.5 : 1,
                       }}
@@ -307,7 +307,7 @@ export function CommandPalette({
           gap: 'var(--lucent-space-4)',
           padding: 'var(--lucent-space-2) var(--lucent-space-4)',
           borderTop: '1px solid var(--lucent-border-subtle)',
-          background: 'var(--lucent-bg-subtle)',
+          background: 'var(--lucent-surface-secondary)',
         }}>
           {[
             ['↑↓', 'Navigate'],
@@ -319,7 +319,7 @@ export function CommandPalette({
                 padding: '1px 5px',
                 borderRadius: 'var(--lucent-radius-sm)',
                 border: '1px solid var(--lucent-border-default)',
-                background: 'var(--lucent-surface-default)',
+                background: 'var(--lucent-surface)',
                 fontFamily: 'var(--lucent-font-family-mono)',
                 fontSize: 'var(--lucent-font-size-xs)',
                 color: 'var(--lucent-text-secondary)',

@@ -45,8 +45,8 @@ function SkeletonBlock({
         height: typeof height === 'number' ? `${height}px` : height,
         borderRadius: radius,
         background: animate
-          ? 'linear-gradient(90deg, var(--lucent-bg-muted) 25%, var(--lucent-bg-subtle) 50%, var(--lucent-bg-muted) 75%)'
-          : 'var(--lucent-bg-muted)',
+          ? 'linear-gradient(90deg, var(--lucent-surface-secondary) 25%, var(--lucent-surface) 50%, var(--lucent-surface-secondary) 75%)'
+          : 'var(--lucent-surface-secondary)',
         backgroundSize: animate ? '200% 100%' : undefined,
         animation: animate ? 'lucent-skeleton-shimmer 1.6s ease-in-out infinite' : undefined,
         flexShrink: 0,

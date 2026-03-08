@@ -61,7 +61,7 @@ function FileRow({
       padding: 'var(--lucent-space-2) var(--lucent-space-3)',
       borderRadius: 'var(--lucent-radius-md)',
       border: `1px solid ${hasError ? 'var(--lucent-danger-default)' : 'var(--lucent-border-default)'}`,
-      background: 'var(--lucent-surface-default)',
+      background: 'var(--lucent-surface)',
     }}>
       {/* File icon */}
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden style={{ flexShrink: 0, color: 'var(--lucent-text-secondary)' }}>
@@ -82,7 +82,7 @@ function FileRow({
             marginTop: 4,
             height: 3,
             borderRadius: 'var(--lucent-radius-full)',
-            background: 'var(--lucent-bg-muted)',
+            background: 'var(--lucent-surface-secondary)',
             overflow: 'hidden',
           }}>
             <div style={{
@@ -109,7 +109,7 @@ function FileRow({
           width: 24, height: 24,
           border: 'none',
           borderRadius: 'var(--lucent-radius-md)',
-          background: removeHovered ? 'var(--lucent-bg-muted)' : 'transparent',
+          background: removeHovered ? 'var(--lucent-surface-secondary)' : 'transparent',
           color: 'var(--lucent-text-secondary)',
           cursor: 'pointer',
           transition: 'background var(--lucent-duration-fast)',
@@ -211,7 +211,7 @@ export function FileUpload({
           }`,
           background: dragging
             ? 'var(--lucent-accent-subtle)'
-            : 'var(--lucent-bg-subtle)',
+            : 'var(--lucent-surface-secondary)',
           cursor: disabled ? 'not-allowed' : 'pointer',
           transition: 'border-color var(--lucent-duration-fast), background var(--lucent-duration-fast)',
           outline: 'none',

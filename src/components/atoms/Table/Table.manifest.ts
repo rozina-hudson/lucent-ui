@@ -24,13 +24,13 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
       type: 'boolean',
       required: false,
       default: 'false',
-      description: 'Applies alternating bgMuted backgrounds to even tbody rows.',
+      description: 'Applies alternating surfaceSecondary backgrounds to even tbody rows.',
     },
     {
       name: 'Table.Head',
       type: 'component',
       required: false,
-      description: 'Renders <thead> with bgMuted background. Accepts Table.Row children.',
+      description: 'Renders <thead> with surfaceSecondary background. Accepts Table.Row children.',
     },
     {
       name: 'Table.Body',
@@ -42,7 +42,7 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
       name: 'Table.Foot',
       type: 'component',
       required: false,
-      description: 'Renders <tfoot> with bgMuted background.',
+      description: 'Renders <tfoot> with surfaceSecondary background.',
     },
     {
       name: 'Table.Row',
