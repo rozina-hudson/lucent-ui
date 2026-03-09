@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useId, useCallback, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect, useId, useCallback, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react';
 import { SegmentedControl } from '../SegmentedControl/SegmentedControl.js';
 import { Select } from '../Select/Select.js';
 import { Input } from '../Input/Input.js';
@@ -283,6 +283,15 @@ export function ColorPicker({
 
   const containerRef = useRef<HTMLDivElement>(null);
   const spectrumRef = useRef<HTMLDivElement>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
+  const [alignRight, setAlignRight] = useState(false);
+
+  // Flip popover to right-align if it would overflow the viewport
+  useLayoutEffect(() => {
+    if (!isOpen || !popoverRef.current) return;
+    const rect = popoverRef.current.getBoundingClientRect();
+    setAlignRight(rect.right > window.innerWidth);
+  }, [isOpen]);
 
   useEffect(() => {
     if (!value) return;
@@ -392,12 +401,13 @@ export function ColorPicker({
       {/* Popover */}
       {isOpen && (
         <div
+          ref={popoverRef}
           role="dialog"
           aria-label="Color picker"
           style={{
             position: 'absolute',
             top: 'calc(100% + 8px)',
-            left: 0,
+            ...(alignRight ? { right: 0 } : { left: 0 }),
             zIndex: 1000,
             background: 'var(--lucent-surface)',
             border: '1px solid var(--lucent-border-default)',
