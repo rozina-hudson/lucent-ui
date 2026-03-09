@@ -17,3 +17,6 @@ export * from './NavLink/index.js';
 export * from './Slider/index.js';
 export * from './CodeBlock/index.js';
 export * from './Table/index.js';
+export * from './ColorPicker/index.js';
+export * from './ColorSwatch/index.js';
+export * from './SegmentedControl/index.js';

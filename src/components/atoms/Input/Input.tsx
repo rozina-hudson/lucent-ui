@@ -1,4 +1,4 @@
-import { forwardRef, type InputHTMLAttributes, type ReactNode } from 'react';
+import { forwardRef, useState, type InputHTMLAttributes, type ReactNode } from 'react';
 
 export type InputType =
   | 'text'
@@ -10,112 +10,204 @@ export type InputType =
   | 'search'
   | 'color';
 
-export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
+export type InputSize = 'sm' | 'md' | 'lg';
+
+export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'prefix'> {
   type?: InputType;
+  size?: InputSize;
   label?: string;
   helperText?: string;
   errorText?: string;
+  /** Icon/element floated inside the left edge — does not resize the field */
   leftElement?: ReactNode;
+  /** Icon/element floated inside the right edge — does not resize the field */
   rightElement?: ReactNode;
+  /** Inset label attached to the left of the field (e.g. "$", "https://") */
+  prefix?: ReactNode;
+  /** Inset label attached to the right of the field (e.g. "kg", ".com") */
+  suffix?: ReactNode;
 }
 
+const sizeH:    Record<InputSize, string> = { sm: '32px', md: '40px', lg: '46px' };
+const sizeFont: Record<InputSize, string> = {
+  sm: 'var(--lucent-font-size-sm)',
+  md: 'var(--lucent-font-size-md)',
+  lg: 'var(--lucent-font-size-md)',
+};
+const sizePx:   Record<InputSize, string> = {
+  sm: 'var(--lucent-space-2)',
+  md: 'var(--lucent-space-3)',
+  lg: 'var(--lucent-space-3)',
+};
+// Left padding when an icon is present (icon width ≈ 16px + gap)
+const sizeIconPad: Record<InputSize, string> = {
+  sm: '28px',
+  md: 'var(--lucent-space-10)',
+  lg: 'var(--lucent-space-10)',
+};
+
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, helperText, errorText, leftElement, rightElement, id, style, ...rest }, ref) => {
+  (
+    {
+      size = 'md',
+      label,
+      helperText,
+      errorText,
+      leftElement,
+      rightElement,
+      prefix,
+      suffix,
+      id,
+      style,
+      ...rest
+    },
+    ref,
+  ) => {
     const inputId = id ?? `lucent-input-${Math.random().toString(36).slice(2, 7)}`;
-    const hasError = Boolean(errorText);
+    const hasError  = Boolean(errorText);
     const isDisabled = Boolean(rest.disabled);
 
+    const [isFocused, setIsFocused] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
+
+    const borderColor = isDisabled
+      ? 'transparent'
+      : hasError
+        ? 'var(--lucent-danger-default)'
+        : isFocused
+          ? 'var(--lucent-focus-ring)'
+          : isHovered
+            ? 'var(--lucent-border-strong)'
+            : 'var(--lucent-border-default)';
+
+    const boxShadow = isFocused
+      ? `0 0 0 3px ${hasError ? 'var(--lucent-danger-subtle)' : 'var(--lucent-accent-subtle)'}`
+      : 'none';
+
+    const addonBase = {
+      display: 'flex',
+      alignItems: 'center',
+      color: isDisabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-secondary)',
+      fontSize: sizeFont[size],
+      fontFamily: 'var(--lucent-font-family-base)',
+      whiteSpace: 'nowrap' as const,
+      userSelect: 'none' as const,
+      flexShrink: 0,
+    };
+    const prefixStyle = { ...addonBase, paddingLeft: sizePx[size], paddingRight: '2px' };
+    const suffixStyle = { ...addonBase, paddingLeft: '2px', paddingRight: sizePx[size] };
+
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--lucent-space-1)', width: '100%' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--lucent-space-1)', width: '100%', ...style }}>
         {label && (
           <label
             htmlFor={inputId}
             style={{
               fontSize: 'var(--lucent-font-size-sm)',
               fontWeight: 'var(--lucent-font-weight-medium)',
-              color: 'var(--lucent-text-primary)',
+              color: isDisabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-primary)',
               fontFamily: 'var(--lucent-font-family-base)',
             }}
           >
             {label}
           </label>
         )}
-        <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-          {leftElement && (
-            <span style={{
-              position: 'absolute', left: 'var(--lucent-space-3)',
-              color: isDisabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-secondary)',
-              display: 'flex', alignItems: 'center',
-              pointerEvents: 'none',
-            }}>
-              {leftElement}
+
+        {/* Field wrapper — owns the border, focus ring, and overflow clip */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'stretch',
+            height: sizeH[size],
+            border: `1px solid ${borderColor}`,
+            borderRadius: 'var(--lucent-radius-lg)',
+            boxShadow,
+            background: isDisabled ? 'var(--lucent-surface-secondary)' : 'var(--lucent-surface)',
+            overflow: 'hidden',
+            cursor: isDisabled ? 'not-allowed' : undefined,
+            transition: [
+              `border-color var(--lucent-duration-fast) var(--lucent-easing-default)`,
+              `box-shadow var(--lucent-duration-fast) var(--lucent-easing-default)`,
+            ].join(', '),
+          }}
+          onMouseEnter={() => { if (!isDisabled) setIsHovered(true); }}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          {/* Prefix addon */}
+          {prefix && (
+            <span style={prefixStyle}>
+              {prefix}
             </span>
           )}
-          <input
-            ref={ref}
-            id={inputId}
-            aria-invalid={hasError}
-            aria-describedby={
-              hasError ? `${inputId}-error` : helperText ? `${inputId}-helper` : undefined
-            }
-            style={{
-              width: '100%',
-              height: '40px',
-              padding: `0 ${rightElement ? 'var(--lucent-space-10)' : 'var(--lucent-space-3)'} 0 ${leftElement ? 'var(--lucent-space-10)' : 'var(--lucent-space-3)'}`,
-              fontSize: 'var(--lucent-font-size-md)',
-              fontFamily: 'var(--lucent-font-family-base)',
-              color: isDisabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-primary)',
-              background: isDisabled ? 'var(--lucent-surface-secondary)' : 'var(--lucent-surface)',
-              border: `1px solid ${isDisabled ? 'transparent' : hasError ? 'var(--lucent-danger-default)' : 'var(--lucent-border-default)'}`,
-              cursor: isDisabled ? 'not-allowed' : undefined,
-              borderRadius: 'var(--lucent-radius-lg)',
-              outline: 'none',
-              boxSizing: 'border-box',
-              transition: `border-color var(--lucent-duration-fast) var(--lucent-easing-default)`,
-              ...style,
-            }}
-            onMouseEnter={(e) => {
-              if (!rest.disabled && e.currentTarget !== document.activeElement) {
-                e.currentTarget.style.borderColor = hasError
-                  ? 'var(--lucent-danger-default)'
-                  : 'var(--lucent-border-strong)';
+
+          {/* Icon + input layer */}
+          <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center', minWidth: 0 }}>
+            {leftElement && (
+              <span style={{
+                position: 'absolute',
+                left: sizePx[size],
+                color: isDisabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-secondary)',
+                display: 'flex',
+                alignItems: 'center',
+                pointerEvents: 'none',
+              }}>
+                {leftElement}
+              </span>
+            )}
+
+            <input
+              ref={ref}
+              id={inputId}
+              aria-invalid={hasError}
+              aria-describedby={
+                hasError ? `${inputId}-error` : helperText ? `${inputId}-helper` : undefined
               }
-              rest.onMouseEnter?.(e);
-            }}
-            onMouseLeave={(e) => {
-              if (!rest.disabled && e.currentTarget !== document.activeElement) {
-                e.currentTarget.style.borderColor = hasError
-                  ? 'var(--lucent-danger-default)'
-                  : 'var(--lucent-border-default)';
-              }
-              rest.onMouseLeave?.(e);
-            }}
-            onFocus={(e) => {
-              e.currentTarget.style.borderColor = hasError
-                ? 'var(--lucent-danger-default)'
-                : 'var(--lucent-focus-ring)';
-              e.currentTarget.style.boxShadow = `0 0 0 3px ${hasError ? 'var(--lucent-danger-subtle)' : 'var(--lucent-accent-subtle)'}`;
-              rest.onFocus?.(e);
-            }}
-            onBlur={(e) => {
-              e.currentTarget.style.borderColor = hasError
-                ? 'var(--lucent-danger-default)'
-                : 'var(--lucent-border-default)';
-              e.currentTarget.style.boxShadow = 'none';
-              rest.onBlur?.(e);
-            }}
-            {...rest}
-          />
-          {rightElement && (
-            <span style={{
-              position: 'absolute', right: 'var(--lucent-space-3)',
-              color: isDisabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-secondary)',
-              display: 'flex', alignItems: 'center',
-            }}>
-              {rightElement}
+              style={{
+                width: '100%',
+                height: '100%',
+                paddingLeft:  leftElement  ? sizeIconPad[size] : sizePx[size],
+                paddingRight: rightElement ? sizeIconPad[size] : sizePx[size],
+                fontSize: sizeFont[size],
+                fontFamily: 'var(--lucent-font-family-base)',
+                color: isDisabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-primary)',
+                background: 'transparent',
+                border: 'none',
+                outline: 'none',
+                cursor: isDisabled ? 'not-allowed' : undefined,
+                boxSizing: 'border-box',
+              }}
+              onFocus={(e) => {
+                setIsFocused(true);
+                rest.onFocus?.(e);
+              }}
+              onBlur={(e) => {
+                setIsFocused(false);
+                rest.onBlur?.(e);
+              }}
+              {...rest}
+            />
+
+            {rightElement && (
+              <span style={{
+                position: 'absolute',
+                right: sizePx[size],
+                color: isDisabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-secondary)',
+                display: 'flex',
+                alignItems: 'center',
+              }}>
+                {rightElement}
+              </span>
+            )}
+          </div>
+
+          {/* Suffix addon */}
+          {suffix && (
+            <span style={suffixStyle}>
+              {suffix}
             </span>
           )}
         </div>
+
         {hasError && (
           <span
             id={`${inputId}-error`}
