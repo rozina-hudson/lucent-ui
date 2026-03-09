@@ -1,3 +1,4 @@
+import { createContext, useContext } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 
 export type CardPadding = 'none' | 'sm' | 'md' | 'lg';
@@ -13,6 +14,13 @@ export interface CardProps {
   radius?: CardRadius;
   style?: CSSProperties;
 }
+
+export interface CardBleedProps {
+  children: ReactNode;
+  style?: CSSProperties;
+}
+
+const CardPaddingContext = createContext<string>('0');
 
 const paddingMap: Record<CardPadding, string> = {
   none: '0',
@@ -71,9 +79,11 @@ export function Card({
           {header}
         </div>
       )}
-      <div style={{ padding: p, flex: 1 }}>
-        {children}
-      </div>
+      <CardPaddingContext.Provider value={p}>
+        <div style={{ padding: p, flex: 1 }}>
+          {children}
+        </div>
+      </CardPaddingContext.Provider>
       {footer != null && (
         <div
           style={{
@@ -84,6 +94,24 @@ export function Card({
           {footer}
         </div>
       )}
+    </div>
+  );
+}
+
+export function CardBleed({ children, style }: CardBleedProps) {
+  const p = useContext(CardPaddingContext);
+
+  return (
+    <div
+      style={{
+        marginLeft: `calc(-1 * ${p})`,
+        marginRight: `calc(-1 * ${p})`,
+        paddingLeft: p,
+        paddingRight: p,
+        ...style,
+      }}
+    >
+      {children}
     </div>
   );
 }
