@@ -37,6 +37,9 @@ import { DatePicker } from '../src/components/molecules/DatePicker/index.js';
 import { DateRangePicker } from '../src/components/molecules/DateRangePicker/index.js';
 import { FileUpload } from '../src/components/molecules/FileUpload/index.js';
 import { Timeline } from '../src/components/molecules/Timeline/index.js';
+import { ColorPicker, type ColorPresetGroup } from '../src/components/atoms/ColorPicker/index.js';
+import { ColorSwatch } from '../src/components/atoms/ColorSwatch/index.js';
+import { SegmentedControl } from '../src/components/atoms/SegmentedControl/index.js';
 import type { LucentTokens, Theme, ThemeAnchors, UploadFile } from '../src/index.js';
 
 type AccentPreset = 'default' | 'gold' | 'indigo';
@@ -66,6 +69,18 @@ const accentLabel: Record<AccentPreset, string> = {
   gold: 'Gold (brandTokens)',
   indigo: 'Indigo',
 };
+
+function ColorPickerDemo({ presetGroups }: { presetGroups?: ColorPresetGroup[] }) {
+  const [color, setColor] = useState('#3b82f6');
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--lucent-space-4)' }}>
+      <ColorPicker value={color} onChange={setColor} label="Color" {...(presetGroups !== undefined && { presetGroups })} />
+      <span style={{ fontSize: 'var(--lucent-font-size-sm)', fontFamily: 'var(--lucent-font-family-mono)', color: 'var(--lucent-text-secondary)' }}>
+        {color}
+      </span>
+    </div>
+  );
+}
 
 function NavIcon() {
   return (
@@ -558,6 +573,65 @@ function Inner({
         </Row>
       </Section>
 
+      {/* Input */}
+      <Section title="Input" tokens={tokens}>
+        <Row label="Sizes" tokens={tokens}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: 280 }}>
+            <Input size="sm" placeholder="Small" />
+            <Input size="md" placeholder="Medium (default)" />
+            <Input size="lg" placeholder="Large" />
+          </div>
+        </Row>
+        <Row label="Label + helper" tokens={tokens}>
+          <div style={{ width: 280 }}>
+            <Input label="Email" type="email" placeholder="you@example.com" helperText="We'll never share your email." value={inputVal} onChange={e => setInputVal(e.target.value)} />
+          </div>
+        </Row>
+        <Row label="Icons" tokens={tokens}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: 280 }}>
+            <Input leftElement={<svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>} placeholder="Search…" />
+            <Input rightElement={<svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>} type="password" placeholder="Password" />
+          </div>
+        </Row>
+        <Row label="Prefix / suffix" tokens={tokens}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: 280 }}>
+            <Input prefix="$" suffix="USD" placeholder="0.00" />
+            <Input prefix="https://" suffix=".com" placeholder="yourdomain" />
+            <Input suffix="kg" placeholder="Weight" />
+          </div>
+        </Row>
+        <Row label="Error state" tokens={tokens}>
+          <div style={{ width: 280 }}>
+            <Input label="Password" type="password" errorText="Must be at least 8 characters" defaultValue="short" />
+          </div>
+        </Row>
+        <Row label="Disabled" tokens={tokens}>
+          <div style={{ width: 280 }}>
+            <Input label="Username" disabled defaultValue="locked_user" />
+          </div>
+        </Row>
+      </Section>
+
+      {/* Textarea */}
+      <Section title="Textarea" tokens={tokens}>
+        <Row label="Auto-resize" tokens={tokens}>
+          <div style={{ width: 320 }}>
+            <Textarea label="Bio" autoResize placeholder="Tell us about yourself…" value={textareaVal} onChange={e => setTextareaVal(e.target.value)} />
+          </div>
+        </Row>
+        <Row label="With count" tokens={tokens}>
+          <div style={{ width: 320 }}>
+            <Textarea label="Tweet" maxLength={280} showCount value={textareaVal} onChange={e => setTextareaVal(e.target.value)} />
+          </div>
+        </Row>
+        <Row label="Error + disabled" tokens={tokens}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: 320 }}>
+            <Textarea label="Notes" errorText="This field is required" />
+            <Textarea label="Archived" disabled defaultValue="Read-only content here." />
+          </div>
+        </Row>
+      </Section>
+
       {/* FormField */}
       <Section title="FormField" tokens={tokens}>
         <Row label="Basic" tokens={tokens}>
@@ -920,6 +994,85 @@ function Inner({
         </Row>
       </Section>
 
+      {/* ColorSwatch */}
+      <Section title="ColorSwatch" tokens={tokens}>
+        <Row label="Circle sizes" tokens={tokens}>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            {(['xs', 'sm', 'md', 'lg', 'xl', '2xl'] as const).map(s => (
+              <ColorSwatch key={s} color="#3b82f6" size={s} shape="circle" />
+            ))}
+          </div>
+        </Row>
+        <Row label="Square sizes" tokens={tokens}>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            {(['xs', 'sm', 'md', 'lg', 'xl', '2xl'] as const).map(s => (
+              <ColorSwatch key={s} color="#8b5cf6" size={s} shape="square" />
+            ))}
+          </div>
+        </Row>
+        <Row label="Selected" tokens={tokens}>
+          <div style={{ display: 'flex', gap: 8 }}>
+            {['#ef4444', '#f97316', '#22c55e', '#3b82f6', '#8b5cf6'].map((c, i) => (
+              <ColorSwatch key={c} color={c} selected={i === 3} onClick={() => {}} />
+            ))}
+          </div>
+        </Row>
+        <Row label="Disabled" tokens={tokens}>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <ColorSwatch color="#3b82f6" disabled />
+            <ColorSwatch color="#22c55e" disabled selected />
+          </div>
+        </Row>
+      </Section>
+
+      {/* ColorPicker */}
+      <Section title="ColorPicker" tokens={tokens}>
+        <Row label="Default" tokens={tokens}>
+          <ColorPickerDemo />
+        </Row>
+        <Row label="Multiple groups" tokens={tokens}>
+          <ColorPickerDemo presetGroups={[
+            { label: 'Brand', colors: ['#111827', '#3b82f6', '#8b5cf6', '#ec4899'] },
+            { label: 'Semantic', colors: ['#22c55e', '#f59e0b', '#ef4444', '#0ea5e9'] },
+          ]} />
+        </Row>
+        <Row label="No presets" tokens={tokens}>
+          <ColorPickerDemo presetGroups={[]} />
+        </Row>
+        <Row label="Disabled" tokens={tokens}>
+          <ColorPicker value="#6b7280" disabled label="Theme color" />
+        </Row>
+      </Section>
+
+      {/* SegmentedControl */}
+      <Section title="SegmentedControl" tokens={tokens}>
+        <Row label="Sizes" tokens={tokens}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: 320 }}>
+            <SegmentedControl size="sm" defaultValue="grid" options={[{ value: 'grid', label: 'Grid' }, { value: 'list', label: 'List' }, { value: 'table', label: 'Table' }]} />
+            <SegmentedControl size="md" defaultValue="grid" options={[{ value: 'grid', label: 'Grid' }, { value: 'list', label: 'List' }, { value: 'table', label: 'Table' }]} />
+            <SegmentedControl size="lg" defaultValue="grid" options={[{ value: 'grid', label: 'Grid' }, { value: 'list', label: 'List' }, { value: 'table', label: 'Table' }]} />
+          </div>
+        </Row>
+        <Row label="4 options" tokens={tokens}>
+          <div style={{ width: 320 }}>
+            <SegmentedControl defaultValue="day" options={[{ value: 'day', label: 'Day' }, { value: 'week', label: 'Week' }, { value: 'month', label: 'Month' }, { value: 'year', label: 'Year' }]} />
+          </div>
+        </Row>
+        <Row label="Inline (fit-content)" tokens={tokens}>
+          <SegmentedControl fullWidth={false} defaultValue="a" options={[{ value: 'a', label: 'Alpha' }, { value: 'b', label: 'Beta' }, { value: 'c', label: 'Gamma' }]} />
+        </Row>
+        <Row label="Disabled option" tokens={tokens}>
+          <div style={{ width: 280 }}>
+            <SegmentedControl defaultValue="a" options={[{ value: 'a', label: 'Active' }, { value: 'b', label: 'Disabled', disabled: true }, { value: 'c', label: 'Normal' }]} />
+          </div>
+        </Row>
+        <Row label="All disabled" tokens={tokens}>
+          <div style={{ width: 280 }}>
+            <SegmentedControl disabled defaultValue="hex" options={[{ value: 'hex', label: 'Hex' }, { value: 'rgb', label: 'RGB' }, { value: 'hsl', label: 'HSL' }]} />
+          </div>
+        </Row>
+      </Section>
+
       {/* Select */}
       <Section title="Select" tokens={tokens}>
         <Row label="Default" tokens={tokens}>
@@ -1065,38 +1218,6 @@ function Inner({
       </Section>
 
       {/* Input */}
-      <Section title="Input" tokens={tokens}>
-        <Row label="Default" tokens={tokens}>
-          <div style={{ width: 280 }}>
-            <Input label="Email" type="email" placeholder="you@example.com" value={inputVal} onChange={e => setInputVal(e.target.value)} />
-          </div>
-        </Row>
-        <Row label="With helper" tokens={tokens}>
-          <div style={{ width: 280 }}>
-            <Input label="Username" helperText="3–20 characters" placeholder="yourname" />
-          </div>
-        </Row>
-        <Row label="Error state" tokens={tokens}>
-          <div style={{ width: 280 }}>
-            <Input label="Password" type="password" errorText="Must be at least 8 characters" defaultValue="short" />
-          </div>
-        </Row>
-      </Section>
-
-      {/* Textarea */}
-      <Section title="Textarea" tokens={tokens}>
-        <Row label="Auto-resize" tokens={tokens}>
-          <div style={{ width: 320 }}>
-            <Textarea label="Bio" autoResize placeholder="Tell us about yourself…" value={textareaVal} onChange={e => setTextareaVal(e.target.value)} />
-          </div>
-        </Row>
-        <Row label="With count" tokens={tokens}>
-          <div style={{ width: 320 }}>
-            <Textarea label="Tweet" maxLength={280} showCount value={textareaVal} onChange={e => setTextareaVal(e.target.value)} />
-          </div>
-        </Row>
-      </Section>
-
       {/* Badge */}
       <Section title="Badge" tokens={tokens}>
         <Row label="Variants" tokens={tokens}>
