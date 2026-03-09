@@ -29,7 +29,8 @@
     "build": "vite build",
     "build:server": "tsc -p server/tsconfig.json",
     "build:cli": "tsc -p cli/tsconfig.json && cp cli/template.manifest.json dist-cli/cli/template.manifest.json",
-    "test": "echo \"No tests yet\" && exit 0",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "prepublishOnly": "tsc --noEmit && pnpm build && pnpm build:server && pnpm build:cli",
     "changeset": "changeset",
     "version-packages": "changeset version",
@@ -60,11 +61,13 @@
     "@types/react": "^18.3.28",
     "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "^4.7.0",
+    "@vitest/ui": "^4.0.18",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "typescript": "^5.9.3",
     "vite": "^6.4.1",
-    "vite-plugin-dts": "^4.5.4"
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^4.0.18"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.1",
