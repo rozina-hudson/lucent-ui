@@ -1,0 +1,63 @@
+queries:
+  - "cursor \"design system\""
+  - "cursor MCP"
+  - "model context protocol devtools"
+  - "design system AI"
+  - "shadcn cursor"
+  - "component library AI"
+  - "storybook cursor"
+  - "vibe coding design system"
+
+product:
+  name: Lucent UI
+  tagline: AI-first React component library
+  differentiator: >
+    Every component ships with a COMPONENT_MANIFEST — a machine-readable
+    spec that AI coding tools (Cursor, Copilot, Claude) read at import time.
+    Define it once, every AI tool reads it natively. Like OpenAPI but for UI components.
+  url: lucentui.com
+  key_concept: COMPONENT_MANIFEST
+
+voice:
+  tone: Technical peer, not marketer. Lead with insight, not product.
+  rules:
+    - Never open with the product name
+    - Lead with a genuine technical observation
+    - Only mention Lucent UI if it's the natural next sentence
+    - One out of three comments should have no product mention at all
+    - Phrase "hallucinated variants" resonates with the audience
+    - Phrase "like OpenAPI but for UI" is strong positioning
+
+engagement_levels:
+  additive: >
+    Purely technical observation, no product mention.
+    Use when the thread is adjacent but not directly on-point.
+  forward: >
+    Technical observation that hints at the problem space.
+    Mention "we" or "we've been building" without naming the product.
+    Use when the thread is directly relevant.
+  direct: >
+    Name COMPONENT_MANIFEST and lucentui.com explicitly.
+    Use when the person has already articulated the exact pain point
+    or when they're comparing solutions.
+
+competitors:
+  - name: shadcn/ui
+    note: No manifest, no AI context layer. Not a direct competitor but often confused.
+  - name: Storybook MCP
+    note: >
+      Closest adjacent tool. Key difference: Storybook is a human doc layer,
+      COMPONENT_MANIFEST ships with the component at import time.
+      Engage on Storybook threads — differentiation is clear and technical.
+  - name: RantirSystem
+    note: Direct competitor. Structured component library for AI. Research before engaging.
+  - name: FlyonUI MCP
+    note: Skip. Tailwind component tool, different audience.
+
+skip_rules:
+  - Decorative asset packs or design resources
+  - Taste vs craft debates
+  - Image generation / creative AI tools
+  - Generic "AI is changing everything" takes
+  - Posts by direct competitors (don't amplify them)
+  - Anything where Lucent UI angle would feel forced

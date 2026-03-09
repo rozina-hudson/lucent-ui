@@ -99,6 +99,19 @@
           />
           <button class="footer-submit" id="footer-submit">Join waitlist</button>
         </div>
+
+        <!-- Turnstile widget -->
+        <div id="footer-turnstile-wrap">
+          <div
+            class="cf-turnstile"
+            data-sitekey="0x4AAAAAACl3dxrYdL-dCqgj"
+            data-callback="onFooterTurnstileSuccess"
+            data-expired-callback="onFooterTurnstileExpired"
+            data-appearance="interaction-only"
+            style="margin-bottom: 4px;">
+          </div>
+        </div>
+
         <p class="footer-form-note" id="footer-form-note">Early access · No spam · Unsubscribe anytime</p>
         <p class="footer-success" id="footer-success">✦ &nbsp; You're on the list</p>
 
@@ -354,8 +367,13 @@
     });
   });
 
-  // Footer email form (same logic as hero, separate DOM IDs)
+  // Footer Turnstile callbacks
   let _footerToken: string | null = null;
+  (window as any).onFooterTurnstileSuccess = (token: string) => { _footerToken = token; };
+  (window as any).onFooterTurnstileExpired = () => {
+    _footerToken = null;
+    if (typeof (window as any).turnstile !== 'undefined') (window as any).turnstile.reset();
+  };
 
   const footerBtn = document.getElementById('footer-submit') as HTMLButtonElement;
   footerBtn?.addEventListener('click', handleFooterSubmit);
@@ -389,6 +407,8 @@
 
       if (res.ok) {
         wrap.style.display = 'none';
+        const tw = document.getElementById('footer-turnstile-wrap') as HTMLElement | null;
+        if (tw) tw.style.display = 'none';
         note.style.display = 'none';
         msg.style.display  = 'block';
       } else {
