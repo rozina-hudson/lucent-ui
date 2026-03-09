@@ -18,7 +18,7 @@ import { Icon } from '../src/components/atoms/Icon/index.js';
 import { Text } from '../src/components/atoms/Text/index.js';
 import { FormField } from '../src/components/molecules/FormField/index.js';
 import { SearchInput } from '../src/components/molecules/SearchInput/index.js';
-import { Card } from '../src/components/molecules/Card/index.js';
+import { Card, CardBleed } from '../src/components/molecules/Card/index.js';
 import { Alert } from '../src/components/molecules/Alert/index.js';
 import { EmptyState } from '../src/components/molecules/EmptyState/index.js';
 import { Skeleton } from '../src/components/molecules/Skeleton/index.js';
@@ -726,6 +726,40 @@ function Inner({
             <Text size="xs">lg padding + shadow</Text>
           </Card>
         </Row>
+        <Row label="CardBleed" tokens={tokens}>
+          <Card style={{ width: 320 }}>
+            <Text weight="semibold" size="sm">Settings</Text>
+            <CardBleed
+              style={{
+                borderTop: `1px solid ${tokens.borderDefault}`,
+                borderBottom: `1px solid ${tokens.borderDefault}`,
+                marginTop: tokens.space3,
+                paddingTop: tokens.space3,
+                paddingBottom: tokens.space3,
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Text size="sm">Email alerts</Text>
+                <Toggle checked onChange={() => {}} />
+              </div>
+            </CardBleed>
+            <CardBleed
+              style={{
+                borderBottom: `1px solid ${tokens.borderDefault}`,
+                paddingTop: tokens.space3,
+                paddingBottom: tokens.space3,
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Text size="sm">Push notifications</Text>
+                <Toggle onChange={() => {}} />
+              </div>
+            </CardBleed>
+            <div style={{ paddingTop: tokens.space3 }}>
+              <Text size="xs" color="secondary">Bleed rows stretch edge-to-edge.</Text>
+            </div>
+          </Card>
+        </Row>
       </Section>
 
       {/* Alert */}
@@ -1306,7 +1340,7 @@ function Inner({
       </Section>
 
       <Section title="Tabs" tokens={tokens}>
-        <Row label="Default" tokens={tokens}>
+        <Row label="Underline (default)" tokens={tokens}>
           <div style={{ width: '100%' }}>
             <Tabs
               tabs={[
@@ -1314,6 +1348,33 @@ function Inner({
                 { value: 'api', label: 'API', content: <Text size="sm" color="secondary">API reference content.</Text> },
                 { value: 'examples', label: 'Examples', content: <Text size="sm" color="secondary">Usage examples.</Text> },
                 { value: 'disabled', label: 'Disabled', content: null, disabled: true },
+              ]}
+            />
+          </div>
+        </Row>
+        <Row label="Pills" tokens={tokens}>
+          <div style={{ width: '100%' }}>
+            <Tabs
+              variant="pills"
+              tabs={[
+                { value: 'overview', label: 'Overview', content: <Text size="sm" color="secondary">Overview content goes here.</Text> },
+                { value: 'api', label: 'API', content: <Text size="sm" color="secondary">API reference content.</Text> },
+                { value: 'examples', label: 'Examples', content: <Text size="sm" color="secondary">Usage examples.</Text> },
+                { value: 'disabled', label: 'Disabled', content: null, disabled: true },
+              ]}
+            />
+          </div>
+        </Row>
+        <Row label="Overflow (constrained width)" tokens={tokens}>
+          <div style={{ width: 360 }}>
+            <Tabs
+              tabs={[
+                { value: 'overview', label: 'Overview', content: <Text size="sm" color="secondary">Overview content.</Text> },
+                { value: 'api', label: 'API', content: <Text size="sm" color="secondary">API reference.</Text> },
+                { value: 'examples', label: 'Examples', content: <Text size="sm" color="secondary">Usage examples.</Text> },
+                { value: 'changelog', label: 'Changelog', content: <Text size="sm" color="secondary">Changelog content.</Text> },
+                { value: 'settings', label: 'Settings', content: <Text size="sm" color="secondary">Settings content.</Text> },
+                { value: 'advanced', label: 'Advanced', content: <Text size="sm" color="secondary">Advanced options.</Text> },
               ]}
             />
           </div>
