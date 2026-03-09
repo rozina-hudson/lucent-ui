@@ -14,5 +14,8 @@
     "./**/*.ts",
     "../src/manifest/**/*.ts",
     "../src/components/**/*.manifest.ts"
+  ],
+  "exclude": [
+    "../src/**/*.test.ts"
   ]
 }
