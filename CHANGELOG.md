@@ -1,5 +1,11 @@
 # lucent-ui
 
+## 0.9.1
+
+### Patch Changes
+
+- Fix ColorPicker popover opening off-viewport when trigger is near the right edge; increase Card default padding sizes by ~1.5×
+
 ## 0.9.0
 
 ### Minor Changes
