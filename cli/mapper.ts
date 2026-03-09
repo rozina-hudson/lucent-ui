@@ -16,7 +16,7 @@ import {
  */
 const LUCENT_TOKEN_KEYS = new Set<keyof LucentTokens>([
   // SemanticColorTokens
-  'bgBase', 'bgSubtle', 'bgMuted', 'bgOverlay',
+  'bgBase', 'bgSubtle', 'bgOverlay',
   'surface', 'surfaceSecondary', 'surfaceRaised', 'surfaceOverlay',
   'borderDefault', 'borderSubtle', 'borderStrong',
   'textPrimary', 'textSecondary', 'textDisabled', 'textInverse', 'textOnAccent',

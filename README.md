@@ -4,6 +4,8 @@
 [![npm](https://img.shields.io/npm/v/lucent-ui)](https://www.npmjs.com/package/lucent-ui)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
+**[Documentation & component playground → lucentui.dev](https://lucentui.dev)**
+
 > **The React component library built for AI coding assistants.**
 > Every component ships with a machine-readable manifest — so Claude, Cursor, and Copilot generate correct, on-brand UI the first time, every time.
 
@@ -41,7 +43,7 @@ export default function App() {
 
 ## Components
 
-### Atoms
+### Atoms (19)
 | Component | Description |
 |-----------|-------------|
 | `Button` | Clickable control with `primary`, `secondary`, `ghost`, `danger` variants |
@@ -53,14 +55,18 @@ export default function App() {
 | `Radio` / `RadioGroup` | Radio button with group context |
 | `Toggle` | On/off switch |
 | `Select` | Native select with styled appearance |
+| `Slider` | Range input with token-driven track and thumb |
 | `Tag` | Removable or static tag/chip |
 | `Tooltip` | Hover tooltip with placement options |
 | `Icon` | SVG icon wrapper (Lucide-compatible) |
 | `Text` | Polymorphic typography primitive (`p`, `h1`–`h6`, `span`, `code`, …) |
 | `Spinner` | Loading indicator |
 | `Divider` | Horizontal or vertical rule |
+| `NavLink` | Navigation link with active state and accent highlight |
+| `Table` | Structural table primitive (`Table`, `Head`, `Body`, `Row`, `Cell`) |
+| `CodeBlock` | Syntax-highlighted code with tab support and prompt variant |
 
-### Molecules
+### Molecules (17)
 | Component | Description |
 |-----------|-------------|
 | `FormField` | Label + input + helper/error text composition |
@@ -69,6 +75,17 @@ export default function App() {
 | `Alert` | Inline feedback banner (`info`, `success`, `warning`, `danger`) |
 | `EmptyState` | Zero-data placeholder with icon, title, and action |
 | `Skeleton` | Loading placeholder for content areas |
+| `Breadcrumb` | Navigational breadcrumb trail |
+| `Tabs` | Tabbed content switcher with sliding indicator |
+| `Collapsible` | Expandable/collapsible section with animated height |
+| `PageLayout` | App shell with sidebar, header, right panel, and footer slots |
+| `DataTable` | Sortable, paginated, filterable data table |
+| `CommandPalette` | Keyboard-driven command launcher |
+| `MultiSelect` | Multi-value select with search and tag display |
+| `DatePicker` | Single-date calendar picker |
+| `DateRangePicker` | Date range calendar picker |
+| `FileUpload` | Drag-and-drop file upload with preview |
+| `Timeline` | Vertical event/activity timeline |
 
 ---
 
@@ -152,7 +169,7 @@ node dist-server/server/index.js
 Lucent UI uses CSS custom properties — no CSS-in-JS, no runtime overhead.
 
 ```tsx
-import { LucentProvider, brandTokens } from 'lucent-ui';
+import { LucentProvider, brandTokens, createTheme } from 'lucent-ui';
 
 // Default neutral theme
 <LucentProvider>...</LucentProvider>
@@ -160,7 +177,11 @@ import { LucentProvider, brandTokens } from 'lucent-ui';
 // Built-in gold accent preset
 <LucentProvider tokens={brandTokens}>...</LucentProvider>
 
-// Fully custom
+// Generate a full light/dark theme from a single accent color
+const theme = createTheme({ accent: '#6366f1' });
+<LucentProvider tokens={theme.light} darkTokens={theme.dark}>...</LucentProvider>
+
+// Fully custom token overrides
 <LucentProvider tokens={{ accentDefault: '#6366f1', accentHover: '#4f46e5' }}>
   ...
 </LucentProvider>

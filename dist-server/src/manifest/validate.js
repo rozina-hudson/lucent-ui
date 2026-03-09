@@ -27,7 +27,7 @@ export function validateManifest(manifest) {
         errors.push(err('id', 'Must be kebab-case (e.g. "button", "form-field")'));
     }
     // tier
-    const validTiers = ['atom', 'molecule', 'block', 'flow', 'overlay'];
+    const validTiers = ['atom', 'molecule', 'block', 'flow', 'overlay', 'provider'];
     if (!validTiers.includes(m['tier'])) {
         errors.push(err('tier', `Must be one of: ${validTiers.join(', ')}`));
     }
