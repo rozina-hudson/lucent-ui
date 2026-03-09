@@ -7,7 +7,7 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
   domain: 'neutral',
   specVersion: '0.1',
 
-  description: 'A surface container with optional header, body, and footer slots, configurable padding, shadow, and radius.',
+  description: 'A surface container with optional header, body, and footer slots, configurable padding, shadow, and radius. Includes a CardBleed sub-component for edge-to-edge content.',
 
   designIntent:
     'Card provides a consistent elevated surface for grouping related content. The header and footer slots ' +
@@ -15,6 +15,10 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
     'the consumer to manage spacing. Padding, shadow, and radius are all configurable to accommodate ' +
     'flat/ghost cards, modal-like surfaces, and compact data-dense layouts. The overflow: hidden ensures ' +
     'children respect the border-radius without needing additional clipping.\n\n' +
+    'CardBleed is a companion component that allows specific children within the Card body to stretch ' +
+    'edge-to-edge, cancelling the horizontal padding via negative margins. Text inside CardBleed stays ' +
+    'aligned with the rest of the card content thanks to matching inner padding. Use it for dividers, ' +
+    'full-width lists, or bordered sections that need to reach the card edges.\n\n' +
     'Token rule: Card uses surface for its background. Never use bgBase or bgSubtle on a Card — ' +
     'those tokens are reserved for the page canvas (body, sidebar, layout regions). Content nested ' +
     'inside a Card that needs a tinted fill (e.g. a footer, inset panel, or disabled input) should use ' +
@@ -91,6 +95,15 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
       title: 'Flat variant',
       code: `<Card shadow="none" radius="sm" padding="sm">
   <Text size="sm">Compact flat card</Text>
+</Card>`,
+    },
+    {
+      title: 'Edge-to-edge content with CardBleed',
+      code: `<Card>
+  <Text weight="semibold">Settings</Text>
+  <CardBleed style={{ borderTop: '1px solid var(--lucent-border-default)', marginTop: 'var(--lucent-space-4)' }}>
+    <Text color="secondary">This section stretches to the card edges.</Text>
+  </CardBleed>
 </Card>`,
     },
   ],
