@@ -370,39 +370,24 @@ export function ColorPicker({
       )}
 
       {/* Swatch trigger */}
-      <button
+      <ColorSwatch
         id={`${pickerId}-swatch`}
-        type="button"
+        color={`rgba(${rgba.r},${rgba.g},${rgba.b},${hsva.a})`}
+        shape="square"
+        showCheckerboard
         disabled={disabled}
         onClick={() => setIsOpen(o => !o)}
         aria-expanded={isOpen}
         aria-haspopup="dialog"
         style={{
-          position: 'relative',
           width: 40,
           height: 40,
           borderRadius: 'var(--lucent-radius-lg)',
-          border: `2px solid ${isOpen ? 'var(--lucent-focus-ring)' : 'var(--lucent-border-default)'}`,
-          cursor: disabled ? 'not-allowed' : 'pointer',
-          outline: 'none',
-          padding: 0,
-          overflow: 'hidden',
-          boxShadow: isOpen ? `0 0 0 3px var(--lucent-accent-subtle)` : 'none',
-          transition: 'box-shadow var(--lucent-duration-fast) var(--lucent-easing-default)',
+          boxShadow: isOpen
+            ? `inset 0 0 0 2px var(--lucent-focus-ring), 0 0 0 3px var(--lucent-accent-subtle)`
+            : 'inset 0 0 0 1px rgba(0,0,0,0.2)',
         }}
-        onFocus={e => { e.currentTarget.style.boxShadow = `0 0 0 3px var(--lucent-accent-subtle)`; }}
-        onBlur={e => { if (!isOpen) e.currentTarget.style.boxShadow = 'none'; }}
-      >
-        {/* Checkerboard for transparency */}
-        <div style={{
-          position: 'absolute', inset: 0,
-          backgroundImage: CHECKERBOARD,
-          backgroundSize: '8px 8px',
-          backgroundPosition: '0 0, 0 4px, 4px -4px, -4px 0',
-          backgroundColor: '#fff',
-        }} />
-        <div style={{ position: 'absolute', inset: 0, background: `rgba(${rgba.r},${rgba.g},${rgba.b},${hsva.a})` }} />
-      </button>
+      />
 
       {/* Popover */}
       {isOpen && (
@@ -461,16 +446,12 @@ export function ColorPicker({
             {/* Swatch preview + sliders row */}
             <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
               {/* Mini swatch showing current color with alpha */}
-              <div style={{ position: 'relative', width: 44, height: 44, borderRadius: 8, overflow: 'hidden', flexShrink: 0, border: '1px solid var(--lucent-border-default)' }}>
-                <div style={{
-                  position: 'absolute', inset: 0,
-                  backgroundImage: CHECKERBOARD,
-                  backgroundSize: '6px 6px',
-                  backgroundPosition: '0 0, 0 3px, 3px -3px, -3px 0',
-                  backgroundColor: '#fff',
-                }} />
-                <div style={{ position: 'absolute', inset: 0, background: `rgba(${rgba.r},${rgba.g},${rgba.b},${hsva.a})` }} />
-              </div>
+              <ColorSwatch
+                color={`rgba(${rgba.r},${rgba.g},${rgba.b},${hsva.a})`}
+                shape="square"
+                showCheckerboard
+                style={{ width: 44, height: 44, borderRadius: 8 }}
+              />
 
               {/* Hue + alpha sliders */}
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>

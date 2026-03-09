@@ -996,11 +996,18 @@ function Inner({
 
       {/* ColorSwatch */}
       <Section title="ColorSwatch" tokens={tokens}>
-        <Row label="Sizes" tokens={tokens}>
+        <Row label="Circle sizes" tokens={tokens}>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <ColorSwatch color="#3b82f6" size="sm" />
-            <ColorSwatch color="#3b82f6" size="md" />
-            <ColorSwatch color="#3b82f6" size="lg" />
+            {(['xs', 'sm', 'md', 'lg', 'xl', '2xl'] as const).map(s => (
+              <ColorSwatch key={s} color="#3b82f6" size={s} shape="circle" />
+            ))}
+          </div>
+        </Row>
+        <Row label="Square sizes" tokens={tokens}>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            {(['xs', 'sm', 'md', 'lg', 'xl', '2xl'] as const).map(s => (
+              <ColorSwatch key={s} color="#8b5cf6" size={s} shape="square" />
+            ))}
           </div>
         </Row>
         <Row label="Selected" tokens={tokens}>

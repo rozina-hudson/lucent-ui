@@ -35,7 +35,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     const hasError = Boolean(errorText);
 
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--lucent-space-1)', width: '100%' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--lucent-space-1)', width: '100%', ...style }}>
         {label && (
           <label
             htmlFor={selectId}
@@ -73,7 +73,6 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
               appearance: 'none',
               cursor: disabled ? 'not-allowed' : 'pointer',
               transition: `border-color var(--lucent-duration-fast) var(--lucent-easing-default)`,
-              ...style,
             }}
             onMouseEnter={(e) => {
               if (!disabled && e.currentTarget !== document.activeElement) {
