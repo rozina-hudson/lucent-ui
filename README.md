@@ -4,6 +4,8 @@
 [![npm](https://img.shields.io/npm/v/lucent-ui)](https://www.npmjs.com/package/lucent-ui)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
+**[Documentation & component playground → lucentui.dev](https://lucentui.dev)**
+
 > **The React component library built for AI coding assistants.**
 > Every component ships with a machine-readable manifest — so Claude, Cursor, and Copilot generate correct, on-brand UI the first time, every time.
 

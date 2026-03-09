@@ -9,7 +9,11 @@ export const COMPONENT_MANIFEST = {
         'are separated from the body by a border-default divider, giving visual structure without requiring ' +
         'the consumer to manage spacing. Padding, shadow, and radius are all configurable to accommodate ' +
         'flat/ghost cards, modal-like surfaces, and compact data-dense layouts. The overflow: hidden ensures ' +
-        'children respect the border-radius without needing additional clipping.',
+        'children respect the border-radius without needing additional clipping.\n\n' +
+        'Token rule: Card uses surface for its background. Never use bgBase or bgSubtle on a Card — ' +
+        'those tokens are reserved for the page canvas (body, sidebar, layout regions). Content nested ' +
+        'inside a Card that needs a tinted fill (e.g. a footer, inset panel, or disabled input) should use ' +
+        'surfaceSecondary.',
     props: [
         {
             name: 'children',
