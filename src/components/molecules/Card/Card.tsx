@@ -16,9 +16,9 @@ export interface CardProps {
 
 const paddingMap: Record<CardPadding, string> = {
   none: '0',
-  sm:   'var(--lucent-space-3)',
-  md:   'var(--lucent-space-4)',
-  lg:   'var(--lucent-space-6)',
+  sm:   'var(--lucent-space-4)',
+  md:   'var(--lucent-space-6)',
+  lg:   'var(--lucent-space-8)',
 };
 
 const shadowMap: Record<CardShadow, string> = {
