@@ -13,6 +13,8 @@ import { adjustLightness } from '../tokens/color.js';
 import { deriveTokens } from '../tokens/derive.js';
 import { createTheme } from '../tokens/createTheme.js';
 import type { LucentTokens, Theme, ThemeAnchors } from '../tokens/types.js';
+import type { PresetProp } from '../tokens/presets/types.js';
+import { resolvePreset } from '../tokens/presets/resolve.js';
 
 interface LucentContextValue {
   theme: Theme;
@@ -26,6 +28,14 @@ const LucentContext = createContext<LucentContextValue>({
 
 export interface LucentProviderProps {
   theme?: Theme;
+  /**
+   * A design preset that bundles palette, shape, density, and shadow tokens.
+   * Pass a combined preset name (`"modern"`, `"enterprise"`, `"playful"`) or
+   * an object to mix dimensions: `{ palette: 'indigo', shape: 'pill' }`.
+   *
+   * Precedence (later wins): base theme → preset → anchors → tokens.
+   */
+  preset?: PresetProp;
   /**
    * Full or partial token overrides. Individual tokens can be set here and
    * any missing variant tokens will be derived automatically.
@@ -59,28 +69,50 @@ export interface LucentProviderProps {
  */
 export function LucentProvider({
   theme = 'light',
+  preset,
   tokens: tokenOverrides,
   anchors,
   children,
 }: LucentProviderProps) {
   const id = useId().replace(/:/g, '');
 
-  // When anchors are provided, delegate fully to createTheme() which handles
-  // all derivation in one pass. The tokens/overrides path is skipped.
+  // Resolve preset into a flat partial token set (palette colors are fully
+  // derived via createTheme inside resolvePreset).
+  const presetTokens = preset ? resolvePreset(preset, theme) : undefined;
+
+  // Precedence: base theme → preset → anchors → tokens.
   const tokens: LucentTokens = (() => {
     if (anchors) {
-      return createTheme(anchors, theme);
+      // anchors fully derive colors; preset shape/density/shadow survive on top.
+      const anchorTokens = createTheme(anchors, theme);
+      if (presetTokens) {
+        // Extract only layout tokens (spacing, radius, shadow, motion) from preset
+        // so anchor-derived colors always win.
+        const layoutOverrides: Partial<LucentTokens> = {};
+        for (const [k, v] of Object.entries(presetTokens)) {
+          if (k.startsWith('space') || k.startsWith('radius') ||
+              k.startsWith('shadow') || k.startsWith('duration') || k.startsWith('easing')) {
+            (layoutOverrides as Record<string, string>)[k] = v;
+          }
+        }
+        return { ...anchorTokens, ...layoutOverrides };
+      }
+      return anchorTokens;
     }
 
     const baseTokens = theme === 'dark' ? darkTokens : lightTokens;
-    const merged: LucentTokens = tokenOverrides
-      ? { ...baseTokens, ...tokenOverrides }
+    const effectiveOverrides = presetTokens
+      ? { ...presetTokens, ...tokenOverrides }
+      : tokenOverrides;
+
+    const merged: LucentTokens = effectiveOverrides
+      ? { ...baseTokens, ...effectiveOverrides }
       : baseTokens;
 
     // Derive variant tokens from any anchor overrides the consumer provided.
-    // Only fills keys that are absent from tokenOverrides — never clobbers
+    // Only fills keys that are absent from overrides — never clobbers
     // explicit user values. Skipped entirely when no overrides are passed.
-    const derived = tokenOverrides ? deriveTokens(tokenOverrides, merged, theme) : {};
+    const derived = effectiveOverrides ? deriveTokens(effectiveOverrides, merged, theme) : {};
 
     // Auto-compute textOnAccent from the resolved accent color unless the consumer
     // explicitly overrides it. This guarantees WCAG AA contrast on accent surfaces
@@ -92,7 +124,7 @@ export function LucentProvider({
     // themes.  The consumer can still override `accentBorder` if they really
     // want to pick a specific value; this computation only applies when the
     // token is _not_ provided.
-    const computedBorder = tokenOverrides?.accentBorder
+    const computedBorder = effectiveOverrides?.accentBorder
       ?? (theme === 'light'
         ? adjustLightness(merged.accentDefault, -0.15)
         : adjustLightness(merged.accentDefault, 0.15));
@@ -100,7 +132,7 @@ export function LucentProvider({
     return {
       ...merged,
       ...derived,
-      textOnAccent: tokenOverrides?.textOnAccent ?? getContrastText(merged.accentDefault),
+      textOnAccent: effectiveOverrides?.textOnAccent ?? getContrastText(merged.accentDefault),
       accentBorder: computedBorder,
     };
   })();

@@ -15,6 +15,7 @@
     "./styles": "./dist/index.css"
   },
   "bin": {
+    "lucent-ui": "./dist-cli/cli/entry.js",
     "lucent-mcp": "./dist-server/server/index.js",
     "lucent-manifest": "./dist-cli/cli/index.js"
   },

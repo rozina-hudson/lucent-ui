@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { LucentProvider, useLucent, brandTokens } from '../src/index.js';
+import type { PresetProp, PaletteName, ShapeName, DensityName, ShadowName } from '../src/tokens/presets/types.js';
 import { adjustLightness, getThemeComplementBorderColor, deriveBorderVariants } from '../src/tokens/color.js';
 import { Button } from '../src/components/atoms/Button/index.js';
 import { Input } from '../src/components/atoms/Input/index.js';
@@ -98,11 +99,149 @@ function StarIcon() {
   );
 }
 
+const PALETTE_OPTIONS: { value: PaletteName; label: string; swatch: string }[] = [
+  { value: 'default', label: 'Default', swatch: '#111827' },
+  { value: 'brand', label: 'Brand', swatch: '#e9c96b' },
+  { value: 'indigo', label: 'Indigo', swatch: '#6366f1' },
+  { value: 'emerald', label: 'Emerald', swatch: '#10b981' },
+  { value: 'rose', label: 'Rose', swatch: '#f43f5e' },
+  { value: 'ocean', label: 'Ocean', swatch: '#0ea5e9' },
+];
+
+const SHAPE_OPTIONS: { value: ShapeName; label: string }[] = [
+  { value: 'sharp', label: 'Sharp' },
+  { value: 'rounded', label: 'Rounded' },
+  { value: 'pill', label: 'Pill' },
+];
+
+const DENSITY_OPTIONS: { value: DensityName; label: string }[] = [
+  { value: 'compact', label: 'Compact' },
+  { value: 'default', label: 'Default' },
+  { value: 'spacious', label: 'Spacious' },
+];
+
+const SHADOW_OPTIONS: { value: ShadowName; label: string }[] = [
+  { value: 'flat', label: 'Flat' },
+  { value: 'subtle', label: 'Subtle' },
+  { value: 'elevated', label: 'Elevated' },
+];
+
+const COMBINED_PRESETS: { name: string; config: PresetConfig }[] = [
+  { name: 'Modern', config: { palette: 'indigo', shape: 'rounded', density: 'default', shadow: 'subtle' } },
+  { name: 'Enterprise', config: { palette: 'default', shape: 'sharp', density: 'compact', shadow: 'flat' } },
+  { name: 'Playful', config: { palette: 'rose', shape: 'pill', density: 'spacious', shadow: 'elevated' } },
+];
+
+function PresetPicker({ config, onChange }: { config: PresetConfig; onChange: (c: PresetConfig) => void }) {
+  const { tokens } = useLucent();
+
+  const selectStyle = (isActive: boolean): React.CSSProperties => ({
+    padding: `${tokens.space1} ${tokens.space2}`,
+    border: `1px solid ${isActive ? tokens.accentDefault : tokens.borderDefault}`,
+    borderRadius: tokens.radiusMd,
+    background: isActive ? tokens.accentDefault : tokens.surface,
+    color: isActive ? tokens.textOnAccent : tokens.textPrimary,
+    fontFamily: tokens.fontFamilyBase,
+    fontSize: tokens.fontSizeXs,
+    fontWeight: isActive ? tokens.fontWeightSemibold : tokens.fontWeightRegular,
+    cursor: 'pointer',
+  });
+
+  const sectionStyle: React.CSSProperties = { marginBottom: tokens.space4 };
+  const labelStyle: React.CSSProperties = { fontSize: tokens.fontSizeXs, fontWeight: tokens.fontWeightSemibold, color: tokens.textSecondary, marginBottom: tokens.space1, display: 'block' };
+  const gridStyle: React.CSSProperties = { display: 'flex', flexWrap: 'wrap', gap: tokens.space1 };
+
+  return (
+    <div style={{ marginTop: tokens.space4 }}>
+      {/* Quick presets */}
+      <div style={sectionStyle}>
+        <span style={labelStyle}>Quick presets</span>
+        <div style={gridStyle}>
+          {COMBINED_PRESETS.map(p => {
+            const isActive = p.config.palette === config.palette && p.config.shape === config.shape && p.config.density === config.density && p.config.shadow === config.shadow;
+            return (
+              <button key={p.name} onClick={() => onChange(p.config)} style={selectStyle(isActive)}>
+                {p.name}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Palette */}
+      <div style={sectionStyle}>
+        <span style={labelStyle}>Palette</span>
+        <div style={gridStyle}>
+          {PALETTE_OPTIONS.map(p => (
+            <button key={p.value} onClick={() => onChange({ ...config, palette: p.value })} style={{ ...selectStyle(config.palette === p.value), display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: p.swatch, display: 'inline-block', border: '1px solid rgba(0,0,0,0.1)' }} />
+              {p.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Shape */}
+      <div style={sectionStyle}>
+        <span style={labelStyle}>Shape</span>
+        <div style={gridStyle}>
+          {SHAPE_OPTIONS.map(s => (
+            <button key={s.value} onClick={() => onChange({ ...config, shape: s.value })} style={selectStyle(config.shape === s.value)}>
+              {s.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Density */}
+      <div style={sectionStyle}>
+        <span style={labelStyle}>Density</span>
+        <div style={gridStyle}>
+          {DENSITY_OPTIONS.map(d => (
+            <button key={d.value} onClick={() => onChange({ ...config, density: d.value })} style={selectStyle(config.density === d.value)}>
+              {d.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Shadow */}
+      <div style={sectionStyle}>
+        <span style={labelStyle}>Shadow</span>
+        <div style={gridStyle}>
+          {SHADOW_OPTIONS.map(s => (
+            <button key={s.value} onClick={() => onChange({ ...config, shadow: s.value })} style={selectStyle(config.shadow === s.value)}>
+              {s.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+type ThemingMode = 'preset' | 'tokens' | 'anchors';
+
+interface PresetConfig {
+  palette: PaletteName;
+  shape: ShapeName;
+  density: DensityName;
+  shadow: ShadowName;
+}
+
+const DEFAULT_PRESET_CONFIG: PresetConfig = {
+  palette: 'default',
+  shape: 'rounded',
+  density: 'default',
+  shadow: 'subtle',
+};
+
 export function ComponentPreview() {
   const [theme, setTheme] = useState<Theme>('light');
+  const [themingMode, setThemingMode] = useState<ThemingMode>('preset');
+  const [presetConfig, setPresetConfig] = useState<PresetConfig>(DEFAULT_PRESET_CONFIG);
   const [accent, setAccent] = useState<AccentPreset>('default');
   const [overrides, setOverrides] = useState<Partial<LucentTokens>>({});
-  const [anchorMode, setAnchorMode] = useState(false);
   const [anchors, setAnchors] = useState<ThemeAnchors>(DEFAULT_ANCHORS);
 
   const tokenPreset =
@@ -125,22 +264,34 @@ export function ComponentPreview() {
 
   const clearOverrides = () => setOverrides({});
 
+  const presetProp: PresetProp = {
+    palette: presetConfig.palette,
+    shape: presetConfig.shape,
+    density: presetConfig.density,
+    shadow: presetConfig.shadow,
+  };
+
+  const providerProps = themingMode === 'preset'
+    ? { preset: presetProp }
+    : themingMode === 'anchors'
+      ? { anchors }
+      : { tokens: mergedTokens };
+
   return (
-    <LucentProvider
-      theme={theme}
-      {...(anchorMode ? { anchors } : { tokens: mergedTokens })}
-    >
+    <LucentProvider theme={theme} {...providerProps}>
       <Inner
         theme={theme}
+        themingMode={themingMode}
+        presetConfig={presetConfig}
         accent={accent}
         overrides={overrides}
-        anchorMode={anchorMode}
         anchors={anchors}
         onToggleTheme={() => setTheme(t => t === 'light' ? 'dark' : 'light')}
+        onSetThemingMode={setThemingMode}
+        onSetPresetConfig={setPresetConfig}
         onSetAccent={setAccent}
         onChangeOverride={handleTokenChange}
         onChangeAnchor={handleAnchorChange}
-        onToggleAnchorMode={() => setAnchorMode(m => !m)}
         clearOverrides={clearOverrides}
       />
     </LucentProvider>
@@ -149,27 +300,31 @@ export function ComponentPreview() {
 
 function Inner({
   theme,
+  themingMode,
+  presetConfig,
   accent,
   overrides,
-  anchorMode,
   anchors,
   onToggleTheme,
+  onSetThemingMode,
+  onSetPresetConfig,
   onSetAccent,
   onChangeOverride,
   onChangeAnchor,
-  onToggleAnchorMode,
   clearOverrides,
 }: {
   theme: Theme;
+  themingMode: ThemingMode;
+  presetConfig: PresetConfig;
   accent: AccentPreset;
   overrides: Partial<LucentTokens>;
-  anchorMode: boolean;
   anchors: ThemeAnchors;
   onToggleTheme: () => void;
+  onSetThemingMode: (m: ThemingMode) => void;
+  onSetPresetConfig: (c: PresetConfig) => void;
   onSetAccent: (p: AccentPreset) => void;
   onChangeOverride: (key: keyof LucentTokens, value: string) => void;
   onChangeAnchor: (key: keyof ThemeAnchors, value: string) => void;
-  onToggleAnchorMode: () => void;
   clearOverrides: () => void;
 }) {
   const { tokens } = useLucent();
@@ -332,21 +487,36 @@ function Inner({
       }}>
         <h2 style={{ fontSize: tokens.fontSizeLg, fontWeight: tokens.fontWeightSemibold, marginTop: 0 }}>Customizer</h2>
 
-        {/* Anchor mode — derive full theme from 9 colors */}
-        <div style={{ marginBottom: tokens.space4, padding: tokens.space3, background: anchorMode ? tokens.accentSubtle : tokens.surfaceSecondary, borderRadius: tokens.radiusMd, border: `1px solid ${anchorMode ? tokens.accentBorder : tokens.borderDefault}` }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: tokens.space2, cursor: 'pointer' }}>
-            <input type="checkbox" checked={anchorMode} onChange={onToggleAnchorMode} />
-            <span style={{ fontSize: tokens.fontSizeSm, fontWeight: tokens.fontWeightSemibold, color: anchorMode ? tokens.accentDefault : tokens.textPrimary }}>
-              Anchor mode
-            </span>
-          </label>
-          <p style={{ margin: `${tokens.space1} 0 0`, fontSize: tokens.fontSizeXs, color: tokens.textSecondary, lineHeight: tokens.lineHeightBase }}>
-            {anchorMode ? '9 colors → full theme via createTheme()' : 'Specify 9 colors, derive everything else'}
-          </p>
+        {/* Theming mode selector */}
+        <div style={{ marginBottom: tokens.space4, display: 'flex', gap: tokens.space1 }}>
+          {(['preset', 'tokens', 'anchors'] as ThemingMode[]).map(mode => (
+            <button
+              key={mode}
+              onClick={() => onSetThemingMode(mode)}
+              style={{
+                flex: 1,
+                padding: `${tokens.space1} ${tokens.space2}`,
+                border: `1px solid ${themingMode === mode ? tokens.accentDefault : tokens.borderDefault}`,
+                borderRadius: tokens.radiusMd,
+                background: themingMode === mode ? tokens.accentDefault : tokens.surface,
+                color: themingMode === mode ? tokens.textOnAccent : tokens.textPrimary,
+                fontFamily: tokens.fontFamilyBase,
+                fontSize: tokens.fontSizeXs,
+                fontWeight: themingMode === mode ? tokens.fontWeightSemibold : tokens.fontWeightRegular,
+                cursor: 'pointer',
+              }}
+            >
+              {mode === 'preset' ? 'Preset' : mode === 'tokens' ? 'Tokens' : 'Anchors'}
+            </button>
+          ))}
         </div>
 
-        {anchorMode ? (
-          <div style={{ marginBottom: tokens.space6 }}>
+        <Toggle label="Dark mode" checked={theme === 'dark'} onChange={onToggleTheme} />
+
+        {themingMode === 'preset' ? (
+          <PresetPicker config={presetConfig} onChange={onSetPresetConfig} />
+        ) : themingMode === 'anchors' ? (
+          <div style={{ marginTop: tokens.space4, marginBottom: tokens.space6 }}>
             {(Object.keys(DEFAULT_ANCHORS) as (keyof ThemeAnchors)[]).map(key => (
               <div key={key} style={{ marginBottom: tokens.space3 }}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: tokens.space2, fontSize: tokens.fontSizeSm }}>
@@ -362,9 +532,8 @@ function Inner({
             ))}
           </div>
         ) : (<>
-        <div style={{ marginBottom: tokens.space6 }}>
-          <Toggle label="Dark mode" checked={theme === 'dark'} onChange={onToggleTheme} />
-          <div style={{ marginTop: tokens.space4, display: 'flex', flexDirection: 'column', gap: tokens.space2 }}>
+        <div style={{ marginTop: tokens.space4, marginBottom: tokens.space6 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.space2 }}>
             {(['default', 'gold', 'indigo'] as AccentPreset[]).map(p => (
               <button
                 key={p}
@@ -531,7 +700,9 @@ function Inner({
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: tokens.space8, flexWrap: 'wrap', gap: tokens.space4 }}>
         <div>
           <h1 style={{ fontSize: tokens.fontSize2xl, fontWeight: tokens.fontWeightBold, margin: 0 }}>Lucent UI — Component Preview</h1>
-          <p style={{ color: tokens.textSecondary, margin: `${tokens.space1} 0 0`, fontSize: tokens.fontSizeSm }}>Molecules Wave 1 · Atoms Wave 1 + 2 · {theme} mode · {accentLabel[accent]}</p>
+          <p style={{ color: tokens.textSecondary, margin: `${tokens.space1} 0 0`, fontSize: tokens.fontSizeSm }}>
+            {theme} mode · {themingMode === 'preset' ? `preset: ${presetConfig.palette} / ${presetConfig.shape} / ${presetConfig.density} / ${presetConfig.shadow}` : themingMode === 'anchors' ? 'anchor mode' : accentLabel[accent]}
+          </p>
         </div>
       </div>
 
