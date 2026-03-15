@@ -1,5 +1,11 @@
 # lucent-ui
 
+## 0.10.0
+
+### Minor Changes
+
+- Add design presets system with composable dimensions (palette, shape, density, shadow), CLI init command (`npx lucent-ui init`), and MCP preset discovery tools
+
 ## 0.9.1
 
 ### Patch Changes
