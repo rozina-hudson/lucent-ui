@@ -12,6 +12,7 @@
   },
   "include": [
     "./**/*.ts",
-    "../src/tokens/types.ts"
+    "../src/tokens/types.ts",
+    "../src/tokens/presets/types.ts"
   ]
 }

@@ -9,6 +9,20 @@ export type { LucentProviderProps } from './provider/index.js';
 export { lightTokens, darkTokens, makeLibraryCSS, getContrastText, brandTokens, deriveTokens, deriveDarkFromLight, createTheme } from './tokens/index.js';
 export type { LucentTokens, Theme, ThemeAnchors } from './tokens/index.js';
 
+// Presets
+export {
+  defaultPalette, brandPalette, indigoPalette, emeraldPalette, rosePalette, oceanPalette,
+  sharpShape, roundedShape, pillShape,
+  compactDensity, defaultDensity, spaciousDensity,
+  flatShadow, subtleShadow, elevatedShadow,
+  modernPreset, enterprisePreset, playfulPreset,
+  resolvePreset,
+} from './tokens/index.js';
+export type {
+  ColorPalette, ShapePreset, DensityPreset, ShadowPreset, DesignPreset,
+  PresetProp, PresetName, PaletteName, ShapeName, DensityName, ShadowName,
+} from './tokens/index.js';
+
 export {
   validateManifest,
   assertManifest,

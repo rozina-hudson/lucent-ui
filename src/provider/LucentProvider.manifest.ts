@@ -82,14 +82,21 @@ export const LucentProviderManifest: ComponentManifest = {
 
   description:
     'Root configuration wrapper that injects Lucent design tokens as CSS custom properties. ' +
-    'Accepts either 9 anchor colors (via `anchors`) for zero-config theming, or granular ' +
-    'token overrides (via `tokens`) for full control.',
+    'Accepts a design preset for instant theming, 9 anchor colors (via `anchors`) for zero-config theming, ' +
+    'or granular token overrides (via `tokens`) for full control.',
 
   designIntent:
     'LucentProvider is the single source of truth for the visual identity of any Lucent-powered UI. ' +
     'Its primary design goal is to make custom theming accessible to both humans and LLMs with minimal effort.\n\n' +
 
-    'ANCHOR MODE (recommended for LLMs): Pass `anchors` with 9 semantic colors and the provider ' +
+    'PRESET MODE (fastest path): Pass `preset` with a named preset ("modern", "enterprise", "playful") ' +
+    'or an object mixing dimensions: `{ palette: "indigo", shape: "pill", density: "compact", shadow: "elevated" }`. ' +
+    'Presets bundle palette colors, border radius, spacing, and shadows into one cohesive design. ' +
+    'Available palettes: default, brand, indigo, emerald, rose, ocean. ' +
+    'Shapes: sharp, rounded, pill. Densities: compact, default, spacious. Shadows: flat, subtle, elevated. ' +
+    'Presets work with both light and dark themes automatically.\n\n' +
+
+    'ANCHOR MODE (recommended for LLMs building custom themes): Pass `anchors` with 9 semantic colors and the provider ' +
     'automatically derives all 30+ variant tokens — hover/active/subtle states, WCAG-compliant ' +
     'contrast text, status subtle tints, surface elevation steps, and more. An LLM generating a ' +
     'themed UI only needs to reason about 9 colors, not the full token surface.\n\n' +
@@ -99,18 +106,31 @@ export const LucentProviderManifest: ComponentManifest = {
     'supply only `accentDefault`, the provider auto-derives `accentHover`, `accentActive`, ' +
     '`accentSubtle`, `accentBorder`, and `textOnAccent`.\n\n' +
 
+    'PRECEDENCE (later wins): base theme → preset → anchors → tokens. ' +
+    'You can combine preset with tokens to start from a preset and tweak individual values.\n\n' +
+
     'WCAG auto-computation: `textOnAccent` is always computed from the resolved accent color via ' +
     'relative luminance — it will be #000000 or #ffffff, whichever passes AA contrast. ' +
     'Consumers can override it if they have brand-specific requirements.\n\n' +
 
-    'DARK MODE: Pass `theme="dark"` alongside either prop. Anchor colors are applied to the dark ' +
-    'base palette; derivation runs with dark-calibrated lightness deltas. The same 9 anchors ' +
-    'produce a coherent dark theme — no extra work needed.\n\n' +
+    'DARK MODE: Pass `theme="dark"` alongside any prop. Presets include both light and dark palettes. ' +
+    'Anchor colors are applied to the dark base palette; derivation runs with dark-calibrated lightness deltas.\n\n' +
 
     'DO NOT nest multiple LucentProviders unless intentionally theming a sub-tree differently ' +
     '(e.g. an inverted sidebar). The outermost provider wins for `:root` CSS vars.',
 
   props: [
+    {
+      name: 'preset',
+      type: 'PresetProp',
+      required: false,
+      description:
+        'Design preset for instant theming. Pass a combined name ("modern", "enterprise", "playful") ' +
+        'or an object to mix dimensions: { palette?: "default"|"brand"|"indigo"|"emerald"|"rose"|"ocean", ' +
+        'shape?: "sharp"|"rounded"|"pill", density?: "compact"|"default"|"spacious", ' +
+        'shadow?: "flat"|"subtle"|"elevated" }. You can also pass imported preset objects directly ' +
+        'for tree-shaking. Precedence: base theme → preset → anchors → tokens.',
+    },
     {
       name: 'anchors',
       type: 'ThemeAnchors',
@@ -118,7 +138,9 @@ export const LucentProviderManifest: ComponentManifest = {
       description:
         'Minimal theming API: supply 9 semantic anchor colors and all variant tokens are derived ' +
         'automatically. See ThemeAnchorsSpec for guidance on each key. ' +
-        'When provided, the `tokens` prop is ignored. ' +
+        'When provided alongside a preset, anchors override the preset\'s palette colors ' +
+        'but preset shape/density/shadow tokens are preserved. When provided without a preset, ' +
+        'the `tokens` prop is ignored. ' +
         'Keys: bgBase, surface, borderDefault, textPrimary, accentDefault, ' +
         'successDefault, warningDefault, dangerDefault, infoDefault.',
     },
@@ -151,6 +173,57 @@ export const LucentProviderManifest: ComponentManifest = {
   ],
 
   usageExamples: [
+    {
+      title: 'Preset mode — combined preset (simplest)',
+      description: 'Pick a curated preset that bundles palette, shape, density, and shadow tokens. Works with both light and dark themes.',
+      code: `import { LucentProvider } from 'lucent-ui';
+
+<LucentProvider preset="modern">
+  <App />
+</LucentProvider>
+
+{/* Dark mode with the same preset */}
+<LucentProvider theme="dark" preset="modern">
+  <App />
+</LucentProvider>`,
+    },
+    {
+      title: 'Preset mode — mix and match dimensions',
+      description: 'Pick each dimension independently for a custom combination.',
+      code: `import { LucentProvider } from 'lucent-ui';
+
+<LucentProvider
+  preset={{
+    palette: 'ocean',
+    shape: 'pill',
+    density: 'compact',
+    shadow: 'elevated',
+  }}
+>
+  <App />
+</LucentProvider>`,
+    },
+    {
+      title: 'Preset mode — with token overrides',
+      description: 'Start from a preset and tweak individual tokens. The tokens prop wins over the preset.',
+      code: `import { LucentProvider } from 'lucent-ui';
+
+<LucentProvider
+  preset="modern"
+  tokens={{ accentDefault: '#8b5cf6', radiusLg: '1rem' }}
+>
+  <App />
+</LucentProvider>`,
+    },
+    {
+      title: 'Preset mode — tree-shakeable direct imports',
+      description: 'Import preset objects directly for maximum bundle control.',
+      code: `import { LucentProvider, indigoPalette, pillShape } from 'lucent-ui';
+
+<LucentProvider preset={{ palette: indigoPalette, shape: pillShape }}>
+  <App />
+</LucentProvider>`,
+    },
     {
       title: 'Anchor mode — indigo brand (light)',
       description: 'The recommended pattern for LLMs. 9 colors produce a complete WCAG-compliant theme.',

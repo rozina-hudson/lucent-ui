@@ -4,6 +4,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { z } from 'zod';
 import { ALL_MANIFESTS } from './registry.js';
 import type { ComponentManifest } from '../src/manifest/types.js';
+import { PALETTES, SHAPES, DENSITIES, SHADOWS, COMBINED, generatePresetConfig } from './presets.js';
 
 // ─── Auth stub ───────────────────────────────────────────────────────────────
 // LUCENT_API_KEY is reserved for the future paid tier.
@@ -122,6 +123,64 @@ server.tool(
         {
           type: 'text' as const,
           text: JSON.stringify({ query, results }, null, 2),
+        },
+      ],
+    };
+  },
+);
+
+// Tool: list_presets
+server.tool(
+  'list_presets',
+  'Lists all available Lucent UI design presets. Returns combined presets (modern, enterprise, playful) and individual dimensions (palettes, shapes, densities, shadows) that can be mixed and matched.',
+  {},
+  async () => {
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: JSON.stringify({
+            combined: COMBINED,
+            palettes: PALETTES,
+            shapes: SHAPES,
+            densities: DENSITIES,
+            shadows: SHADOWS,
+          }, null, 2),
+        },
+      ],
+    };
+  },
+);
+
+// Tool: get_preset_config
+server.tool(
+  'get_preset_config',
+  'Returns the LucentProvider configuration code for a given preset selection. Pass a combined preset name OR individual dimension names to get a ready-to-use config file and provider snippet.',
+  {
+    preset: z.string().optional().describe('Combined preset name: "modern", "enterprise", or "playful"'),
+    palette: z.string().optional().describe('Palette name: "default", "brand", "indigo", "emerald", "rose", or "ocean"'),
+    shape: z.string().optional().describe('Shape name: "sharp", "rounded", or "pill"'),
+    density: z.string().optional().describe('Density name: "compact", "default", or "spacious"'),
+    shadow: z.string().optional().describe('Shadow name: "flat", "subtle", or "elevated"'),
+  },
+  async ({ preset, palette, shape, density, shadow }) => {
+    const result = generatePresetConfig({ preset, palette, shape, density, shadow });
+
+    if ('error' in result) {
+      return {
+        content: [{ type: 'text' as const, text: JSON.stringify({ error: result.error }) }],
+        isError: true,
+      };
+    }
+
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: JSON.stringify({
+            configFile: result.configFile,
+            providerSnippet: result.providerSnippet,
+          }, null, 2),
         },
       ],
     };
