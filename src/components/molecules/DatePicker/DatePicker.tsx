@@ -37,6 +37,8 @@ function formatDate(d: Date) {
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
+export type DatePickerSize = 'sm' | 'md' | 'lg';
+
 export interface DatePickerProps {
   value?: Date;
   defaultValue?: Date;
@@ -45,8 +47,16 @@ export interface DatePickerProps {
   disabled?: boolean;
   min?: Date;
   max?: Date;
+  size?: DatePickerSize;
   style?: CSSProperties;
 }
+
+const sizeHeights: Record<DatePickerSize, number> = { sm: 32, md: 40, lg: 46 };
+const sizeFontSizes: Record<DatePickerSize, string> = {
+  sm: 'var(--lucent-font-size-sm)',
+  md: 'var(--lucent-font-size-md)',
+  lg: 'var(--lucent-font-size-md)',
+};
 
 // ─── Nav button ───────────────────────────────────────────────────────────────
 
@@ -86,7 +96,7 @@ function NavButton({ dir, onClick, disabled }: { dir: 'prev' | 'next'; onClick: 
 function Calendar({
   year, month, selected, today, min, max,
   onSelect, onPrevMonth, onNextMonth,
-  highlightRange,
+  highlightRange, onDayHover,
 }: {
   year: number; month: number;
   selected?: Date; today: Date;
@@ -94,6 +104,7 @@ function Calendar({
   onSelect: (d: Date) => void;
   onPrevMonth: () => void; onNextMonth: () => void;
   highlightRange?: { start?: Date; end?: Date };
+  onDayHover?: (date: Date | null) => void;
 }) {
   const totalDays = daysInMonth(year, month);
   const startDay = startDayOfMonth(year, month);
@@ -147,8 +158,8 @@ function Calendar({
               type="button"
               disabled={isDisabled}
               onClick={() => !isDisabled && onSelect(date)}
-              onMouseEnter={() => setHoveredDay(day)}
-              onMouseLeave={() => setHoveredDay(null)}
+              onMouseEnter={() => { setHoveredDay(day); onDayHover?.(date); }}
+              onMouseLeave={() => { setHoveredDay(null); onDayHover?.(null); }}
               aria-label={formatDate(date)}
               aria-pressed={isSelected}
               style={{
@@ -194,6 +205,7 @@ export function DatePicker({
   disabled = false,
   min,
   max,
+  size = 'md',
   style,
 }: DatePickerProps) {
   const isControlled = controlledValue !== undefined;
@@ -233,7 +245,7 @@ export function DatePicker({
   };
 
   return (
-    <div ref={containerRef} style={{ position: 'relative', display: 'inline-block', ...style }}>
+    <div ref={containerRef} style={{ position: 'relative', ...style }}>
       <button
         type="button"
         disabled={disabled}
@@ -243,18 +255,20 @@ export function DatePicker({
         aria-haspopup="dialog"
         aria-expanded={open}
         style={{
-          display: 'inline-flex', alignItems: 'center', gap: 'var(--lucent-space-2)',
-          padding: 'var(--lucent-space-2) var(--lucent-space-3)',
-          borderRadius: 'var(--lucent-radius-md)',
+          display: 'flex', alignItems: 'center', gap: 'var(--lucent-space-2)',
+          width: '100%',
+          height: sizeHeights[size],
+          boxSizing: 'content-box',
+          padding: '0 var(--lucent-space-3)',
+          borderRadius: 'var(--lucent-radius-lg)',
           border: `1px solid ${focused ? 'var(--lucent-accent-default)' : 'var(--lucent-border-default)'}`,
           background: disabled ? 'var(--lucent-surface-secondary)' : 'var(--lucent-surface)',
           color: selected ? 'var(--lucent-text-primary)' : 'var(--lucent-text-secondary)',
           fontFamily: 'var(--lucent-font-family-base)',
-          fontSize: 'var(--lucent-font-size-sm)',
+          fontSize: sizeFontSizes[size],
           cursor: disabled ? 'not-allowed' : 'pointer',
           outline: focused ? `2px solid var(--lucent-focus-ring)` : 'none',
           outlineOffset: 2,
-          minWidth: 160,
           transition: 'border-color var(--lucent-duration-fast)',
         }}
       >

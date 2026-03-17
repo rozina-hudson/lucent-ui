@@ -4,6 +4,7 @@ import {
 } from 'react';
 import { Text } from '../../atoms/Text/index.js';
 import { Checkbox } from '../../atoms/Checkbox/index.js';
+import { Tag } from '../../atoms/Tag/index.js';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -12,6 +13,8 @@ export interface MultiSelectOption {
   label: string;
   disabled?: boolean;
 }
+
+export type MultiSelectSize = 'sm' | 'md' | 'lg';
 
 export interface MultiSelectProps {
   options: MultiSelectOption[];
@@ -22,55 +25,24 @@ export interface MultiSelectProps {
   disabled?: boolean;
   /** Max number of items that can be selected. No limit by default. */
   max?: number;
+  size?: MultiSelectSize;
   style?: CSSProperties;
 }
 
-// ─── Tag ──────────────────────────────────────────────────────────────────────
+const sizeHeights: Record<MultiSelectSize, number> = { sm: 28, md: 36, lg: 42 };
+const sizeFontSizes: Record<MultiSelectSize, string> = {
+  sm: 'var(--lucent-font-size-sm)',
+  md: 'var(--lucent-font-size-md)',
+  lg: 'var(--lucent-font-size-md)',
+};
+const sizePaddings: Record<MultiSelectSize, string> = {
+  sm: '2px var(--lucent-space-2)',
+  md: '2px var(--lucent-space-2)',
+  lg: '2px var(--lucent-space-3)',
+};
 
-function Tag({ label, onRemove, disabled }: { label: string; onRemove: () => void; disabled?: boolean }) {
-  return (
-    <span style={{
-      display: 'inline-flex',
-      alignItems: 'center',
-      gap: 4,
-      padding: '2px 6px 2px 8px',
-      borderRadius: 'var(--lucent-radius-full)',
-      background: 'var(--lucent-surface-secondary)',
-      border: '1px solid var(--lucent-border-default)',
-      fontSize: 'var(--lucent-font-size-sm)',
-      fontFamily: 'var(--lucent-font-family-base)',
-      color: 'var(--lucent-text-primary)',
-      lineHeight: 1.4,
-      flexShrink: 0,
-    }}>
-      {label}
-      {!disabled && (
-        <button
-          type="button"
-          onClick={e => { e.stopPropagation(); onRemove(); }}
-          aria-label={`Remove ${label}`}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 14,
-            height: 14,
-            padding: 0,
-            border: 'none',
-            background: 'none',
-            cursor: 'pointer',
-            color: 'var(--lucent-text-secondary)',
-            borderRadius: 'var(--lucent-radius-full)',
-          }}
-        >
-          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden>
-            <path d="M2 2l6 6M8 2l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
-        </button>
-      )}
-    </span>
-  );
-}
+// Map MultiSelect size → Tag size that fits inside the trigger
+const tagSizeMap: Record<MultiSelectSize, 'sm' | 'md' | 'lg'> = { sm: 'sm', md: 'md', lg: 'lg' };
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -82,6 +54,7 @@ export function MultiSelect({
   placeholder = 'Select…',
   disabled = false,
   max,
+  size = 'md',
   style,
 }: MultiSelectProps) {
   const isControlled = controlledValue !== undefined;
@@ -168,10 +141,10 @@ export function MultiSelect({
           display: 'flex',
           flexWrap: 'wrap',
           alignItems: 'center',
-          gap: 'var(--lucent-space-1)',
-          minHeight: 38,
-          padding: 'var(--lucent-space-1) var(--lucent-space-3)',
-          borderRadius: 'var(--lucent-radius-md)',
+          gap: 'var(--lucent-space-2)',
+          minHeight: sizeHeights[size],
+          padding: sizePaddings[size],
+          borderRadius: 'var(--lucent-radius-lg)',
           border: `1px solid ${borderColor}`,
           background: disabled ? 'var(--lucent-surface-secondary)' : 'var(--lucent-surface)',
           cursor: disabled ? 'not-allowed' : 'text',
@@ -183,7 +156,7 @@ export function MultiSelect({
         {selected.map(val => {
           const opt = options.find(o => o.value === val);
           return opt ? (
-            <Tag key={val} label={opt.label} onRemove={() => remove(val)} disabled={disabled} />
+            <Tag key={val} size={tagSizeMap[size]} onDismiss={() => remove(val)} disabled={disabled}>{opt.label}</Tag>
           ) : null;
         })}
 
@@ -207,7 +180,7 @@ export function MultiSelect({
             outline: 'none',
             background: 'transparent',
             fontFamily: 'var(--lucent-font-family-base)',
-            fontSize: 'var(--lucent-font-size-sm)',
+            fontSize: sizeFontSizes[size],
             color: disabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-primary)',
             cursor: disabled ? 'not-allowed' : 'text',
             padding: '2px 0',
@@ -229,7 +202,7 @@ export function MultiSelect({
             zIndex: 1000,
             background: 'var(--lucent-surface-overlay)',
             border: '1px solid var(--lucent-border-default)',
-            borderRadius: 'var(--lucent-radius-md)',
+            borderRadius: 'var(--lucent-radius-lg)',
             boxShadow: 'var(--lucent-shadow-md)',
             maxHeight: 240,
             overflowY: 'auto',

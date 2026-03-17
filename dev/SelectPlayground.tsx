@@ -9,6 +9,9 @@ import { Button } from '../src/components/atoms/Button/index.js';
 import { Tag } from '../src/components/atoms/Tag/index.js';
 import { Badge } from '../src/components/atoms/Badge/index.js';
 import { SearchInput } from '../src/components/molecules/SearchInput/index.js';
+import { MultiSelect } from '../src/components/molecules/MultiSelect/index.js';
+import { DatePicker } from '../src/components/molecules/DatePicker/index.js';
+import { DateRangePicker } from '../src/components/molecules/DateRangePicker/index.js';
 import { Text } from '../src/components/atoms/Text/index.js';
 
 /* ------------------------------------------------------------------ */
@@ -27,6 +30,14 @@ const selectOptions = [
   { value: 'banana', label: 'Banana' },
   { value: 'cherry', label: 'Cherry' },
   { value: 'dragonfruit', label: 'Dragonfruit' },
+];
+
+const multiSelectOptions = [
+  { value: 'react', label: 'React' },
+  { value: 'vue', label: 'Vue' },
+  { value: 'angular', label: 'Angular' },
+  { value: 'svelte', label: 'Svelte' },
+  { value: 'solid', label: 'Solid' },
 ];
 
 /* Each entry: { props, render }
@@ -168,14 +179,14 @@ const registry: Record<string, {
   Tag: {
     props: {
       variant: { type: 'select', options: ['neutral', 'accent', 'success', 'warning', 'danger', 'info'], default: 'neutral' },
-      size:    { type: 'select', options: ['sm', 'md'], default: 'md' },
+      size:    { type: 'select', options: ['sm', 'md', 'lg'], default: 'md' },
       text:    { type: 'text', default: 'Tag label' },
       dismissible: { type: 'boolean', default: false },
     },
     render: (v) => (
       <Tag
         variant={v.variant as 'neutral' | 'accent' | 'success' | 'warning' | 'danger' | 'info'}
-        size={v.size as 'sm' | 'md'}
+        size={v.size as 'sm' | 'md' | 'lg'}
         onDismiss={v.dismissible ? () => {} : undefined}
       >
         {v.text as string}
@@ -196,6 +207,52 @@ const registry: Record<string, {
       >
         {v.text as string}
       </Badge>
+    ),
+  },
+
+  MultiSelect: {
+    props: {
+      size:        { type: 'select', options: ['sm', 'md', 'lg'], default: 'md' },
+      placeholder: { type: 'text', default: 'Select…' },
+      disabled:    { type: 'boolean', default: false },
+    },
+    render: (v) => (
+      <MultiSelect
+        options={multiSelectOptions}
+        size={v.size as 'sm' | 'md' | 'lg'}
+        placeholder={v.placeholder as string}
+        disabled={v.disabled as boolean}
+      />
+    ),
+  },
+
+  DatePicker: {
+    props: {
+      size:        { type: 'select', options: ['sm', 'md', 'lg'], default: 'md' },
+      placeholder: { type: 'text', default: 'Pick a date' },
+      disabled:    { type: 'boolean', default: false },
+    },
+    render: (v) => (
+      <DatePicker
+        size={v.size as 'sm' | 'md' | 'lg'}
+        placeholder={v.placeholder as string}
+        disabled={v.disabled as boolean}
+      />
+    ),
+  },
+
+  DateRangePicker: {
+    props: {
+      size:        { type: 'select', options: ['sm', 'md', 'lg'], default: 'md' },
+      placeholder: { type: 'text', default: 'Pick a date range' },
+      disabled:    { type: 'boolean', default: false },
+    },
+    render: (v) => (
+      <DateRangePicker
+        size={v.size as 'sm' | 'md' | 'lg'}
+        placeholder={v.placeholder as string}
+        disabled={v.disabled as boolean}
+      />
     ),
   },
 };

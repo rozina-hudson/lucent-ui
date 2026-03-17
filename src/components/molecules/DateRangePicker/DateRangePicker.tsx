@@ -10,6 +10,8 @@ export interface DateRange {
   end: Date;
 }
 
+export type DateRangePickerSize = 'sm' | 'md' | 'lg';
+
 export interface DateRangePickerProps {
   value?: DateRange;
   defaultValue?: DateRange;
@@ -18,8 +20,16 @@ export interface DateRangePickerProps {
   disabled?: boolean;
   min?: Date;
   max?: Date;
+  size?: DateRangePickerSize;
   style?: CSSProperties;
 }
+
+const sizeHeights: Record<DateRangePickerSize, number> = { sm: 32, md: 40, lg: 46 };
+const sizeFontSizes: Record<DateRangePickerSize, string> = {
+  sm: 'var(--lucent-font-size-sm)',
+  md: 'var(--lucent-font-size-md)',
+  lg: 'var(--lucent-font-size-md)',
+};
 
 function formatRange(range: DateRange | undefined, placeholder: string): string {
   if (!range) return placeholder;
@@ -35,6 +45,7 @@ export function DateRangePicker({
   disabled = false,
   min,
   max,
+  size = 'md',
   style,
 }: DateRangePickerProps) {
   const isControlled = controlledValue !== undefined;
@@ -43,6 +54,7 @@ export function DateRangePicker({
 
   // Selecting state: first click sets start, second sets end
   const [selecting, setSelecting] = useState<Date | null>(null);
+  const [hoveredDate, setHoveredDate] = useState<Date | null>(null);
 
   const today = new Date();
   const [leftYear, setLeftYear] = useState((selected?.start ?? today).getFullYear());
@@ -94,15 +106,21 @@ export function DateRangePicker({
     else setLeftMonth(m => m + 1);
   };
 
-  // Highlight range: if mid-selection, highlight from start to hovered; else show selected range
-  const highlightRange = selecting
-    ? { start: selecting, end: selecting } // will be overridden by hover in Calendar
-    : selected
-    ? { start: selected.start, end: selected.end }
-    : undefined;
+  // Highlight range: if mid-selection, highlight from first click to hovered day
+  let highlightRange: { start: Date; end: Date } | undefined;
+  if (selecting && hoveredDate) {
+    const [s, e] = isBeforeDay(hoveredDate, selecting)
+      ? [hoveredDate, selecting]
+      : [selecting, hoveredDate];
+    highlightRange = { start: s, end: e };
+  } else if (selecting) {
+    highlightRange = { start: selecting, end: selecting };
+  } else if (selected) {
+    highlightRange = { start: selected.start, end: selected.end };
+  }
 
   return (
-    <div ref={containerRef} style={{ position: 'relative', display: 'inline-block', ...style }}>
+    <div ref={containerRef} style={{ position: 'relative', ...style }}>
       <button
         type="button"
         disabled={disabled}
@@ -112,18 +130,20 @@ export function DateRangePicker({
         aria-haspopup="dialog"
         aria-expanded={open}
         style={{
-          display: 'inline-flex', alignItems: 'center', gap: 'var(--lucent-space-2)',
-          padding: 'var(--lucent-space-2) var(--lucent-space-3)',
-          borderRadius: 'var(--lucent-radius-md)',
+          display: 'flex', alignItems: 'center', gap: 'var(--lucent-space-2)',
+          width: '100%',
+          height: sizeHeights[size],
+          boxSizing: 'content-box',
+          padding: '0 var(--lucent-space-3)',
+          borderRadius: 'var(--lucent-radius-lg)',
           border: `1px solid ${focused ? 'var(--lucent-accent-default)' : 'var(--lucent-border-default)'}`,
           background: disabled ? 'var(--lucent-surface-secondary)' : 'var(--lucent-surface)',
           color: selected ? 'var(--lucent-text-primary)' : 'var(--lucent-text-secondary)',
           fontFamily: 'var(--lucent-font-family-base)',
-          fontSize: 'var(--lucent-font-size-sm)',
+          fontSize: sizeFontSizes[size],
           cursor: disabled ? 'not-allowed' : 'pointer',
           outline: focused ? `2px solid var(--lucent-focus-ring)` : 'none',
           outlineOffset: 2,
-          minWidth: 220,
           transition: 'border-color var(--lucent-duration-fast)',
         }}
       >
@@ -168,6 +188,7 @@ export function DateRangePicker({
               onPrevMonth={prevLeft}
               onNextMonth={nextLeft}
               {...(highlightRange !== undefined && { highlightRange })}
+              onDayHover={selecting ? setHoveredDate : undefined}
             />
           </div>
 
@@ -187,6 +208,7 @@ export function DateRangePicker({
               onPrevMonth={prevLeft}
               onNextMonth={nextLeft}
               {...(highlightRange !== undefined && { highlightRange })}
+              onDayHover={selecting ? setHoveredDate : undefined}
             />
           </div>
         </div>

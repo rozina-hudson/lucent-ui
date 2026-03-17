@@ -1,7 +1,7 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 
 export type TagVariant = 'neutral' | 'accent' | 'success' | 'warning' | 'danger' | 'info';
-export type TagSize = 'sm' | 'md';
+export type TagSize = 'sm' | 'md' | 'lg';
 
 export interface TagProps {
   children: ReactNode;
@@ -21,40 +21,50 @@ const variantStyles: Record<TagVariant, { bg: string; color: string; border: str
 };
 
 const sizeStyles: Record<TagSize, { fontSize: string; height: string; padding: string; iconSize: number; gap: string }> = {
-  sm: { fontSize: 'var(--lucent-font-size-xs)', height: '20px', padding: '0 var(--lucent-space-2)', iconSize: 10, gap: 'var(--lucent-space-1)' },
-  md: { fontSize: 'var(--lucent-font-size-sm)', height: '24px', padding: '0 var(--lucent-space-2)', iconSize: 12, gap: 'var(--lucent-space-1)' },
+  sm: { fontSize: 'var(--lucent-font-size-xs)', height: '20px', padding: '0 var(--lucent-space-3)', iconSize: 10, gap: 'var(--lucent-space-1)' },
+  md: { fontSize: 'var(--lucent-font-size-sm)', height: '24px', padding: '0 var(--lucent-space-3)', iconSize: 12, gap: 'var(--lucent-space-1)' },
+  lg: { fontSize: 'var(--lucent-font-size-md)', height: '28px', padding: '0 var(--lucent-space-4)', iconSize: 14, gap: 'var(--lucent-space-2)' },
 };
 
 export function Tag({ children, variant = 'neutral', size = 'md', onDismiss, disabled }: TagProps) {
   const v = variantStyles[variant];
   const s = sizeStyles[size];
+  const [hovered, setHovered] = useState(false);
+
+  const isInteractive = !disabled && onDismiss;
 
   return (
     <span
+      onMouseEnter={() => { if (!disabled) setHovered(true); }}
+      onMouseLeave={() => setHovered(false)}
       style={{
         display: 'inline-flex',
         alignItems: 'center',
         gap: s.gap,
         height: s.height,
-        padding: onDismiss ? `0 var(--lucent-space-1) 0 var(--lucent-space-2)` : s.padding,
+        padding: onDismiss ? `0 var(--lucent-space-2) 0 ${s.padding.split(' ')[1]}` : s.padding,
         fontSize: s.fontSize,
         fontFamily: 'var(--lucent-font-family-base)',
         fontWeight: 'var(--lucent-font-weight-medium)',
         lineHeight: 1,
-        borderRadius: 'var(--lucent-radius-full)',
+        borderRadius: 'var(--lucent-radius-lg)',
         background: v.bg,
         color: v.color,
-        border: `1px solid ${v.border}`,
+        border: `1px solid ${hovered && !disabled ? v.dismissHover : v.border}`,
         whiteSpace: 'nowrap',
         boxSizing: 'border-box',
         opacity: disabled ? 0.5 : 1,
+        transform: hovered && isInteractive ? 'translateY(-1px)' : 'none',
+        boxShadow: hovered && isInteractive ? `0 2px 4px ${v.dismissHover}22` : 'none',
+        transition: 'transform var(--lucent-duration-fast) var(--lucent-easing-default), box-shadow var(--lucent-duration-fast) var(--lucent-easing-default), border-color var(--lucent-duration-fast) var(--lucent-easing-default)',
+        cursor: isInteractive ? 'pointer' : 'default',
       }}
     >
       {children}
       {onDismiss && (
         <button
           type="button"
-          onClick={disabled ? undefined : onDismiss}
+          onClick={disabled ? undefined : (e) => { e.stopPropagation(); onDismiss?.(); }}
           disabled={disabled}
           aria-label="Dismiss"
           style={{
@@ -65,7 +75,7 @@ export function Tag({ children, variant = 'neutral', size = 'md', onDismiss, dis
             height: s.iconSize + 4,
             padding: 0,
             border: 'none',
-            borderRadius: 'var(--lucent-radius-full)',
+            borderRadius: 'var(--lucent-radius-lg)',
             background: 'transparent',
             color: 'inherit',
             cursor: disabled ? 'not-allowed' : 'pointer',

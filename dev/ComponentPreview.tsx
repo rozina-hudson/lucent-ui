@@ -1760,6 +1760,19 @@ function Inner({
       </Section>
 
       <Section title="MultiSelect" tokens={tokens}>
+        <Row label="Sizes" tokens={tokens}>
+          <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+            {(['sm', 'md', 'lg'] as const).map(s => (
+              <div key={s} style={{ width: 260 }}>
+                <MultiSelect
+                  size={s}
+                  options={['React', 'Vue', 'Svelte'].map(v => ({ value: v.toLowerCase(), label: v }))}
+                  placeholder={`Size ${s}`}
+                />
+              </div>
+            ))}
+          </div>
+        </Row>
         <Row label="Default" tokens={tokens}>
           <div style={{ width: 320 }}>
             <MultiSelect
@@ -1789,6 +1802,13 @@ function Inner({
       </Section>
 
       <Section title="DatePicker" tokens={tokens}>
+        <Row label="Sizes" tokens={tokens}>
+          <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+            {(['sm', 'md', 'lg'] as const).map(s => (
+              <DatePicker key={s} size={s} placeholder={`Size ${s}`} onChange={() => {}} />
+            ))}
+          </div>
+        </Row>
         <Row label="Single date" tokens={tokens}>
           <DatePicker onChange={() => {}} />
         </Row>
@@ -1801,6 +1821,13 @@ function Inner({
       </Section>
 
       <Section title="DateRangePicker" tokens={tokens}>
+        <Row label="Sizes" tokens={tokens}>
+          <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+            {(['sm', 'md', 'lg'] as const).map(s => (
+              <DateRangePicker key={s} size={s} placeholder={`Size ${s}`} onChange={() => {}} />
+            ))}
+          </div>
+        </Row>
         <Row label="Default" tokens={tokens}>
           <DateRangePicker onChange={() => {}} />
         </Row>
