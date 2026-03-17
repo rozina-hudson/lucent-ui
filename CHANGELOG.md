@@ -1,10 +1,65 @@
 # lucent-ui
 
+## 0.11.0
+
+### Component Consistency
+
+- **Select**: refactored to wrapper-div architecture matching Input — fixes height mismatch from browser UA padding
+- **Select/Textarea**: proper disabled state (transparent border, muted bg, disabled text, not-allowed cursor)
+- **Textarea**: border radius aligned to `radius-lg`, hover border added, focus ring transitions smoothed
+- **SearchInput**: added `size` prop (`sm`/`md`/`lg`) passthrough to Input
+- **Button heights** aligned to match Input/Select at every size
+
+### Button Overhaul
+
+- **New `outline` variant** — bordered button (previously `secondary`); `secondary` is now a filled surface button
+- **Hover animation** on all variants: `translateY(-1px)` lift + accent-derived glow via `color-mix`
+- **Press state**: `translateY(1px)` + accent ring with 2px gap offset
+- **Disabled state**: theme-aware neutral gray via `color-mix` (no accent tinting in any preset)
+- **Focus ring**: variant-aware (danger uses `danger-subtle`)
+- **Primary border removed** for cleaner look
+
+### APCA Contrast Algorithm
+
+- Replaced WCAG 2.1 luminance threshold with **APCA** (Accessible Perceptual Contrast Algorithm) for `getContrastText` — correctly handles saturated blues/purples where WCAG 2.1 picks the wrong text color
+- `ensureContrast()` nudges accent lightness until APCA Lc ≥ 60 (fluent body text readability)
+- `LucentProvider` auto-adjusts `accentDefault` — no accent color ever produces unreadable button text
+- New exports: `apcaContrast`, `ensureContrast`, `getContrastRatio`
+
+### 6 New Palette Presets
+
+- **Trendy**: `violet` (#8b5cf6), `coral` (#e8624a), `teal` (#0d9488), `amber` (#d97706)
+- **Muted**: `slate` (#475569), `sage` (#5f8c6e)
+- Total palette count: 12
+
+### Dev Tooling
+
+- **Component Playground**: pick any two components, configure props, compare side-by-side
+
 ## 0.10.0
 
-### Minor Changes
+### New: Design Presets
 
-- Add design presets system with composable dimensions (palette, shape, density, shadow), CLI init command (`npx lucent-ui init`), and MCP preset discovery tools
+Pick a curated preset and get an instantly polished UI — colors, spacing, borders, and shadows — with zero manual configuration.
+
+- **3 combined presets**: `modern`, `enterprise`, `playful`
+- **4 mixable dimensions**: palette (6 options), shape (3), density (3), shadow (3)
+- **Full-atmosphere palettes**: bg, surface, and border colors are tinted toward the accent hue — not just a recolored accent on neutral grays
+- Works with both light and dark themes automatically
+
+```tsx
+<LucentProvider preset="modern">
+<LucentProvider preset={{ palette: 'ocean', shape: 'pill', density: 'compact', shadow: 'elevated' }}>
+```
+
+### New: `npx lucent-ui init`
+
+Interactive CLI that walks you through preset selection and writes a `lucent.config.ts` + provider snippet.
+
+### New: MCP preset tools
+
+- `list_presets` — discover all available presets and dimensions
+- `get_preset_config` — generate ready-to-use provider config from a selection
 
 ## 0.9.1
 
