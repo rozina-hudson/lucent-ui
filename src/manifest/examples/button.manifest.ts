@@ -11,9 +11,9 @@ export const ButtonManifest: ComponentManifest = {
   designIntent:
     'Buttons communicate available actions. Variant conveys hierarchy: use "primary" for the ' +
     'single most important action in a view, "secondary" for supporting actions, "ghost" for ' +
-    'low-emphasis actions in dense UIs, and "danger" exclusively for destructive or irreversible ' +
-    'operations. Size should match surrounding content density — prefer "md" as the default and ' +
-    'reserve "sm" for toolbars or tables.',
+    'low-emphasis actions in dense UIs, "outline" for bordered buttons with no fill, and "danger" exclusively for destructive or irreversible ' +
+    'operations. Size should match surrounding content density — prefer "md" as the default, ' +
+    '"sm" for toolbars or tables, and "xs" for compact UIs like customizer panels.',
   props: [
     {
       name: 'variant',
@@ -21,7 +21,7 @@ export const ButtonManifest: ComponentManifest = {
       required: false,
       default: 'primary',
       description: 'Visual style conveying action hierarchy.',
-      enumValues: ['primary', 'secondary', 'ghost', 'danger'],
+      enumValues: ['primary', 'secondary', 'outline', 'ghost', 'danger'],
     },
     {
       name: 'size',
@@ -29,7 +29,7 @@ export const ButtonManifest: ComponentManifest = {
       required: false,
       default: 'md',
       description: 'Controls height and padding.',
-      enumValues: ['sm', 'md', 'lg'],
+      enumValues: ['xs', 'sm', 'md', 'lg'],
     },
     {
       name: 'children',
@@ -78,6 +78,20 @@ export const ButtonManifest: ComponentManifest = {
       description: 'Icon element rendered after the label.',
     },
     {
+      name: 'chevron',
+      type: 'boolean',
+      required: false,
+      default: 'false',
+      description: 'Appends a chevron-down icon after the label. Useful for dropdown triggers.',
+    },
+    {
+      name: 'spread',
+      type: 'boolean',
+      required: false,
+      default: 'false',
+      description: 'Spaces content to the edges (justify-content: space-between). Useful with fullWidth + rightIcon/chevron.',
+    },
+    {
       name: 'onClick',
       type: 'function',
       required: false,
@@ -118,8 +132,12 @@ export const ButtonManifest: ComponentManifest = {
       code: `<Button variant="primary" type="submit" fullWidth>Sign in</Button>`,
     },
     {
-      title: 'Borderless primary',
-      code: `<Button variant="primary" bordered={false}>Flat primary</Button>`,
+      title: 'Outline with swatch',
+      code: `<Button size="xs" variant="outline" leftIcon={<span style={{ width: 8, height: 8, borderRadius: '50%', background: '#6366f1' }} />}>Indigo</Button>`,
+    },
+    {
+      title: 'Dropdown trigger',
+      code: `<Button variant="outline" chevron>Options</Button>`,
     },
   ],
   compositionGraph: [],

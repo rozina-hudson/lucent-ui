@@ -132,7 +132,7 @@ const registry: Record<string, {
 
   Button: {
     props: {
-      size:    { type: 'select', options: ['sm', 'md', 'lg'], default: 'md' },
+      size:    { type: 'select', options: ['xs', 'sm', 'md', 'lg'], default: 'md' },
       variant: { type: 'select', options: ['primary', 'secondary', 'outline', 'ghost', 'danger'], default: 'primary' },
       text:    { type: 'text', default: 'Click me' },
       disabled: { type: 'boolean', default: false },

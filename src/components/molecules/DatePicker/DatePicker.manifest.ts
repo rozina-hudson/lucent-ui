@@ -44,6 +44,14 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
       description: 'Trigger button text when no date is selected.',
     },
     {
+      name: 'size',
+      type: 'enum',
+      required: false,
+      default: 'md',
+      description: 'Controls trigger height and font size to match Input/Select.',
+      enumValues: ['sm', 'md', 'lg'],
+    },
+    {
       name: 'disabled',
       type: 'boolean',
       required: false,
