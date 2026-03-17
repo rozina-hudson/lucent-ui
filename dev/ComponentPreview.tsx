@@ -166,9 +166,9 @@ function PresetPicker({ config, onChange }: { config: PresetConfig; onChange: (c
           {COMBINED_PRESETS.map(p => {
             const isActive = p.config.palette === config.palette && p.config.shape === config.shape && p.config.density === config.density && p.config.shadow === config.shadow;
             return (
-              <button key={p.name} onClick={() => onChange(p.config)} style={selectStyle(isActive)}>
+              <Button key={p.name} size="xs" variant={isActive ? 'primary' : 'outline'} onClick={() => onChange(p.config)}>
                 {p.name}
-              </button>
+              </Button>
             );
           })}
         </div>
@@ -179,10 +179,15 @@ function PresetPicker({ config, onChange }: { config: PresetConfig; onChange: (c
         <span style={labelStyle}>Palette</span>
         <div style={gridStyle}>
           {PALETTE_OPTIONS.map(p => (
-            <button key={p.value} onClick={() => onChange({ ...config, palette: p.value })} style={{ ...selectStyle(config.palette === p.value), display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: p.swatch, display: 'inline-block', border: '1px solid rgba(0,0,0,0.1)' }} />
+            <Button
+              key={p.value}
+              size="xs"
+              variant={config.palette === p.value ? 'primary' : 'outline'}
+              onClick={() => onChange({ ...config, palette: p.value })}
+              leftIcon={<span style={{ width: 8, height: 8, borderRadius: '50%', background: p.swatch, display: 'inline-block', border: '1px solid rgba(0,0,0,0.15)', flexShrink: 0 }} />}
+            >
               {p.label}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
@@ -192,9 +197,9 @@ function PresetPicker({ config, onChange }: { config: PresetConfig; onChange: (c
         <span style={labelStyle}>Shape</span>
         <div style={gridStyle}>
           {SHAPE_OPTIONS.map(s => (
-            <button key={s.value} onClick={() => onChange({ ...config, shape: s.value })} style={selectStyle(config.shape === s.value)}>
+            <Button key={s.value} size="xs" variant={config.shape === s.value ? 'primary' : 'outline'} onClick={() => onChange({ ...config, shape: s.value })}>
               {s.label}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
@@ -204,9 +209,9 @@ function PresetPicker({ config, onChange }: { config: PresetConfig; onChange: (c
         <span style={labelStyle}>Density</span>
         <div style={gridStyle}>
           {DENSITY_OPTIONS.map(d => (
-            <button key={d.value} onClick={() => onChange({ ...config, density: d.value })} style={selectStyle(config.density === d.value)}>
+            <Button key={d.value} size="xs" variant={config.density === d.value ? 'primary' : 'outline'} onClick={() => onChange({ ...config, density: d.value })}>
               {d.label}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
@@ -216,9 +221,9 @@ function PresetPicker({ config, onChange }: { config: PresetConfig; onChange: (c
         <span style={labelStyle}>Shadow</span>
         <div style={gridStyle}>
           {SHADOW_OPTIONS.map(s => (
-            <button key={s.value} onClick={() => onChange({ ...config, shadow: s.value })} style={selectStyle(config.shadow === s.value)}>
+            <Button key={s.value} size="xs" variant={config.shadow === s.value ? 'primary' : 'outline'} onClick={() => onChange({ ...config, shadow: s.value })}>
               {s.label}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
@@ -334,6 +339,20 @@ function Inner({
   clearOverrides: () => void;
 }) {
   const { tokens } = useLucent();
+  const [componentFilter, setComponentFilter] = useState('');
+
+  const allSections = [
+    'Text', 'Input', 'Textarea', 'FormField', 'SearchInput', 'Card', 'Alert',
+    'EmptyState', 'Skeleton', 'Checkbox', 'Radio', 'Toggle', 'Slider', 'CodeBlock',
+    'Table', 'ColorSwatch', 'ColorPicker', 'SegmentedControl', 'Select', 'Tag',
+    'Tooltip', 'Icon', 'Button', 'Badge', 'Avatar', 'Spinner', 'Divider',
+    'Breadcrumb', 'Tabs', 'Collapsible', 'NavLink', 'PageLayout', 'DataTable',
+    'CommandPalette', 'MultiSelect', 'DatePicker', 'DateRangePicker', 'FileUpload', 'Timeline',
+  ];
+
+  const filterLower = componentFilter.toLowerCase();
+  const showSection = (name: string) => !filterLower || name.toLowerCase().includes(filterLower);
+
   const [inputVal, setInputVal] = useState('');
   const [textareaVal, setTextareaVal] = useState('');
   const [deriveAccent, setDeriveAccent] = useState(true);
@@ -712,10 +731,56 @@ function Inner({
         </div>
       </div>
 
-      {/* ── Molecules ── */}
+      {/* ── Component filter ── */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: tokens.space3,
+        marginBottom: tokens.space6,
+        flexWrap: 'wrap',
+      }}>
+        <input
+          type="text"
+          value={componentFilter}
+          onChange={(e) => setComponentFilter(e.target.value)}
+          placeholder="Filter components…"
+          style={{
+            width: 240,
+            height: 34,
+            padding: '0 12px',
+            border: `1px solid ${tokens.borderDefault}`,
+            borderRadius: tokens.radiusLg,
+            background: tokens.surface,
+            color: tokens.textPrimary,
+            fontFamily: tokens.fontFamilyBase,
+            fontSize: tokens.fontSizeSm,
+            outline: 'none',
+          }}
+        />
+        <span style={{ fontSize: tokens.fontSizeXs, color: tokens.textSecondary }}>
+          {allSections.filter(s => showSection(s)).length} / {allSections.length} components
+        </span>
+        {componentFilter && (
+          <button
+            onClick={() => setComponentFilter('')}
+            style={{
+              border: 'none',
+              background: 'none',
+              color: tokens.textSecondary,
+              cursor: 'pointer',
+              fontSize: tokens.fontSizeSm,
+              padding: '4px 8px',
+            }}
+          >
+            Clear
+          </button>
+        )}
+      </div>
+
+      {/* ── Components ── */}
 
       {/* Text */}
-      <Section title="Text" tokens={tokens}>
+      <Section title="Text" tokens={tokens} hidden={!showSection('Text')}>
         <Row label="Sizes" tokens={tokens}>
           <Text as="span" size="xs">xs — Extra small</Text>
           <Text as="span" size="sm">sm — Small</Text>
@@ -751,7 +816,7 @@ function Inner({
       </Section>
 
       {/* Input */}
-      <Section title="Input" tokens={tokens}>
+      <Section title="Input" tokens={tokens} hidden={!showSection('Input')}>
         <Row label="Sizes" tokens={tokens}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: 280 }}>
             <Input size="sm" placeholder="Small" />
@@ -790,7 +855,7 @@ function Inner({
       </Section>
 
       {/* Textarea */}
-      <Section title="Textarea" tokens={tokens}>
+      <Section title="Textarea" tokens={tokens} hidden={!showSection('Textarea')}>
         <Row label="Auto-resize" tokens={tokens}>
           <div style={{ width: 320 }}>
             <Textarea label="Bio" autoResize placeholder="Tell us about yourself…" value={textareaVal} onChange={e => setTextareaVal(e.target.value)} />
@@ -810,7 +875,7 @@ function Inner({
       </Section>
 
       {/* FormField */}
-      <Section title="FormField" tokens={tokens}>
+      <Section title="FormField" tokens={tokens} hidden={!showSection('FormField')}>
         <Row label="Basic" tokens={tokens}>
           <div style={{ width: 280 }}>
             <FormField label="Email address" htmlFor="ff-email">
@@ -850,7 +915,7 @@ function Inner({
       </Section>
 
       {/* SearchInput */}
-      <Section title="SearchInput" tokens={tokens}>
+      <Section title="SearchInput" tokens={tokens} hidden={!showSection('SearchInput')}>
         <Row label="With results dropdown" tokens={tokens}>
           <div style={{ width: 320 }}>
             <SearchInput
@@ -875,7 +940,7 @@ function Inner({
       </Section>
 
       {/* Card */}
-      <Section title="Card" tokens={tokens}>
+      <Section title="Card" tokens={tokens} hidden={!showSection('Card')}>
         <Row label="Body only" tokens={tokens}>
           <Card style={{ width: 280 }}>
             <Text size="sm" color="secondary">A simple card with body content only.</Text>
@@ -940,7 +1005,7 @@ function Inner({
       </Section>
 
       {/* Alert */}
-      <Section title="Alert" tokens={tokens}>
+      <Section title="Alert" tokens={tokens} hidden={!showSection('Alert')}>
         <Row label="All variants" tokens={tokens}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.space3, width: '100%' }}>
             <Alert variant="info" title="Did you know?">You can customize the accent color using token overrides.</Alert>
@@ -959,7 +1024,7 @@ function Inner({
       </Section>
 
       {/* EmptyState */}
-      <Section title="EmptyState" tokens={tokens}>
+      <Section title="EmptyState" tokens={tokens} hidden={!showSection('EmptyState')}>
         <Row label="With illustration + CTA" tokens={tokens}>
           <Card style={{ width: 360 }}>
             <EmptyState
@@ -985,7 +1050,7 @@ function Inner({
       </Section>
 
       {/* Skeleton */}
-      <Section title="Skeleton" tokens={tokens}>
+      <Section title="Skeleton" tokens={tokens} hidden={!showSection('Skeleton')}>
         <Row label="Text lines" tokens={tokens}>
           <div style={{ width: 280 }}>
             <Skeleton variant="text" lines={3} />
@@ -1018,7 +1083,7 @@ function Inner({
       {/* ── Wave 2 ── */}
 
       {/* Checkbox */}
-      <Section title="Checkbox" tokens={tokens}>
+      <Section title="Checkbox" tokens={tokens} hidden={!showSection('Checkbox')}>
         <Row label="Controlled" tokens={tokens}>
           <Checkbox label="Accept terms" checked={checked} onChange={e => setChecked(e.target.checked)} />
           <Checkbox label="Indeterminate" indeterminate />
@@ -1032,7 +1097,7 @@ function Inner({
       </Section>
 
       {/* Radio */}
-      <Section title="Radio" tokens={tokens}>
+      <Section title="Radio" tokens={tokens} hidden={!showSection('Radio')}>
         <Row label="Vertical group (default)" tokens={tokens}>
           <RadioGroup name="plan" value={radio} onChange={setRadio}>
             <Radio value="option1" label="Free — up to 3 projects" />
@@ -1057,7 +1122,7 @@ function Inner({
       </Section>
 
       {/* Toggle */}
-      <Section title="Toggle" tokens={tokens}>
+      <Section title="Toggle" tokens={tokens} hidden={!showSection('Toggle')}>
         <Row label="Controlled" tokens={tokens}>
           <Toggle label="Dark mode" checked={toggled} onChange={e => setToggled(e.target.checked)} />
         </Row>
@@ -1073,7 +1138,7 @@ function Inner({
       </Section>
 
       {/* Slider */}
-      <Section title="Slider" tokens={tokens}>
+      <Section title="Slider" tokens={tokens} hidden={!showSection('Slider')}>
         <Row label="Controlled" tokens={tokens}>
           <div style={{ width: 280 }}>
             <Slider label="Volume" showValue value={sliderValue} onChange={e => setSliderValue(Number(e.target.value))} />
@@ -1094,7 +1159,7 @@ function Inner({
       </Section>
 
       {/* CodeBlock */}
-      <Section title="CodeBlock" tokens={tokens}>
+      <Section title="CodeBlock" tokens={tokens} hidden={!showSection('CodeBlock')}>
         <Row label="Single snippet" tokens={tokens}>
           <div style={{ width: '100%' }}>
             <CodeBlock
@@ -1148,7 +1213,7 @@ function Inner({
       </Section>
 
       {/* Table */}
-      <Section title="Table" tokens={tokens}>
+      <Section title="Table" tokens={tokens} hidden={!showSection('Table')}>
         <Row label="Basic" tokens={tokens}>
           <Table>
             <Table.Head>
@@ -1206,7 +1271,7 @@ function Inner({
       </Section>
 
       {/* ColorSwatch */}
-      <Section title="ColorSwatch" tokens={tokens}>
+      <Section title="ColorSwatch" tokens={tokens} hidden={!showSection('ColorSwatch')}>
         <Row label="Circle sizes" tokens={tokens}>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
             {(['xs', 'sm', 'md', 'lg', 'xl', '2xl'] as const).map(s => (
@@ -1237,7 +1302,7 @@ function Inner({
       </Section>
 
       {/* ColorPicker */}
-      <Section title="ColorPicker" tokens={tokens}>
+      <Section title="ColorPicker" tokens={tokens} hidden={!showSection('ColorPicker')}>
         <Row label="Default" tokens={tokens}>
           <ColorPickerDemo />
         </Row>
@@ -1256,7 +1321,7 @@ function Inner({
       </Section>
 
       {/* SegmentedControl */}
-      <Section title="SegmentedControl" tokens={tokens}>
+      <Section title="SegmentedControl" tokens={tokens} hidden={!showSection('SegmentedControl')}>
         <Row label="Sizes" tokens={tokens}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: 320 }}>
             <SegmentedControl size="sm" defaultValue="grid" options={[{ value: 'grid', label: 'Grid' }, { value: 'list', label: 'List' }, { value: 'table', label: 'Table' }]} />
@@ -1285,7 +1350,7 @@ function Inner({
       </Section>
 
       {/* Select */}
-      <Section title="Select" tokens={tokens}>
+      <Section title="Select" tokens={tokens} hidden={!showSection('Select')}>
         <Row label="Default" tokens={tokens}>
           <div style={{ width: 280 }}>
             <Select
@@ -1326,7 +1391,7 @@ function Inner({
       </Section>
 
       {/* Tag */}
-      <Section title="Tag" tokens={tokens}>
+      <Section title="Tag" tokens={tokens} hidden={!showSection('Tag')}>
         <Row label="Dismissible" tokens={tokens}>
           {tags.map(t => (
             <Tag key={t} onDismiss={() => setTags(prev => prev.filter(x => x !== t))}>{t}</Tag>
@@ -1348,7 +1413,7 @@ function Inner({
       </Section>
 
       {/* Tooltip */}
-      <Section title="Tooltip" tokens={tokens}>
+      <Section title="Tooltip" tokens={tokens} hidden={!showSection('Tooltip')}>
         <Row label="Placements" tokens={tokens}>
           <Tooltip content="Tooltip on top" placement="top">
             <Button variant="secondary" size="sm">Top</Button>
@@ -1371,7 +1436,7 @@ function Inner({
       </Section>
 
       {/* Icon */}
-      <Section title="Icon" tokens={tokens}>
+      <Section title="Icon" tokens={tokens} hidden={!showSection('Icon')}>
         <Row label="Sizes" tokens={tokens}>
           {(['xs', 'sm', 'md', 'lg', 'xl'] as const).map(s => (
             <Tooltip key={s} content={s} delay={0}>
@@ -1402,7 +1467,7 @@ function Inner({
       {/* ── Wave 1 ── */}
 
       {/* Button */}
-      <Section title="Button" tokens={tokens}>
+      <Section title="Button" tokens={tokens} hidden={!showSection('Button')}>
         <Row label="Variants" tokens={tokens}>
           <Button variant="primary">Primary</Button>
           <Button variant="secondary">Secondary</Button>
@@ -1422,6 +1487,7 @@ function Inner({
           ))}
         </Row>
         <Row label="Sizes" tokens={tokens}>
+          <Button size="xs">Extra small</Button>
           <Button size="sm">Small</Button>
           <Button size="md">Medium</Button>
           <Button size="lg">Large</Button>
@@ -1432,6 +1498,13 @@ function Inner({
           <Button variant="outline" chevron>Dropdown</Button>
           <Button leftIcon={<StarIcon />} chevron>Both</Button>
         </Row>
+        <Row label="With swatches" tokens={tokens}>
+          <Button size="xs" variant="outline" leftIcon={<span style={{ width: 8, height: 8, borderRadius: '50%', background: '#6366f1', border: '1px solid rgba(0,0,0,0.1)' }} />}>Indigo</Button>
+          <Button size="xs" variant="outline" leftIcon={<span style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981', border: '1px solid rgba(0,0,0,0.1)' }} />}>Emerald</Button>
+          <Button size="xs" variant="outline" leftIcon={<span style={{ width: 8, height: 8, borderRadius: '50%', background: '#f43f5e', border: '1px solid rgba(0,0,0,0.1)' }} />}>Rose</Button>
+          <Button size="sm" variant="outline" leftIcon={<span style={{ width: 10, height: 10, borderRadius: '50%', background: '#0ea5e9', border: '1px solid rgba(0,0,0,0.1)' }} />}>Ocean</Button>
+          <Button size="sm" variant="primary" leftIcon={<span style={{ width: 10, height: 10, borderRadius: '50%', background: '#e9c96b', border: '1px solid rgba(0,0,0,0.1)' }} />}>Brand</Button>
+        </Row>
         <Row label="States" tokens={tokens}>
           <Button loading>Loading</Button>
           <Button variant="primary" fullWidth>Full width</Button>
@@ -1440,7 +1513,7 @@ function Inner({
 
       {/* Input */}
       {/* Badge */}
-      <Section title="Badge" tokens={tokens}>
+      <Section title="Badge" tokens={tokens} hidden={!showSection('Badge')}>
         <Row label="Variants" tokens={tokens}>
           <Badge variant="neutral">Neutral</Badge>
           <Badge variant="accent">Accent</Badge>
@@ -1456,7 +1529,7 @@ function Inner({
       </Section>
 
       {/* Avatar */}
-      <Section title="Avatar" tokens={tokens}>
+      <Section title="Avatar" tokens={tokens} hidden={!showSection('Avatar')}>
         <Row label="With image" tokens={tokens}>
           {(['xs', 'sm', 'md', 'lg', 'xl'] as const).map(s => (
             <Avatar key={s} src="https://i.pravatar.cc/150?img=3" alt="Jane Doe" size={s} />
@@ -1470,7 +1543,7 @@ function Inner({
       </Section>
 
       {/* Spinner */}
-      <Section title="Spinner" tokens={tokens}>
+      <Section title="Spinner" tokens={tokens} hidden={!showSection('Spinner')}>
         <Row label="Sizes" tokens={tokens}>
           <Spinner size="xs" />
           <Spinner size="sm" />
@@ -1480,7 +1553,7 @@ function Inner({
       </Section>
 
       {/* Divider */}
-      <Section title="Divider" tokens={tokens}>
+      <Section title="Divider" tokens={tokens} hidden={!showSection('Divider')}>
         <Row label="Horizontal" tokens={tokens}>
           <div style={{ width: '100%' }}>
             <p style={{ margin: `0 0 ${tokens.space2}`, color: tokens.textSecondary, fontSize: tokens.fontSizeSm }}>Content above</p>
@@ -1504,7 +1577,7 @@ function Inner({
         </Row>
       </Section>
 
-      <Section title="Breadcrumb" tokens={tokens}>
+      <Section title="Breadcrumb" tokens={tokens} hidden={!showSection('Breadcrumb')}>
         <Row label="Default" tokens={tokens}>
           <Breadcrumb
             items={[
@@ -1526,7 +1599,7 @@ function Inner({
         </Row>
       </Section>
 
-      <Section title="Tabs" tokens={tokens}>
+      <Section title="Tabs" tokens={tokens} hidden={!showSection('Tabs')}>
         <Row label="Underline (default)" tokens={tokens}>
           <div style={{ width: '100%' }}>
             <Tabs
@@ -1568,7 +1641,7 @@ function Inner({
         </Row>
       </Section>
 
-      <Section title="Collapsible" tokens={tokens}>
+      <Section title="Collapsible" tokens={tokens} hidden={!showSection('Collapsible')}>
         <Row label="Default" tokens={tokens}>
           <div style={{ width: '100%', maxWidth: 400, borderBottom: `1px solid ${tokens.borderDefault}` }}>
             <Collapsible trigger={<Text weight="medium">Advanced options</Text>}>
@@ -1585,7 +1658,7 @@ function Inner({
         </Row>
       </Section>
 
-      <Section title="NavLink" tokens={tokens}>
+      <Section title="NavLink" tokens={tokens} hidden={!showSection('NavLink')}>
         <Row label="States" tokens={tokens}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.space1, width: 220 }}>
             <NavLink href="#" icon={<NavIcon />}>Dashboard</NavLink>
@@ -1603,7 +1676,7 @@ function Inner({
         </Row>
       </Section>
 
-      <Section title="PageLayout" tokens={tokens}>
+      <Section title="PageLayout" tokens={tokens} hidden={!showSection('PageLayout')}>
         <Row label="With header + sidebar" tokens={tokens}>
           <div style={{ width: '100%', height: 320, border: `1px solid ${tokens.borderDefault}`, borderRadius: tokens.radiusMd, overflow: 'hidden' }}>
             <PageLayout
@@ -1699,7 +1772,7 @@ function Inner({
 
       {/* ── Molecules Wave 2 ── */}
 
-      <Section title="DataTable" tokens={tokens}>
+      <Section title="DataTable" tokens={tokens} hidden={!showSection('DataTable')}>
         <Row label="Sortable + paginated" tokens={tokens}>
           <DataTable
             style={{ width: '100%' }}
@@ -1745,7 +1818,7 @@ function Inner({
         </Row>
       </Section>
 
-      <Section title="CommandPalette" tokens={tokens}>
+      <Section title="CommandPalette" tokens={tokens} hidden={!showSection('CommandPalette')}>
         <Row label="⌘K to open" tokens={tokens}>
           <CommandPalette
             commands={[
@@ -1759,7 +1832,7 @@ function Inner({
         </Row>
       </Section>
 
-      <Section title="MultiSelect" tokens={tokens}>
+      <Section title="MultiSelect" tokens={tokens} hidden={!showSection('MultiSelect')}>
         <Row label="Sizes" tokens={tokens}>
           <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
             {(['sm', 'md', 'lg'] as const).map(s => (
@@ -1801,7 +1874,7 @@ function Inner({
         </Row>
       </Section>
 
-      <Section title="DatePicker" tokens={tokens}>
+      <Section title="DatePicker" tokens={tokens} hidden={!showSection('DatePicker')}>
         <Row label="Sizes" tokens={tokens}>
           <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
             {(['sm', 'md', 'lg'] as const).map(s => (
@@ -1820,7 +1893,7 @@ function Inner({
         </Row>
       </Section>
 
-      <Section title="DateRangePicker" tokens={tokens}>
+      <Section title="DateRangePicker" tokens={tokens} hidden={!showSection('DateRangePicker')}>
         <Row label="Sizes" tokens={tokens}>
           <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
             {(['sm', 'md', 'lg'] as const).map(s => (
@@ -1836,7 +1909,7 @@ function Inner({
         </Row>
       </Section>
 
-      <Section title="FileUpload" tokens={tokens}>
+      <Section title="FileUpload" tokens={tokens} hidden={!showSection('FileUpload')}>
         <Row label="Single file" tokens={tokens}>
           <div style={{ width: '100%', maxWidth: 480 }}>
             <FileUpload accept="image/*,.pdf" maxSize={5 * 1024 * 1024} onChange={() => {}} />
@@ -1857,7 +1930,7 @@ function Inner({
         </Row>
       </Section>
 
-      <Section title="Timeline" tokens={tokens}>
+      <Section title="Timeline" tokens={tokens} hidden={!showSection('Timeline')}>
         <Row label="Event log" tokens={tokens}>
           <div style={{ width: '100%', maxWidth: 480 }}>
             <Timeline
@@ -1876,7 +1949,8 @@ function Inner({
   );
 }
 
-function Section({ title, tokens, children }: { title: string; tokens: ReturnType<typeof useLucent>['tokens']; children: React.ReactNode }) {
+function Section({ title, tokens, children, hidden }: { title: string; tokens: ReturnType<typeof useLucent>['tokens']; children: React.ReactNode; hidden?: boolean }) {
+  if (hidden) return null;
   return (
     <div style={{ background: tokens.surface, border: `1px solid ${tokens.borderDefault}`, borderRadius: tokens.radiusLg, padding: tokens.space6, marginBottom: tokens.space6 }}>
       <h2 style={{ fontSize: tokens.fontSizeLg, fontWeight: tokens.fontWeightSemibold, marginBottom: tokens.space5, marginTop: 0 }}>{title}</h2>
