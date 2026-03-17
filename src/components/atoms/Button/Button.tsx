@@ -27,7 +27,7 @@ const variantStyles: Record<ButtonVariant, CSSProperties> = {
     border: '1px solid transparent',
   },
   secondary: {
-    background: 'var(--lucent-surface-secondary)',
+    background: 'color-mix(in srgb, var(--lucent-accent-default) 14%, var(--lucent-surface-secondary))',
     color: 'var(--lucent-text-primary)',
     border: '1px solid transparent',
   },
@@ -84,8 +84,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           ...variantStyles[variant],
           ...style,
           ...(isDisabled && {
-            background: 'var(--lucent-surface-secondary)',
-            color: 'var(--lucent-text-disabled)',
+            background: 'color-mix(in srgb, var(--lucent-surface-secondary) 70%, var(--lucent-border-default))',
+            color: 'color-mix(in srgb, var(--lucent-text-disabled) 50%, var(--lucent-border-default))',
             borderColor: 'transparent',
           }),
           // hide border entirely when bordered prop is false
