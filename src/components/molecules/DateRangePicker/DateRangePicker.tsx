@@ -188,7 +188,7 @@ export function DateRangePicker({
               onPrevMonth={prevLeft}
               onNextMonth={nextLeft}
               {...(highlightRange !== undefined && { highlightRange })}
-              onDayHover={selecting ? setHoveredDate : undefined}
+              {...(selecting && { onDayHover: setHoveredDate })}
             />
           </div>
 
@@ -208,7 +208,7 @@ export function DateRangePicker({
               onPrevMonth={prevLeft}
               onNextMonth={nextLeft}
               {...(highlightRange !== undefined && { highlightRange })}
-              onDayHover={selecting ? setHoveredDate : undefined}
+              {...(selecting && { onDayHover: setHoveredDate })}
             />
           </div>
         </div>
