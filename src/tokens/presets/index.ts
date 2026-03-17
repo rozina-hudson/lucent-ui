@@ -12,7 +12,7 @@ export type {
   ShadowName,
 } from './types.js';
 
-export { defaultPalette, brandPalette, indigoPalette, emeraldPalette, rosePalette, oceanPalette } from './palettes/index.js';
+export { defaultPalette, brandPalette, indigoPalette, violetPalette, emeraldPalette, tealPalette, rosePalette, coralPalette, amberPalette, oceanPalette, slatePalette, sagePalette } from './palettes/index.js';
 export { sharpShape, roundedShape, pillShape } from './shapes/index.js';
 export { compactDensity, defaultDensity, spaciousDensity } from './densities/index.js';
 export { flatShadow, subtleShadow, elevatedShadow } from './shadows/index.js';

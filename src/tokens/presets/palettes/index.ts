@@ -1,6 +1,12 @@
 export { defaultPalette } from './default.js';
 export { brandPalette } from './brand.js';
 export { indigoPalette } from './indigo.js';
+export { violetPalette } from './violet.js';
 export { emeraldPalette } from './emerald.js';
+export { tealPalette } from './teal.js';
 export { rosePalette } from './rose.js';
+export { coralPalette } from './coral.js';
+export { amberPalette } from './amber.js';
 export { oceanPalette } from './ocean.js';
+export { slatePalette } from './slate.js';
+export { sagePalette } from './sage.js';

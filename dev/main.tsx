@@ -2,15 +2,22 @@ import { StrictMode, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { TokenPreview } from './TokenPreview.js';
 import { ComponentPreview } from './ComponentPreview.js';
+import { SelectPlayground } from './SelectPlayground.js';
 
-type Tab = 'tokens' | 'components';
+type Tab = 'tokens' | 'components' | 'select';
+
+const tabLabels: Record<Tab, string> = {
+  components: 'Components',
+  tokens: 'Tokens',
+  select: 'Playground',
+};
 
 function App() {
-  const [tab, setTab] = useState<Tab>('components');
+  const [tab, setTab] = useState<Tab>('select');
   return (
     <div>
       <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid #e5e7eb', background: '#fff', position: 'sticky', top: 0, zIndex: 10 }}>
-        {(['components', 'tokens'] as Tab[]).map(t => (
+        {(['components', 'tokens', 'select'] as Tab[]).map(t => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -27,11 +34,11 @@ function App() {
               marginBottom: -1,
             }}
           >
-            {t.charAt(0).toUpperCase() + t.slice(1)}
+            {tabLabels[t]}
           </button>
         ))}
       </div>
-      {tab === 'tokens' ? <TokenPreview /> : <ComponentPreview />}
+      {tab === 'tokens' ? <TokenPreview /> : tab === 'select' ? <SelectPlayground /> : <ComponentPreview />}
     </div>
   );
 }

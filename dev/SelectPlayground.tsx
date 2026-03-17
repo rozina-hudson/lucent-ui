@@ -1,0 +1,435 @@
+import { useState, type ReactNode } from 'react';
+import { LucentProvider } from '../src/index.js';
+import { Input } from '../src/components/atoms/Input/index.js';
+import { Textarea } from '../src/components/atoms/Textarea/index.js';
+import { Select } from '../src/components/atoms/Select/index.js';
+import { Checkbox } from '../src/components/atoms/Checkbox/index.js';
+import { Toggle } from '../src/components/atoms/Toggle/index.js';
+import { Button } from '../src/components/atoms/Button/index.js';
+import { Tag } from '../src/components/atoms/Tag/index.js';
+import { Badge } from '../src/components/atoms/Badge/index.js';
+import { SearchInput } from '../src/components/molecules/SearchInput/index.js';
+import { Text } from '../src/components/atoms/Text/index.js';
+
+/* ------------------------------------------------------------------ */
+/*  Prop control definitions                                          */
+/* ------------------------------------------------------------------ */
+
+type PropDef =
+  | { type: 'select'; options: string[]; default: string }
+  | { type: 'boolean'; default: boolean }
+  | { type: 'text'; default: string };
+
+type PropDefs = Record<string, PropDef>;
+
+const selectOptions = [
+  { value: 'apple', label: 'Apple' },
+  { value: 'banana', label: 'Banana' },
+  { value: 'cherry', label: 'Cherry' },
+  { value: 'dragonfruit', label: 'Dragonfruit' },
+];
+
+/* Each entry: { props, render }
+   `props` defines the controllable knobs.
+   `render(propValues)` returns the JSX. */
+const registry: Record<string, {
+  props: PropDefs;
+  render: (vals: Record<string, string | boolean>) => ReactNode;
+}> = {
+  Input: {
+    props: {
+      size:      { type: 'select', options: ['sm', 'md', 'lg'], default: 'md' },
+      label:     { type: 'text', default: 'Label' },
+      placeholder: { type: 'text', default: 'Type here…' },
+      helperText: { type: 'text', default: '' },
+      errorText: { type: 'text', default: '' },
+      disabled:  { type: 'boolean', default: false },
+    },
+    render: (v) => (
+      <Input
+        size={v.size as 'sm' | 'md' | 'lg'}
+        label={v.label as string || undefined}
+        placeholder={v.placeholder as string}
+        helperText={v.helperText as string || undefined}
+        errorText={v.errorText as string || undefined}
+        disabled={v.disabled as boolean}
+      />
+    ),
+  },
+
+  Textarea: {
+    props: {
+      label:     { type: 'text', default: 'Label' },
+      placeholder: { type: 'text', default: 'Type here…' },
+      helperText: { type: 'text', default: '' },
+      errorText: { type: 'text', default: '' },
+      autoResize: { type: 'boolean', default: false },
+      disabled:  { type: 'boolean', default: false },
+    },
+    render: (v) => (
+      <Textarea
+        label={v.label as string || undefined}
+        placeholder={v.placeholder as string}
+        helperText={v.helperText as string || undefined}
+        errorText={v.errorText as string || undefined}
+        autoResize={v.autoResize as boolean}
+        disabled={v.disabled as boolean}
+      />
+    ),
+  },
+
+  Select: {
+    props: {
+      size:      { type: 'select', options: ['sm', 'md', 'lg'], default: 'md' },
+      label:     { type: 'text', default: 'Label' },
+      placeholder: { type: 'text', default: 'Choose…' },
+      helperText: { type: 'text', default: '' },
+      errorText: { type: 'text', default: '' },
+      disabled:  { type: 'boolean', default: false },
+    },
+    render: (v) => (
+      <Select
+        size={v.size as 'sm' | 'md' | 'lg'}
+        label={v.label as string || undefined}
+        placeholder={v.placeholder as string}
+        helperText={v.helperText as string || undefined}
+        errorText={v.errorText as string || undefined}
+        disabled={v.disabled as boolean}
+        options={selectOptions}
+      />
+    ),
+  },
+
+  SearchInput: {
+    props: {
+      size:      { type: 'select', options: ['sm', 'md', 'lg'], default: 'md' },
+      placeholder: { type: 'text', default: 'Search…' },
+      disabled:  { type: 'boolean', default: false },
+      isLoading: { type: 'boolean', default: false },
+    },
+    render: (v) => (
+      <SearchInput
+        value=""
+        onChange={() => {}}
+        size={v.size as 'sm' | 'md' | 'lg'}
+        placeholder={v.placeholder as string}
+        disabled={v.disabled as boolean}
+        isLoading={v.isLoading as boolean}
+      />
+    ),
+  },
+
+  Button: {
+    props: {
+      size:    { type: 'select', options: ['sm', 'md', 'lg'], default: 'md' },
+      variant: { type: 'select', options: ['primary', 'secondary', 'outline', 'ghost', 'danger'], default: 'primary' },
+      text:    { type: 'text', default: 'Click me' },
+      disabled: { type: 'boolean', default: false },
+    },
+    render: (v) => (
+      <Button
+        size={v.size as 'sm' | 'md' | 'lg'}
+        variant={v.variant as 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger'}
+        disabled={v.disabled as boolean}
+      >
+        {v.text as string}
+      </Button>
+    ),
+  },
+
+  Checkbox: {
+    props: {
+      label:    { type: 'text', default: 'Agree to terms' },
+      disabled: { type: 'boolean', default: false },
+    },
+    render: (v) => (
+      <Checkbox
+        label={v.label as string}
+        disabled={v.disabled as boolean}
+      />
+    ),
+  },
+
+  Toggle: {
+    props: {
+      label:    { type: 'text', default: 'Enable feature' },
+      size:     { type: 'select', options: ['sm', 'md'], default: 'md' },
+      disabled: { type: 'boolean', default: false },
+    },
+    render: (v) => (
+      <Toggle
+        label={v.label as string}
+        size={v.size as 'sm' | 'md'}
+        disabled={v.disabled as boolean}
+      />
+    ),
+  },
+
+  Tag: {
+    props: {
+      variant: { type: 'select', options: ['neutral', 'accent', 'success', 'warning', 'danger', 'info'], default: 'neutral' },
+      size:    { type: 'select', options: ['sm', 'md'], default: 'md' },
+      text:    { type: 'text', default: 'Tag label' },
+      dismissible: { type: 'boolean', default: false },
+    },
+    render: (v) => (
+      <Tag
+        variant={v.variant as 'neutral' | 'accent' | 'success' | 'warning' | 'danger' | 'info'}
+        size={v.size as 'sm' | 'md'}
+        onDismiss={v.dismissible ? () => {} : undefined}
+      >
+        {v.text as string}
+      </Tag>
+    ),
+  },
+
+  Badge: {
+    props: {
+      variant: { type: 'select', options: ['neutral', 'accent', 'success', 'warning', 'danger', 'info'], default: 'neutral' },
+      size:    { type: 'select', options: ['sm', 'md'], default: 'md' },
+      text:    { type: 'text', default: 'Badge' },
+    },
+    render: (v) => (
+      <Badge
+        variant={v.variant as 'neutral' | 'accent' | 'success' | 'warning' | 'danger' | 'info'}
+        size={v.size as 'sm' | 'md'}
+      >
+        {v.text as string}
+      </Badge>
+    ),
+  },
+};
+
+const componentNames = Object.keys(registry);
+
+/* ------------------------------------------------------------------ */
+/*  Prop controls panel                                               */
+/* ------------------------------------------------------------------ */
+
+function PropControls({
+  defs,
+  values,
+  onChange,
+}: {
+  defs: PropDefs;
+  values: Record<string, string | boolean>;
+  onChange: (key: string, val: string | boolean) => void;
+}) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      {Object.entries(defs).map(([key, def]) => (
+        <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <label style={{
+            width: '90px',
+            fontSize: '12px',
+            fontFamily: 'var(--lucent-font-family-mono, monospace)',
+            color: '#6b7280',
+            flexShrink: 0,
+          }}>
+            {key}
+          </label>
+
+          {def.type === 'boolean' && (
+            <input
+              type="checkbox"
+              checked={values[key] as boolean}
+              onChange={(e) => onChange(key, e.target.checked)}
+            />
+          )}
+
+          {def.type === 'select' && (
+            <select
+              value={values[key] as string}
+              onChange={(e) => onChange(key, e.target.value)}
+              style={{
+                fontSize: '12px',
+                padding: '2px 4px',
+                border: '1px solid #d1d5db',
+                borderRadius: '4px',
+                fontFamily: 'inherit',
+              }}
+            >
+              {def.options.map((o) => (
+                <option key={o} value={o}>{o}</option>
+              ))}
+            </select>
+          )}
+
+          {def.type === 'text' && (
+            <input
+              type="text"
+              value={values[key] as string}
+              onChange={(e) => onChange(key, e.target.value)}
+              placeholder={`(empty)`}
+              style={{
+                fontSize: '12px',
+                padding: '2px 6px',
+                border: '1px solid #d1d5db',
+                borderRadius: '4px',
+                fontFamily: 'inherit',
+                flex: 1,
+                minWidth: 0,
+              }}
+            />
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Single component panel                                            */
+/* ------------------------------------------------------------------ */
+
+function ComponentPanel({
+  side,
+  selectedName,
+  onSelectName,
+  propValues,
+  onPropChange,
+}: {
+  side: 'A' | 'B';
+  selectedName: string;
+  onSelectName: (name: string) => void;
+  propValues: Record<string, string | boolean>;
+  onPropChange: (key: string, val: string | boolean) => void;
+}) {
+  const entry = registry[selectedName];
+
+  return (
+    <div style={{
+      flex: '1 1 0',
+      minWidth: '320px',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '16px',
+    }}>
+      {/* Header: component picker */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <span style={{ fontSize: '11px', fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          {side}
+        </span>
+        <select
+          value={selectedName}
+          onChange={(e) => onSelectName(e.target.value)}
+          style={{
+            fontSize: '14px',
+            fontWeight: 600,
+            padding: '4px 8px',
+            border: '1px solid #d1d5db',
+            borderRadius: '6px',
+            fontFamily: 'inherit',
+            background: '#fff',
+          }}
+        >
+          {componentNames.map((n) => (
+            <option key={n} value={n}>{n}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* Controls */}
+      <div style={{
+        padding: '12px',
+        background: '#f9fafb',
+        borderRadius: '8px',
+        border: '1px solid #e5e7eb',
+      }}>
+        <PropControls
+          defs={entry.props}
+          values={propValues}
+          onChange={onPropChange}
+        />
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Helper: get defaults from a registry entry                        */
+/* ------------------------------------------------------------------ */
+
+function getDefaults(name: string): Record<string, string | boolean> {
+  const defs = registry[name].props;
+  const out: Record<string, string | boolean> = {};
+  for (const [k, d] of Object.entries(defs)) {
+    out[k] = d.default;
+  }
+  return out;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Main export                                                       */
+/* ------------------------------------------------------------------ */
+
+export function SelectPlayground() {
+  const [nameA, setNameA] = useState('Input');
+  const [nameB, setNameB] = useState('Select');
+  const [propsA, setPropsA] = useState<Record<string, string | boolean>>(() => getDefaults('Input'));
+  const [propsB, setPropsB] = useState<Record<string, string | boolean>>(() => getDefaults('Select'));
+
+  const pickA = (name: string) => { setNameA(name); setPropsA(getDefaults(name)); };
+  const pickB = (name: string) => { setNameB(name); setPropsB(getDefaults(name)); };
+  const changeA = (key: string, val: string | boolean) => setPropsA((p) => ({ ...p, [key]: val }));
+  const changeB = (key: string, val: string | boolean) => setPropsB((p) => ({ ...p, [key]: val }));
+
+  const entryA = registry[nameA];
+  const entryB = registry[nameB];
+
+  return (
+    <LucentProvider>
+      <div style={{ padding: '32px', maxWidth: '1200px', margin: '0 auto' }}>
+        <Text as="h1" size="2xl" weight="bold" style={{ marginBottom: '8px' }}>
+          Component Playground
+        </Text>
+        <Text as="p" size="sm" color="secondary" style={{ marginBottom: '32px' }}>
+          Pick two components, tweak their props, and see how they look together.
+        </Text>
+
+        {/* Controls row */}
+        <div style={{
+          display: 'flex',
+          gap: '32px',
+          alignItems: 'flex-start',
+          flexWrap: 'wrap',
+          marginBottom: '24px',
+        }}>
+          <ComponentPanel
+            side="A"
+            selectedName={nameA}
+            onSelectName={pickA}
+            propValues={propsA}
+            onPropChange={changeA}
+          />
+          <ComponentPanel
+            side="B"
+            selectedName={nameB}
+            onSelectName={pickB}
+            propValues={propsB}
+            onPropChange={changeB}
+          />
+        </div>
+
+        {/* Shared preview */}
+        <div style={{
+          padding: '32px',
+          border: '1px solid #e5e7eb',
+          borderRadius: '12px',
+          background: '#fff',
+          display: 'flex',
+          gap: '24px',
+          alignItems: 'flex-start',
+          flexWrap: 'wrap',
+        }}>
+          <div style={{ flex: '1 1 200px', minWidth: 0 }}>
+            {entryA.render(propsA)}
+          </div>
+          <div style={{ flex: '1 1 200px', minWidth: 0 }}>
+            {entryB.render(propsB)}
+          </div>
+        </div>
+      </div>
+    </LucentProvider>
+  );
+}

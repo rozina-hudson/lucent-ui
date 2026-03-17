@@ -1,4 +1,4 @@
-import { forwardRef, type SelectHTMLAttributes } from 'react';
+import { forwardRef, useState, type SelectHTMLAttributes } from 'react';
 
 export type SelectSize = 'sm' | 'md' | 'lg';
 
@@ -17,22 +17,46 @@ export interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement
   placeholder?: string;
 }
 
-const sizeHeights: Record<SelectSize, string> = {
+const sizeH: Record<SelectSize, string> = {
   sm: '32px',
   md: '40px',
   lg: '46px',
 };
 
-const sizeFonts: Record<SelectSize, string> = {
+const sizeFont: Record<SelectSize, string> = {
   sm: 'var(--lucent-font-size-sm)',
   md: 'var(--lucent-font-size-md)',
   lg: 'var(--lucent-font-size-lg)',
+};
+
+const sizePx: Record<SelectSize, string> = {
+  sm: 'var(--lucent-space-2)',
+  md: 'var(--lucent-space-3)',
+  lg: 'var(--lucent-space-3)',
 };
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
   ({ options, size = 'md', label, helperText, errorText, placeholder, disabled, id, style, ...rest }, ref) => {
     const selectId = id ?? `lucent-select-${Math.random().toString(36).slice(2, 7)}`;
     const hasError = Boolean(errorText);
+    const isDisabled = Boolean(disabled);
+
+    const [isFocused, setIsFocused] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
+
+    const borderColor = isDisabled
+      ? 'transparent'
+      : hasError
+        ? 'var(--lucent-danger-default)'
+        : isFocused
+          ? 'var(--lucent-focus-ring)'
+          : isHovered
+            ? 'var(--lucent-border-strong)'
+            : 'var(--lucent-border-default)';
+
+    const boxShadow = isFocused
+      ? `0 0 0 3px ${hasError ? 'var(--lucent-danger-subtle)' : 'var(--lucent-accent-subtle)'}`
+      : 'none';
 
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--lucent-space-1)', width: '100%', ...style }}>
@@ -42,14 +66,34 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             style={{
               fontSize: 'var(--lucent-font-size-sm)',
               fontWeight: 'var(--lucent-font-weight-medium)',
-              color: 'var(--lucent-text-primary)',
+              color: isDisabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-primary)',
               fontFamily: 'var(--lucent-font-family-base)',
             }}
           >
             {label}
           </label>
         )}
-        <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+
+        {/* Field wrapper — owns the border, focus ring, and height (matches Input) */}
+        <div
+          style={{
+            position: 'relative',
+            display: 'flex',
+            alignItems: 'center',
+            height: sizeH[size],
+            border: `1px solid ${borderColor}`,
+            borderRadius: 'var(--lucent-radius-lg)',
+            boxShadow,
+            background: isDisabled ? 'var(--lucent-surface-secondary)' : 'var(--lucent-surface)',
+            cursor: isDisabled ? 'not-allowed' : 'pointer',
+            transition: [
+              `border-color var(--lucent-duration-fast) var(--lucent-easing-default)`,
+              `box-shadow var(--lucent-duration-fast) var(--lucent-easing-default)`,
+            ].join(', '),
+          }}
+          onMouseEnter={() => { if (!isDisabled) setIsHovered(true); }}
+          onMouseLeave={() => setIsHovered(false)}
+        >
           <select
             ref={ref}
             id={selectId}
@@ -60,48 +104,25 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             }
             style={{
               width: '100%',
-              height: sizeHeights[size],
-              padding: `0 var(--lucent-space-8) 0 var(--lucent-space-3)`,
-              fontSize: sizeFonts[size],
+              height: '100%',
+              padding: `0 var(--lucent-space-8) 0 ${sizePx[size]}`,
+              fontSize: sizeFont[size],
               fontFamily: 'var(--lucent-font-family-base)',
-              color: 'var(--lucent-text-primary)',
-              background: 'var(--lucent-surface)',
-              border: `1px solid ${hasError ? 'var(--lucent-danger-default)' : 'var(--lucent-border-default)'}`,
+              color: isDisabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-primary)',
+              background: 'transparent',
+              border: 'none',
               borderRadius: 'var(--lucent-radius-lg)',
               outline: 'none',
-              boxSizing: 'border-box',
               appearance: 'none',
-              cursor: disabled ? 'not-allowed' : 'pointer',
-              transition: `border-color var(--lucent-duration-fast) var(--lucent-easing-default)`,
-            }}
-            onMouseEnter={(e) => {
-              if (!disabled && e.currentTarget !== document.activeElement) {
-                e.currentTarget.style.borderColor = hasError
-                  ? 'var(--lucent-danger-default)'
-                  : 'var(--lucent-border-strong)';
-              }
-              rest.onMouseEnter?.(e);
-            }}
-            onMouseLeave={(e) => {
-              if (!disabled && e.currentTarget !== document.activeElement) {
-                e.currentTarget.style.borderColor = hasError
-                  ? 'var(--lucent-danger-default)'
-                  : 'var(--lucent-border-default)';
-              }
-              rest.onMouseLeave?.(e);
+              cursor: isDisabled ? 'not-allowed' : 'pointer',
+              boxSizing: 'border-box',
             }}
             onFocus={(e) => {
-              e.currentTarget.style.borderColor = hasError
-                ? 'var(--lucent-danger-default)'
-                : 'var(--lucent-focus-ring)';
-              e.currentTarget.style.boxShadow = `0 0 0 3px ${hasError ? 'var(--lucent-danger-subtle)' : 'var(--lucent-accent-subtle)'}`;
+              setIsFocused(true);
               rest.onFocus?.(e);
             }}
             onBlur={(e) => {
-              e.currentTarget.style.borderColor = hasError
-                ? 'var(--lucent-danger-default)'
-                : 'var(--lucent-border-default)';
-              e.currentTarget.style.boxShadow = 'none';
+              setIsFocused(false);
               rest.onBlur?.(e);
             }}
             {...rest}
@@ -122,9 +143,9 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             aria-hidden
             style={{
               position: 'absolute',
-              right: 'var(--lucent-space-3)',
+              right: sizePx[size],
               pointerEvents: 'none',
-              color: 'var(--lucent-text-secondary)',
+              color: isDisabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-secondary)',
               display: 'flex',
               alignItems: 'center',
             }}
@@ -134,6 +155,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             </svg>
           </span>
         </div>
+
         {hasError && (
           <span
             id={`${selectId}-error`}

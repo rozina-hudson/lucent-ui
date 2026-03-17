@@ -1,6 +1,6 @@
 import { forwardRef, type ButtonHTMLAttributes, type CSSProperties, type ReactNode } from 'react';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
+export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -24,9 +24,14 @@ const variantStyles: Record<ButtonVariant, CSSProperties> = {
   primary: {
     background: 'var(--lucent-accent-default)',
     color: 'var(--lucent-text-on-accent)',
-    border: '1px solid var(--lucent-accent-border)',
+    border: '1px solid transparent',
   },
   secondary: {
+    background: 'color-mix(in srgb, var(--lucent-accent-default) 14%, var(--lucent-surface-secondary))',
+    color: 'var(--lucent-text-primary)',
+    border: '1px solid transparent',
+  },
+  outline: {
     background: 'var(--lucent-surface)',
     color: 'var(--lucent-text-primary)',
     border: '1px solid var(--lucent-border-default)',
@@ -44,9 +49,9 @@ const variantStyles: Record<ButtonVariant, CSSProperties> = {
 };
 
 const sizeStyles: Record<ButtonSize, CSSProperties> = {
-  sm: { height: '32px', padding: '0 var(--lucent-space-3)', fontSize: 'var(--lucent-font-size-sm)' },
-  md: { height: '38px', padding: '0 var(--lucent-space-4)', fontSize: 'var(--lucent-font-size-md)' },
-  lg: { height: '46px', padding: '0 var(--lucent-space-5)', fontSize: 'var(--lucent-font-size-lg)' },
+  sm: { height: '34px', padding: '0 var(--lucent-space-3)', fontSize: 'var(--lucent-font-size-sm)' },
+  md: { height: '42px', padding: '0 var(--lucent-space-4)', fontSize: 'var(--lucent-font-size-md)' },
+  lg: { height: '48px', padding: '0 var(--lucent-space-5)', fontSize: 'var(--lucent-font-size-lg)' },
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -79,8 +84,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           ...variantStyles[variant],
           ...style,
           ...(isDisabled && {
-            background: 'var(--lucent-surface-secondary)',
-            color: 'var(--lucent-text-disabled)',
+            background: 'color-mix(in srgb, var(--lucent-surface-secondary) 70%, var(--lucent-border-default))',
+            color: 'color-mix(in srgb, var(--lucent-text-disabled) 50%, var(--lucent-border-default))',
             borderColor: 'transparent',
           }),
           // hide border entirely when bordered prop is false
@@ -95,15 +100,24 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           rest.onMouseLeave?.(e);
         }}
         onMouseDown={(e) => {
-          if (!isDisabled) e.currentTarget.style.transform = 'scale(0.95)';
+          if (!isDisabled) {
+            const ring = variant === 'danger' ? 'var(--lucent-danger-default)' : 'var(--lucent-accent-default)';
+            e.currentTarget.style.transform = 'translateY(1px)';
+            e.currentTarget.style.boxShadow = `0 0 0 2px var(--lucent-surface), 0 0 0 4px ${ring}`;
+            e.currentTarget.dataset.pressed = '1';
+          }
           rest.onMouseDown?.(e);
         }}
         onMouseUp={(e) => {
           e.currentTarget.style.transform = '';
+          e.currentTarget.style.boxShadow = '';
+          delete e.currentTarget.dataset.pressed;
           rest.onMouseUp?.(e);
         }}
         onFocus={(e) => {
-          e.currentTarget.style.boxShadow = '0 0 0 3px var(--lucent-accent-subtle)';
+          if (!e.currentTarget.dataset.pressed) {
+            e.currentTarget.style.boxShadow = '0 0 0 3px var(--lucent-accent-subtle)';
+          }
           rest.onFocus?.(e);
         }}
         onBlur={(e) => {
@@ -123,14 +137,26 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
 Button.displayName = 'Button';
 
+const hoverShadow: Record<ButtonVariant, string> = {
+  primary:   '0 4px 14px -2px var(--lucent-accent-subtle)',
+  secondary: '0 4px 14px -2px var(--lucent-accent-subtle)',
+  outline:   '0 4px 14px -2px var(--lucent-accent-subtle)',
+  ghost:     '0 4px 14px -2px var(--lucent-accent-subtle)',
+  danger:    '0 4px 14px -2px var(--lucent-danger-subtle)',
+};
+
 function applyHover(el: HTMLButtonElement, variant: ButtonVariant, bordered?: boolean) {
+  el.style.transform = 'translateY(-1px)';
+  el.style.boxShadow = hoverShadow[variant];
+
   if (variant === 'primary') {
     el.style.background = 'var(--lucent-accent-hover)';
-    if (bordered !== false) el.style.borderColor = 'var(--lucent-accent-border)';
   } else if (variant === 'secondary') {
-    el.style.background = 'var(--lucent-surface-secondary)';
+    el.style.background = 'color-mix(in srgb, var(--lucent-accent-default) 10%, var(--lucent-surface-secondary))';
+  } else if (variant === 'outline') {
+    el.style.background = 'color-mix(in srgb, var(--lucent-accent-default) 10%, var(--lucent-surface))';
   } else if (variant === 'ghost') {
-    el.style.background = 'var(--lucent-surface-secondary)';
+    el.style.background = 'color-mix(in srgb, var(--lucent-accent-default) 8%, var(--lucent-surface))';
   } else if (variant === 'danger') {
     el.style.background = 'var(--lucent-danger-hover)';
     if (bordered !== false) el.style.borderColor = 'var(--lucent-danger-hover)';
@@ -138,10 +164,14 @@ function applyHover(el: HTMLButtonElement, variant: ButtonVariant, bordered?: bo
 }
 
 function removeHover(el: HTMLButtonElement, variant: ButtonVariant, bordered?: boolean) {
+  el.style.transform = '';
+  el.style.boxShadow = '';
+
   if (variant === 'primary') {
     el.style.background = 'var(--lucent-accent-default)';
-    if (bordered !== false) el.style.borderColor = 'var(--lucent-accent-border)';
   } else if (variant === 'secondary') {
+    el.style.background = 'var(--lucent-surface-secondary)';
+  } else if (variant === 'outline') {
     el.style.background = 'var(--lucent-surface)';
   } else if (variant === 'ghost') {
     el.style.background = 'transparent';
