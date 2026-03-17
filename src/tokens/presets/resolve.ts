@@ -16,9 +16,15 @@ import type {
 import { defaultPalette } from './palettes/default.js';
 import { brandPalette } from './palettes/brand.js';
 import { indigoPalette } from './palettes/indigo.js';
+import { violetPalette } from './palettes/violet.js';
 import { emeraldPalette } from './palettes/emerald.js';
+import { tealPalette } from './palettes/teal.js';
 import { rosePalette } from './palettes/rose.js';
+import { coralPalette } from './palettes/coral.js';
+import { amberPalette } from './palettes/amber.js';
 import { oceanPalette } from './palettes/ocean.js';
+import { slatePalette } from './palettes/slate.js';
+import { sagePalette } from './palettes/sage.js';
 
 import { sharpShape } from './shapes/sharp.js';
 import { roundedShape } from './shapes/rounded.js';
@@ -42,9 +48,15 @@ const paletteMap: Record<PaletteName, ColorPalette> = {
   default: defaultPalette,
   brand: brandPalette,
   indigo: indigoPalette,
+  violet: violetPalette,
   emerald: emeraldPalette,
+  teal: tealPalette,
   rose: rosePalette,
+  coral: coralPalette,
+  amber: amberPalette,
   ocean: oceanPalette,
+  slate: slatePalette,
+  sage: sagePalette,
 };
 
 const shapeMap: Record<ShapeName, ShapePreset> = {

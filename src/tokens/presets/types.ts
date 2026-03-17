@@ -31,7 +31,7 @@ export interface DesignPreset {
 }
 
 export type PresetName = 'modern' | 'enterprise' | 'playful';
-export type PaletteName = 'default' | 'brand' | 'indigo' | 'emerald' | 'rose' | 'ocean';
+export type PaletteName = 'default' | 'brand' | 'indigo' | 'violet' | 'emerald' | 'teal' | 'rose' | 'coral' | 'amber' | 'ocean' | 'slate' | 'sage';
 export type ShapeName = 'sharp' | 'rounded' | 'pill';
 export type DensityName = 'compact' | 'default' | 'spacious';
 export type ShadowName = 'flat' | 'subtle' | 'elevated';

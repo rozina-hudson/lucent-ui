@@ -103,9 +103,15 @@ const PALETTE_OPTIONS: { value: PaletteName; label: string; swatch: string }[] =
   { value: 'default', label: 'Default', swatch: '#111827' },
   { value: 'brand', label: 'Brand', swatch: '#e9c96b' },
   { value: 'indigo', label: 'Indigo', swatch: '#6366f1' },
+  { value: 'violet', label: 'Violet', swatch: '#8b5cf6' },
   { value: 'emerald', label: 'Emerald', swatch: '#10b981' },
+  { value: 'teal', label: 'Teal', swatch: '#0d9488' },
   { value: 'rose', label: 'Rose', swatch: '#f43f5e' },
+  { value: 'coral', label: 'Coral', swatch: '#e8624a' },
+  { value: 'amber', label: 'Amber', swatch: '#d97706' },
   { value: 'ocean', label: 'Ocean', swatch: '#0ea5e9' },
+  { value: 'slate', label: 'Slate', swatch: '#475569' },
+  { value: 'sage', label: 'Sage', swatch: '#5f8c6e' },
 ];
 
 const SHAPE_OPTIONS: { value: ShapeName; label: string }[] = [

@@ -8,7 +8,7 @@ import {
 import { lightTokens } from '../tokens/light.js';
 import { darkTokens } from '../tokens/dark.js';
 import { makeLibraryCSS } from '../tokens/css.js';
-import { getContrastText } from '../tokens/contrast.js';
+import { getContrastText, ensureContrast } from '../tokens/contrast.js';
 import { adjustLightness } from '../tokens/color.js';
 import { deriveTokens } from '../tokens/derive.js';
 import { createTheme } from '../tokens/createTheme.js';
@@ -129,10 +129,15 @@ export function LucentProvider({
         ? adjustLightness(merged.accentDefault, -0.15)
         : adjustLightness(merged.accentDefault, 0.15));
 
+    // Pick the best text color, then nudge the accent if APCA contrast is too low
+    const textOnAccent = effectiveOverrides?.textOnAccent ?? getContrastText(merged.accentDefault);
+    const adjustedAccent = ensureContrast(merged.accentDefault, textOnAccent);
+
     return {
       ...merged,
       ...derived,
-      textOnAccent: effectiveOverrides?.textOnAccent ?? getContrastText(merged.accentDefault),
+      accentDefault: adjustedAccent,
+      textOnAccent,
       accentBorder: computedBorder,
     };
   })();
