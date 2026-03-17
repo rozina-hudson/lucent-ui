@@ -1155,7 +1155,7 @@ function Inner({
             </Table.Head>
             <Table.Body>
               {[
-                ['variant', '"primary" | "secondary" | "ghost" | "danger"', '"primary"', 'Visual style of the button'],
+                ['variant', '"primary" | "secondary" | "outline" | "ghost" | "danger"', '"primary"', 'Visual style of the button'],
                 ['size', '"sm" | "md" | "lg"', '"md"', 'Controls height and padding'],
                 ['disabled', 'boolean', 'false', 'Prevents interaction'],
                 ['loading', 'boolean', 'false', 'Shows a spinner, disables click'],
@@ -1400,9 +1400,20 @@ function Inner({
         <Row label="Variants" tokens={tokens}>
           <Button variant="primary">Primary</Button>
           <Button variant="secondary">Secondary</Button>
+          <Button variant="outline">Outline</Button>
           <Button variant="ghost">Ghost</Button>
           <Button variant="danger">Danger</Button>
-          <Button variant="primary" bordered={false}>Flat</Button>
+
+        </Row>
+        <Row label="Pressed" tokens={tokens}>
+          {(['primary', 'secondary', 'outline', 'ghost', 'danger'] as const).map((v) => (
+            <Button key={v} variant={v} disableHoverStyles style={{ transform: 'translateY(1px)', boxShadow: `0 0 0 2px var(--lucent-surface), 0 0 0 4px ${v === 'danger' ? 'var(--lucent-danger-default)' : 'var(--lucent-accent-default)'}` }}>{v.charAt(0).toUpperCase() + v.slice(1)}</Button>
+          ))}
+        </Row>
+        <Row label="Disabled" tokens={tokens}>
+          {(['primary', 'secondary', 'outline', 'ghost', 'danger'] as const).map((v) => (
+            <Button key={v} variant={v} disabled>{v.charAt(0).toUpperCase() + v.slice(1)}</Button>
+          ))}
         </Row>
         <Row label="Sizes" tokens={tokens}>
           <Button size="sm">Small</Button>
@@ -1411,13 +1422,12 @@ function Inner({
         </Row>
         <Row label="Icons" tokens={tokens}>
           <Button leftIcon={<StarIcon />}>With prefix</Button>
-          <Button variant="secondary" rightIcon={<StarIcon />}>With suffix</Button>
-          <Button variant="secondary" chevron>Dropdown</Button>
+          <Button variant="outline" rightIcon={<StarIcon />}>With suffix</Button>
+          <Button variant="outline" chevron>Dropdown</Button>
           <Button leftIcon={<StarIcon />} chevron>Both</Button>
         </Row>
         <Row label="States" tokens={tokens}>
           <Button loading>Loading</Button>
-          <Button disabled>Disabled</Button>
           <Button variant="primary" fullWidth>Full width</Button>
         </Row>
       </Section>

@@ -10,11 +10,12 @@ export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElemen
 }
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ label, helperText, errorText, autoResize = false, maxLength, showCount = false, id, value, onChange, style, ...rest }, ref) => {
+  ({ label, helperText, errorText, autoResize = false, maxLength, showCount = false, id, value, onChange, disabled, style, ...rest }, ref) => {
     const internalRef = useRef<HTMLTextAreaElement>(null);
     const resolvedRef = (ref as React.RefObject<HTMLTextAreaElement>) ?? internalRef;
     const inputId = id ?? `lucent-textarea-${Math.random().toString(36).slice(2, 7)}`;
     const hasError = Boolean(errorText);
+    const isDisabled = Boolean(disabled);
     const charCount = typeof value === 'string' ? value.length : 0;
 
     useEffect(() => {
@@ -25,13 +26,19 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       el.style.height = `${el.scrollHeight}px`;
     }, [value, autoResize, resolvedRef]);
 
+    const borderColor = isDisabled
+      ? 'transparent'
+      : hasError
+        ? 'var(--lucent-danger-default)'
+        : 'var(--lucent-border-default)';
+
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--lucent-space-1)', width: '100%' }}>
         {label && (
           <label htmlFor={inputId} style={{
             fontSize: 'var(--lucent-font-size-sm)',
             fontWeight: 'var(--lucent-font-weight-medium)',
-            color: 'var(--lucent-text-primary)',
+            color: isDisabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-primary)',
             fontFamily: 'var(--lucent-font-family-base)',
           }}>
             {label}
@@ -43,6 +50,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           maxLength={maxLength}
           value={value}
           onChange={onChange}
+          disabled={disabled}
           aria-invalid={hasError}
           aria-describedby={hasError ? `${inputId}-error` : helperText ? `${inputId}-helper` : undefined}
           style={{
@@ -51,23 +59,45 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             padding: 'var(--lucent-space-3)',
             fontSize: 'var(--lucent-font-size-md)',
             fontFamily: 'var(--lucent-font-family-base)',
-            color: 'var(--lucent-text-primary)',
-            background: 'var(--lucent-surface)',
-            border: `1px solid ${hasError ? 'var(--lucent-danger-default)' : 'var(--lucent-border-default)'}`,
-            borderRadius: 'var(--lucent-radius-md)',
+            color: isDisabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-primary)',
+            background: isDisabled ? 'var(--lucent-surface-secondary)' : 'var(--lucent-surface)',
+            border: `1px solid ${borderColor}`,
+            borderRadius: 'var(--lucent-radius-lg)',
             outline: 'none',
             resize: autoResize ? 'none' : 'vertical',
             boxSizing: 'border-box',
             lineHeight: 'var(--lucent-line-height-base)',
-            transition: `border-color var(--lucent-duration-fast) var(--lucent-easing-default)`,
+            cursor: isDisabled ? 'not-allowed' : undefined,
+            transition: [
+              `border-color var(--lucent-duration-fast) var(--lucent-easing-default)`,
+              `box-shadow var(--lucent-duration-fast) var(--lucent-easing-default)`,
+            ].join(', '),
             ...style,
           }}
+          onMouseEnter={(e) => {
+            if (!isDisabled && e.currentTarget !== document.activeElement) {
+              e.currentTarget.style.borderColor = hasError
+                ? 'var(--lucent-danger-default)'
+                : 'var(--lucent-border-strong)';
+            }
+            rest.onMouseEnter?.(e);
+          }}
+          onMouseLeave={(e) => {
+            if (!isDisabled && e.currentTarget !== document.activeElement) {
+              e.currentTarget.style.borderColor = hasError
+                ? 'var(--lucent-danger-default)'
+                : 'var(--lucent-border-default)';
+            }
+            rest.onMouseLeave?.(e);
+          }}
           onFocus={(e) => {
+            if (isDisabled) return;
             e.currentTarget.style.borderColor = hasError ? 'var(--lucent-danger-default)' : 'var(--lucent-focus-ring)';
             e.currentTarget.style.boxShadow = `0 0 0 3px ${hasError ? 'var(--lucent-danger-subtle)' : 'var(--lucent-accent-subtle)'}`;
             rest.onFocus?.(e);
           }}
           onBlur={(e) => {
+            if (isDisabled) return;
             e.currentTarget.style.borderColor = hasError ? 'var(--lucent-danger-default)' : 'var(--lucent-border-default)';
             e.currentTarget.style.boxShadow = 'none';
             rest.onBlur?.(e);

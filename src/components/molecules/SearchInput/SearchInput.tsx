@@ -1,5 +1,5 @@
 import { useRef, useState, type CSSProperties } from 'react';
-import { Input } from '../../atoms/Input/Input.js';
+import { Input, type InputSize } from '../../atoms/Input/Input.js';
 import { Spinner } from '../../atoms/Spinner/Spinner.js';
 import { Text } from '../../atoms/Text/Text.js';
 
@@ -12,6 +12,7 @@ export interface SearchInputProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  size?: InputSize;
   results?: SearchResult[];
   onResultSelect?: (result: SearchResult) => void;
   isLoading?: boolean;
@@ -37,6 +38,7 @@ export function SearchInput({
   value,
   onChange,
   placeholder = 'Search…',
+  size = 'md',
   results = [],
   onResultSelect,
   isLoading = false,
@@ -98,6 +100,7 @@ export function SearchInput({
       <Input
         id={id}
         type="search"
+        size={size}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
