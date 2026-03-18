@@ -15,7 +15,7 @@ export interface ToggleProps extends Omit<InputHTMLAttributes<HTMLInputElement>,
   align?: 'left' | 'right';
 }
 
-const containedHeight: Record<ToggleSize, number> = { sm: 32, md: 40, lg: 46 };
+const containedHeight: Record<ToggleSize, string> = { sm: 'calc(var(--lucent-space-8) * 0.5 + 16px)', md: 'calc(var(--lucent-space-10) * 0.5 + 20px)', lg: 'calc(var(--lucent-space-12) * 0.5 + 24px)' };
 
 const sizes: Record<ToggleSize, { track: [number, number]; thumb: number }> = {
   sm: { track: [28, 16], thumb: 12 },

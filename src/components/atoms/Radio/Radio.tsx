@@ -90,7 +90,7 @@ export interface RadioProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
 }
 
 const sizePx: Record<RadioSize, number> = { sm: 14, md: 16, lg: 20 };
-const containedHeight: Record<RadioSize, number> = { sm: 32, md: 40, lg: 46 };
+const containedHeight: Record<RadioSize, string> = { sm: 'calc(var(--lucent-space-8) * 0.5 + 16px)', md: 'calc(var(--lucent-space-10) * 0.5 + 20px)', lg: 'calc(var(--lucent-space-12) * 0.5 + 24px)' };
 const sizeFontSize: Record<RadioSize, string> = {
   sm: 'var(--lucent-font-size-sm)',
   md: 'var(--lucent-font-size-md)',

@@ -21,8 +21,8 @@ export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement
 }
 
 const sizePx: Record<CheckboxSize, number> = { sm: 14, md: 16, lg: 20 };
-// Content-box height so contained checkbox matches Input (sm=32, md=40, lg=46)
-const containedHeight: Record<CheckboxSize, number> = { sm: 32, md: 40, lg: 46 };
+// Contained height matches Input (dampened vertical scaling)
+const containedHeight: Record<CheckboxSize, string> = { sm: 'calc(var(--lucent-space-8) * 0.5 + 16px)', md: 'calc(var(--lucent-space-10) * 0.5 + 20px)', lg: 'calc(var(--lucent-space-12) * 0.5 + 24px)' };
 
 // Keyframes injected once — spring pop on the box, draw-in on the mark.
 const STYLES = `

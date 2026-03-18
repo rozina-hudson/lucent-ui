@@ -50,9 +50,9 @@ const variantStyles: Record<ButtonVariant, CSSProperties> = {
 
 const sizeStyles: Record<ButtonSize, CSSProperties> = {
   xs: { height: '26px', padding: '0 var(--lucent-space-2)', fontSize: 'var(--lucent-font-size-xs)' },
-  sm: { height: '34px', padding: '0 var(--lucent-space-3)', fontSize: 'var(--lucent-font-size-sm)' },
-  md: { height: '42px', padding: '0 var(--lucent-space-4)', fontSize: 'var(--lucent-font-size-md)' },
-  lg: { height: '48px', padding: '0 var(--lucent-space-5)', fontSize: 'var(--lucent-font-size-lg)' },
+  sm: { height: 'calc(var(--lucent-space-8) * 0.5 + 18px)', padding: '0 var(--lucent-space-3)', fontSize: 'var(--lucent-font-size-sm)' },
+  md: { height: 'calc(var(--lucent-space-10) * 0.5 + 22px)', padding: '0 var(--lucent-space-4)', fontSize: 'var(--lucent-font-size-md)' },
+  lg: { height: 'calc(var(--lucent-space-12) * 0.5 + 26px)', padding: '0 var(--lucent-space-5)', fontSize: 'var(--lucent-font-size-lg)' },
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
