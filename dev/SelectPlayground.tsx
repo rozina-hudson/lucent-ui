@@ -6,8 +6,7 @@ import { Select } from '../src/components/atoms/Select/index.js';
 import { Checkbox } from '../src/components/atoms/Checkbox/index.js';
 import { Toggle } from '../src/components/atoms/Toggle/index.js';
 import { Button } from '../src/components/atoms/Button/index.js';
-import { Tag } from '../src/components/atoms/Tag/index.js';
-import { Badge } from '../src/components/atoms/Badge/index.js';
+import { Chip } from '../src/components/atoms/Chip/index.js';
 import { SearchInput } from '../src/components/molecules/SearchInput/index.js';
 import { MultiSelect } from '../src/components/molecules/MultiSelect/index.js';
 import { DatePicker } from '../src/components/molecules/DatePicker/index.js';
@@ -176,37 +175,31 @@ const registry: Record<string, {
     ),
   },
 
-  Tag: {
+  Chip: {
     props: {
-      variant: { type: 'select', options: ['neutral', 'accent', 'success', 'warning', 'danger', 'info'], default: 'neutral' },
-      size:    { type: 'select', options: ['sm', 'md', 'lg'], default: 'md' },
-      text:    { type: 'text', default: 'Tag label' },
+      variant:    { type: 'select', options: ['neutral', 'accent', 'success', 'warning', 'danger', 'info'], default: 'neutral' },
+      size:       { type: 'select', options: ['sm', 'md', 'lg'], default: 'md' },
+      text:       { type: 'text', default: 'Chip label' },
+      swatch:     { type: 'text', default: '' },
+      dot:        { type: 'boolean', default: false },
+      borderless: { type: 'boolean', default: false },
       dismissible: { type: 'boolean', default: false },
+      clickable:  { type: 'boolean', default: false },
+      disabled:   { type: 'boolean', default: false },
     },
     render: (v) => (
-      <Tag
+      <Chip
         variant={v.variant as 'neutral' | 'accent' | 'success' | 'warning' | 'danger' | 'info'}
         size={v.size as 'sm' | 'md' | 'lg'}
+        {...(v.swatch ? { swatch: v.swatch as string } : {})}
+        dot={v.dot as boolean}
+        borderless={v.borderless as boolean}
         onDismiss={v.dismissible ? () => {} : undefined}
+        onClick={v.clickable ? () => {} : undefined}
+        disabled={v.disabled as boolean}
       >
         {v.text as string}
-      </Tag>
-    ),
-  },
-
-  Badge: {
-    props: {
-      variant: { type: 'select', options: ['neutral', 'accent', 'success', 'warning', 'danger', 'info'], default: 'neutral' },
-      size:    { type: 'select', options: ['sm', 'md'], default: 'md' },
-      text:    { type: 'text', default: 'Badge' },
-    },
-    render: (v) => (
-      <Badge
-        variant={v.variant as 'neutral' | 'accent' | 'success' | 'warning' | 'danger' | 'info'}
-        size={v.size as 'sm' | 'md'}
-      >
-        {v.text as string}
-      </Badge>
+      </Chip>
     ),
   },
 

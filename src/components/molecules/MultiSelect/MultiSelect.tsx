@@ -4,7 +4,7 @@ import {
 } from 'react';
 import { Text } from '../../atoms/Text/index.js';
 import { Checkbox } from '../../atoms/Checkbox/index.js';
-import { Tag } from '../../atoms/Tag/index.js';
+import { Chip } from '../../atoms/Chip/index.js';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -42,7 +42,7 @@ const sizePaddings: Record<MultiSelectSize, string> = {
 };
 
 // Map MultiSelect size → Tag size that fits inside the trigger
-const tagSizeMap: Record<MultiSelectSize, 'sm' | 'md' | 'lg'> = { sm: 'sm', md: 'md', lg: 'lg' };
+const chipSizeMap: Record<MultiSelectSize, 'sm' | 'md' | 'lg'> = { sm: 'sm', md: 'md', lg: 'lg' };
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -156,7 +156,7 @@ export function MultiSelect({
         {selected.map(val => {
           const opt = options.find(o => o.value === val);
           return opt ? (
-            <Tag key={val} size={tagSizeMap[size]} onDismiss={() => remove(val)} disabled={disabled}>{opt.label}</Tag>
+            <Chip key={val} size={chipSizeMap[size]} onDismiss={() => remove(val)} disabled={disabled}>{opt.label}</Chip>
           ) : null;
         })}
 
