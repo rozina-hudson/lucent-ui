@@ -105,7 +105,7 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
   ],
 
   compositionGraph: [
-    { componentId: 'tag', componentName: 'Tag', role: 'Selected value chips with dismiss button', required: true },
+    { componentId: 'chip', componentName: 'Chip', role: 'Selected value chips with dismiss button', required: true },
     { componentId: 'checkbox', componentName: 'Checkbox', role: 'Selection indicator in dropdown options', required: true },
     { componentId: 'text', componentName: 'Text', role: 'Option labels, empty state, and max hint', required: true },
   ],

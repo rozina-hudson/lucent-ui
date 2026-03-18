@@ -13,13 +13,16 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
     'validation failures; the component applies danger styling automatically. ' +
     'leftElement and rightElement accept icons or small controls (e.g. currency symbol, clear button).',
   props: [
-    { name: 'type', type: 'enum', required: false, default: 'text', description: 'HTML input type.', enumValues: ['text', 'number', 'password', 'email', 'tel', 'url', 'search'] },
+    { name: 'size', type: 'enum', required: false, default: 'md', description: 'Controls height, font size, and padding. Label and helper text scale accordingly.', enumValues: ['sm', 'md', 'lg'] },
+    { name: 'type', type: 'enum', required: false, default: 'text', description: 'HTML input type.', enumValues: ['text', 'number', 'password', 'email', 'tel', 'url', 'search', 'color'] },
     { name: 'label', type: 'string', required: false, description: 'Visible label rendered above the input.' },
     { name: 'helperText', type: 'string', required: false, description: 'Supplementary hint shown below the input.' },
     { name: 'errorText', type: 'string', required: false, description: 'Validation error message. When set, input renders in error state.' },
     { name: 'leftElement', type: 'ReactNode', required: false, description: 'Icon or adornment rendered inside the left edge.' },
     { name: 'rightElement', type: 'ReactNode', required: false, description: 'Icon or adornment rendered inside the right edge.' },
     { name: 'placeholder', type: 'string', required: false, description: 'Placeholder text. Use as a hint, not a label.' },
+    { name: 'prefix', type: 'ReactNode', required: false, description: 'Inset label attached to the left of the field (e.g. "$", "https://").' },
+    { name: 'suffix', type: 'ReactNode', required: false, description: 'Inset label attached to the right of the field (e.g. "kg", ".com").' },
     { name: 'disabled', type: 'boolean', required: false, default: 'false', description: 'Disables the input.' },
     { name: 'value', type: 'string', required: false, description: 'Controlled value.' },
     { name: 'onChange', type: 'function', required: false, description: 'Change handler.' },
