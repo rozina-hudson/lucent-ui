@@ -78,22 +78,22 @@ const sizeStyles: Record<ChipSize, {
   sm: {
     fontSize: 'var(--lucent-font-size-xs)',
     height: 'calc(var(--lucent-space-5) * 0.5 + 10px)',
-    padding: '0 var(--lucent-space-3)',
-    paddingDismiss: '0 var(--lucent-space-2) 0 var(--lucent-space-3)',
+    padding: 'var(--lucent-space-1) var(--lucent-space-2)',
+    paddingDismiss: 'var(--lucent-space-1) var(--lucent-space-1) var(--lucent-space-1) var(--lucent-space-2)',
     iconSize: 12, dotSize: 6, gap: 'var(--lucent-space-1)',
   },
   md: {
     fontSize: 'var(--lucent-font-size-sm)',
     height: 'calc(var(--lucent-space-6) * 0.5 + 12px)',
-    padding: '0 var(--lucent-space-3)',
-    paddingDismiss: '0 var(--lucent-space-2) 0 var(--lucent-space-3)',
+    padding: 'var(--lucent-space-1) var(--lucent-space-2)',
+    paddingDismiss: 'var(--lucent-space-1) var(--lucent-space-1) var(--lucent-space-1) var(--lucent-space-2)',
     iconSize: 14, dotSize: 7, gap: 'var(--lucent-space-2)',
   },
   lg: {
     fontSize: 'var(--lucent-font-size-md)',
     height: 'calc(var(--lucent-space-8) * 0.5 + 14px)',
-    padding: '0 var(--lucent-space-4)',
-    paddingDismiss: '0 var(--lucent-space-2) 0 var(--lucent-space-4)',
+    padding: 'var(--lucent-space-1) var(--lucent-space-3)',
+    paddingDismiss: 'var(--lucent-space-1) var(--lucent-space-2) var(--lucent-space-1) var(--lucent-space-3)',
     iconSize: 16, dotSize: 8, gap: 'var(--lucent-space-2)',
   },
 };
