@@ -40,9 +40,9 @@ const sizeFontSizes: Record<MultiSelectSize, string> = {
   lg: 'var(--lucent-font-size-md)',
 };
 const sizePaddings: Record<MultiSelectSize, string> = {
-  sm: '6px var(--lucent-space-2)',
-  md: '8px var(--lucent-space-2)',
-  lg: '9px var(--lucent-space-3)',
+  sm: 'var(--lucent-space-1) var(--lucent-space-2)',
+  md: 'var(--lucent-space-2) var(--lucent-space-2)',
+  lg: 'var(--lucent-space-2) var(--lucent-space-3)',
 };
 
 const dropdownPadding: Record<MultiSelectSize, string> = {
