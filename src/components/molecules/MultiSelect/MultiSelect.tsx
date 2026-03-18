@@ -51,7 +51,13 @@ const dropdownPadding: Record<MultiSelectSize, string> = {
   lg: 'var(--lucent-space-3)',
 };
 
-// Map MultiSelect size → Tag size that fits inside the trigger
+const sizeLabelFont: Record<MultiSelectSize, string> = {
+  sm: 'var(--lucent-font-size-sm)',
+  md: 'var(--lucent-font-size-sm)',
+  lg: 'var(--lucent-font-size-md)',
+};
+
+// Map MultiSelect size → Chip size that fits inside the trigger
 const chipSizeMap: Record<MultiSelectSize, 'sm' | 'md' | 'lg'> = { sm: 'sm', md: 'md', lg: 'lg' };
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -160,7 +166,7 @@ export function MultiSelect({
         <label
           htmlFor={inputId}
           style={{
-            fontSize: 'var(--lucent-font-size-sm)',
+            fontSize: sizeLabelFont[size],
             fontWeight: 'var(--lucent-font-weight-medium)',
             color: disabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-primary)',
             fontFamily: 'var(--lucent-font-family-base)',
@@ -307,7 +313,7 @@ export function MultiSelect({
           id={`${inputId}-error`}
           role="alert"
           style={{
-            fontSize: 'var(--lucent-font-size-sm)',
+            fontSize: sizeLabelFont[size],
             color: 'var(--lucent-danger-text)',
             fontFamily: 'var(--lucent-font-family-base)',
           }}
@@ -319,7 +325,7 @@ export function MultiSelect({
         <span
           id={`${inputId}-helper`}
           style={{
-            fontSize: 'var(--lucent-font-size-sm)',
+            fontSize: sizeLabelFont[size],
             color: 'var(--lucent-text-secondary)',
             fontFamily: 'var(--lucent-font-family-base)',
           }}

@@ -29,6 +29,12 @@ const sizeFont: Record<SelectSize, string> = {
   lg: 'var(--lucent-font-size-lg)',
 };
 
+const sizeLabelFont: Record<SelectSize, string> = {
+  sm: 'var(--lucent-font-size-sm)',
+  md: 'var(--lucent-font-size-sm)',
+  lg: 'var(--lucent-font-size-md)',
+};
+
 const sizePx: Record<SelectSize, string> = {
   sm: 'var(--lucent-space-2)',
   md: 'var(--lucent-space-3)',
@@ -64,7 +70,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           <label
             htmlFor={selectId}
             style={{
-              fontSize: 'var(--lucent-font-size-sm)',
+              fontSize: sizeLabelFont[size],
               fontWeight: 'var(--lucent-font-weight-medium)',
               color: isDisabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-primary)',
               fontFamily: 'var(--lucent-font-family-base)',
@@ -162,7 +168,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             id={`${selectId}-error`}
             role="alert"
             style={{
-              fontSize: 'var(--lucent-font-size-sm)',
+              fontSize: sizeLabelFont[size],
               color: 'var(--lucent-danger-text)',
               fontFamily: 'var(--lucent-font-family-base)',
             }}
@@ -174,7 +180,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           <span
             id={`${selectId}-helper`}
             style={{
-              fontSize: 'var(--lucent-font-size-sm)',
+              fontSize: sizeLabelFont[size],
               color: 'var(--lucent-text-secondary)',
               fontFamily: 'var(--lucent-font-family-base)',
             }}

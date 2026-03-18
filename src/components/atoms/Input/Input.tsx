@@ -39,6 +39,11 @@ const sizeFont: Record<InputSize, string> = {
   md: 'var(--lucent-font-size-md)',
   lg: 'var(--lucent-font-size-md)',
 };
+const sizeLabelFont: Record<InputSize, string> = {
+  sm: 'var(--lucent-font-size-sm)',
+  md: 'var(--lucent-font-size-sm)',
+  lg: 'var(--lucent-font-size-md)',
+};
 const sizePx:   Record<InputSize, string> = {
   sm: 'var(--lucent-space-3)',
   md: 'var(--lucent-space-4)',
@@ -108,7 +113,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           <label
             htmlFor={inputId}
             style={{
-              fontSize: 'var(--lucent-font-size-sm)',
+              fontSize: sizeLabelFont[size],
               fontWeight: 'var(--lucent-font-weight-medium)',
               color: isDisabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-primary)',
               fontFamily: 'var(--lucent-font-family-base)',
@@ -218,7 +223,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             id={`${inputId}-error`}
             role="alert"
             style={{
-              fontSize: 'var(--lucent-font-size-sm)',
+              fontSize: sizeLabelFont[size],
               color: 'var(--lucent-danger-text)',
               fontFamily: 'var(--lucent-font-family-base)',
             }}
@@ -230,7 +235,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           <span
             id={`${inputId}-helper`}
             style={{
-              fontSize: 'var(--lucent-font-size-sm)',
+              fontSize: sizeLabelFont[size],
               color: 'var(--lucent-text-secondary)',
               fontFamily: 'var(--lucent-font-family-base)',
             }}
