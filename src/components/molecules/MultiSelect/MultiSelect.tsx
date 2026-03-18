@@ -32,8 +32,12 @@ export interface MultiSelectProps {
   style?: CSSProperties;
 }
 
-// minHeight so total (minHeight + 2*6px padding + 2px border) matches Input
-const sizeHeights: Record<MultiSelectSize, number> = { sm: 20, md: 24, lg: 28 };
+// minHeight matches Input (dampened vertical scaling), border-box includes padding + border
+const sizeHeights: Record<MultiSelectSize, string> = {
+  sm: 'calc(var(--lucent-space-8) * 0.5 + 16px + 2px)',
+  md: 'calc(var(--lucent-space-10) * 0.5 + 20px + 2px)',
+  lg: 'calc(var(--lucent-space-12) * 0.5 + 24px + 2px)',
+};
 const sizeFontSizes: Record<MultiSelectSize, string> = {
   sm: 'var(--lucent-font-size-sm)',
   md: 'var(--lucent-font-size-md)',
@@ -186,6 +190,7 @@ export function MultiSelect({
           alignItems: 'center',
           gap: dropdownPadding[size],
           minHeight: sizeHeights[size],
+          boxSizing: 'border-box',
           padding: sizePaddings[size],
           borderRadius: 'var(--lucent-radius-lg)',
           border: `1px solid ${borderColor}`,
