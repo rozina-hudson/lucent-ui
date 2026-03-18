@@ -44,6 +44,12 @@ const sizePaddings: Record<MultiSelectSize, string> = {
   lg: '2px var(--lucent-space-3)',
 };
 
+const dropdownPadding: Record<MultiSelectSize, string> = {
+  sm: 'var(--lucent-space-2)',
+  md: 'var(--lucent-space-2)',
+  lg: 'var(--lucent-space-3)',
+};
+
 // Map MultiSelect size → Tag size that fits inside the trigger
 const tagSizeMap: Record<MultiSelectSize, 'sm' | 'md' | 'lg'> = { sm: 'sm', md: 'md', lg: 'lg' };
 
@@ -171,7 +177,7 @@ export function MultiSelect({
           display: 'flex',
           flexWrap: 'wrap',
           alignItems: 'center',
-          gap: 'var(--lucent-space-2)',
+          gap: dropdownPadding[size],
           minHeight: sizeHeights[size],
           padding: sizePaddings[size],
           borderRadius: 'var(--lucent-radius-lg)',
@@ -237,11 +243,11 @@ export function MultiSelect({
             boxShadow: 'var(--lucent-shadow-md)',
             maxHeight: 240,
             overflowY: 'auto',
-            padding: 'var(--lucent-space-1) 0',
+            padding: dropdownPadding[size],
           }}
         >
           {filtered.length === 0 ? (
-            <div style={{ padding: 'var(--lucent-space-3) var(--lucent-space-4)' }}>
+            <div style={{ padding: 'var(--lucent-space-2)' }}>
               <Text color="secondary" size="sm">No options</Text>
             </div>
           ) : (
@@ -261,8 +267,9 @@ export function MultiSelect({
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 'var(--lucent-space-2)',
-                    padding: 'var(--lucent-space-2) var(--lucent-space-3)',
+                    gap: dropdownPadding[size],
+                    padding: dropdownPadding[size],
+                    borderRadius: 'var(--lucent-radius-md)',
                     cursor: isDisabled || wouldExceedMax ? 'not-allowed' : 'pointer',
                     background: isActive ? 'var(--lucent-surface-secondary)' : 'transparent',
                     opacity: isDisabled || wouldExceedMax ? 0.5 : 1,
@@ -271,7 +278,7 @@ export function MultiSelect({
                   <Checkbox
                     checked={isSelected}
                     disabled={isDisabled || wouldExceedMax}
-                    size="md"
+                    size={size}
                     style={{ margin: 0, pointerEvents: 'none' }}
                     aria-hidden
                     readOnly
@@ -284,7 +291,7 @@ export function MultiSelect({
 
           {atMax && (
             <div style={{
-              padding: 'var(--lucent-space-2) var(--lucent-space-3)',
+              padding: 'var(--lucent-space-2)',
               borderTop: '1px solid var(--lucent-border-subtle)',
             }}>
               <Text size="xs" color="secondary">Max {max} selected</Text>
