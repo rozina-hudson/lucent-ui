@@ -41,8 +41,21 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
       type: 'enum',
       required: false,
       default: 'md',
-      description: 'Size of the radio button circle.',
-      enumValues: ['sm', 'md'],
+      description: 'Size of the radio button circle and label text.',
+      enumValues: ['sm', 'md', 'lg'],
+    },
+    {
+      name: 'contained',
+      type: 'boolean',
+      required: false,
+      default: 'false',
+      description: 'Wraps the radio in a bordered container. Highlights with accent border and subtle background when selected. Use for plan/option cards where each choice needs visual emphasis.',
+    },
+    {
+      name: 'helperText',
+      type: 'string',
+      required: false,
+      description: 'Secondary text below the label for additional context. Label becomes medium-weight for visual hierarchy.',
     },
   ],
 
@@ -63,6 +76,14 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
   <Radio value="s" label="S" />
   <Radio value="m" label="M" />
   <Radio value="l" label="L" />
+</RadioGroup>`.trim(),
+    },
+    {
+      title: 'Contained plan selector',
+      code: `
+<RadioGroup name="plan" value={plan} onChange={setPlan}>
+  <Radio value="free" label="Free plan" helperText="Up to 3 projects" contained />
+  <Radio value="pro" label="Pro plan" helperText="Unlimited projects" contained />
 </RadioGroup>`.trim(),
     },
     {

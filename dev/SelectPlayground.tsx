@@ -484,6 +484,7 @@ export function SelectPlayground() {
 
   const [spaceScale, setSpaceScale] = useState(100);
   const [fontScale, setFontScale] = useState(100);
+  const [radiusScale, setRadiusScale] = useState(100);
 
   const pickA = (name: string) => { setNameA(name); setPropsA(getDefaults(name)); };
   const pickB = (name: string) => { setNameB(name); setPropsB(getDefaults(name)); };
@@ -495,19 +496,26 @@ export function SelectPlayground() {
 
   const baseSpaces = { space0: 0, space1: 0.25, space2: 0.5, space3: 0.75, space4: 1, space5: 1.25, space6: 1.5, space8: 2, space10: 2.5, space12: 3, space16: 4, space20: 5, space24: 6 };
   const baseFonts = { fontSizeXs: 0.6875, fontSizeSm: 0.8125, fontSizeMd: 0.9375, fontSizeLg: 1.125 };
+  const baseRadii = { radiusNone: 0, radiusSm: 0.25, radiusMd: 0.375, radiusLg: 0.5, radiusXl: 0.75 };
 
   const tokenOverrides = useMemo(() => {
     const t: Partial<LucentTokens> = {};
     const sm = spaceScale / 100;
     const fm = fontScale / 100;
+    const rm = radiusScale / 100;
     for (const [k, v] of Object.entries(baseSpaces)) {
       (t as Record<string, string>)[k] = `${(v * sm).toFixed(4)}rem`;
     }
     for (const [k, v] of Object.entries(baseFonts)) {
       (t as Record<string, string>)[k] = `${(v * fm).toFixed(4)}rem`;
     }
+    for (const [k, v] of Object.entries(baseRadii)) {
+      (t as Record<string, string>)[k] = `${(v * rm).toFixed(4)}rem`;
+    }
+    // radiusFull stays fixed (pill shape)
+    t.radiusFull = '9999px';
     return t;
-  }, [spaceScale, fontScale]);
+  }, [spaceScale, fontScale, radiusScale]);
 
   return (
     <LucentProvider tokens={tokenOverrides}>
@@ -560,6 +568,22 @@ export function SelectPlayground() {
             />
             <span style={{ fontSize: '12px', fontFamily: 'monospace', color: '#374151', minWidth: '36px', textAlign: 'right' }}>
               {fontScale}%
+            </span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: '1 1 200px' }}>
+            <label style={{ fontSize: '12px', fontFamily: 'monospace', color: '#6b7280', whiteSpace: 'nowrap' }}>
+              Roundness
+            </label>
+            <input
+              type="range"
+              min={0}
+              max={300}
+              value={radiusScale}
+              onChange={(e) => setRadiusScale(Number(e.target.value))}
+              style={{ flex: 1 }}
+            />
+            <span style={{ fontSize: '12px', fontFamily: 'monospace', color: '#374151', minWidth: '36px', textAlign: 'right' }}>
+              {radiusScale}%
             </span>
           </div>
         </div>
