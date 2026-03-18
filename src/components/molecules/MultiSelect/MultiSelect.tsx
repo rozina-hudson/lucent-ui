@@ -4,7 +4,7 @@ import {
 } from 'react';
 import { Text } from '../../atoms/Text/index.js';
 import { Checkbox } from '../../atoms/Checkbox/index.js';
-import { Tag } from '../../atoms/Tag/index.js';
+import { Chip } from '../../atoms/Chip/index.js';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -32,17 +32,21 @@ export interface MultiSelectProps {
   style?: CSSProperties;
 }
 
-// minHeight so total (minHeight + 2*6px padding + 2px border) matches Input
-const sizeHeights: Record<MultiSelectSize, number> = { sm: 20, md: 24, lg: 28 };
+// minHeight matches Input (dampened vertical scaling), border-box includes padding + border
+const sizeHeights: Record<MultiSelectSize, string> = {
+  sm: 'calc(var(--lucent-space-8) * 0.5 + 16px + 2px)',
+  md: 'calc(var(--lucent-space-10) * 0.5 + 20px + 2px)',
+  lg: 'calc(var(--lucent-space-12) * 0.5 + 24px + 2px)',
+};
 const sizeFontSizes: Record<MultiSelectSize, string> = {
   sm: 'var(--lucent-font-size-sm)',
   md: 'var(--lucent-font-size-md)',
   lg: 'var(--lucent-font-size-md)',
 };
 const sizePaddings: Record<MultiSelectSize, string> = {
-  sm: '6px var(--lucent-space-2)',
-  md: '8px var(--lucent-space-2)',
-  lg: '9px var(--lucent-space-3)',
+  sm: 'var(--lucent-space-1) var(--lucent-space-2)',
+  md: 'var(--lucent-space-1) var(--lucent-space-2)',
+  lg: 'var(--lucent-space-2) var(--lucent-space-3)',
 };
 
 const dropdownPadding: Record<MultiSelectSize, string> = {
@@ -51,8 +55,14 @@ const dropdownPadding: Record<MultiSelectSize, string> = {
   lg: 'var(--lucent-space-3)',
 };
 
-// Map MultiSelect size → Tag size that fits inside the trigger
-const tagSizeMap: Record<MultiSelectSize, 'sm' | 'md' | 'lg'> = { sm: 'sm', md: 'md', lg: 'lg' };
+const sizeLabelFont: Record<MultiSelectSize, string> = {
+  sm: 'var(--lucent-font-size-sm)',
+  md: 'var(--lucent-font-size-sm)',
+  lg: 'var(--lucent-font-size-md)',
+};
+
+// Map MultiSelect size → Chip size that fits inside the trigger
+const chipSizeMap: Record<MultiSelectSize, 'sm' | 'md' | 'lg'> = { sm: 'sm', md: 'md', lg: 'lg' };
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -160,7 +170,7 @@ export function MultiSelect({
         <label
           htmlFor={inputId}
           style={{
-            fontSize: 'var(--lucent-font-size-sm)',
+            fontSize: sizeLabelFont[size],
             fontWeight: 'var(--lucent-font-weight-medium)',
             color: disabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-primary)',
             fontFamily: 'var(--lucent-font-family-base)',
@@ -180,6 +190,7 @@ export function MultiSelect({
           alignItems: 'center',
           gap: dropdownPadding[size],
           minHeight: sizeHeights[size],
+          boxSizing: 'border-box',
           padding: sizePaddings[size],
           borderRadius: 'var(--lucent-radius-lg)',
           border: `1px solid ${borderColor}`,
@@ -192,7 +203,7 @@ export function MultiSelect({
         {selected.map(val => {
           const opt = options.find(o => o.value === val);
           return opt ? (
-            <Tag key={val} size={tagSizeMap[size]} onDismiss={() => remove(val)} disabled={disabled}>{opt.label}</Tag>
+            <Chip key={val} size={chipSizeMap[size]} onDismiss={() => remove(val)} disabled={disabled}>{opt.label}</Chip>
           ) : null;
         })}
 
@@ -307,7 +318,7 @@ export function MultiSelect({
           id={`${inputId}-error`}
           role="alert"
           style={{
-            fontSize: 'var(--lucent-font-size-sm)',
+            fontSize: sizeLabelFont[size],
             color: 'var(--lucent-danger-text)',
             fontFamily: 'var(--lucent-font-family-base)',
           }}
@@ -319,7 +330,7 @@ export function MultiSelect({
         <span
           id={`${inputId}-helper`}
           style={{
-            fontSize: 'var(--lucent-font-size-sm)',
+            fontSize: sizeLabelFont[size],
             color: 'var(--lucent-text-secondary)',
             fontFamily: 'var(--lucent-font-family-base)',
           }}

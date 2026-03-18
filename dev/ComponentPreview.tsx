@@ -6,6 +6,7 @@ import { Button } from '../src/components/atoms/Button/index.js';
 import { Input } from '../src/components/atoms/Input/index.js';
 import { Textarea } from '../src/components/atoms/Textarea/index.js';
 import { Badge } from '../src/components/atoms/Badge/index.js';
+import { Chip } from '../src/components/atoms/Chip/index.js';
 import { Avatar } from '../src/components/atoms/Avatar/index.js';
 import { Spinner } from '../src/components/atoms/Spinner/index.js';
 import { Divider } from '../src/components/atoms/Divider/index.js';
@@ -344,8 +345,8 @@ function Inner({
   const allSections = [
     'Text', 'Input', 'Textarea', 'FormField', 'SearchInput', 'Card', 'Alert',
     'EmptyState', 'Skeleton', 'Checkbox', 'Radio', 'Toggle', 'Slider', 'CodeBlock',
-    'Table', 'ColorSwatch', 'ColorPicker', 'SegmentedControl', 'Select', 'Tag',
-    'Tooltip', 'Icon', 'Button', 'Badge', 'Avatar', 'Spinner', 'Divider',
+    'Table', 'ColorSwatch', 'ColorPicker', 'SegmentedControl', 'Select', 'Chip',
+    'Tooltip', 'Icon', 'Button', 'Avatar', 'Spinner', 'Divider',
     'Breadcrumb', 'Tabs', 'Collapsible', 'NavLink', 'PageLayout', 'DataTable',
     'CommandPalette', 'MultiSelect', 'DatePicker', 'DateRangePicker', 'FileUpload', 'Timeline',
   ];
@@ -1437,25 +1438,55 @@ function Inner({
         </Row>
       </Section>
 
-      {/* Tag */}
-      <Section title="Tag" tokens={tokens} hidden={!showSection('Tag')}>
+      {/* Chip */}
+      <Section title="Chip" tokens={tokens} hidden={!showSection('Chip')}>
         <Row label="Dismissible" tokens={tokens}>
           {tags.map(t => (
-            <Tag key={t} onDismiss={() => setTags(prev => prev.filter(x => x !== t))}>{t}</Tag>
+            <Chip key={t} onDismiss={() => setTags(prev => prev.filter(x => x !== t))}>{t}</Chip>
           ))}
-          {tags.length === 0 && <span style={{ fontSize: tokens.fontSizeSm, color: tokens.textSecondary }}>All tags dismissed — refresh to reset</span>}
+          {tags.length === 0 && <span style={{ fontSize: tokens.fontSizeSm, color: tokens.textSecondary }}>All chips dismissed — refresh to reset</span>}
         </Row>
-        <Row label="Variants (static)" tokens={tokens}>
-          <Tag variant="neutral">Neutral</Tag>
-          <Tag variant="accent">Accent</Tag>
-          <Tag variant="success">Success</Tag>
-          <Tag variant="warning">Warning</Tag>
-          <Tag variant="danger">Danger</Tag>
-          <Tag variant="info">Info</Tag>
+        <Row label="Variants" tokens={tokens}>
+          <Chip variant="neutral">Neutral</Chip>
+          <Chip variant="accent">Accent</Chip>
+          <Chip variant="success">Success</Chip>
+          <Chip variant="warning">Warning</Chip>
+          <Chip variant="danger">Danger</Chip>
+          <Chip variant="info">Info</Chip>
+        </Row>
+        <Row label="With dot" tokens={tokens}>
+          <Chip variant="success" dot>Online</Chip>
+          <Chip variant="danger" dot>Offline</Chip>
+          <Chip variant="neutral" dot>Suspended</Chip>
+        </Row>
+        <Row label="With swatch" tokens={tokens}>
+          <Chip swatch="#6366f1" onDismiss={() => {}}>Indigo</Chip>
+          <Chip swatch="#10b981" onDismiss={() => {}}>Emerald</Chip>
+          <Chip swatch="#f43f5e" onDismiss={() => {}}>Rose</Chip>
+        </Row>
+        <Row label="With icon" tokens={tokens}>
+          <Chip leftIcon={<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M1 4l5-3 5 3v5a1 1 0 01-1 1H2a1 1 0 01-1-1V4z" /></svg>} onDismiss={() => {}}>Folders</Chip>
+          <Chip leftIcon={<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="1" width="8" height="10" rx="1" /><path d="M4 4h4M4 6h4M4 8h2" /></svg>} onDismiss={() => {}}>Files</Chip>
+        </Row>
+        <Row label="Borderless" tokens={tokens}>
+          <Chip variant="success" borderless>New</Chip>
+          <Chip variant="warning" borderless>Pending</Chip>
+          <Chip variant="neutral" borderless>Active</Chip>
+          <Chip variant="danger" borderless>Closed</Chip>
+        </Row>
+        <Row label="Clickable" tokens={tokens}>
+          <Chip variant="accent" onClick={() => {}}>UX</Chip>
+          <Chip variant="accent" onClick={() => {}}>UI</Chip>
+          <Chip variant="accent" onClick={() => {}}>Motion</Chip>
         </Row>
         <Row label="Sizes" tokens={tokens}>
-          <Tag size="sm" onDismiss={() => {}}>Small</Tag>
-          <Tag size="md" onDismiss={() => {}}>Medium</Tag>
+          <Chip size="sm" onDismiss={() => {}}>Small</Chip>
+          <Chip size="md" onDismiss={() => {}}>Medium</Chip>
+          <Chip size="lg" onDismiss={() => {}}>Large</Chip>
+        </Row>
+        <Row label="Disabled" tokens={tokens}>
+          <Chip disabled onDismiss={() => {}}>Disabled</Chip>
+          <Chip disabled variant="accent">Disabled accent</Chip>
         </Row>
       </Section>
 
@@ -1560,20 +1591,7 @@ function Inner({
 
       {/* Input */}
       {/* Badge */}
-      <Section title="Badge" tokens={tokens} hidden={!showSection('Badge')}>
-        <Row label="Variants" tokens={tokens}>
-          <Badge variant="neutral">Neutral</Badge>
-          <Badge variant="accent">Accent</Badge>
-          <Badge variant="success" dot>Active</Badge>
-          <Badge variant="warning">Warning</Badge>
-          <Badge variant="danger">12</Badge>
-          <Badge variant="info">Beta</Badge>
-        </Row>
-        <Row label="Sizes" tokens={tokens}>
-          <Badge size="sm" variant="success">Small</Badge>
-          <Badge size="md" variant="success">Medium</Badge>
-        </Row>
-      </Section>
+      {/* Badge — replaced by Chip, kept for backward compat */}
 
       {/* Avatar */}
       <Section title="Avatar" tokens={tokens} hidden={!showSection('Avatar')}>
