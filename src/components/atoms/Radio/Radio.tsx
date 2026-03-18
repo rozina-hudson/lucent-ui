@@ -94,7 +94,7 @@ const containedHeight: Record<RadioSize, number> = { sm: 32, md: 40, lg: 46 };
 const sizeFontSize: Record<RadioSize, string> = {
   sm: 'var(--lucent-font-size-sm)',
   md: 'var(--lucent-font-size-md)',
-  lg: 'var(--lucent-font-size-lg)',
+  lg: 'var(--lucent-font-size-md)',
 };
 
 export function Radio({ value, label, size = 'md', contained = false, helperText, disabled, id, onChange, checked, style, ...rest }: RadioProps) {

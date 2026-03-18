@@ -124,7 +124,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           gap: 'var(--lucent-space-2)',
           cursor: disabled ? 'not-allowed' : 'pointer',
           fontFamily: 'var(--lucent-font-family-base)',
-          fontSize: size === 'sm' ? 'var(--lucent-font-size-sm)' : size === 'lg' ? 'var(--lucent-font-size-lg)' : 'var(--lucent-font-size-md)',
+          fontSize: size === 'sm' ? 'var(--lucent-font-size-sm)' : 'var(--lucent-font-size-md)',
           color: disabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-primary)',
           userSelect: 'none',
           ...(contained ? {} : style),

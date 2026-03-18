@@ -4,6 +4,7 @@ import { Input } from '../src/components/atoms/Input/index.js';
 import { Textarea } from '../src/components/atoms/Textarea/index.js';
 import { Select } from '../src/components/atoms/Select/index.js';
 import { Checkbox } from '../src/components/atoms/Checkbox/index.js';
+import { Radio, RadioGroup } from '../src/components/atoms/Radio/index.js';
 import { Toggle } from '../src/components/atoms/Toggle/index.js';
 import { Button } from '../src/components/atoms/Button/index.js';
 import { Tag } from '../src/components/atoms/Tag/index.js';
@@ -170,11 +171,34 @@ const registry: Record<string, {
     ),
   },
 
+  Radio: {
+    props: {
+      size:       { type: 'select', options: ['sm', 'md', 'lg'], default: 'md' },
+      label:      { type: 'text', default: 'Option A' },
+      helperText: { type: 'text', default: '' },
+      contained:  { type: 'boolean', default: false },
+      disabled:   { type: 'boolean', default: false },
+    },
+    render: (v) => (
+      <RadioGroup name="playground-radio" value="a" onChange={() => {}}>
+        <Radio
+          value="a"
+          size={v.size as 'sm' | 'md' | 'lg'}
+          label={v.label as string}
+          {...(v.helperText ? { helperText: v.helperText as string } : {})}
+          contained={v.contained as boolean}
+          disabled={v.disabled as boolean}
+        />
+      </RadioGroup>
+    ),
+  },
+
   Toggle: {
     props: {
       label:      { type: 'text', default: 'Enable feature' },
       helperText: { type: 'text', default: '' },
       size:       { type: 'select', options: ['sm', 'md', 'lg'], default: 'md' },
+      align:      { type: 'select', options: ['left', 'right'], default: 'left' },
       contained:  { type: 'boolean', default: false },
       checked:    { type: 'boolean', default: false },
       disabled:   { type: 'boolean', default: false },
@@ -185,6 +209,7 @@ const registry: Record<string, {
         label={v.label as string}
         {...(v.helperText ? { helperText: v.helperText as string } : {})}
         size={v.size as 'sm' | 'md' | 'lg'}
+        align={v.align as 'left' | 'right'}
         contained={v.contained as boolean}
         defaultChecked={v.checked as boolean}
         disabled={v.disabled as boolean}

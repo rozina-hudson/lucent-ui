@@ -11,6 +11,8 @@ export interface ToggleProps extends Omit<InputHTMLAttributes<HTMLInputElement>,
   contained?: boolean;
   /** Helper text displayed below the label. */
   helperText?: string;
+  /** Position of the toggle track relative to the label. */
+  align?: 'left' | 'right';
 }
 
 const containedHeight: Record<ToggleSize, number> = { sm: 32, md: 40, lg: 46 };
@@ -39,6 +41,7 @@ export function Toggle({
   defaultChecked,
   contained = false,
   helperText,
+  align = 'left',
   disabled,
   id,
   onChange,
@@ -103,12 +106,13 @@ export function Toggle({
   const labelContent = (
     <label
       style={{
-        display: 'inline-flex',
+        display: align === 'right' ? 'flex' : 'inline-flex',
         alignItems: helperText ? 'flex-start' : 'center',
         gap: 'var(--lucent-space-2)',
+        ...(align === 'right' ? { width: '100%' } : {}),
         cursor: disabled ? 'not-allowed' : 'pointer',
         fontFamily: 'var(--lucent-font-family-base)',
-        fontSize: 'var(--lucent-font-size-md)',
+        fontSize: size === 'sm' ? 'var(--lucent-font-size-sm)' : 'var(--lucent-font-size-md)',
         color: disabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-primary)',
         userSelect: 'none',
         ...(contained ? {} : (style as React.CSSProperties)),
@@ -125,9 +129,9 @@ export function Toggle({
         style={{ position: 'absolute', opacity: 0, width: 0, height: 0, margin: 0, pointerEvents: 'none' }}
         {...rest}
       />
-      {trackEl}
+      {align === 'left' && trackEl}
       {(label || helperText) ? (
-        <span style={{ display: 'flex', flexDirection: 'column' }}>
+        <span style={{ display: 'flex', flexDirection: 'column', flex: align === 'right' ? 1 : undefined }}>
           {label && <span style={{
             fontWeight: helperText ? 'var(--lucent-font-weight-medium)' : 'var(--lucent-font-weight-regular)',
             lineHeight: helperText ? 1.3 : 1,
@@ -143,6 +147,7 @@ export function Toggle({
           )}
         </span>
       ) : null}
+      {align === 'right' && trackEl}
     </label>
   );
 
