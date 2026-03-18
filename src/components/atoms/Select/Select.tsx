@@ -118,13 +118,14 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
               boxSizing: 'border-box',
             }}
             onFocus={(e) => {
-              setIsFocused(true);
+              if (!isDisabled) setIsFocused(true);
               rest.onFocus?.(e);
             }}
             onBlur={(e) => {
               setIsFocused(false);
               rest.onBlur?.(e);
             }}
+            onMouseDown={() => { if (!isDisabled) setIsFocused(true); }}
             {...rest}
           >
             {placeholder && (
