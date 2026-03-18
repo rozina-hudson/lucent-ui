@@ -172,15 +172,20 @@ const registry: Record<string, {
 
   Toggle: {
     props: {
-      label:    { type: 'text', default: 'Enable feature' },
-      size:     { type: 'select', options: ['sm', 'md', 'lg'], default: 'md' },
-      checked:  { type: 'boolean', default: false },
-      disabled: { type: 'boolean', default: false },
+      label:      { type: 'text', default: 'Enable feature' },
+      helperText: { type: 'text', default: '' },
+      size:       { type: 'select', options: ['sm', 'md', 'lg'], default: 'md' },
+      contained:  { type: 'boolean', default: false },
+      checked:    { type: 'boolean', default: false },
+      disabled:   { type: 'boolean', default: false },
     },
     render: (v) => (
       <Toggle
+        key={String(v.checked)}
         label={v.label as string}
+        {...(v.helperText ? { helperText: v.helperText as string } : {})}
         size={v.size as 'sm' | 'md' | 'lg'}
+        contained={v.contained as boolean}
         defaultChecked={v.checked as boolean}
         disabled={v.disabled as boolean}
       />

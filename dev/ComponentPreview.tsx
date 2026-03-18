@@ -1136,6 +1136,15 @@ function Inner({
           <RadioGroup name="size-preview-md" value="a" onChange={() => {}} orientation="horizontal">
             <Radio size="md" value="a" label="Medium" />
           </RadioGroup>
+          <RadioGroup name="size-preview-lg" value="a" onChange={() => {}} orientation="horizontal">
+            <Radio size="lg" value="a" label="Large" />
+          </RadioGroup>
+        </Row>
+        <Row label="Contained" tokens={tokens}>
+          <RadioGroup name="contained-demo" value="pro" onChange={() => {}}>
+            <Radio value="free" label="Free plan" helperText="Up to 3 projects, 1 GB storage" contained />
+            <Radio value="pro" label="Pro plan" helperText="Unlimited projects, 100 GB storage" contained />
+          </RadioGroup>
         </Row>
         <Row label="Disabled" tokens={tokens}>
           <RadioGroup name="disabled-off" value="" onChange={() => {}} disabled>
@@ -1160,6 +1169,14 @@ function Inner({
           <Toggle size="sm" label="Small" defaultChecked />
           <Toggle size="md" label="Medium" defaultChecked />
           <Toggle size="lg" label="Large" defaultChecked />
+        </Row>
+        <Row label="With helper text" tokens={tokens}>
+          <Toggle label="Notifications" helperText="Receive email alerts for new activity" defaultChecked />
+          <Toggle label="Auto-save" helperText="Save changes automatically every 30 seconds" />
+        </Row>
+        <Row label="Contained" tokens={tokens}>
+          <Toggle label="Dark mode" helperText="Use dark colour scheme across the app" contained defaultChecked />
+          <Toggle label="Compact view" helperText="Reduce spacing for denser layouts" contained />
         </Row>
         <Row label="Disabled" tokens={tokens}>
           <Toggle disabled label="Disabled off" />
