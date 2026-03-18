@@ -163,7 +163,7 @@ export function DateRangePicker({
           aria-label="Date range picker"
           style={{
             position: 'absolute',
-            top: 'calc(100% + 4px)',
+            top: 'calc(100% + var(--lucent-space-1))',
             left: 0,
             zIndex: 1000,
             background: 'var(--lucent-surface-overlay)',
@@ -215,7 +215,7 @@ export function DateRangePicker({
       )}
 
       {selecting && open && (
-        <div style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, zIndex: 1001, pointerEvents: 'none' }}>
+        <div style={{ position: 'absolute', top: 'calc(100% + var(--lucent-space-1))', left: 0, zIndex: 1001, pointerEvents: 'none' }}>
           {/* invisible — selecting hint is conveyed via the range highlight */}
         </div>
       )}

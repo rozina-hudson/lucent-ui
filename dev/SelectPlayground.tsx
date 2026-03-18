@@ -254,14 +254,20 @@ const registry: Record<string, {
   MultiSelect: {
     props: {
       size:        { type: 'select', options: ['sm', 'md', 'lg'], default: 'md' },
+      label:       { type: 'text', default: '' },
       placeholder: { type: 'text', default: 'Select…' },
+      helperText:  { type: 'text', default: '' },
+      errorText:   { type: 'text', default: '' },
       disabled:    { type: 'boolean', default: false },
     },
     render: (v) => (
       <MultiSelect
         options={multiSelectOptions}
         size={v.size as 'sm' | 'md' | 'lg'}
+        {...(v.label ? { label: v.label as string } : {})}
         placeholder={v.placeholder as string}
+        {...(v.helperText ? { helperText: v.helperText as string } : {})}
+        {...(v.errorText ? { errorText: v.errorText as string } : {})}
         disabled={v.disabled as boolean}
       />
     ),

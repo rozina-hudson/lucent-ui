@@ -26,6 +26,9 @@ export interface MultiSelectProps {
   /** Max number of items that can be selected. No limit by default. */
   max?: number;
   size?: MultiSelectSize;
+  label?: string;
+  helperText?: string;
+  errorText?: string;
   style?: CSSProperties;
 }
 
@@ -55,6 +58,9 @@ export function MultiSelect({
   disabled = false,
   max,
   size = 'md',
+  label,
+  helperText,
+  errorText,
   style,
 }: MultiSelectProps) {
   const isControlled = controlledValue !== undefined;
@@ -126,14 +132,38 @@ export function MultiSelect({
 
   const atMax = max !== undefined && selected.length >= max;
 
+  const hasError = Boolean(errorText);
   const borderColor = disabled
     ? 'var(--lucent-border-default)'
+    : hasError
+    ? 'var(--lucent-danger-default)'
     : focused
-    ? 'var(--lucent-accent-default)'
+    ? 'var(--lucent-focus-ring)'
     : 'var(--lucent-border-default)';
 
+  const boxShadow = focused
+    ? `0 0 0 3px ${hasError ? 'var(--lucent-danger-subtle)' : 'var(--lucent-accent-subtle)'}`
+    : 'none';
+
+  const inputId = `lucent-multiselect-${useId()}`;
+
   return (
-    <div ref={containerRef} style={{ position: 'relative', ...style }}>
+    <div ref={containerRef} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--lucent-space-1)', ...style }}>
+      {label && (
+        <label
+          htmlFor={inputId}
+          style={{
+            fontSize: 'var(--lucent-font-size-sm)',
+            fontWeight: 'var(--lucent-font-weight-medium)',
+            color: disabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-primary)',
+            fontFamily: 'var(--lucent-font-family-base)',
+          }}
+        >
+          {label}
+        </label>
+      )}
+      {/* Trigger + dropdown wrapper (position anchor) */}
+      <div style={{ position: 'relative' }}>
       {/* Trigger / tag area */}
       <div
         onClick={() => { if (!disabled) { setOpen(true); inputRef.current?.focus(); } }}
@@ -148,9 +178,8 @@ export function MultiSelect({
           border: `1px solid ${borderColor}`,
           background: disabled ? 'var(--lucent-surface-secondary)' : 'var(--lucent-surface)',
           cursor: disabled ? 'not-allowed' : 'text',
-          transition: 'border-color var(--lucent-duration-fast) var(--lucent-easing-default)',
-          outline: focused ? `2px solid var(--lucent-focus-ring)` : 'none',
-          outlineOffset: 2,
+          transition: 'border-color var(--lucent-duration-fast) var(--lucent-easing-default), box-shadow var(--lucent-duration-fast) var(--lucent-easing-default)',
+          boxShadow,
         }}
       >
         {selected.map(val => {
@@ -161,6 +190,7 @@ export function MultiSelect({
         })}
 
         <input
+          id={inputId}
           ref={inputRef}
           value={query}
           onChange={e => { setQuery(e.target.value); setOpen(true); setActiveIndex(0); }}
@@ -172,6 +202,7 @@ export function MultiSelect({
           aria-autocomplete="list"
           aria-controls={listId}
           aria-expanded={open}
+          aria-describedby={hasError ? `${inputId}-error` : helperText ? `${inputId}-helper` : undefined}
           role="combobox"
           style={{
             flex: '1 1 80px',
@@ -183,7 +214,7 @@ export function MultiSelect({
             fontSize: sizeFontSizes[size],
             color: disabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-primary)',
             cursor: disabled ? 'not-allowed' : 'text',
-            padding: '2px 0',
+            padding: selected.length === 0 ? '2px 0 2px var(--lucent-space-1)' : '2px 0',
           }}
         />
       </div>
@@ -196,7 +227,7 @@ export function MultiSelect({
           aria-multiselectable="true"
           style={{
             position: 'absolute',
-            top: 'calc(100% + 4px)',
+            top: 'calc(100% + var(--lucent-space-1))',
             left: 0,
             right: 0,
             zIndex: 1000,
@@ -260,6 +291,33 @@ export function MultiSelect({
             </div>
           )}
         </div>
+      )}
+      </div>
+
+      {hasError && (
+        <span
+          id={`${inputId}-error`}
+          role="alert"
+          style={{
+            fontSize: 'var(--lucent-font-size-sm)',
+            color: 'var(--lucent-danger-text)',
+            fontFamily: 'var(--lucent-font-family-base)',
+          }}
+        >
+          {errorText}
+        </span>
+      )}
+      {!hasError && helperText && (
+        <span
+          id={`${inputId}-helper`}
+          style={{
+            fontSize: 'var(--lucent-font-size-sm)',
+            color: 'var(--lucent-text-secondary)',
+            fontFamily: 'var(--lucent-font-family-base)',
+          }}
+        >
+          {helperText}
+        </span>
       )}
     </div>
   );

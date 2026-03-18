@@ -288,7 +288,7 @@ export function DatePicker({
           aria-label="Date picker"
           style={{
             position: 'absolute',
-            top: 'calc(100% + 4px)',
+            top: 'calc(100% + var(--lucent-space-1))',
             left: 0,
             zIndex: 1000,
             background: 'var(--lucent-surface-overlay)',
