@@ -150,12 +150,21 @@ const registry: Record<string, {
 
   Checkbox: {
     props: {
-      label:    { type: 'text', default: 'Agree to terms' },
-      disabled: { type: 'boolean', default: false },
+      size:       { type: 'select', options: ['sm', 'md', 'lg'], default: 'md' },
+      label:      { type: 'text', default: 'Agree to terms' },
+      helperText: { type: 'text', default: '' },
+      contained:  { type: 'boolean', default: false },
+      checked:    { type: 'boolean', default: false },
+      disabled:   { type: 'boolean', default: false },
     },
     render: (v) => (
       <Checkbox
+        key={String(v.checked)}
+        size={v.size as 'sm' | 'md' | 'lg'}
         label={v.label as string}
+        {...(v.helperText ? { helperText: v.helperText as string } : {})}
+        contained={v.contained as boolean}
+        defaultChecked={v.checked as boolean}
         disabled={v.disabled as boolean}
       />
     ),
@@ -164,13 +173,15 @@ const registry: Record<string, {
   Toggle: {
     props: {
       label:    { type: 'text', default: 'Enable feature' },
-      size:     { type: 'select', options: ['sm', 'md'], default: 'md' },
+      size:     { type: 'select', options: ['sm', 'md', 'lg'], default: 'md' },
+      checked:  { type: 'boolean', default: false },
       disabled: { type: 'boolean', default: false },
     },
     render: (v) => (
       <Toggle
         label={v.label as string}
-        size={v.size as 'sm' | 'md'}
+        size={v.size as 'sm' | 'md' | 'lg'}
+        defaultChecked={v.checked as boolean}
         disabled={v.disabled as boolean}
       />
     ),

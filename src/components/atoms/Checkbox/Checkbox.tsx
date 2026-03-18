@@ -8,15 +8,21 @@ import {
   type CSSProperties,
 } from 'react';
 
-export type CheckboxSize = 'sm' | 'md';
+export type CheckboxSize = 'sm' | 'md' | 'lg';
 
 export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'type'> {
   label?: string;
   size?: CheckboxSize;
   indeterminate?: boolean;
+  /** Wraps the checkbox in a bordered container with padding. */
+  contained?: boolean;
+  /** Helper text displayed below the label. */
+  helperText?: string;
 }
 
-const sizePx: Record<CheckboxSize, number> = { sm: 14, md: 16 };
+const sizePx: Record<CheckboxSize, number> = { sm: 14, md: 16, lg: 20 };
+// Content-box height so contained checkbox matches Input (sm=32, md=40, lg=46)
+const containedHeight: Record<CheckboxSize, number> = { sm: 32, md: 40, lg: 46 };
 
 // Keyframes injected once — spring pop on the box, draw-in on the mark.
 const STYLES = `
@@ -39,6 +45,8 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       label,
       size = 'md',
       indeterminate = false,
+      contained = false,
+      helperText,
       checked,
       defaultChecked,
       disabled,
@@ -55,6 +63,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
 
     const isControlled = checked !== undefined;
     const [internalChecked, setInternalChecked] = useState(defaultChecked ?? false);
+    const [hovered, setHovered] = useState(false);
     const isChecked = isControlled ? Boolean(checked) : internalChecked;
 
     // Track when checked state changes to trigger the box pop animation.
@@ -107,59 +116,111 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       animation: popKey > 0 ? 'lucent-cb-pop 220ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards' : undefined,
     };
 
+    const labelContent = (
+      <label
+        style={{
+          display: 'inline-flex',
+          alignItems: helperText ? 'flex-start' : 'center',
+          gap: 'var(--lucent-space-2)',
+          cursor: disabled ? 'not-allowed' : 'pointer',
+          fontFamily: 'var(--lucent-font-family-base)',
+          fontSize: size === 'sm' ? 'var(--lucent-font-size-sm)' : size === 'lg' ? 'var(--lucent-font-size-lg)' : 'var(--lucent-font-size-md)',
+          color: disabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-primary)',
+          userSelect: 'none',
+          ...(contained ? {} : style),
+        }}
+      >
+        <input
+          ref={mergeRef}
+          type="checkbox"
+          id={inputId}
+          checked={isControlled ? checked : internalChecked}
+          disabled={disabled}
+          onChange={handleChange}
+          style={{ position: 'absolute', opacity: 0, width: 0, height: 0, margin: 0, pointerEvents: 'none' }}
+          {...rest}
+        />
+        {/* Box — animates on every toggle via popKey */}
+        <span key={popKey} aria-hidden style={boxStyle}>
+          {(isChecked && !indeterminate) && (
+            <svg
+              width={px - 4}
+              height={px - 4}
+              viewBox="0 0 10 10"
+              fill="none"
+              style={{ animation: 'lucent-cb-mark 200ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards' }}
+            >
+              <path d="M1.5 5L4 7.5L8.5 2.5" stroke={stroke} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          )}
+          {indeterminate && (
+            <svg
+              width={px - 4}
+              height={px - 4}
+              viewBox="0 0 10 10"
+              fill="none"
+              style={{ animation: 'lucent-cb-mark 200ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards' }}
+            >
+              <path d="M2 5H8" stroke={stroke} strokeWidth={1.5} strokeLinecap="round" />
+            </svg>
+          )}
+        </span>
+        {(label || helperText) && (
+          <span style={{ display: 'flex', flexDirection: 'column' }}>
+            {label && <span style={{
+              fontWeight: helperText ? 'var(--lucent-font-weight-medium)' : 'var(--lucent-font-weight-regular)',
+              lineHeight: helperText ? 1.4 : 1,
+            }}>{label}</span>}
+            {helperText && (
+              <span style={{
+                fontSize: 'var(--lucent-font-size-xs)',
+                color: disabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-secondary)',
+                marginTop: '2px',
+              }}>
+                {helperText}
+              </span>
+            )}
+          </span>
+        )}
+      </label>
+    );
+
     return (
       <>
         <style>{STYLES}</style>
-        <label
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 'var(--lucent-space-2)',
-            cursor: disabled ? 'not-allowed' : 'pointer',
-            fontFamily: 'var(--lucent-font-family-base)',
-            fontSize: size === 'sm' ? 'var(--lucent-font-size-sm)' : 'var(--lucent-font-size-md)',
-            color: disabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-primary)',
-            userSelect: 'none',
-            ...style,
-          }}
-        >
-          <input
-            ref={mergeRef}
-            type="checkbox"
-            id={inputId}
-            checked={isControlled ? checked : internalChecked}
-            disabled={disabled}
-            onChange={handleChange}
-            style={{ position: 'absolute', opacity: 0, width: 0, height: 0, margin: 0, pointerEvents: 'none' }}
-            {...rest}
-          />
-          {/* Box — animates on every toggle via popKey */}
-          <span key={popKey} aria-hidden style={boxStyle}>
-            {(isChecked && !indeterminate) && (
-              <svg
-                width={px - 4}
-                height={px - 4}
-                viewBox="0 0 10 10"
-                fill="none"
-                style={{ animation: 'lucent-cb-mark 200ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards' }}
-              >
-                <path d="M1.5 5L4 7.5L8.5 2.5" stroke={stroke} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            )}
-            {indeterminate && (
-              <svg
-                width={px - 4}
-                height={px - 4}
-                viewBox="0 0 10 10"
-                fill="none"
-                style={{ animation: 'lucent-cb-mark 200ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards' }}
-              >
-                <path d="M2 5H8" stroke={stroke} strokeWidth={1.5} strokeLinecap="round" />
-              </svg>
-            )}
-          </span>
-          {label}
-        </label>
+        {contained ? (
+          <div
+            onMouseEnter={() => { if (!disabled) setHovered(true); }}
+            onMouseLeave={() => setHovered(false)}
+            style={{
+              border: `1px solid ${
+                isChecked && !disabled
+                  ? 'var(--lucent-accent-default)'
+                  : hovered && !disabled
+                  ? 'var(--lucent-border-strong)'
+                  : 'var(--lucent-border-default)'
+              }`,
+              borderRadius: 'var(--lucent-radius-lg)',
+              ...(helperText ? {} : { minHeight: containedHeight[size] }),
+              padding: helperText ? 'var(--lucent-space-3)' : '0 var(--lucent-space-3)',
+              display: 'flex',
+              alignItems: helperText ? 'flex-start' : 'center',
+              background: isChecked && !disabled ? 'var(--lucent-accent-subtle)' : 'var(--lucent-surface)',
+              transition: 'border-color var(--lucent-duration-fast) var(--lucent-easing-default), background var(--lucent-duration-fast) var(--lucent-easing-default)',
+              cursor: disabled ? 'not-allowed' : 'pointer',
+              ...style,
+            }}
+            onClick={(e) => {
+              if (disabled) return;
+              // Only handle clicks on the container padding (not bubbled from label)
+              if (e.target === e.currentTarget) {
+                internalRef.current?.click();
+              }
+            }}
+          >
+            {labelContent}
+          </div>
+        ) : labelContent}
       </>
     );
   },
