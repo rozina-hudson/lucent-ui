@@ -1,5 +1,63 @@
 # lucent-ui
 
+## 0.13.0
+
+### New: Chip Component
+
+- **Unified replacement for Tag + Badge** — single flexible label primitive for filters, tags, statuses, and categories
+- Props: `variant`, `size` (sm/md/lg), `onDismiss`, `onClick`, `leftIcon`, `swatch` (color dot), `dot` (status indicator), `borderless`, `disabled`
+- Renders as `<button>` when `onClick` is provided for native semantics
+- Heights scale with spacing tokens via dampened formula
+- Hover animation: `translateY(-1px)` + shadow on interactive chips
+- Tag and Badge kept for backward compatibility
+
+### Checkbox / Radio / Toggle Enhancements
+
+- **`contained` prop** — bordered container with accent border + subtle bg when checked. Use for plan cards, feature toggles, consent items
+- **`helperText` prop** — secondary text below label, label auto-upgrades to medium weight
+- **`lg` size** for Checkbox (20px) and Radio (20px)
+- **Toggle `align` prop** — `left` (default) or `right` to push track to container end
+- Font sizes aligned: sm=`font-size-sm`, md/lg=`font-size-md` across all three
+
+### Token-Based Heights
+
+- All form control heights use `calc(space-token × 0.5 + fixed)` for **dampened vertical scaling** — horizontal padding scales fully while height scales at 50% rate
+- Applies to: Input, Select, Button, DatePicker, DateRangePicker, Checkbox/Radio/Toggle contained, MultiSelect, Chip
+
+### MultiSelect Enhancements
+
+- **`label`**, **`helperText`**, **`errorText`** props matching Input pattern
+- Focus ring matches Input (`boxShadow` instead of `outline`)
+- Dropdown positions relative to trigger (not label/helper)
+- Size × density matrix for dropdown/option padding
+- Checkbox size in dropdown matches MultiSelect size
+- Uses Chip (not Tag) for selected values
+
+### SearchInput Enhancements
+
+- **`label`**, **`helperText`**, **`errorText`** passthrough to Input
+- Search icon scales with size (sm=14px, md=18px, lg=20px)
+- Icon padding uses `calc` with actual icon sizes + gap tokens
+
+### Textarea
+
+- **`size` prop** (sm/md/lg) with size-aware font and padding
+
+### Input Fixes
+
+- Focus ring now works when `onFocus`/`onBlur` passed via rest props (fixed `{...rest}` spread order)
+- Horizontal padding bumped up (sm=`space-3`, md/lg=`space-4`)
+- Size-aware label/helper/error font sizes (sm/md=`font-size-sm`, lg=`font-size-md`)
+- `prefix` and `suffix` props documented in manifest
+
+### Dev Tooling
+
+- **Playground sliders**: spacing, font size, and roundness — scale tokens in real time
+- **All sizes stacked** in preview (no size selector needed)
+- **Component filter** in ComponentPreview — search to show/hide sections
+- Customizer buttons use Button atom with color swatch `leftIcon`
+- Radio, Chip entries added to playground with full prop controls
+
 ## 0.11.0
 
 ### Component Consistency
