@@ -4,8 +4,8 @@ export const compactDensity: DensityPreset = {
   name: 'compact',
   tokens: {
     space0: '0px',
-    space1: '0.2rem',
-    space2: '0.4rem',
+    space1: '0.1rem',
+    space2: '0.25rem',
     space3: '0.6rem',
     space4: '0.8rem',
     space5: '1rem',

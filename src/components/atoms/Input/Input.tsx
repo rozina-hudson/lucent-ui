@@ -28,22 +28,27 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
   suffix?: ReactNode;
 }
 
-const sizeH:    Record<InputSize, string> = { sm: '32px', md: '40px', lg: '46px' };
+// Heights use calc to dampen vertical scaling (50% spacing token + 50% fixed)
+const sizeH:    Record<InputSize, string> = {
+  sm: 'calc(var(--lucent-space-8) * 0.5 + 16px)',
+  md: 'calc(var(--lucent-space-10) * 0.5 + 20px)',
+  lg: 'calc(var(--lucent-space-12) * 0.5 + 24px)',
+};
 const sizeFont: Record<InputSize, string> = {
   sm: 'var(--lucent-font-size-sm)',
   md: 'var(--lucent-font-size-md)',
   lg: 'var(--lucent-font-size-md)',
 };
 const sizePx:   Record<InputSize, string> = {
-  sm: 'var(--lucent-space-2)',
-  md: 'var(--lucent-space-3)',
-  lg: 'var(--lucent-space-3)',
+  sm: 'var(--lucent-space-3)',
+  md: 'var(--lucent-space-4)',
+  lg: 'var(--lucent-space-4)',
 };
-// Left padding when an icon is present (icon width ≈ 16px + gap)
+// Left padding when an icon is present (icon position + icon width + gap)
 const sizeIconPad: Record<InputSize, string> = {
-  sm: '28px',
-  md: 'var(--lucent-space-10)',
-  lg: 'var(--lucent-space-10)',
+  sm: 'calc(var(--lucent-space-3) + 14px + var(--lucent-space-2))',
+  md: 'calc(var(--lucent-space-4) + 18px + var(--lucent-space-2))',
+  lg: 'calc(var(--lucent-space-4) + 20px + var(--lucent-space-3))',
 };
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
@@ -176,6 +181,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
                 cursor: isDisabled ? 'not-allowed' : undefined,
                 boxSizing: 'border-box',
               }}
+              {...rest}
               onFocus={(e) => {
                 setIsFocused(true);
                 rest.onFocus?.(e);
@@ -184,7 +190,6 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
                 setIsFocused(false);
                 rest.onBlur?.(e);
               }}
-              {...rest}
             />
 
             {rightElement && (

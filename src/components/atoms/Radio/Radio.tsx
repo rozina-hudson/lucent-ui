@@ -77,20 +77,31 @@ export function RadioGroup({
 
 // ─── Radio ─────────────────────────────────────────────────────────────────────
 
-export type RadioSize = 'sm' | 'md';
+export type RadioSize = 'sm' | 'md' | 'lg';
 
 export interface RadioProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'type'> {
   value: string;
   label?: string;
   size?: RadioSize;
+  /** Wraps the radio in a bordered container with padding. */
+  contained?: boolean;
+  /** Helper text displayed below the label. */
+  helperText?: string;
 }
 
-const sizePx: Record<RadioSize, number> = { sm: 14, md: 16 };
+const sizePx: Record<RadioSize, number> = { sm: 14, md: 16, lg: 20 };
+const containedHeight: Record<RadioSize, string> = { sm: 'calc(var(--lucent-space-8) * 0.5 + 16px)', md: 'calc(var(--lucent-space-10) * 0.5 + 20px)', lg: 'calc(var(--lucent-space-12) * 0.5 + 24px)' };
+const sizeFontSize: Record<RadioSize, string> = {
+  sm: 'var(--lucent-font-size-sm)',
+  md: 'var(--lucent-font-size-md)',
+  lg: 'var(--lucent-font-size-md)',
+};
 
-export function Radio({ value, label, size = 'md', disabled, id, onChange, checked, ...rest }: RadioProps) {
+export function Radio({ value, label, size = 'md', contained = false, helperText, disabled, id, onChange, checked, style, ...rest }: RadioProps) {
   const ctx = useContext(RadioContext);
   const inputId = id ?? `lucent-radio-${Math.random().toString(36).slice(2, 7)}`;
   const px = sizePx[size];
+  const [hovered, setHovered] = useState(false);
 
   const isDisabled = disabled ?? ctx?.disabled ?? false;
   const isChecked = ctx ? ctx.value === value : Boolean(checked);
@@ -133,37 +144,87 @@ export function Radio({ value, label, size = 'md', disabled, id, onChange, check
     animation: popKey > 0 ? 'lucent-radio-pop 220ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards' : undefined,
   };
 
+  const labelContent = (
+    <label
+      style={{
+        display: 'inline-flex',
+        alignItems: helperText ? 'flex-start' : 'center',
+        gap: 'var(--lucent-space-2)',
+        cursor: isDisabled ? 'not-allowed' : 'pointer',
+        fontFamily: 'var(--lucent-font-family-base)',
+        fontSize: sizeFontSize[size],
+        color: isDisabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-primary)',
+        userSelect: 'none',
+        ...(contained ? {} : (style as React.CSSProperties)),
+      }}
+    >
+      <input
+        type="radio"
+        id={inputId}
+        value={value}
+        name={ctx?.name ?? rest.name}
+        checked={isChecked}
+        disabled={isDisabled}
+        onChange={handleChange}
+        style={{ position: 'absolute', opacity: 0, width: 0, height: 0, margin: 0, pointerEvents: 'none' }}
+        {...rest}
+      />
+      <span key={popKey} aria-hidden style={circleStyle}>
+        <span style={dotStyle} />
+      </span>
+      {(label || helperText) ? (
+        <span style={{ display: 'flex', flexDirection: 'column' }}>
+          {label && <span style={{
+            fontWeight: helperText ? 'var(--lucent-font-weight-medium)' : 'var(--lucent-font-weight-regular)',
+            lineHeight: helperText ? 1.3 : 1,
+          }}>{label}</span>}
+          {helperText && (
+            <span style={{
+              fontSize: 'var(--lucent-font-size-xs)',
+              color: isDisabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-secondary)',
+              marginTop: '2px',
+            }}>
+              {helperText}
+            </span>
+          )}
+        </span>
+      ) : null}
+    </label>
+  );
+
   return (
     <>
       <style>{STYLES}</style>
-      <label
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 'var(--lucent-space-2)',
-          cursor: isDisabled ? 'not-allowed' : 'pointer',
-          fontFamily: 'var(--lucent-font-family-base)',
-          fontSize: size === 'sm' ? 'var(--lucent-font-size-sm)' : 'var(--lucent-font-size-md)',
-          color: isDisabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-primary)',
-          userSelect: 'none',
-        }}
-      >
-        <input
-          type="radio"
-          id={inputId}
-          value={value}
-          name={ctx?.name ?? rest.name}
-          checked={isChecked}
-          disabled={isDisabled}
-          onChange={handleChange}
-          style={{ position: 'absolute', opacity: 0, width: 0, height: 0, margin: 0, pointerEvents: 'none' }}
-          {...rest}
-        />
-        <span key={popKey} aria-hidden style={circleStyle}>
-          <span style={dotStyle} />
-        </span>
-        {label}
-      </label>
+      {contained ? (
+        <div
+          onMouseEnter={() => { if (!isDisabled) setHovered(true); }}
+          onMouseLeave={() => setHovered(false)}
+          style={{
+            border: `1px solid ${
+              isChecked && !isDisabled
+                ? 'var(--lucent-accent-default)'
+                : hovered && !isDisabled
+                ? 'var(--lucent-border-strong)'
+                : 'var(--lucent-border-default)'
+            }`,
+            borderRadius: 'var(--lucent-radius-lg)',
+            ...(helperText ? { padding: 'var(--lucent-space-3)' } : { minHeight: containedHeight[size], padding: '0 var(--lucent-space-3)', display: 'flex', alignItems: 'center' }),
+            background: isChecked && !isDisabled ? 'var(--lucent-accent-subtle)' : 'var(--lucent-surface)',
+            transition: 'border-color var(--lucent-duration-fast) var(--lucent-easing-default), background var(--lucent-duration-fast) var(--lucent-easing-default)',
+            cursor: isDisabled ? 'not-allowed' : 'pointer',
+            ...(style as React.CSSProperties),
+          }}
+          onClick={(e) => {
+            if (isDisabled) return;
+            if (e.target === e.currentTarget) {
+              const input = e.currentTarget.querySelector('input');
+              input?.click();
+            }
+          }}
+        >
+          {labelContent}
+        </div>
+      ) : labelContent}
     </>
   );
 }

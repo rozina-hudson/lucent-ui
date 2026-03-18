@@ -1,5 +1,7 @@
 import { forwardRef, useEffect, useRef, type TextareaHTMLAttributes } from 'react';
 
+export type TextareaSize = 'sm' | 'md' | 'lg';
+
 export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
   helperText?: string;
@@ -7,10 +9,22 @@ export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElemen
   autoResize?: boolean;
   maxLength?: number;
   showCount?: boolean;
+  size?: TextareaSize;
 }
 
+const sizeFontSizes: Record<TextareaSize, string> = {
+  sm: 'var(--lucent-font-size-sm)',
+  md: 'var(--lucent-font-size-md)',
+  lg: 'var(--lucent-font-size-md)',
+};
+const sizePaddings: Record<TextareaSize, string> = {
+  sm: 'var(--lucent-space-2)',
+  md: 'var(--lucent-space-3)',
+  lg: 'var(--lucent-space-4)',
+};
+
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ label, helperText, errorText, autoResize = false, maxLength, showCount = false, id, value, onChange, disabled, style, ...rest }, ref) => {
+  ({ label, helperText, errorText, autoResize = false, maxLength, showCount = false, size = 'md', id, value, onChange, disabled, style, ...rest }, ref) => {
     const internalRef = useRef<HTMLTextAreaElement>(null);
     const resolvedRef = (ref as React.RefObject<HTMLTextAreaElement>) ?? internalRef;
     const inputId = id ?? `lucent-textarea-${Math.random().toString(36).slice(2, 7)}`;
@@ -56,8 +70,8 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           style={{
             width: '100%',
             minHeight: '100px',
-            padding: 'var(--lucent-space-3)',
-            fontSize: 'var(--lucent-font-size-md)',
+            padding: sizePaddings[size],
+            fontSize: sizeFontSizes[size],
             fontFamily: 'var(--lucent-font-family-base)',
             color: isDisabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-primary)',
             background: isDisabled ? 'var(--lucent-surface-secondary)' : 'var(--lucent-surface)',

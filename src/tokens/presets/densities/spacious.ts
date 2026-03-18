@@ -4,9 +4,9 @@ export const spaciousDensity: DensityPreset = {
   name: 'spacious',
   tokens: {
     space0: '0px',
-    space1: '0.3125rem',
-    space2: '0.625rem',
-    space3: '0.9375rem',
+    space1: '0.375rem',
+    space2: '0.75rem',
+    space3: '1.125rem',
     space4: '1.25rem',
     space5: '1.5625rem',
     space6: '1.875rem',

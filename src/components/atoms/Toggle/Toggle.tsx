@@ -7,7 +7,15 @@ export interface ToggleProps extends Omit<InputHTMLAttributes<HTMLInputElement>,
   size?: ToggleSize;
   checked?: boolean;
   defaultChecked?: boolean;
+  /** Wraps the toggle in a bordered container with padding. */
+  contained?: boolean;
+  /** Helper text displayed below the label. */
+  helperText?: string;
+  /** Position of the toggle track relative to the label. */
+  align?: 'left' | 'right';
 }
+
+const containedHeight: Record<ToggleSize, string> = { sm: 'calc(var(--lucent-space-8) * 0.5 + 16px)', md: 'calc(var(--lucent-space-10) * 0.5 + 20px)', lg: 'calc(var(--lucent-space-12) * 0.5 + 24px)' };
 
 const sizes: Record<ToggleSize, { track: [number, number]; thumb: number }> = {
   sm: { track: [28, 16], thumb: 12 },
@@ -31,6 +39,9 @@ export function Toggle({
   size = 'md',
   checked,
   defaultChecked,
+  contained = false,
+  helperText,
+  align = 'left',
   disabled,
   id,
   onChange,
@@ -41,6 +52,7 @@ export function Toggle({
   const isControlled = checked !== undefined;
   const [internalChecked, setInternalChecked] = useState(defaultChecked ?? false);
   const isChecked = isControlled ? Boolean(checked) : internalChecked;
+  const [hovered, setHovered] = useState(false);
 
   const prevChecked = useRef(isChecked);
   const [popKey, setPopKey] = useState(0);
@@ -60,65 +72,118 @@ export function Toggle({
     onChange?.(e);
   };
 
+  const trackEl = (
+    <span
+      key={popKey}
+      aria-hidden
+      style={{
+        position: 'relative',
+        width: trackW,
+        height: trackH,
+        borderRadius: trackH / 2,
+        background: disabled ? 'var(--lucent-surface-secondary)' : isChecked ? 'var(--lucent-accent-default)' : 'var(--lucent-border-strong)',
+        flexShrink: 0,
+        transition: `background var(--lucent-duration-fast) var(--lucent-easing-default)`,
+        animation: popKey > 0 ? `lucent-toggle-pop 240ms ${SPRING} forwards` : undefined,
+      }}
+    >
+      <span
+        style={{
+          position: 'absolute',
+          top: 2,
+          left: thumbOffset,
+          width: thumbSize,
+          height: thumbSize,
+          borderRadius: '50%',
+          background: '#ffffff',
+          boxShadow: '0 1px 3px rgb(0 0 0 / 0.2)',
+          transition: `left 260ms ${SPRING}`,
+        }}
+      />
+    </span>
+  );
+
+  const labelContent = (
+    <label
+      style={{
+        display: align === 'right' ? 'flex' : 'inline-flex',
+        alignItems: helperText ? 'flex-start' : 'center',
+        gap: 'var(--lucent-space-2)',
+        ...(align === 'right' ? { width: '100%' } : {}),
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        fontFamily: 'var(--lucent-font-family-base)',
+        fontSize: size === 'sm' ? 'var(--lucent-font-size-sm)' : 'var(--lucent-font-size-md)',
+        color: disabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-primary)',
+        userSelect: 'none',
+        ...(contained ? {} : (style as React.CSSProperties)),
+      }}
+    >
+      <input
+        type="checkbox"
+        role="switch"
+        id={inputId}
+        checked={isControlled ? checked : internalChecked}
+        disabled={disabled}
+        onChange={handleChange}
+        aria-checked={isChecked}
+        style={{ position: 'absolute', opacity: 0, width: 0, height: 0, margin: 0, pointerEvents: 'none' }}
+        {...rest}
+      />
+      {align === 'left' && trackEl}
+      {(label || helperText) ? (
+        <span style={{ display: 'flex', flexDirection: 'column', flex: align === 'right' ? 1 : undefined }}>
+          {label && <span style={{
+            fontWeight: helperText ? 'var(--lucent-font-weight-medium)' : 'var(--lucent-font-weight-regular)',
+            lineHeight: helperText ? 1.3 : 1,
+          }}>{label}</span>}
+          {helperText && (
+            <span style={{
+              fontSize: 'var(--lucent-font-size-xs)',
+              color: disabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-secondary)',
+              marginTop: '2px',
+            }}>
+              {helperText}
+            </span>
+          )}
+        </span>
+      ) : null}
+      {align === 'right' && trackEl}
+    </label>
+  );
+
   return (
     <>
       <style>{STYLES}</style>
-      <label
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 'var(--lucent-space-2)',
-          cursor: disabled ? 'not-allowed' : 'pointer',
-          fontFamily: 'var(--lucent-font-family-base)',
-          fontSize: 'var(--lucent-font-size-md)',
-          color: disabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-primary)',
-          userSelect: 'none',
-          ...(style as React.CSSProperties),
-        }}
-      >
-        <input
-          type="checkbox"
-          role="switch"
-          id={inputId}
-          checked={isControlled ? checked : internalChecked}
-          disabled={disabled}
-          onChange={handleChange}
-          aria-checked={isChecked}
-          style={{ position: 'absolute', opacity: 0, width: 0, height: 0, margin: 0, pointerEvents: 'none' }}
-          {...rest}
-        />
-        {/* Track — re-keyed to replay pop on every toggle */}
-        <span
-          key={popKey}
-          aria-hidden
+      {contained ? (
+        <div
+          onMouseEnter={() => { if (!disabled) setHovered(true); }}
+          onMouseLeave={() => setHovered(false)}
           style={{
-            position: 'relative',
-            width: trackW,
-            height: trackH,
-            borderRadius: trackH / 2,
-            background: disabled ? 'var(--lucent-surface-secondary)' : isChecked ? 'var(--lucent-accent-default)' : 'var(--lucent-border-strong)',
-            flexShrink: 0,
-            transition: `background var(--lucent-duration-fast) var(--lucent-easing-default)`,
-            animation: popKey > 0 ? `lucent-toggle-pop 240ms ${SPRING} forwards` : undefined,
+            border: `1px solid ${
+              isChecked && !disabled
+                ? 'var(--lucent-accent-default)'
+                : hovered && !disabled
+                ? 'var(--lucent-border-strong)'
+                : 'var(--lucent-border-default)'
+            }`,
+            borderRadius: 'var(--lucent-radius-lg)',
+            ...(helperText ? { padding: 'var(--lucent-space-3)' } : { minHeight: containedHeight[size], padding: '0 var(--lucent-space-3)', display: 'flex', alignItems: 'center' }),
+            background: isChecked && !disabled ? 'var(--lucent-accent-subtle)' : 'var(--lucent-surface)',
+            transition: 'border-color var(--lucent-duration-fast) var(--lucent-easing-default), background var(--lucent-duration-fast) var(--lucent-easing-default)',
+            cursor: disabled ? 'not-allowed' : 'pointer',
+            ...(style as React.CSSProperties),
+          }}
+          onClick={(e) => {
+            if (disabled) return;
+            if (e.target === e.currentTarget) {
+              const input = e.currentTarget.querySelector('input');
+              input?.click();
+            }
           }}
         >
-          {/* Thumb — spring slide */}
-          <span
-            style={{
-              position: 'absolute',
-              top: 2,
-              left: thumbOffset,
-              width: thumbSize,
-              height: thumbSize,
-              borderRadius: '50%',
-              background: '#ffffff',
-              boxShadow: '0 1px 3px rgb(0 0 0 / 0.2)',
-              transition: `left 260ms ${SPRING}`,
-            }}
-          />
-        </span>
-        {label}
-      </label>
+          {labelContent}
+        </div>
+      ) : labelContent}
     </>
   );
 }

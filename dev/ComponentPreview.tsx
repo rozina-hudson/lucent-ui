@@ -1085,15 +1085,31 @@ function Inner({
 
       {/* Checkbox */}
       <Section title="Checkbox" tokens={tokens} hidden={!showSection('Checkbox')}>
+        <Row label="States" tokens={tokens}>
+          <Checkbox label="Unchecked" />
+          <Checkbox label="Checked" defaultChecked />
+          <Checkbox label="Indeterminate" indeterminate />
+        </Row>
         <Row label="Controlled" tokens={tokens}>
           <Checkbox label="Accept terms" checked={checked} onChange={e => setChecked(e.target.checked)} />
-          <Checkbox label="Indeterminate" indeterminate />
-          <Checkbox label="Disabled" disabled />
-          <Checkbox label="Disabled checked" disabled checked />
         </Row>
         <Row label="Sizes" tokens={tokens}>
           <Checkbox size="sm" label="Small" defaultChecked />
           <Checkbox size="md" label="Medium" defaultChecked />
+          <Checkbox size="lg" label="Large" defaultChecked />
+        </Row>
+        <Row label="With helper text" tokens={tokens}>
+          <Checkbox label="Marketing emails" helperText="Receive occasional updates about new features" defaultChecked />
+          <Checkbox label="Analytics" helperText="Help us improve by sharing anonymous usage data" />
+        </Row>
+        <Row label="Contained" tokens={tokens}>
+          <Checkbox label="Free plan" helperText="Up to 3 projects, 1 GB storage" contained />
+          <Checkbox label="Pro plan" helperText="Unlimited projects, 100 GB storage" contained defaultChecked />
+        </Row>
+        <Row label="Disabled" tokens={tokens}>
+          <Checkbox label="Disabled off" disabled />
+          <Checkbox label="Disabled checked" disabled defaultChecked />
+          <Checkbox label="Disabled indeterminate" disabled indeterminate />
         </Row>
       </Section>
 
@@ -1114,16 +1130,39 @@ function Inner({
             <Radio value="xl" label="XL" />
           </RadioGroup>
         </Row>
-        <Row label="Group disabled" tokens={tokens}>
-          <RadioGroup name="disabled-demo" value="a" onChange={() => {}} disabled>
-            <Radio value="a" label="Option A" />
-            <Radio value="b" label="Option B" />
+        <Row label="Sizes" tokens={tokens}>
+          <RadioGroup name="size-preview" value="a" onChange={() => {}} orientation="horizontal">
+            <Radio size="sm" value="a" label="Small" />
+          </RadioGroup>
+          <RadioGroup name="size-preview-md" value="a" onChange={() => {}} orientation="horizontal">
+            <Radio size="md" value="a" label="Medium" />
+          </RadioGroup>
+          <RadioGroup name="size-preview-lg" value="a" onChange={() => {}} orientation="horizontal">
+            <Radio size="lg" value="a" label="Large" />
+          </RadioGroup>
+        </Row>
+        <Row label="Contained" tokens={tokens}>
+          <RadioGroup name="contained-demo" value="pro" onChange={() => {}}>
+            <Radio value="free" label="Free plan" helperText="Up to 3 projects, 1 GB storage" contained />
+            <Radio value="pro" label="Pro plan" helperText="Unlimited projects, 100 GB storage" contained />
+          </RadioGroup>
+        </Row>
+        <Row label="Disabled" tokens={tokens}>
+          <RadioGroup name="disabled-off" value="" onChange={() => {}} disabled>
+            <Radio value="a" label="Disabled unselected" />
+          </RadioGroup>
+          <RadioGroup name="disabled-on" value="a" onChange={() => {}} disabled>
+            <Radio value="a" label="Disabled selected" />
           </RadioGroup>
         </Row>
       </Section>
 
       {/* Toggle */}
       <Section title="Toggle" tokens={tokens} hidden={!showSection('Toggle')}>
+        <Row label="States" tokens={tokens}>
+          <Toggle label="Off" />
+          <Toggle label="On" defaultChecked />
+        </Row>
         <Row label="Controlled" tokens={tokens}>
           <Toggle label="Dark mode" checked={toggled} onChange={e => setToggled(e.target.checked)} />
         </Row>
@@ -1131,6 +1170,14 @@ function Inner({
           <Toggle size="sm" label="Small" defaultChecked />
           <Toggle size="md" label="Medium" defaultChecked />
           <Toggle size="lg" label="Large" defaultChecked />
+        </Row>
+        <Row label="With helper text" tokens={tokens}>
+          <Toggle label="Notifications" helperText="Receive email alerts for new activity" defaultChecked />
+          <Toggle label="Auto-save" helperText="Save changes automatically every 30 seconds" />
+        </Row>
+        <Row label="Contained" tokens={tokens}>
+          <Toggle label="Dark mode" helperText="Use dark colour scheme across the app" contained defaultChecked />
+          <Toggle label="Compact view" helperText="Reduce spacing for denser layouts" contained />
         </Row>
         <Row label="Disabled" tokens={tokens}>
           <Toggle disabled label="Disabled off" />
@@ -1857,7 +1904,7 @@ function Inner({
               <div key={s} style={{ width: 260 }}>
                 <MultiSelect
                   size={s}
-                  options={['React', 'Vue', 'Svelte'].map(v => ({ value: v.toLowerCase(), label: v }))}
+                  options={['React', 'Vue', 'Svelte', 'Angular', 'Solid', 'Preact', 'Lit'].map(v => ({ value: v.toLowerCase(), label: v }))}
                   placeholder={`Size ${s}`}
                 />
               </div>
