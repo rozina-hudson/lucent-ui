@@ -18,9 +18,9 @@ export interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement
 }
 
 const sizeH: Record<SelectSize, string> = {
-  sm: '32px',
-  md: '40px',
-  lg: '46px',
+  sm: 'calc(var(--lucent-space-8) * 0.5 + 16px)',
+  md: 'calc(var(--lucent-space-10) * 0.5 + 20px)',
+  lg: 'calc(var(--lucent-space-12) * 0.5 + 24px)',
 };
 
 const sizeFont: Record<SelectSize, string> = {
@@ -118,13 +118,14 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
               boxSizing: 'border-box',
             }}
             onFocus={(e) => {
-              setIsFocused(true);
+              if (!isDisabled) setIsFocused(true);
               rest.onFocus?.(e);
             }}
             onBlur={(e) => {
               setIsFocused(false);
               rest.onBlur?.(e);
             }}
+            onMouseDown={() => { if (!isDisabled) setIsFocused(true); }}
             {...rest}
           >
             {placeholder && (

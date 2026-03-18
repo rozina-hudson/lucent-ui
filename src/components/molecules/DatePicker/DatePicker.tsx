@@ -51,7 +51,7 @@ export interface DatePickerProps {
   style?: CSSProperties;
 }
 
-const sizeHeights: Record<DatePickerSize, number> = { sm: 32, md: 40, lg: 46 };
+const sizeHeights: Record<DatePickerSize, string> = { sm: 'calc(var(--lucent-space-8) * 0.5 + 16px)', md: 'calc(var(--lucent-space-10) * 0.5 + 20px)', lg: 'calc(var(--lucent-space-12) * 0.5 + 24px)' };
 const sizeFontSizes: Record<DatePickerSize, string> = {
   sm: 'var(--lucent-font-size-sm)',
   md: 'var(--lucent-font-size-md)',
@@ -288,7 +288,7 @@ export function DatePicker({
           aria-label="Date picker"
           style={{
             position: 'absolute',
-            top: 'calc(100% + 4px)',
+            top: 'calc(100% + var(--lucent-space-1))',
             left: 0,
             zIndex: 1000,
             background: 'var(--lucent-surface-overlay)',

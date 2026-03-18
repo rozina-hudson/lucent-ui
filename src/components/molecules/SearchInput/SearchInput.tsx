@@ -13,6 +13,9 @@ export interface SearchInputProps {
   onChange: (value: string) => void;
   placeholder?: string;
   size?: InputSize;
+  label?: string;
+  helperText?: string;
+  errorText?: string;
   results?: SearchResult[];
   onResultSelect?: (result: SearchResult) => void;
   isLoading?: boolean;
@@ -21,8 +24,10 @@ export interface SearchInputProps {
   style?: CSSProperties;
 }
 
-const SearchIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+const iconSizes: Record<InputSize, number> = { sm: 14, md: 18, lg: 20 };
+
+const SearchIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" fill="none" aria-hidden="true">
     <circle cx="6.5" cy="6.5" r="4" stroke="currentColor" strokeWidth="1.5"/>
     <path d="M9.5 9.5L13 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
   </svg>
@@ -39,6 +44,9 @@ export function SearchInput({
   onChange,
   placeholder = 'Search…',
   size = 'md',
+  label,
+  helperText,
+  errorText,
   results = [],
   onResultSelect,
   isLoading = false,
@@ -105,10 +113,13 @@ export function SearchInput({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
-        leftElement={<SearchIcon />}
+        leftElement={<SearchIcon size={iconSizes[size]} />}
         rightElement={rightSlot ?? undefined}
         onFocus={handleFocus}
         onBlur={handleBlur}
+        {...(label !== undefined && { label })}
+        {...(helperText !== undefined && { helperText })}
+        {...(errorText !== undefined && { errorText })}
       />
       {showDropdown && (
         <div
