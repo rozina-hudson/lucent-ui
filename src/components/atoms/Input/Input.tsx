@@ -181,6 +181,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
                 cursor: isDisabled ? 'not-allowed' : undefined,
                 boxSizing: 'border-box',
               }}
+              {...rest}
               onFocus={(e) => {
                 setIsFocused(true);
                 rest.onFocus?.(e);
@@ -189,7 +190,6 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
                 setIsFocused(false);
                 rest.onBlur?.(e);
               }}
-              {...rest}
             />
 
             {rightElement && (
