@@ -45,7 +45,7 @@ const sizeFontSizes: Record<MultiSelectSize, string> = {
 };
 const sizePaddings: Record<MultiSelectSize, string> = {
   sm: 'var(--lucent-space-1) var(--lucent-space-2)',
-  md: 'var(--lucent-space-2) var(--lucent-space-2)',
+  md: 'var(--lucent-space-1) var(--lucent-space-2)',
   lg: 'var(--lucent-space-2) var(--lucent-space-3)',
 };
 
