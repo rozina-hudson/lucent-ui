@@ -1886,7 +1886,7 @@ function Inner({
               <div key={s} style={{ width: 260 }}>
                 <MultiSelect
                   size={s}
-                  options={['React', 'Vue', 'Svelte'].map(v => ({ value: v.toLowerCase(), label: v }))}
+                  options={['React', 'Vue', 'Svelte', 'Angular', 'Solid', 'Preact', 'Lit'].map(v => ({ value: v.toLowerCase(), label: v }))}
                   placeholder={`Size ${s}`}
                 />
               </div>

@@ -32,16 +32,17 @@ export interface MultiSelectProps {
   style?: CSSProperties;
 }
 
-const sizeHeights: Record<MultiSelectSize, number> = { sm: 28, md: 36, lg: 42 };
+// minHeight so total (minHeight + 2*6px padding + 2px border) matches Input
+const sizeHeights: Record<MultiSelectSize, number> = { sm: 20, md: 24, lg: 28 };
 const sizeFontSizes: Record<MultiSelectSize, string> = {
   sm: 'var(--lucent-font-size-sm)',
   md: 'var(--lucent-font-size-md)',
   lg: 'var(--lucent-font-size-md)',
 };
 const sizePaddings: Record<MultiSelectSize, string> = {
-  sm: '2px var(--lucent-space-2)',
-  md: '2px var(--lucent-space-2)',
-  lg: '2px var(--lucent-space-3)',
+  sm: '6px var(--lucent-space-2)',
+  md: '8px var(--lucent-space-2)',
+  lg: '9px var(--lucent-space-3)',
 };
 
 const dropdownPadding: Record<MultiSelectSize, string> = {
