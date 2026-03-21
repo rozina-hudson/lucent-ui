@@ -49,6 +49,9 @@ export function NavLink({
           : isActive
           ? (inverse ? 'var(--lucent-text-primary)' : 'var(--lucent-text-on-accent)')
           : 'var(--lucent-text-secondary)',
+        border: isActive && inverse ? '1px solid var(--lucent-border-default)' : '1px solid transparent',
+        borderRight: isActive && inverse ? '3px solid var(--lucent-accent-default)' : '3px solid transparent',
+        boxShadow: isActive && inverse ? 'var(--lucent-shadow-md)' : 'none',
         fontFamily: 'var(--lucent-font-family-base)',
         fontSize: 'var(--lucent-font-size-md)',
         fontWeight: isActive ? 'var(--lucent-font-weight-medium)' : 'var(--lucent-font-weight-regular)',
