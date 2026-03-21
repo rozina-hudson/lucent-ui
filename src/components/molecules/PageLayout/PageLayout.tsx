@@ -1,5 +1,8 @@
 import type { CSSProperties, ReactNode } from 'react';
 
+const SCROLLBAR_HIDE_CLASS = 'lucent-pl-no-scrollbar';
+const SCROLLBAR_HIDE_CSS = `.${SCROLLBAR_HIDE_CLASS}{scrollbar-width:none}.${SCROLLBAR_HIDE_CLASS}::-webkit-scrollbar{display:none}`;
+
 export interface PageLayoutProps {
   children: ReactNode;
   header?: ReactNode;
@@ -20,6 +23,8 @@ export interface PageLayoutProps {
   footer?: ReactNode;
   /** Footer height in px or any CSS value. Default: 48 */
   footerHeight?: number | string;
+  /** Background token for chrome regions (header, sidebar, footer). Default: "bgBase" */
+  chromeBackground?: 'bgBase' | 'bgSubtle' | 'surface';
   /** Style overrides for the main content card (border, borderRadius, boxShadow, etc.) */
   mainStyle?: CSSProperties;
   style?: CSSProperties;
@@ -41,6 +46,7 @@ export function PageLayout({
   rightSidebarCollapsed = false,
   footer,
   footerHeight = 28,
+  chromeBackground = 'bgBase',
   mainStyle,
   style,
 }: PageLayoutProps) {
@@ -48,6 +54,11 @@ export function PageLayout({
   const sidebarW = toCss(sidebarWidth);
   const rightSidebarW = toCss(rightSidebarWidth);
   const footerH = toCss(footerHeight);
+  const chromeBg = chromeBackground === 'bgBase'
+    ? 'var(--lucent-bg-base)'
+    : chromeBackground === 'bgSubtle'
+      ? 'var(--lucent-bg-subtle)'
+      : 'var(--lucent-surface)';
 
   return (
     <div
@@ -56,10 +67,12 @@ export function PageLayout({
         flexDirection: 'column',
         height: '100vh',
         overflow: 'hidden',
+        background: chromeBg,
         fontFamily: 'var(--lucent-font-family-base)',
         ...style,
       }}
     >
+      <style>{SCROLLBAR_HIDE_CSS}</style>
       {/* Header — no border, floats above the body */}
       {header != null && (
         <div
@@ -67,7 +80,7 @@ export function PageLayout({
             flexShrink: 0,
             height: headerH,
             zIndex: 10,
-            background: 'var(--lucent-surface)',
+            background: chromeBg,
           }}
         >
           {header}
@@ -79,12 +92,13 @@ export function PageLayout({
         {/* Sidebar — no border-right */}
         {sidebar != null && (
           <div
+            className={SCROLLBAR_HIDE_CLASS}
             style={{
               width: sidebarCollapsed ? 0 : sidebarW,
               flexShrink: 0,
               overflow: 'hidden',
               overflowY: sidebarCollapsed ? 'hidden' : 'auto',
-              background: 'var(--lucent-surface)',
+              background: chromeBg,
               transition: 'width 200ms var(--lucent-easing-default)',
             }}
           >
@@ -94,6 +108,7 @@ export function PageLayout({
 
         {/* Main content — card with border, radius, shadow */}
         <main
+          className={SCROLLBAR_HIDE_CLASS}
           style={{
             flex: 1,
             overflowY: 'auto',
@@ -114,12 +129,13 @@ export function PageLayout({
         {/* Right panel — structural sibling of <main> */}
         {rightSidebar != null && (
           <aside
+            className={SCROLLBAR_HIDE_CLASS}
             style={{
               width: rightSidebarCollapsed ? 0 : rightSidebarW,
               flexShrink: 0,
               overflow: 'hidden',
               overflowY: rightSidebarCollapsed ? 'hidden' : 'auto',
-              background: 'var(--lucent-surface)',
+              background: chromeBg,
               transition: 'width 200ms var(--lucent-easing-default)',
             }}
           >
@@ -135,7 +151,7 @@ export function PageLayout({
             flexShrink: 0,
             height: footerH,
             zIndex: 10,
-            background: 'var(--lucent-surface)',
+            background: chromeBg,
           }}
         >
           {footer}

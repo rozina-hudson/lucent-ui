@@ -1,7 +1,14 @@
-import { useState, useEffect, useRef } from 'react';
-import { LucentProvider, useLucent, brandTokens } from '../src/index.js';
-import type { PresetProp, PaletteName, ShapeName, DensityName, ShadowName } from '../src/tokens/presets/types.js';
-import { adjustLightness, getThemeComplementBorderColor, deriveBorderVariants } from '../src/tokens/color.js';
+import { useState, useEffect, useRef, useMemo } from 'react';
+import { LucentProvider, useLucent, createTheme } from '../src/index.js';
+import { hexToHsl, hslToHex } from '../src/tokens/color.js';
+import type { PaletteName, ShapeName, ShadowName } from '../src/tokens/presets/types.js';
+import type { ColorPalette } from '../src/tokens/presets/types.js';
+import {
+  defaultPalette, brandPalette, indigoPalette, violetPalette, emeraldPalette, tealPalette,
+  rosePalette, coralPalette, amberPalette, oceanPalette, slatePalette, sagePalette,
+  sharpShape, roundedShape, pillShape,
+  flatShadow, subtleShadow, elevatedShadow,
+} from '../src/tokens/presets/index.js';
 import { Button } from '../src/components/atoms/Button/index.js';
 import { Input } from '../src/components/atoms/Input/index.js';
 import { Textarea } from '../src/components/atoms/Textarea/index.js';
@@ -32,6 +39,8 @@ import { Slider } from '../src/components/atoms/Slider/index.js';
 import { CodeBlock } from '../src/components/atoms/CodeBlock/index.js';
 import { Table } from '../src/components/atoms/Table/index.js';
 import { PageLayout } from '../src/components/molecules/PageLayout/index.js';
+import { TokenPreview } from './TokenPreview.js';
+import { SelectPlayground } from './SelectPlayground.js';
 import { DataTable } from '../src/components/molecules/DataTable/index.js';
 import { CommandPalette } from '../src/components/molecules/CommandPalette/index.js';
 import { MultiSelect } from '../src/components/molecules/MultiSelect/index.js';
@@ -44,32 +53,18 @@ import { ColorSwatch } from '../src/components/atoms/ColorSwatch/index.js';
 import { SegmentedControl } from '../src/components/atoms/SegmentedControl/index.js';
 import type { LucentTokens, Theme, ThemeAnchors, UploadFile } from '../src/index.js';
 
-type AccentPreset = 'default' | 'gold' | 'indigo';
+// ─── Palette map ────────────────────────────────────────────────────────────
 
-const DEFAULT_ANCHORS: ThemeAnchors = {
-  bgBase:         '#ffffff',
-  borderDefault:  '#e5e7eb',
-  textPrimary:    '#111827',
-  accentDefault:  '#111827',
-  successDefault: '#22c55e',
-  warningDefault: '#f59e0b',
-  dangerDefault:  '#ef4444',
-  infoDefault:    '#3b82f6',
+const PALETTE_MAP: Record<PaletteName, ColorPalette> = {
+  default: defaultPalette, brand: brandPalette, indigo: indigoPalette,
+  violet: violetPalette, emerald: emeraldPalette, teal: tealPalette,
+  rose: rosePalette, coral: coralPalette, amber: amberPalette,
+  ocean: oceanPalette, slate: slatePalette, sage: sagePalette,
 };
 
-const indigoTokens: Partial<LucentTokens> = {
-  accentDefault: '#4f46e5',
-  accentHover: '#4338ca',
-  accentActive: '#3730a3',
-  accentSubtle: '#eef2ff',
-  focusRing: '#4f46e5',
-};
-
-const accentLabel: Record<AccentPreset, string> = {
-  default: 'Default (monochrome)',
-  gold: 'Gold (brandTokens)',
-  indigo: 'Indigo',
-};
+import type { ShapePreset, ShadowPreset } from '../src/tokens/presets/types.js';
+const SHAPE_MAP: Record<ShapeName, ShapePreset> = { sharp: sharpShape, rounded: roundedShape, pill: pillShape };
+const SHADOW_MAP: Record<ShadowName, ShadowPreset> = { flat: flatShadow, subtle: subtleShadow, elevated: elevatedShadow };
 
 function ColorPickerDemo({ presetGroups }: { presetGroups?: ColorPresetGroup[] }) {
   const [color, setColor] = useState('#3b82f6');
@@ -114,229 +109,215 @@ const PALETTE_OPTIONS: { value: PaletteName; label: string; swatch: string }[] =
   { value: 'sage', label: 'Sage', swatch: '#5f8c6e' },
 ];
 
-const SHAPE_OPTIONS: { value: ShapeName; label: string }[] = [
-  { value: 'sharp', label: 'Sharp' },
-  { value: 'rounded', label: 'Rounded' },
-  { value: 'pill', label: 'Pill' },
+const SHAPE_OPTIONS: ShapeName[] = ['sharp', 'rounded', 'pill'];
+const SHADOW_OPTIONS: ShadowName[] = ['flat', 'subtle', 'elevated'];
+
+const QUICK_PRESETS: { name: string; palette: PaletteName; shape: ShapeName; shadow: ShadowName; fontScale: number; spaceScale: number }[] = [
+  { name: 'Modern', palette: 'indigo', shape: 'rounded', shadow: 'subtle', fontScale: 100, spaceScale: 100 },
+  { name: 'Enterprise', palette: 'default', shape: 'sharp', shadow: 'flat', fontScale: 95, spaceScale: 90 },
+  { name: 'Playful', palette: 'rose', shape: 'pill', shadow: 'elevated', fontScale: 105, spaceScale: 110 },
 ];
 
-const DENSITY_OPTIONS: { value: DensityName; label: string }[] = [
-  { value: 'compact', label: 'Compact' },
-  { value: 'default', label: 'Default' },
-  { value: 'spacious', label: 'Spacious' },
+// Anchor derivation chain — which live tokens derive from each anchor
+const ANCHOR_DERIVATIONS: { anchor: keyof ThemeAnchors; label: string; derived: { key: keyof LucentTokens; label: string }[] }[] = [
+  { anchor: 'bgBase', label: 'Background', derived: [
+    { key: 'bgSubtle', label: 'subtle' }, { key: 'surface', label: 'surface' }, { key: 'surfaceTint', label: 'tint' },
+  ]},
+  { anchor: 'borderDefault', label: 'Border', derived: [
+    { key: 'borderSubtle', label: 'subtle' }, { key: 'borderStrong', label: 'strong' },
+  ]},
+  { anchor: 'textPrimary', label: 'Text', derived: [
+    { key: 'textSecondary', label: 'secondary' }, { key: 'textDisabled', label: 'disabled' },
+  ]},
+  { anchor: 'accentDefault', label: 'Accent', derived: [
+    { key: 'accentHover', label: 'hover' }, { key: 'accentActive', label: 'active' },
+    { key: 'accentSubtle', label: 'subtle' }, { key: 'accentBorder', label: 'border' },
+    { key: 'textOnAccent', label: 'text' },
+  ]},
 ];
 
-const SHADOW_OPTIONS: { value: ShadowName; label: string }[] = [
-  { value: 'flat', label: 'Flat' },
-  { value: 'subtle', label: 'Subtle' },
-  { value: 'elevated', label: 'Elevated' },
+const STATUS_ANCHORS: { anchor: keyof ThemeAnchors; label: string; derived: { key: keyof LucentTokens; label: string }[] }[] = [
+  { anchor: 'successDefault', label: 'Success', derived: [{ key: 'successSubtle', label: 'subtle' }, { key: 'successText', label: 'text' }] },
+  { anchor: 'warningDefault', label: 'Warning', derived: [{ key: 'warningSubtle', label: 'subtle' }, { key: 'warningText', label: 'text' }] },
+  { anchor: 'dangerDefault', label: 'Danger', derived: [{ key: 'dangerSubtle', label: 'subtle' }, { key: 'dangerText', label: 'text' }] },
+  { anchor: 'infoDefault', label: 'Info', derived: [{ key: 'infoSubtle', label: 'subtle' }, { key: 'infoText', label: 'text' }] },
 ];
 
-const COMBINED_PRESETS: { name: string; config: PresetConfig }[] = [
-  { name: 'Modern', config: { palette: 'indigo', shape: 'rounded', density: 'default', shadow: 'subtle' } },
-  { name: 'Enterprise', config: { palette: 'default', shape: 'sharp', density: 'compact', shadow: 'flat' } },
-  { name: 'Playful', config: { palette: 'rose', shape: 'pill', density: 'spacious', shadow: 'elevated' } },
-];
+export type DevTab = 'components' | 'tokens' | 'playground';
 
-function PresetPicker({ config, onChange }: { config: PresetConfig; onChange: (c: PresetConfig) => void }) {
-  const { tokens } = useLucent();
-
-  const selectStyle = (isActive: boolean): React.CSSProperties => ({
-    padding: `${tokens.space1} ${tokens.space2}`,
-    border: `1px solid ${isActive ? tokens.accentDefault : tokens.borderDefault}`,
-    borderRadius: tokens.radiusMd,
-    background: isActive ? tokens.accentDefault : tokens.surface,
-    color: isActive ? tokens.textOnAccent : tokens.textPrimary,
-    fontFamily: tokens.fontFamilyBase,
-    fontSize: tokens.fontSizeXs,
-    fontWeight: isActive ? tokens.fontWeightSemibold : tokens.fontWeightRegular,
-    cursor: 'pointer',
-  });
-
-  const sectionStyle: React.CSSProperties = { marginBottom: tokens.space4 };
-  const labelStyle: React.CSSProperties = { fontSize: tokens.fontSizeXs, fontWeight: tokens.fontWeightSemibold, color: tokens.textSecondary, marginBottom: tokens.space1, display: 'block' };
-  const gridStyle: React.CSSProperties = { display: 'flex', flexWrap: 'wrap', gap: tokens.space1 };
-
-  return (
-    <div style={{ marginTop: tokens.space4 }}>
-      {/* Quick presets */}
-      <div style={sectionStyle}>
-        <span style={labelStyle}>Quick presets</span>
-        <div style={gridStyle}>
-          {COMBINED_PRESETS.map(p => {
-            const isActive = p.config.palette === config.palette && p.config.shape === config.shape && p.config.density === config.density && p.config.shadow === config.shadow;
-            return (
-              <Button key={p.name} size="xs" variant={isActive ? 'primary' : 'outline'} onClick={() => onChange(p.config)}>
-                {p.name}
-              </Button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Palette */}
-      <div style={sectionStyle}>
-        <span style={labelStyle}>Palette</span>
-        <div style={gridStyle}>
-          {PALETTE_OPTIONS.map(p => (
-            <Button
-              key={p.value}
-              size="xs"
-              variant={config.palette === p.value ? 'primary' : 'outline'}
-              onClick={() => onChange({ ...config, palette: p.value })}
-              leftIcon={<span style={{ width: 8, height: 8, borderRadius: '50%', background: p.swatch, display: 'inline-block', border: '1px solid rgba(0,0,0,0.15)', flexShrink: 0 }} />}
-            >
-              {p.label}
-            </Button>
-          ))}
-        </div>
-      </div>
-
-      {/* Shape */}
-      <div style={sectionStyle}>
-        <span style={labelStyle}>Shape</span>
-        <div style={gridStyle}>
-          {SHAPE_OPTIONS.map(s => (
-            <Button key={s.value} size="xs" variant={config.shape === s.value ? 'primary' : 'outline'} onClick={() => onChange({ ...config, shape: s.value })}>
-              {s.label}
-            </Button>
-          ))}
-        </div>
-      </div>
-
-      {/* Density */}
-      <div style={sectionStyle}>
-        <span style={labelStyle}>Density</span>
-        <div style={gridStyle}>
-          {DENSITY_OPTIONS.map(d => (
-            <Button key={d.value} size="xs" variant={config.density === d.value ? 'primary' : 'outline'} onClick={() => onChange({ ...config, density: d.value })}>
-              {d.label}
-            </Button>
-          ))}
-        </div>
-      </div>
-
-      {/* Shadow */}
-      <div style={sectionStyle}>
-        <span style={labelStyle}>Shadow</span>
-        <div style={gridStyle}>
-          {SHADOW_OPTIONS.map(s => (
-            <Button key={s.value} size="xs" variant={config.shadow === s.value ? 'primary' : 'outline'} onClick={() => onChange({ ...config, shadow: s.value })}>
-              {s.label}
-            </Button>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-type ThemingMode = 'preset' | 'tokens' | 'anchors';
-
-interface PresetConfig {
-  palette: PaletteName;
-  shape: ShapeName;
-  density: DensityName;
-  shadow: ShadowName;
-}
-
-const DEFAULT_PRESET_CONFIG: PresetConfig = {
-  palette: 'default',
-  shape: 'rounded',
-  density: 'default',
-  shadow: 'subtle',
-};
-
-export function ComponentPreview() {
+export function ComponentPreview({ tab, setTab }: { tab: DevTab; setTab: (t: DevTab) => void }) {
   const [theme, setTheme] = useState<Theme>('light');
-  const [themingMode, setThemingMode] = useState<ThemingMode>('preset');
-  const [presetConfig, setPresetConfig] = useState<PresetConfig>(DEFAULT_PRESET_CONFIG);
-  const [accent, setAccent] = useState<AccentPreset>('default');
-  const [overrides, setOverrides] = useState<Partial<LucentTokens>>({});
-  const [anchors, setAnchors] = useState<ThemeAnchors>(DEFAULT_ANCHORS);
+  const [palette, setPalette] = useState<PaletteName | null>('default');
+  const [anchors, setAnchors] = useState<ThemeAnchors>(() => ({ ...PALETTE_MAP.default.light, textPrimary: '#111111' }));
+  const [shape, setShape] = useState<ShapeName>('rounded');
+  const [shadow, setShadow] = useState<ShadowName>('subtle');
+  const [scaleOverrides, setScaleOverrides] = useState<Partial<LucentTokens>>({});
 
-  const tokenPreset =
-    accent === 'gold' ? brandTokens :
-    accent === 'indigo' ? indigoTokens :
-    undefined;
-
-  const mergedTokens: Partial<LucentTokens> = {
-    ...(tokenPreset || {}),
-    ...overrides,
-  };
-
-  const handleTokenChange = (key: keyof LucentTokens, value: string) => {
-    setOverrides(prev => ({ ...prev, [key]: value }));
+  // Derive tinted bgBase and borderDefault from an accent color
+  const deriveFromAccent = (accent: string, t: Theme): { bgBase: string; borderDefault: string } => {
+    const [h, s] = hexToHsl(accent);
+    if (t === 'light') {
+      return {
+        bgBase: hslToHex(h, Math.min(s, 0.3), 0.99),
+        borderDefault: hslToHex(h, Math.min(s, 0.15), 0.88),
+      };
+    }
+    return {
+      bgBase: hslToHex(h, Math.min(s, 0.2), 0.07),
+      borderDefault: hslToHex(h, Math.min(s, 0.12), 0.18),
+    };
   };
 
   const handleAnchorChange = (key: keyof ThemeAnchors, value: string) => {
-    setAnchors(prev => ({ ...prev, [key]: value }));
+    setPalette(null); // clear palette — colors are now custom
+    if (key === 'accentDefault') {
+      // Cascade: accent drives bgBase + borderDefault; keep text neutral; drop surface to re-derive
+      const derived = deriveFromAccent(value, theme);
+      setAnchors(prev => {
+        const next = {
+          ...prev,
+          accentDefault: value,
+          bgBase: derived.bgBase,
+          borderDefault: derived.borderDefault,
+          textPrimary: theme === 'light' ? '#111111' : '#eeeeee',
+        };
+        delete next.surface;
+        return next;
+      });
+    } else if (key === 'bgBase') {
+      // When bgBase changes manually, drop explicit surface so it re-derives
+      setAnchors(prev => {
+        const next = { ...prev, bgBase: value };
+        delete next.surface;
+        return next;
+      });
+    } else {
+      setAnchors(prev => ({ ...prev, [key]: value }));
+    }
   };
 
-  const clearOverrides = () => setOverrides({});
-
-  const presetProp: PresetProp = {
-    palette: presetConfig.palette,
-    shape: presetConfig.shape,
-    density: presetConfig.density,
-    shadow: presetConfig.shadow,
+  const applyPalette = (p: PaletteName) => {
+    setPalette(p);
+    const paletteAnchors = PALETTE_MAP[p][theme];
+    setAnchors({
+      ...paletteAnchors,
+      // textPrimary is optional in ThemeAnchors; ensure it's always set
+      textPrimary: paletteAnchors.textPrimary ?? (theme === 'light' ? '#111111' : '#eeeeee'),
+    });
   };
 
-  const providerProps = themingMode === 'preset'
-    ? { preset: presetProp }
-    : themingMode === 'anchors'
-      ? { anchors }
-      : { tokens: mergedTokens };
+  const applyShape = (s: ShapeName) => {
+    setShape(s);
+    // Clear any radius scale overrides so the preset takes effect
+    setScaleOverrides(prev => {
+      const next = { ...prev };
+      delete next.radiusSm; delete next.radiusMd; delete next.radiusLg;
+      delete next.radiusXl; delete next.radiusFull;
+      return next;
+    });
+  };
+
+  // Target scale percentages — set by quick presets, applied by Inner
+  const [targetFontScale, setTargetFontScale] = useState(100);
+  const [targetSpaceScale, setTargetSpaceScale] = useState(100);
+
+  const applyQuickPreset = (qp: typeof QUICK_PRESETS[number]) => {
+    applyPalette(qp.palette);
+    applyShape(qp.shape);
+    setShadow(qp.shadow);
+    setTargetFontScale(qp.fontScale);
+    setTargetSpaceScale(qp.spaceScale);
+    setScaleOverrides({});
+  };
+
+  const handleScaleOverride = (key: keyof LucentTokens, value: string) => {
+    setScaleOverrides(prev => ({ ...prev, [key]: value }));
+  };
+
+  const resetAll = () => {
+    setPalette('default');
+    const pa = PALETTE_MAP.default[theme];
+    setAnchors({ ...pa, textPrimary: pa.textPrimary ?? (theme === 'light' ? '#111111' : '#eeeeee') });
+    setShape('rounded');
+    setShadow('subtle');
+    setScaleOverrides({});
+  };
+
+  // Compute final tokens: anchor-derived colors + shape/shadow presets + scale overrides
+  const finalTokens = useMemo(() => {
+    const colorTokens = createTheme(anchors, theme);
+    const shapeTokens = SHAPE_MAP[shape].tokens;
+    const shadowTokens = SHADOW_MAP[shadow][theme];
+    return { ...colorTokens, ...shapeTokens, ...shadowTokens, ...scaleOverrides };
+  }, [anchors, theme, shape, shadow, scaleOverrides]);
+
+  // Sync anchors when theme toggles (use the palette's light/dark anchors, or re-derive custom)
+  const prevThemeRef = useRef(theme);
+  useEffect(() => {
+    if (prevThemeRef.current !== theme) {
+      prevThemeRef.current = theme;
+      if (palette) {
+        const pa = PALETTE_MAP[palette][theme];
+        setAnchors({ ...pa, textPrimary: pa.textPrimary ?? (theme === 'light' ? '#111111' : '#eeeeee') });
+      } else {
+        // Custom colors — re-derive bg/border from current accent for new theme
+        setAnchors(prev => {
+          const derived = deriveFromAccent(prev.accentDefault, theme);
+          return { ...prev, ...derived, textPrimary: theme === 'light' ? '#111111' : '#eeeeee' };
+        });
+      }
+    }
+  }, [theme, palette]);
 
   return (
-    <LucentProvider theme={theme} {...providerProps}>
+    <LucentProvider theme={theme} tokens={finalTokens}>
       <Inner
+        tab={tab}
+        setTab={setTab}
         theme={theme}
-        themingMode={themingMode}
-        presetConfig={presetConfig}
-        accent={accent}
-        overrides={overrides}
+        palette={palette}
         anchors={anchors}
+        shape={shape}
+        shadow={shadow}
+        scaleOverrides={scaleOverrides}
         onToggleTheme={() => setTheme(t => t === 'light' ? 'dark' : 'light')}
-        onSetThemingMode={setThemingMode}
-        onSetPresetConfig={setPresetConfig}
-        onSetAccent={setAccent}
-        onChangeOverride={handleTokenChange}
+        onChangePalette={applyPalette}
         onChangeAnchor={handleAnchorChange}
-        clearOverrides={clearOverrides}
+        onChangeShape={applyShape}
+        onChangeShadow={setShadow}
+        onScaleOverride={handleScaleOverride}
+        onQuickPreset={applyQuickPreset}
+        onReset={resetAll}
+        targetFontScale={targetFontScale}
+        targetSpaceScale={targetSpaceScale}
       />
     </LucentProvider>
   );
 }
 
 function Inner({
-  theme,
-  themingMode,
-  presetConfig,
-  accent,
-  overrides,
-  anchors,
-  onToggleTheme,
-  onSetThemingMode,
-  onSetPresetConfig,
-  onSetAccent,
-  onChangeOverride,
-  onChangeAnchor,
-  clearOverrides,
+  tab, setTab, theme, palette, anchors, shape, shadow, scaleOverrides,
+  onToggleTheme, onChangePalette, onChangeAnchor, onChangeShape, onChangeShadow,
+  onScaleOverride, onQuickPreset, onReset, targetFontScale, targetSpaceScale,
 }: {
+  tab: DevTab;
+  setTab: (t: DevTab) => void;
   theme: Theme;
-  themingMode: ThemingMode;
-  presetConfig: PresetConfig;
-  accent: AccentPreset;
-  overrides: Partial<LucentTokens>;
+  palette: PaletteName | null;
   anchors: ThemeAnchors;
+  shape: ShapeName;
+  shadow: ShadowName;
+  scaleOverrides: Partial<LucentTokens>;
   onToggleTheme: () => void;
-  onSetThemingMode: (m: ThemingMode) => void;
-  onSetPresetConfig: (c: PresetConfig) => void;
-  onSetAccent: (p: AccentPreset) => void;
-  onChangeOverride: (key: keyof LucentTokens, value: string) => void;
+  onChangePalette: (p: PaletteName) => void;
   onChangeAnchor: (key: keyof ThemeAnchors, value: string) => void;
-  clearOverrides: () => void;
+  onChangeShape: (s: ShapeName) => void;
+  onChangeShadow: (s: ShadowName) => void;
+  onScaleOverride: (key: keyof LucentTokens, value: string) => void;
+  onQuickPreset: (qp: typeof QUICK_PRESETS[number]) => void;
+  onReset: () => void;
+  targetFontScale: number;
+  targetSpaceScale: number;
 }) {
   const { tokens } = useLucent();
   const [componentFilter, setComponentFilter] = useState('');
@@ -355,8 +336,6 @@ function Inner({
 
   const [inputVal, setInputVal] = useState('');
   const [textareaVal, setTextareaVal] = useState('');
-  const [deriveAccent, setDeriveAccent] = useState(true);
-  const [deriveBorder, setDeriveBorder] = useState(true);
   const [checked, setChecked] = useState(false);
   const [radio, setRadio] = useState('option1');
   const [radioSize, setRadioSize] = useState('m');
@@ -367,125 +346,52 @@ function Inner({
   const [searchQuery, setSearchQuery] = useState('');
   const [alertDismissed, setAlertDismissed] = useState(false);
 
-  // font scale slider (percentage of base)
+  // Scale slider state
   const [fontScalePercent, setFontScalePercent] = useState(100);
-  const baseFontSizesRef = useRef<Record<string, string>>({});
-
-  // spacing scale slider
   const [spaceScalePercent, setSpaceScalePercent] = useState(100);
-  const baseSpaceRef = useRef<Record<string, string>>({});
-
-  const [radiusPx, setRadiusPx] = useState(() => {
+  // Derive radius slider value from live token
+  const radiusPx = (() => {
     const raw = tokens.radiusLg;
     if (raw.endsWith('px')) return parseInt(raw);
-    if (raw.endsWith('rem')) return Math.round(parseFloat(raw) * 16);
-    return 0;
-  });
+    if (raw.endsWith('rem')) return Math.round(parseFloat(raw) * 14); // 14px base
+    return 8;
+  })();
+  const baseFontSizesRef = useRef<Record<string, string>>({});
+  const baseSpaceRef = useRef<Record<string, string>>({});
 
-  // track border colors per theme for context-aware derivation
-  const borderColorsRef = useRef<{ light: string; dark: string }>({ light: '', dark: '' });
-
-  // when deriveAccent toggled on or base color/theme changes, update other tokens
-  useEffect(() => {
-    if (deriveAccent) {
-      const base = tokens.accentDefault;
-      const hover = theme === 'light' ? adjustLightness(base, -0.08) : adjustLightness(base, 0.08);
-      const active = theme === 'light' ? adjustLightness(base, -0.12) : adjustLightness(base, 0.12);
-      const subtle = theme === 'light' ? adjustLightness(base, 0.8) : adjustLightness(base, -0.8);
-      const border = theme === 'light' ? adjustLightness(base, -0.15) : adjustLightness(base, 0.15);
-      onChangeOverride('accentHover', hover);
-      onChangeOverride('accentActive', active);
-      onChangeOverride('accentSubtle', subtle);
-      onChangeOverride('accentBorder', border);
-    }
-  }, [deriveAccent, theme, tokens.accentDefault]);
-
-  // when deriveBorder toggled on or base color/theme changes, update other tokens
-  useEffect(() => {
-    if (deriveBorder) {
-      const base = tokens.borderDefault;
-      const variants = deriveBorderVariants(base);
-      onChangeOverride('borderSubtle', variants.subtle);
-      onChangeOverride('borderStrong', variants.strong);
-    }
-  }, [deriveBorder, tokens.borderDefault]);
-
-  // when theme changes, switch to the complementary border color for that theme
-  useEffect(() => {
-    if (deriveBorder) {
-      const colorKey = theme === 'light' ? 'light' : 'dark';
-      const otherKey = theme === 'light' ? 'dark' : 'light';
-
-      // if we have a color stored for the current theme, use it
-      if (borderColorsRef.current[colorKey]) {
-        onChangeOverride('borderDefault', borderColorsRef.current[colorKey]);
-      } else {
-        // first time in this theme, compute complement of the other theme's color
-        const currentColor = tokens.borderDefault;
-        const complement = getThemeComplementBorderColor(currentColor);
-        borderColorsRef.current[colorKey] = complement;
-        onChangeOverride('borderDefault', complement);
-      }
-    }
-  }, [theme, deriveBorder]);
-
-  // keep slider in sync if token changes externally
-  useEffect(() => {
-    const raw = tokens.radiusLg;
-    const px = raw.endsWith('px') ? parseInt(raw) : raw.endsWith('rem') ? Math.round(parseFloat(raw) * 16) : 0;
-    setRadiusPx(px);
-  }, [tokens.radiusLg, tokens.radiusMd, tokens.radiusSm, tokens.radiusXl, tokens.radiusFull]);
-
-  // remember original font sizes once, then keep scale state updated
+  // Capture base font/space values once for scaling
   useEffect(() => {
     if (Object.keys(baseFontSizesRef.current).length === 0) {
-      [
-        'fontSizeXs','fontSizeSm','fontSizeMd','fontSizeLg','fontSizeXl','fontSize2xl','fontSize3xl'
-      ].forEach(k => {
+      ['fontSizeXs','fontSizeSm','fontSizeMd','fontSizeLg','fontSizeXl','fontSize2xl','fontSize3xl'].forEach(k => {
         baseFontSizesRef.current[k] = tokens[k as keyof typeof tokens] as string;
       });
     }
-
     if (Object.keys(baseSpaceRef.current).length === 0) {
-      Object.keys(tokens)
-        .filter(k => k.startsWith('space'))
-        .forEach(k => {
-          baseSpaceRef.current[k] = tokens[k as keyof typeof tokens] as string;
-        });
+      Object.keys(tokens).filter(k => k.startsWith('space')).forEach(k => {
+        baseSpaceRef.current[k] = tokens[k as keyof typeof tokens] as string;
+      });
     }
   }, [tokens]);
 
+  // Sync scale sliders when quick preset sets target values
   useEffect(() => {
-    // if any font token changes outside the slider, recompute percent
-    const raw = tokens.fontSizeMd;
-    const baseRaw = baseFontSizesRef.current.fontSizeMd;
-    if (baseRaw) {
-      const num = parseFloat(raw);
-      const baseNum = parseFloat(baseRaw);
-      const percent = Math.round((num / baseNum) * 100);
-      setFontScalePercent(percent);
+    if (targetFontScale !== fontScalePercent) {
+      setFontScalePercent(targetFontScale);
+      const scale = targetFontScale / 100;
+      Object.entries(baseFontSizesRef.current).forEach(([k, v]) => {
+        const num = parseFloat(v); const unit = v.replace(/[\d.]/g, '');
+        onScaleOverride(k as keyof LucentTokens, `${num * scale}${unit}`);
+      });
     }
-  }, [
-    tokens.fontSizeXs,
-    tokens.fontSizeSm,
-    tokens.fontSizeMd,
-    tokens.fontSizeLg,
-    tokens.fontSizeXl,
-    tokens.fontSize2xl,
-    tokens.fontSize3xl,
-  ]);
-
-  useEffect(() => {
-    // keep spacing slider in sync when spacing tokens change externally
-    const raw = tokens.space4; // use mid-level token as reference
-    const baseRaw = baseSpaceRef.current.space4;
-    if (baseRaw) {
-      const num = parseFloat(raw);
-      const baseNum = parseFloat(baseRaw);
-      const percent = Math.round((num / baseNum) * 100);
-      setSpaceScalePercent(percent);
+    if (targetSpaceScale !== spaceScalePercent) {
+      setSpaceScalePercent(targetSpaceScale);
+      const scale = targetSpaceScale / 100;
+      Object.entries(baseSpaceRef.current).forEach(([k, v]) => {
+        const num = parseFloat(v); const unit = v.replace(/[\d.]/g, '');
+        onScaleOverride(k as keyof LucentTokens, `${num * scale}${unit}`);
+      });
     }
-  }, [tokens]);
+  }, [targetFontScale, targetSpaceScale]);
 
   const allFruits = ['Apple', 'Apricot', 'Banana', 'Blueberry', 'Cherry', 'Grape', 'Mango', 'Orange', 'Peach', 'Pear', 'Pineapple', 'Strawberry'];
   const searchResults = searchQuery.length > 0
@@ -494,290 +400,237 @@ function Inner({
         .map((f, i) => ({ id: i, label: f }))
     : [];
 
-  return (
-    <div style={{ background: tokens.bgBase, color: tokens.textPrimary, fontFamily: tokens.fontFamilyBase, minHeight: '100vh', padding: tokens.space8, paddingRight: '280px' }}>
-      {/* Header */}
-      {/* Customizer sidebar */}
-      <div style={{
-        position: 'fixed',
-        right: 0,
-        top: 0,
-        bottom: 0,
-        width: 240,
-        overflowY: 'auto',
-        padding: tokens.space4,
-        background: tokens.surface,
-        borderLeft: `1px solid ${tokens.borderDefault}`,
-        zIndex: 1000,
-      }}>
-        <h2 style={{ fontSize: tokens.fontSizeLg, fontWeight: tokens.fontWeightSemibold, marginTop: 0 }}>Customizer</h2>
-
-        {/* Theming mode selector */}
-        <div style={{ marginBottom: tokens.space4, display: 'flex', gap: tokens.space1 }}>
-          {(['preset', 'tokens', 'anchors'] as ThemingMode[]).map(mode => (
-            <button
-              key={mode}
-              onClick={() => onSetThemingMode(mode)}
-              style={{
-                flex: 1,
-                padding: `${tokens.space1} ${tokens.space2}`,
-                border: `1px solid ${themingMode === mode ? tokens.accentDefault : tokens.borderDefault}`,
-                borderRadius: tokens.radiusMd,
-                background: themingMode === mode ? tokens.accentDefault : tokens.surface,
-                color: themingMode === mode ? tokens.textOnAccent : tokens.textPrimary,
-                fontFamily: tokens.fontFamilyBase,
-                fontSize: tokens.fontSizeXs,
-                fontWeight: themingMode === mode ? tokens.fontWeightSemibold : tokens.fontWeightRegular,
-                cursor: 'pointer',
-              }}
-            >
-              {mode === 'preset' ? 'Preset' : mode === 'tokens' ? 'Tokens' : 'Anchors'}
-            </button>
-          ))}
-        </div>
-
-        <Toggle label="Dark mode" checked={theme === 'dark'} onChange={onToggleTheme} />
-
-        {themingMode === 'preset' ? (
-          <PresetPicker config={presetConfig} onChange={onSetPresetConfig} />
-        ) : themingMode === 'anchors' ? (
-          <div style={{ marginTop: tokens.space4, marginBottom: tokens.space6 }}>
-            {(Object.keys(DEFAULT_ANCHORS) as (keyof ThemeAnchors)[]).map(key => (
-              <div key={key} style={{ marginBottom: tokens.space3 }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: tokens.space2, fontSize: tokens.fontSizeSm }}>
-                  <input
-                    type="color"
-                    value={anchors[key]}
-                    onChange={e => onChangeAnchor(key, e.target.value)}
-                    style={{ width: 28, height: 28, padding: 0, border: `1px solid ${tokens.borderDefault}`, borderRadius: tokens.radiusSm, cursor: 'pointer', background: 'none' }}
-                  />
-                  <span style={{ color: tokens.textSecondary }}>{key}</span>
-                </label>
-              </div>
-            ))}
-          </div>
-        ) : (<>
-        <div style={{ marginTop: tokens.space4, marginBottom: tokens.space6 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.space2 }}>
-            {(['default', 'gold', 'indigo'] as AccentPreset[]).map(p => (
-              <button
-                key={p}
-                onClick={() => onSetAccent(p)}
-                style={{
-                  padding: `${tokens.space1} ${tokens.space3}`,
-                  border: `1px solid ${accent === p ? tokens.accentDefault : tokens.borderDefault}`,
-                  borderRadius: tokens.radiusMd,
-                  background: accent === p ? tokens.accentDefault : tokens.surface,
-                  color: accent === p ? tokens.textOnAccent : tokens.textPrimary,
-                  fontFamily: tokens.fontFamilyBase,
-                  fontSize: tokens.fontSizeSm,
-                  fontWeight: accent === p ? tokens.fontWeightSemibold : tokens.fontWeightRegular,
-                  cursor: 'pointer',
-                }}
-              >
-                {accentLabel[p]}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div style={{ marginBottom: tokens.space4 }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: tokens.space2 }}>
-            <input
-              type="checkbox"
-              checked={deriveAccent}
-              onChange={e => setDeriveAccent(e.target.checked)}
-            />
-            <span style={{ fontSize: tokens.fontSizeSm }}>Derive variants from accentDefault</span>
-          </label>
-        </div>
-        {(deriveAccent ? ['accentDefault'] : ['accentDefault', 'accentHover', 'accentActive', 'accentSubtle', 'accentBorder']).map(key => (
-          <div key={key} style={{ marginBottom: tokens.space4 }}>
-            <Input
-              type="color"
-              label={key}
-              value={tokens[key as keyof typeof tokens] as string}
-              onChange={e => {
-                const val = e.target.value;
-                onChangeOverride(key as keyof LucentTokens, val);
-                if (deriveAccent && key === 'accentDefault') {
-                  // compute derived tokens
-                  const base = val;
-                  const hover = theme === 'light' ? adjustLightness(base, -0.08) : adjustLightness(base, 0.08);
-                  const active = theme === 'light' ? adjustLightness(base, -0.12) : adjustLightness(base, 0.12);
-                  const subtle = theme === 'light' ? adjustLightness(base, 0.8) : adjustLightness(base, -0.8);
-                  const border = theme === 'light' ? adjustLightness(base, -0.15) : adjustLightness(base, 0.15);
-                  onChangeOverride('accentHover', hover);
-                  onChangeOverride('accentActive', active);
-                  onChangeOverride('accentSubtle', subtle);
-                  onChangeOverride('accentBorder', border);
-                }
-              }}
-            />
-          </div>
-        ))}
-
-        {/* border color pickers */}
-        <div style={{ marginTop: tokens.space6, marginBottom: tokens.space4, paddingTop: tokens.space4, borderTop: `1px solid ${tokens.borderDefault}` }}>
-          <span style={{ fontSize: tokens.fontSizeSm, fontWeight: tokens.fontWeightSemibold, display: 'block', marginBottom: tokens.space3 }}>Border Colors</span>
-        </div>
-        <div style={{ marginBottom: tokens.space4 }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: tokens.space2 }}>
-            <input
-              type="checkbox"
-              checked={deriveBorder}
-              onChange={e => setDeriveBorder(e.target.checked)}
-            />
-            <span style={{ fontSize: tokens.fontSizeSm }}>Derive variants from borderDefault</span>
-          </label>
-        </div>
-        {(deriveBorder ? ['borderDefault'] : ['borderDefault', 'borderSubtle', 'borderStrong']).map(key => (
-          <div key={key} style={{ marginBottom: tokens.space4 }}>
-            <Input
-              type="color"
-              label={key}
-              value={tokens[key as keyof typeof tokens] as string}
-              onChange={e => {
-                const val = e.target.value;
-                onChangeOverride(key as keyof LucentTokens, val);
-                if (deriveBorder && key === 'borderDefault') {
-                  // store this color for the current theme
-                  const colorKey = theme === 'light' ? 'light' : 'dark';
-                  borderColorsRef.current[colorKey] = val;
-
-                  // compute derived variants from the chosen color
-                  const variants = deriveBorderVariants(val);
-                  onChangeOverride('borderSubtle', variants.subtle);
-                  onChangeOverride('borderStrong', variants.strong);
-                }
-              }}
-            />
-          </div>
-        ))}
-
-        {/* font size scale slider */}
-        <div style={{ marginBottom: tokens.space4 }}>
-          <label style={{ display: 'flex', flexDirection: 'column', gap: tokens.space1 }}>
-            <span style={{ fontSize: tokens.fontSizeSm }}>Font scale ({fontScalePercent}%)</span>
-            <input
-              type="range"
-              min={50}
-              max={150}
-              value={fontScalePercent}
-              onChange={e => {
-                const pct = parseInt(e.target.value);
-                setFontScalePercent(pct);
-                const scale = pct / 100;
-                Object.entries(baseFontSizesRef.current).forEach(([key, val]) => {
-                  const num = parseFloat(val);
-                  const unit = val.replace(/[\d.]/g, '');
-                  onChangeOverride(key as keyof LucentTokens, `${num * scale}${unit}`);
-                });
-              }}
-            />
-          </label>
-        </div>
-
-        {/* spacing scale slider */}
-        <div style={{ marginBottom: tokens.space4 }}>
-          <label style={{ display: 'flex', flexDirection: 'column', gap: tokens.space1 }}>
-            <span style={{ fontSize: tokens.fontSizeSm }}>Spacing scale ({spaceScalePercent}%)</span>
-            <input
-              type="range"
-              min={50}
-              max={150}
-              value={spaceScalePercent}
-              onChange={e => {
-                const pct = parseInt(e.target.value);
-                setSpaceScalePercent(pct);
-                const scale = pct / 100;
-                Object.entries(baseSpaceRef.current).forEach(([key, val]) => {
-                  const num = parseFloat(val);
-                  const unit = val.replace(/[\d.]/g, '');
-                  onChangeOverride(key as keyof LucentTokens, `${num * scale}${unit}`);
-                });
-              }}
-            />
-          </label>
-        </div>
-
-        <div style={{ marginBottom: tokens.space4 }}>
-          <label style={{ display: 'flex', flexDirection: 'column', gap: tokens.space1 }}>
-            <span style={{ fontSize: tokens.fontSizeSm }}>Border radius ({radiusPx}px)</span>
-            <input
-              type="range"
-              min={0}
-              max={32}
-              value={radiusPx}
-              onChange={e => {
-                const v = parseInt(e.target.value);
-                setRadiusPx(v);
-                ['radiusSm','radiusMd','radiusLg','radiusXl','radiusFull'].forEach(k =>
-                  onChangeOverride(k as keyof LucentTokens, `${v}px`)
-                );
-              }}
-            />
-          </label>
-        </div>
-
-        <Button size="sm" onClick={clearOverrides}>Reset</Button>
-        </>)}
-      </div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: tokens.space8, flexWrap: 'wrap', gap: tokens.space4 }}>
-        <div>
-          <h1 style={{ fontSize: tokens.fontSize2xl, fontWeight: tokens.fontWeightBold, margin: 0 }}>Lucent UI — Component Preview</h1>
-          <p style={{ color: tokens.textSecondary, margin: `${tokens.space1} 0 0`, fontSize: tokens.fontSizeSm }}>
-            {theme} mode · {themingMode === 'preset' ? `preset: ${presetConfig.palette} / ${presetConfig.shape} / ${presetConfig.density} / ${presetConfig.shadow}` : themingMode === 'anchors' ? 'anchor mode' : accentLabel[accent]}
-          </p>
-        </div>
-      </div>
-
-      {/* ── Component filter ── */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: tokens.space3,
-        marginBottom: tokens.space6,
-        flexWrap: 'wrap',
-      }}>
+  const navSidebar = (
+    <div style={{ padding: tokens.space4, display: 'flex', flexDirection: 'column', gap: tokens.space1 }}>
+      <div style={{ marginBottom: tokens.space2 }}>
         <input
           type="text"
           value={componentFilter}
           onChange={(e) => setComponentFilter(e.target.value)}
-          placeholder="Filter components…"
+          placeholder="Filter…"
           style={{
-            width: 240,
-            height: 34,
-            padding: '0 12px',
+            width: '100%',
+            height: 30,
+            padding: '0 8px',
+            boxSizing: 'border-box',
             border: `1px solid ${tokens.borderDefault}`,
-            borderRadius: tokens.radiusLg,
+            borderRadius: tokens.radiusMd,
             background: tokens.surface,
             color: tokens.textPrimary,
             fontFamily: tokens.fontFamilyBase,
-            fontSize: tokens.fontSizeSm,
+            fontSize: tokens.fontSizeXs,
             outline: 'none',
           }}
         />
-        <span style={{ fontSize: tokens.fontSizeXs, color: tokens.textSecondary }}>
-          {allSections.filter(s => showSection(s)).length} / {allSections.length} components
-        </span>
-        {componentFilter && (
-          <button
-            onClick={() => setComponentFilter('')}
-            style={{
-              border: 'none',
-              background: 'none',
-              color: tokens.textSecondary,
-              cursor: 'pointer',
-              fontSize: tokens.fontSizeSm,
-              padding: '4px 8px',
-            }}
-          >
-            Clear
-          </button>
-        )}
       </div>
+      {allSections.filter(s => showSection(s)).map(name => (
+        <NavLink
+          key={name}
+          href={`#section-${name}`}
+          onClick={(e: React.MouseEvent) => {
+            e.preventDefault();
+            setComponentFilter(name);
+          }}
+          isActive={componentFilter === name}
+          inverse
+        >
+          {name}
+        </NavLink>
+      ))}
+      {componentFilter && (
+        <button
+          onClick={() => setComponentFilter('')}
+          style={{
+            border: 'none',
+            background: 'none',
+            color: tokens.textSecondary,
+            cursor: 'pointer',
+            fontSize: tokens.fontSizeXs,
+            padding: `${tokens.space1} ${tokens.space2}`,
+            textAlign: 'left',
+          }}
+        >
+          Clear filter
+        </button>
+      )}
+    </div>
+  );
 
-      {/* ── Components ── */}
+  // ─── Derived-variant dot ────────────────────────────────────────────────────
+  const dot = (color: string, label: string) => (
+    <Tooltip content={label}>
+      <ColorSwatch color={color} size="xs" shape="circle" />
+    </Tooltip>
+  );
+
+  // Match current state to a quick preset (or null if custom)
+  const activeQuickPreset = QUICK_PRESETS.find(
+    qp => palette === qp.palette && shape === qp.shape && shadow === qp.shadow
+  )?.name ?? undefined;
+
+  const customizerSidebar = (
+    <div style={{ padding: tokens.space3, display: 'flex', flexDirection: 'column', gap: tokens.space1 }}>
+      {/* ── Quick Presets ── */}
+      <Collapsible trigger="Quick start" defaultOpen>
+        <div style={{ paddingTop: tokens.space2 }}>
+          <SegmentedControl
+            size="sm"
+            options={QUICK_PRESETS.map(qp => ({ value: qp.name, label: qp.name }))}
+            value={activeQuickPreset}
+            onChange={v => {
+              const qp = QUICK_PRESETS.find(p => p.name === v);
+              if (qp) onQuickPreset(qp);
+            }}
+          />
+        </div>
+      </Collapsible>
+
+      {/* ── Palette ── */}
+      <Collapsible trigger="Palette" defaultOpen>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: tokens.space1, paddingTop: tokens.space2 }}>
+          {PALETTE_OPTIONS.map(p => (
+            <Button key={p.value} size="xs" variant={palette === p.value ? 'primary' : 'outline'}
+              onClick={() => onChangePalette(p.value)}
+              leftIcon={<ColorSwatch color={p.swatch} size="xs" />}>
+              {p.label}
+            </Button>
+          ))}
+        </div>
+      </Collapsible>
+
+      {/* ── Anchor Colors + Derivations ── */}
+      <Collapsible trigger="Colors" defaultOpen>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.space2, paddingTop: tokens.space2 }}>
+          {ANCHOR_DERIVATIONS.map(({ anchor, label, derived }) => (
+            <div key={anchor} style={{ display: 'flex', alignItems: 'center', gap: tokens.space2 }}>
+              <ColorPicker value={anchors[anchor]} onChange={v => onChangeAnchor(anchor, v)} label={label} size="sm" inline presetGroups={[]} />
+              <div style={{ display: 'flex', gap: 3, marginLeft: 'auto' }}>
+                {derived.map(d => dot(tokens[d.key] as string, d.label))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </Collapsible>
+
+      {/* ── Status Colors ── */}
+      <Collapsible trigger="Status" defaultOpen>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.space2, paddingTop: tokens.space2 }}>
+          {STATUS_ANCHORS.map(({ anchor, label, derived }) => (
+            <div key={anchor} style={{ display: 'flex', alignItems: 'center', gap: tokens.space2 }}>
+              <ColorPicker value={anchors[anchor]} onChange={v => onChangeAnchor(anchor, v)} label={label} size="sm" inline presetGroups={[]} />
+              <div style={{ display: 'flex', gap: 3, marginLeft: 'auto' }}>
+                {derived.map(d => dot(tokens[d.key] as string, d.label))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </Collapsible>
+
+      {/* ── Layout ── */}
+      <Collapsible trigger="Layout" defaultOpen>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.space3, paddingTop: tokens.space2 }}>
+          <div>
+            <Slider label={`Radius (${radiusPx}px)`} size="sm" min={0} max={32} value={radiusPx} onChange={e => {
+              const v = parseInt(e.target.value);
+              ['radiusSm','radiusMd','radiusLg','radiusXl','radiusFull'].forEach(k =>
+                onScaleOverride(k as keyof LucentTokens, `${v}px`)
+              );
+            }} />
+            <SegmentedControl
+              size="sm"
+              options={SHAPE_OPTIONS.map(s => ({ value: s, label: s[0].toUpperCase() + s.slice(1) }))}
+              value={shape}
+              onChange={v => onChangeShape(v as ShapeName)}
+              style={{ marginTop: tokens.space2 }}
+            />
+          </div>
+          <div>
+            <Slider label="Elevation" size="sm" min={0} max={2} step={1} value={SHADOW_OPTIONS.indexOf(shadow)} onChange={e => {
+              onChangeShadow(SHADOW_OPTIONS[parseInt(e.target.value)]);
+            }} />
+            <SegmentedControl
+              size="sm"
+              options={SHADOW_OPTIONS.map(s => ({ value: s, label: s[0].toUpperCase() + s.slice(1) }))}
+              value={shadow}
+              onChange={v => onChangeShadow(v as ShadowName)}
+              style={{ marginTop: tokens.space2 }}
+            />
+          </div>
+          <Slider label={`Font (${fontScalePercent}%)`} size="sm" min={50} max={150} value={fontScalePercent} onChange={e => {
+            const pct = parseInt(e.target.value);
+            setFontScalePercent(pct);
+            const scale = pct / 100;
+            Object.entries(baseFontSizesRef.current).forEach(([k, v]) => {
+              const num = parseFloat(v); const unit = v.replace(/[\d.]/g, '');
+              onScaleOverride(k as keyof LucentTokens, `${num * scale}${unit}`);
+            });
+          }} />
+          <Slider label={`Spacing (${spaceScalePercent}%)`} size="sm" min={50} max={150} value={spaceScalePercent} onChange={e => {
+            const pct = parseInt(e.target.value);
+            setSpaceScalePercent(pct);
+            const scale = pct / 100;
+            Object.entries(baseSpaceRef.current).forEach(([k, v]) => {
+              const num = parseFloat(v); const unit = v.replace(/[\d.]/g, '');
+              onScaleOverride(k as keyof LucentTokens, `${num * scale}${unit}`);
+            });
+          }} />
+        </div>
+      </Collapsible>
+
+      <Divider spacing={tokens.space2} />
+      <Button size="sm" variant="outline" onClick={onReset}>Reset</Button>
+    </div>
+  );
+
+  const tabItems: { key: DevTab; label: string }[] = [
+    { key: 'components', label: 'Components' },
+    { key: 'tokens', label: 'Tokens' },
+    { key: 'playground', label: 'Playground' },
+  ];
+
+  return (
+    <PageLayout
+      header={
+        <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: `0 ${tokens.space5}` }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: tokens.space5 }}>
+            <Text as="span" size="lg" weight="bold">Lucent UI</Text>
+            <nav style={{ display: 'flex', gap: 0, height: '100%' }}>
+              {tabItems.map(t => (
+                <button
+                  key={t.key}
+                  onClick={() => setTab(t.key)}
+                  style={{
+                    padding: `0 ${tokens.space4}`,
+                    height: '100%',
+                    border: 'none',
+                    borderBottom: tab === t.key ? `2px solid ${tokens.accentDefault}` : '2px solid transparent',
+                    background: 'transparent',
+                    fontFamily: tokens.fontFamilyBase,
+                    fontSize: tokens.fontSizeSm,
+                    fontWeight: tab === t.key ? tokens.fontWeightSemibold : tokens.fontWeightRegular,
+                    color: tab === t.key ? tokens.textPrimary : tokens.textSecondary,
+                    cursor: 'pointer',
+                  }}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </nav>
+            <Text as="span" size="xs" color="secondary">
+              {theme} · {palette ?? 'custom'} / {shape} / {shadow}
+            </Text>
+          </div>
+          <Toggle label="Dark" checked={theme === 'dark'} onChange={onToggleTheme} />
+        </div>
+      }
+      headerHeight={48}
+      chromeBackground="bgSubtle"
+      mainStyle={{ background: tokens.bgBase }}
+      {...(tab === 'components' && { sidebar: navSidebar, sidebarWidth: 180 })}
+      {...(tab === 'components' && { rightSidebar: customizerSidebar, rightSidebarWidth: 260 })}
+    >
+      {tab === 'components' ? (
+      <div style={{ padding: tokens.space6 }}>
 
       {/* Text */}
       <Section title="Text" tokens={tokens} hidden={!showSection('Text')}>
@@ -1822,6 +1675,14 @@ function Inner({
             <NavLink href="#">Examples</NavLink>
           </div>
         </Row>
+        <Row label="Inverse (surface highlight)" tokens={tokens}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.space1, width: 220, background: tokens.bgSubtle, borderRadius: tokens.radiusMd, padding: tokens.space3 }}>
+            <NavLink href="#" icon={<NavIcon />} inverse>Dashboard</NavLink>
+            <NavLink href="#" icon={<NavIcon />} isActive inverse>Components</NavLink>
+            <NavLink href="#" icon={<NavIcon />} inverse>Settings</NavLink>
+            <NavLink href="#" icon={<NavIcon />} disabled inverse>Disabled</NavLink>
+          </div>
+        </Row>
       </Section>
 
       <Section title="PageLayout" tokens={tokens} hidden={!showSection('PageLayout')}>
@@ -1830,16 +1691,17 @@ function Inner({
             <PageLayout
               headerHeight={44}
               sidebarWidth={180}
+              chromeBackground="bgSubtle"
               header={
-                <div style={{ height: '100%', display: 'flex', alignItems: 'center', padding: `0 ${tokens.space4}` }}>
+                <div style={{ height: '100%', display: 'flex', alignItems: 'center', padding: `0 ${tokens.space6}` }}>
                   <Text weight="semibold">My App</Text>
                 </div>
               }
               sidebar={
-                <div style={{ padding: tokens.space3, display: 'flex', flexDirection: 'column', gap: tokens.space1 }}>
-                  <NavLink href="#" isActive>Dashboard</NavLink>
-                  <NavLink href="#">Components</NavLink>
-                  <NavLink href="#">Settings</NavLink>
+                <div style={{ padding: tokens.space4, display: 'flex', flexDirection: 'column', gap: tokens.space1 }}>
+                  <NavLink href="#" isActive inverse>Dashboard</NavLink>
+                  <NavLink href="#" inverse>Components</NavLink>
+                  <NavLink href="#" inverse>Settings</NavLink>
                 </div>
               }
             >
@@ -1854,16 +1716,17 @@ function Inner({
             <PageLayout
               headerHeight={44}
               sidebarWidth={180}
+              chromeBackground="bgSubtle"
               header={
-                <div style={{ height: '100%', display: 'flex', alignItems: 'center', padding: `0 ${tokens.space4}` }}>
+                <div style={{ height: '100%', display: 'flex', alignItems: 'center', padding: `0 ${tokens.space6}` }}>
                   <Text weight="semibold">My App</Text>
                 </div>
               }
               sidebar={
-                <div style={{ padding: tokens.space3, display: 'flex', flexDirection: 'column', gap: tokens.space1 }}>
-                  <NavLink href="#" isActive>Dashboard</NavLink>
-                  <NavLink href="#">Components</NavLink>
-                  <NavLink href="#">Settings</NavLink>
+                <div style={{ padding: tokens.space4, display: 'flex', flexDirection: 'column', gap: tokens.space1 }}>
+                  <NavLink href="#" isActive inverse>Dashboard</NavLink>
+                  <NavLink href="#" inverse>Components</NavLink>
+                  <NavLink href="#" inverse>Settings</NavLink>
                 </div>
               }
               footer={
@@ -1889,20 +1752,21 @@ function Inner({
               headerHeight={44}
               sidebarWidth={160}
               rightSidebarWidth={160}
+              chromeBackground="bgSubtle"
               header={
-                <div style={{ height: '100%', display: 'flex', alignItems: 'center', padding: `0 ${tokens.space4}` }}>
+                <div style={{ height: '100%', display: 'flex', alignItems: 'center', padding: `0 ${tokens.space6}` }}>
                   <Text weight="semibold">My App</Text>
                 </div>
               }
               sidebar={
-                <div style={{ padding: tokens.space3, display: 'flex', flexDirection: 'column', gap: tokens.space1 }}>
-                  <NavLink href="#" isActive>Dashboard</NavLink>
-                  <NavLink href="#">Components</NavLink>
-                  <NavLink href="#">Settings</NavLink>
+                <div style={{ padding: tokens.space4, display: 'flex', flexDirection: 'column', gap: tokens.space1 }}>
+                  <NavLink href="#" isActive inverse>Dashboard</NavLink>
+                  <NavLink href="#" inverse>Components</NavLink>
+                  <NavLink href="#" inverse>Settings</NavLink>
                 </div>
               }
               rightSidebar={
-                <div style={{ padding: tokens.space3, display: 'flex', flexDirection: 'column', gap: tokens.space2 }}>
+                <div style={{ padding: tokens.space4, display: 'flex', flexDirection: 'column', gap: tokens.space2 }}>
                   <Text size="xs" weight="semibold" color="secondary">Details</Text>
                   <Text size="xs" color="secondary">Status: Active</Text>
                   <Text size="xs" color="secondary">Owner: You</Text>
@@ -2093,17 +1957,23 @@ function Inner({
           </div>
         </Row>
       </Section>
-    </div>
+      </div>
+      ) : tab === 'tokens' ? (
+        <TokenPreview />
+      ) : (
+        <SelectPlayground />
+      )}
+    </PageLayout>
   );
 }
 
 function Section({ title, tokens, children, hidden }: { title: string; tokens: ReturnType<typeof useLucent>['tokens']; children: React.ReactNode; hidden?: boolean }) {
   if (hidden) return null;
   return (
-    <div style={{ background: tokens.bgSubtle, border: `1px solid ${tokens.borderDefault}`, borderRadius: tokens.radiusLg, padding: tokens.space6, marginBottom: tokens.space6 }}>
-      <h2 style={{ fontSize: tokens.fontSizeLg, fontWeight: tokens.fontWeightSemibold, marginBottom: tokens.space5, marginTop: 0 }}>{title}</h2>
+    <Card variant="outline" padding="lg" style={{ marginBottom: tokens.space6 }}>
+      <Text as="h2" size="lg" weight="semibold" style={{ marginBottom: tokens.space5, marginTop: 0 }}>{title}</Text>
       <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.space4 }}>{children}</div>
-    </div>
+    </Card>
   );
 }
 

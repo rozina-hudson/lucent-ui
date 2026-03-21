@@ -6,6 +6,8 @@ export interface NavLinkProps {
   isActive?: boolean;
   icon?: ReactNode;
   disabled?: boolean;
+  /** Uses surface background instead of accent for the active state. */
+  inverse?: boolean;
   onClick?: MouseEventHandler;
   /** Polymorphic root element. Defaults to `<a>`. Use e.g. `Link` from react-router. */
   as?: React.ElementType;
@@ -18,6 +20,7 @@ export function NavLink({
   isActive = false,
   icon,
   disabled = false,
+  inverse = false,
   onClick,
   as,
   style,
@@ -39,12 +42,12 @@ export function NavLink({
         background: disabled
           ? 'transparent'
           : isActive
-          ? 'var(--lucent-accent-default)'
+          ? (inverse ? 'var(--lucent-surface)' : 'var(--lucent-accent-default)')
           : 'transparent',
         color: disabled
           ? 'var(--lucent-text-disabled)'
           : isActive
-          ? 'var(--lucent-text-on-accent)'
+          ? (inverse ? 'var(--lucent-text-primary)' : 'var(--lucent-text-on-accent)')
           : 'var(--lucent-text-secondary)',
         fontFamily: 'var(--lucent-font-family-base)',
         fontSize: 'var(--lucent-font-size-md)',

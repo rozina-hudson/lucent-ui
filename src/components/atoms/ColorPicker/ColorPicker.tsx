@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useLayoutEffect, useId, useCallback, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react';
+import { createPortal } from 'react-dom';
 import { SegmentedControl } from '../SegmentedControl/SegmentedControl.js';
 import { Select } from '../Select/Select.js';
 import { Input } from '../Input/Input.js';
@@ -254,6 +255,10 @@ export interface ColorPickerProps {
   value?: string;
   onChange?: (hex: string) => void;
   label?: string;
+  /** Swatch trigger size. Default: "md" (40px). */
+  size?: 'sm' | 'md';
+  /** Place label beside the swatch instead of above it. */
+  inline?: boolean;
   disabled?: boolean;
   presetGroups?: ColorPresetGroup[];
   id?: string;
@@ -264,11 +269,14 @@ export function ColorPicker({
   value,
   onChange,
   label,
+  size = 'md',
+  inline = false,
   disabled = false,
   presetGroups = DEFAULT_PRESET_GROUPS,
   id,
   style,
 }: ColorPickerProps) {
+  const swatchPx = size === 'sm' ? 24 : 40;
   const generatedId = useId();
   const pickerId = id ?? generatedId;
 
@@ -284,13 +292,22 @@ export function ColorPicker({
   const containerRef = useRef<HTMLDivElement>(null);
   const spectrumRef = useRef<HTMLDivElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
-  const [alignRight, setAlignRight] = useState(false);
+  const [popoverPos, setPopoverPos] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
 
-  // Flip popover to right-align if it would overflow the viewport
+  // Position the portal popover relative to the trigger swatch
   useLayoutEffect(() => {
-    if (!isOpen || !popoverRef.current) return;
-    const rect = popoverRef.current.getBoundingClientRect();
-    setAlignRight(rect.right > window.innerWidth);
+    if (!isOpen || !containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    let left = rect.left;
+    const top = rect.bottom + 8;
+    // Flip right-align if it would overflow
+    if (popoverRef.current) {
+      const popW = popoverRef.current.offsetWidth;
+      if (left + popW > window.innerWidth) {
+        left = rect.right - popW;
+      }
+    }
+    setPopoverPos({ top, left });
   }, [isOpen]);
 
   useEffect(() => {
@@ -305,9 +322,10 @@ export function ColorPicker({
   useEffect(() => {
     if (!isOpen) return;
     const handler = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-      }
+      const target = e.target as Node;
+      if (containerRef.current?.contains(target)) return;
+      if (popoverRef.current?.contains(target)) return;
+      setIsOpen(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
@@ -357,18 +375,18 @@ export function ColorPicker({
   return (
     <div
       ref={containerRef}
-      style={{ display: 'inline-flex', flexDirection: 'column', gap: 'var(--lucent-space-1)', position: 'relative', ...style }}
+      style={{ display: 'inline-flex', flexDirection: inline ? 'row' : 'column', alignItems: inline ? 'center' : undefined, gap: 'var(--lucent-space-1)', position: 'relative', ...style }}
     >
       <style>{`
         .lucent-cp-field::-webkit-outer-spin-button,
         .lucent-cp-field::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         .lucent-cp-field { -moz-appearance: textfield; }
       `}</style>
-      {label && (
+      {label && !inline && (
         <label
           htmlFor={`${pickerId}-swatch`}
           style={{
-            fontSize: 'var(--lucent-font-size-sm)',
+            fontSize: size === 'sm' ? 'var(--lucent-font-size-xs)' : 'var(--lucent-font-size-sm)',
             fontWeight: 'var(--lucent-font-weight-medium)',
             color: disabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-primary)',
             fontFamily: 'var(--lucent-font-family-base)',
@@ -389,25 +407,40 @@ export function ColorPicker({
         aria-expanded={isOpen}
         aria-haspopup="dialog"
         style={{
-          width: 40,
-          height: 40,
-          borderRadius: 'var(--lucent-radius-lg)',
+          width: swatchPx,
+          height: swatchPx,
+          borderRadius: size === 'sm' ? 'var(--lucent-radius-md)' : 'var(--lucent-radius-lg)',
           boxShadow: isOpen
             ? `inset 0 0 0 2px var(--lucent-focus-ring), 0 0 0 3px var(--lucent-accent-subtle)`
             : 'inset 0 0 0 1px rgba(0,0,0,0.2)',
         }}
       />
 
-      {/* Popover */}
-      {isOpen && (
+      {label && inline && (
+        <label
+          htmlFor={`${pickerId}-swatch`}
+          style={{
+            fontSize: size === 'sm' ? 'var(--lucent-font-size-xs)' : 'var(--lucent-font-size-sm)',
+            fontWeight: 'var(--lucent-font-weight-medium)',
+            color: disabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-primary)',
+            fontFamily: 'var(--lucent-font-family-base)',
+            cursor: 'pointer',
+          }}
+        >
+          {label}
+        </label>
+      )}
+
+      {/* Popover — portaled to body to escape overflow:hidden ancestors */}
+      {isOpen && createPortal(
         <div
           ref={popoverRef}
           role="dialog"
           aria-label="Color picker"
           style={{
-            position: 'absolute',
-            top: 'calc(100% + 8px)',
-            ...(alignRight ? { right: 0 } : { left: 0 }),
+            position: 'fixed',
+            top: popoverPos.top,
+            left: popoverPos.left,
             zIndex: 1000,
             background: 'var(--lucent-surface)',
             border: '1px solid var(--lucent-border-default)',
@@ -630,7 +663,8 @@ export function ColorPicker({
               </div>
             )}
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   );

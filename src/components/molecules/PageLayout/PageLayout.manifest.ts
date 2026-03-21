@@ -11,7 +11,9 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
     'Full-viewport shell layout with optional header, left sidebar, right panel, and footer slots arranged in a flex column/row structure.',
 
   designIntent:
-    'PageLayout owns the outermost chrome of an application page. The body row is a flex row containing ' +
+    'PageLayout owns the outermost chrome of an application page. Chrome regions (header, sidebar, footer) ' +
+    'default to bgBase so the main content card feels elevated against the page canvas — especially ' +
+    'noticeable with tinted bgBase values. The body row is a flex row containing ' +
     'an optional left sidebar, a bordered main content card, and an optional right panel — all as structural ' +
     'siblings so they share the same vertical space. The header and footer sit outside the body row as ' +
     'flex children of the outer column, ensuring they span the full width. Sidebars collapse to zero width ' +
@@ -93,6 +95,17 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
       required: false,
       default: '28',
       description: 'Footer height in px (number) or any CSS value (string). Default: 28 — sized for a compact status bar.',
+    },
+    {
+      name: 'chromeBackground',
+      type: 'string',
+      required: false,
+      default: '"bgBase"',
+      description:
+        'Background token for chrome regions (header, sidebar, footer). ' +
+        '"bgBase" uses the page canvas color so the main content card feels elevated; ' +
+        '"bgSubtle" uses a subtle shade of bgBase for chrome distinction; ' +
+        '"surface" matches the old behavior where chrome and content share the same background.',
     },
     {
       name: 'mainStyle',

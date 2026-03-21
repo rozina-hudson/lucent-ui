@@ -59,10 +59,21 @@ export function SegmentedControl({
   useLayoutEffect(() => {
     const track = trackRef.current;
     if (!track) return;
-    const btn = track.querySelector(`[data-sc-value="${activeValue}"]`) as HTMLElement | null;
-    if (!btn) return;
-    setIndicator({ left: btn.offsetLeft, width: btn.offsetWidth, animate: mounted.current });
-    mounted.current = true;
+    const measure = () => {
+      const btn = track.querySelector(`[data-sc-value="${activeValue}"]`) as HTMLElement | null;
+      if (!btn) return;
+      setIndicator({
+        left: btn.offsetLeft,
+        width: btn.offsetWidth,
+        animate: mounted.current,
+      });
+      mounted.current = true;
+    };
+    measure();
+    // Re-measure on resize (font/spacing changes can affect layout)
+    const ro = new ResizeObserver(measure);
+    ro.observe(track);
+    return () => ro.disconnect();
   }, [activeValue, options]);
 
   const handleSelect = (opt: SegmentedOption) => {
@@ -84,7 +95,7 @@ export function SegmentedControl({
         height: sizeH[size],
         background: 'var(--lucent-surface-secondary)',
         borderRadius: 'var(--lucent-radius-lg)',
-        padding: 2,
+        padding: 0,
         gap: 0,
         opacity: disabled ? 0.5 : 1,
         ...style,
@@ -96,13 +107,13 @@ export function SegmentedControl({
           aria-hidden
           style={{
             position: 'absolute',
-            top: 2,
-            left: indicator.left,
-            width: indicator.width,
-            height: `calc(100% - 4px)`,
+            top: 3,
+            left: indicator.left + 3,
+            width: indicator.width - 6,
+            height: `calc(100% - 6px)`,
             background: 'var(--lucent-surface)',
-            borderRadius: 'var(--lucent-radius-md)',
-            boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+            borderRadius: 'var(--lucent-radius-lg)',
+            boxShadow: 'var(--lucent-shadow-sm)',
             transition: indicator.animate
               ? `left var(--lucent-duration-base) var(--lucent-easing-default), width var(--lucent-duration-base) var(--lucent-easing-default)`
               : 'none',
@@ -133,7 +144,7 @@ export function SegmentedControl({
               justifyContent: 'center',
               gap: 'var(--lucent-space-1)',
               flex: 1,
-              height: `calc(${sizeH[size]} - 4px)`,
+              height: sizeH[size],
               padding: `0 ${sizePx[size]}`,
               fontSize: sizeFont[size],
               fontFamily: 'var(--lucent-font-family-base)',
@@ -147,7 +158,7 @@ export function SegmentedControl({
                   : 'var(--lucent-text-secondary)',
               background: 'transparent',
               border: 'none',
-              borderRadius: 'var(--lucent-radius-md)',
+              borderRadius: 'var(--lucent-radius-lg)',
               cursor: isDisabled ? 'not-allowed' : 'pointer',
               outline: 'none',
               whiteSpace: 'nowrap',
@@ -157,10 +168,12 @@ export function SegmentedControl({
               ].join(', '),
             }}
             onFocus={e => {
-              e.currentTarget.style.boxShadow = `0 0 0 2px var(--lucent-accent-subtle)`;
+              if (e.currentTarget.matches(':focus-visible')) {
+                e.currentTarget.style.boxShadow = `0 0 0 2px var(--lucent-accent-subtle)`;
+              }
             }}
             onBlur={e => {
-              e.currentTarget.style.boxShadow = 'none';
+              e.currentTarget.style.boxShadow = '';
             }}
           >
             {opt.label}
