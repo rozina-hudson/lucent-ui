@@ -1,6 +1,25 @@
 import { adjustLightness, hexToHsl, hslToHex } from './color.js';
 import type { LucentTokens, Theme } from './types.js';
 
+/**
+ * Derive a surface color from a background color.
+ *
+ * Light mode: pushes 85% of the way toward white and retains only 30% of
+ * the original saturation, producing a near-white tint that still feels
+ * cohesive with the page background. For a pure-white bgBase the result
+ * is #ffffff (no behavioral change from pre-derivation defaults).
+ *
+ * Dark mode: lifts lightness by +0.04 (matching scheme.ts's elevation
+ * steps) and preserves hue/saturation so tinted dark surfaces look natural.
+ */
+function deriveSurface(bgBase: string, isLight: boolean): string {
+  const [h, s, l] = hexToHsl(bgBase);
+  if (isLight) {
+    return hslToHex(h, s * 0.3, Math.min(1.0, l + (1 - l) * 0.85));
+  }
+  return hslToHex(h, s, Math.min(0.25, l + 0.04));
+}
+
 // Fixed lightness targets for status subtle/text variants (Tailwind shade-50 / shade-700 equivalents).
 // Using fixed targets rather than deltas ensures consistent results regardless of which shade the
 // consumer picks for the anchor (e.g. a bright warning yellow at L=0.5 still produces a readable
@@ -58,9 +77,25 @@ export function deriveTokens(
 
   // --- Backgrounds ---
   // anchor: bgBase  variant: bgSubtle (layout region tint)
+  // When bgBase changes and surface is not explicitly set, surface is auto-derived
+  // so elevated cards visually lift above the page regardless of background color.
   if ('bgBase' in overrides) {
     if (!('bgSubtle' in overrides))
       derived.bgSubtle = adjustLightness(merged.bgBase, isLight ? -0.02 : +0.02);
+    if (!('surfaceTint' in overrides))
+      derived.surfaceTint = adjustLightness(merged.bgBase, isLight ? -0.04 : +0.03);
+
+    if (!('surface' in overrides)) {
+      const surfaceHex = deriveSurface(merged.bgBase, isLight);
+      derived.surface = surfaceHex;
+      // Cascade: derive surface variants from the new surface
+      if (!('surfaceSecondary' in overrides))
+        derived.surfaceSecondary = adjustLightness(surfaceHex, isLight ? -0.04 : +0.03);
+      if (!('surfaceRaised' in overrides))
+        derived.surfaceRaised = adjustLightness(surfaceHex, isLight ? 0 : +0.06);
+      if (!('surfaceOverlay' in overrides))
+        derived.surfaceOverlay = adjustLightness(surfaceHex, isLight ? 0 : +0.06);
+    }
   }
 
   // --- Surfaces ---

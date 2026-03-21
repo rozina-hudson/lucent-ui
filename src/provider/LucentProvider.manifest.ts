@@ -18,13 +18,20 @@ export const ThemeAnchorsSpec: Record<keyof ThemeAnchors, {
   derives: string[];
 }> = {
   bgBase: {
-    description: 'Main page/canvas background. The lowest elevation layer — everything sits on top of this.',
+    description:
+      'Main page/canvas background. The lowest elevation layer — everything sits on top of this. ' +
+      'When bgBase is customized, `surface` and `surfaceTint` are auto-derived so the entire ' +
+      'card elevation hierarchy (ghost → outline → filled → elevated → combo) adapts automatically.',
     lightGuidance: 'Near-white. Typically #ffffff or a very faint tint (L > 0.96).',
     darkGuidance: 'Near-black with a subtle cool or warm tint. Typically L 0.07–0.10 (e.g. #0f0f11, #111318).',
-    derives: ['bgSubtle'],
+    derives: ['bgSubtle', 'surfaceTint', 'surface', 'surfaceSecondary', 'surfaceRaised', 'surfaceOverlay'],
   },
   surface: {
-    description: 'Component surface color. Used for cards, input backgrounds, table rows, list items — any component that "floats" above the page canvas.',
+    description:
+      'Component surface color for elevated cards, input backgrounds, table rows, list items. ' +
+      'Optional — when omitted, auto-derived from bgBase (pushed 85% toward white in light mode, ' +
+      '+0.04 lightness in dark mode, with 30% saturation retention). Only set explicitly when you ' +
+      'need a surface color that doesn\'t match the bgBase hue.',
     lightGuidance: 'Very slightly off-white — just enough to read as distinct from bgBase. Typically L 0.96–0.98 (e.g. #f9fafb, #f8f8f8).',
     darkGuidance: 'Slightly lighter than bgBase. Typically L 0.11–0.15 (e.g. #1a1a1e, #18181b).',
     derives: ['surfaceSecondary', 'surfaceRaised', 'surfaceOverlay'],
@@ -141,8 +148,9 @@ export const LucentProviderManifest: ComponentManifest = {
         'When provided alongside a preset, anchors override the preset\'s palette colors ' +
         'but preset shape/density/shadow tokens are preserved. When provided without a preset, ' +
         'the `tokens` prop is ignored. ' +
-        'Keys: bgBase, surface, borderDefault, textPrimary, accentDefault, ' +
-        'successDefault, warningDefault, dangerDefault, infoDefault.',
+        'Required keys: bgBase, borderDefault, accentDefault, ' +
+        'successDefault, warningDefault, dangerDefault, infoDefault. ' +
+        'Optional keys: textPrimary (defaults to near-black/white), surface (auto-derived from bgBase).',
     },
     {
       name: 'theme',
@@ -226,15 +234,13 @@ export const LucentProviderManifest: ComponentManifest = {
     },
     {
       title: 'Anchor mode — indigo brand (light)',
-      description: 'The recommended pattern for LLMs. 9 colors produce a complete WCAG-compliant theme.',
+      description: 'The recommended pattern for LLMs. 8 required colors produce a complete WCAG-compliant theme. surface and surfaceTint are auto-derived from bgBase.',
       code: `import { LucentProvider } from 'lucent-ui';
 
 <LucentProvider
   anchors={{
     bgBase:         '#ffffff',
-    surface:        '#f9fafb',
     borderDefault:  '#e5e7eb',
-    textPrimary:    '#111827',
     accentDefault:  '#6366f1',
     successDefault: '#22c55e',
     warningDefault: '#f59e0b',
@@ -247,16 +253,14 @@ export const LucentProviderManifest: ComponentManifest = {
     },
     {
       title: 'Anchor mode — dark theme',
-      description: 'Same anchors, dark mode. The provider applies dark-calibrated derivation automatically.',
+      description: 'Same anchors, dark mode. The provider applies dark-calibrated derivation automatically. surface is auto-derived from bgBase.',
       code: `import { LucentProvider } from 'lucent-ui';
 
 <LucentProvider
   theme="dark"
   anchors={{
     bgBase:         '#0f0f11',
-    surface:        '#18181b',
     borderDefault:  '#27272a',
-    textPrimary:    '#f4f4f5',
     accentDefault:  '#818cf8',
     successDefault: '#4ade80',
     warningDefault: '#fbbf24',
@@ -283,9 +287,7 @@ export const LucentProviderManifest: ComponentManifest = {
 
 const myTheme = createTheme({
   bgBase:         '#ffffff',
-  surface:        '#f5f5f4',
   borderDefault:  '#e7e5e4',
-  textPrimary:    '#1c1917',
   accentDefault:  '#f97316',
   successDefault: '#22c55e',
   warningDefault: '#f59e0b',

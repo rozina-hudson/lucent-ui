@@ -1,18 +1,43 @@
-import { createContext, useContext } from 'react';
-import type { CSSProperties, ReactNode } from 'react';
+import { createContext, useContext, useState } from 'react';
+import type { CSSProperties, MouseEventHandler, ReactNode } from 'react';
 
+export type CardVariant = 'ghost' | 'outline' | 'filled' | 'elevated' | 'combo';
 export type CardPadding = 'none' | 'sm' | 'md' | 'lg';
 export type CardShadow = 'none' | 'sm' | 'md' | 'lg';
 export type CardRadius = 'none' | 'sm' | 'md' | 'lg';
+export type CardStatus = 'success' | 'warning' | 'danger' | 'info';
 
 export interface CardProps {
+  /** Elevation variant — controls background, border, and default shadow. */
+  variant?: CardVariant;
   header?: ReactNode;
   footer?: ReactNode;
   children: ReactNode;
   padding?: CardPadding;
+  /** Overrides the variant's default shadow when set explicitly. */
   shadow?: CardShadow;
   radius?: CardRadius;
   style?: CSSProperties;
+
+  /** Makes the card clickable. Renders as <button>. */
+  onClick?: MouseEventHandler;
+  /** Makes the card a link. Renders as <a>. */
+  href?: string;
+  /** Passed to <a> when href is set. */
+  target?: string;
+  /** Passed to <a> when href is set. */
+  rel?: string;
+  /** Disables interactive behavior. */
+  disabled?: boolean;
+
+  /** Colored left-edge accent bar indicating status. */
+  status?: CardStatus;
+
+  /** Accent inset ring indicating selection. */
+  selected?: boolean;
+
+  /** Full-bleed content rendered at the top (before header). */
+  media?: ReactNode;
 }
 
 export interface CardBleedProps {
@@ -22,11 +47,11 @@ export interface CardBleedProps {
 
 const CardPaddingContext = createContext<string>('0');
 
-const paddingMap: Record<CardPadding, string> = {
-  none: '0',
-  sm:   'var(--lucent-space-4)',
-  md:   'var(--lucent-space-6)',
-  lg:   'var(--lucent-space-8)',
+const paddingMap: Record<CardPadding, { py: string; px: string }> = {
+  none: { py: '0',                        px: '0' },
+  sm:   { py: 'var(--lucent-space-2)',     px: 'var(--lucent-space-3)' },
+  md:   { py: 'var(--lucent-space-4)',     px: 'var(--lucent-space-5)' },
+  lg:   { py: 'var(--lucent-space-6)',     px: 'var(--lucent-space-8)' },
 };
 
 const shadowMap: Record<CardShadow, string> = {
@@ -43,60 +68,289 @@ const radiusMap: Record<CardRadius, string> = {
   lg:   'var(--lucent-radius-lg)',
 };
 
+const statusColorMap: Record<CardStatus, string> = {
+  success: 'var(--lucent-success-default)',
+  warning: 'var(--lucent-warning-default)',
+  danger:  'var(--lucent-danger-default)',
+  info:    'var(--lucent-info-default)',
+};
+
+interface VariantConfig {
+  background: string;
+  border: string;
+  shadowDefault: CardShadow;
+  dividers: boolean;
+}
+
+const variantConfig: Record<CardVariant, VariantConfig> = {
+  ghost: {
+    background: 'transparent',
+    border: 'none',
+    shadowDefault: 'none',
+    dividers: true,
+  },
+  outline: {
+    background: 'transparent',
+    border: '1px solid var(--lucent-border-default)',
+    shadowDefault: 'none',
+    dividers: true,
+  },
+  filled: {
+    background: 'var(--lucent-surface-tint)',
+    border: 'none',
+    shadowDefault: 'none',
+    dividers: true,
+  },
+  elevated: {
+    background: 'var(--lucent-surface)',
+    border: '1px solid var(--lucent-border-default)',
+    shadowDefault: 'md',
+    dividers: true,
+  },
+  combo: {
+    background: 'var(--lucent-surface-tint)',
+    border: 'none',
+    shadowDefault: 'none',
+    dividers: false,
+  },
+};
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+const TRANSITION = [
+  'transform 80ms var(--lucent-easing-default)',
+  'box-shadow var(--lucent-duration-fast) var(--lucent-easing-default)',
+  'border-color var(--lucent-duration-fast) var(--lucent-easing-default)',
+  'background var(--lucent-duration-fast) var(--lucent-easing-default)',
+].join(', ');
+
+const HOVER_GLOW = '0 4px 14px -2px var(--lucent-accent-subtle)';
+const FOCUS_RING = '0 0 0 3px var(--lucent-accent-subtle)';
+const PRESS_RING =
+  '0 0 0 2px var(--lucent-surface), 0 0 0 4px var(--lucent-accent-default)';
+const SELECTED_RING = '0 0 0 3px var(--lucent-accent-subtle)';
+
+function combineShadows(...parts: (string | undefined)[]): string | undefined {
+  const filtered = parts.filter(
+    (s): s is string => s != null && s !== 'none' && s !== 'var(--lucent-shadow-none)',
+  );
+  return filtered.length > 0 ? filtered.join(', ') : undefined;
+}
+
+function getSelectedBg(config: VariantConfig, selected: boolean, disabled: boolean): string {
+  if (!selected || disabled) return config.background;
+  if (config.background === 'transparent') return 'var(--lucent-accent-subtle)';
+  return `color-mix(in srgb, var(--lucent-accent-default) 6%, ${config.background})`;
+}
+
+// ── Card ─────────────────────────────────────────────────────────────────────
+
 export function Card({
+  variant = 'outline',
   header,
   footer,
   children,
   padding = 'md',
-  shadow = 'sm',
+  shadow,
   radius = 'md',
   style,
+  onClick,
+  href,
+  target,
+  rel,
+  disabled,
+  status,
+  selected,
+  media,
 }: CardProps) {
-  const p = paddingMap[padding];
+  const config = variantConfig[variant];
+  const isCombo = variant === 'combo';
+  const effectiveShadow = shadow ?? (isCombo ? 'md' : config.shadowDefault);
+  const { py, px } = paddingMap[padding];
+  const pad = `${py} ${px}`;
   const borderRadius = radiusMap[radius];
 
+  // Interactive state
+  const isLink = href != null;
+  const isInteractive = onClick != null || isLink;
+  const isDisabled = (disabled ?? false) && isInteractive;
+  const Tag = (isLink ? 'a' : isInteractive ? 'button' : 'div') as React.ElementType;
+
+  const [isHovered, setIsHovered] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const [isPressed, setIsPressed] = useState(false);
+
+  // Selected state
+  const isSelected = (selected ?? false) && !isDisabled;
+  const selectedRing = isSelected ? SELECTED_RING : undefined;
+  const bg = getSelectedBg(config, selected ?? false, isDisabled);
+
+  // Shadow composition: variant shadow + selected ring + interactive state
+  let rootShadow: string | undefined;
+  if (isCombo) {
+    // Combo: outer wrapper only gets selected ring (elevation shadow is on the body)
+    rootShadow = selectedRing;
+  } else if (isInteractive && !isDisabled) {
+    if (isPressed) {
+      rootShadow = combineShadows(PRESS_RING, selectedRing);
+    } else if (isFocused) {
+      rootShadow = combineShadows(FOCUS_RING, selectedRing);
+    } else if (isHovered) {
+      rootShadow = combineShadows(HOVER_GLOW, shadowMap[effectiveShadow], selectedRing);
+    } else {
+      rootShadow = combineShadows(shadowMap[effectiveShadow], selectedRing);
+    }
+  } else {
+    rootShadow = combineShadows(shadowMap[effectiveShadow], selectedRing);
+  }
+
+  // Root style
+  const rootStyle: CSSProperties = {
+    display: 'flex',
+    flexDirection: 'column',
+    background: bg,
+    border: config.border,
+    borderRadius,
+    // Outer box-shadow rings (selected, focus) get clipped by overflow:hidden,
+    // so we switch to overflow:visible when a ring is active.
+    overflow: isSelected || (isInteractive && isFocused) ? 'visible' : 'hidden',
+    boxSizing: 'border-box',
+    position: 'relative',
+    ...(rootShadow !== undefined && { boxShadow: rootShadow }),
+    // Interactive transform
+    ...(isInteractive && !isDisabled && isPressed && { transform: 'translateY(1px)' }),
+    ...(isInteractive && !isDisabled && isHovered && !isPressed && { transform: 'translateY(-1px)' }),
+    // Interactive base styles
+    ...(isInteractive && {
+      cursor: isDisabled ? 'not-allowed' : 'pointer',
+      outline: 'none',
+      transition: TRANSITION,
+    }),
+    // Button UA reset
+    ...(isInteractive && !isLink && {
+      padding: 0,
+      font: 'inherit',
+      textAlign: 'inherit' as const,
+      width: '100%',
+      background: bg,
+    }),
+    // Link reset
+    ...(isLink && {
+      textDecoration: 'none',
+      color: 'inherit',
+    }),
+    // Disabled
+    ...(isDisabled && {
+      opacity: 0.6,
+      pointerEvents: 'none' as const,
+    }),
+    ...style,
+  };
+
+  // Interactive event handlers
+  const handlers = isInteractive && !isDisabled
+    ? {
+        onMouseEnter: () => setIsHovered(true),
+        onMouseLeave: () => { setIsHovered(false); setIsPressed(false); },
+        onMouseDown: () => setIsPressed(true),
+        onMouseUp: () => setIsPressed(false),
+        onFocus: () => setIsFocused(true),
+        onBlur: () => { setIsFocused(false); setIsPressed(false); },
+      }
+    : {};
+
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        background: 'var(--lucent-surface)',
-        border: '1px solid var(--lucent-border-default)',
-        borderRadius,
-        boxShadow: shadowMap[shadow],
-        overflow: 'hidden',
-        boxSizing: 'border-box',
-        ...style,
-      }}
+    <Tag
+      style={rootStyle}
+      {...handlers}
+      {...(isLink && {
+        href: isDisabled ? undefined : href,
+        ...(target !== undefined && { target }),
+        ...(rel !== undefined && { rel }),
+      })}
+      {...(!isLink && isInteractive && {
+        type: 'button' as const,
+        ...(isDisabled && { disabled: true }),
+      })}
+      {...(onClick !== undefined && !isDisabled && { onClick })}
+      {...(isInteractive && selected !== undefined && { 'aria-pressed': selected })}
+      {...(isLink && isDisabled && { 'aria-disabled': true })}
     >
+      {/* Media slot — full-bleed, no padding */}
+      {media != null && (
+        <div style={{ lineHeight: 0 }}>{media}</div>
+      )}
+
+      {/* Status accent bar */}
+      {status != null && (
+        <div
+          aria-hidden
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            bottom: 0,
+            width: 3,
+            background: statusColorMap[status],
+            zIndex: 1,
+          }}
+        />
+      )}
+
+      {/* Header */}
       {header != null && (
         <div
           style={{
-            padding: p,
-            borderBottom: '1px solid var(--lucent-border-default)',
+            padding: pad,
+            ...(config.dividers
+              ? { borderBottom: '1px solid var(--lucent-border-default)' }
+              : {}),
           }}
         >
           {header}
         </div>
       )}
-      <CardPaddingContext.Provider value={p}>
-        <div style={{ padding: p, flex: 1 }}>
+
+      {/* Body */}
+      <CardPaddingContext.Provider value={px}>
+        <div
+          style={{
+            padding: pad,
+            flex: 1,
+            ...(isCombo
+              ? {
+                  background: 'var(--lucent-surface)',
+                  border: '1px solid var(--lucent-border-default)',
+                  borderRadius,
+                  boxShadow: shadowMap[effectiveShadow],
+                  marginLeft: `calc(${px} / 3)`,
+                  marginRight: `calc(${px} / 3)`,
+                }
+              : {}),
+          }}
+        >
           {children}
         </div>
       </CardPaddingContext.Provider>
+
+      {/* Footer */}
       {footer != null && (
         <div
           style={{
-            padding: p,
-            borderTop: '1px solid var(--lucent-border-default)',
+            padding: pad,
+            ...(config.dividers
+              ? { borderTop: '1px solid var(--lucent-border-default)' }
+              : {}),
           }}
         >
           {footer}
         </div>
       )}
-    </div>
+    </Tag>
   );
 }
+
+// ── CardBleed ────────────────────────────────────────────────────────────────
 
 export function CardBleed({ children, style }: CardBleedProps) {
   const p = useContext(CardPaddingContext);

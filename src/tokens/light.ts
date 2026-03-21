@@ -24,6 +24,7 @@ export const lightTokens: LucentTokens = {
   surfaceSecondary: '#f3f4f6',
   surfaceRaised: '#ffffff',
   surfaceOverlay: '#ffffff',
+  surfaceTint: '#f2f2f2', // adjustLightness(bgBase, -0.05) — derived when bgBase is customized
 
   // Borders
   borderDefault: '#e5e7eb',

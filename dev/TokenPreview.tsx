@@ -7,9 +7,10 @@ const DERIVED_FROM: Partial<Record<keyof LucentTokens, keyof LucentTokens>> = {
   borderSubtle: 'borderDefault',
   borderStrong: 'borderDefault',
   bgSubtle: 'bgBase',
-  surfaceSecondary: 'surface',
-  surfaceRaised: 'surface',
-  surfaceOverlay: 'surface',
+  surface: 'bgBase',
+  surfaceSecondary: 'bgBase',
+  surfaceRaised: 'bgBase',
+  surfaceOverlay: 'bgBase',
   textSecondary: 'textPrimary',
   textDisabled: 'textPrimary',
   accentHover: 'accentDefault',
@@ -18,7 +19,7 @@ const DERIVED_FROM: Partial<Record<keyof LucentTokens, keyof LucentTokens>> = {
 };
 
 const ANCHOR_KEYS = new Set<keyof LucentTokens>([
-  'borderDefault', 'bgBase', 'surface', 'textPrimary', 'accentDefault',
+  'borderDefault', 'bgBase', 'textPrimary', 'accentDefault',
 ]);
 
 export function TokenPreview() {

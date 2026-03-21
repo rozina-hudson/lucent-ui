@@ -87,6 +87,7 @@ export interface SemanticColorTokens {
   surfaceSecondary: string; // tinted fill within a surface (striped rows, thead/tfoot, disabled inputs, nested panels)
   surfaceRaised: string;   // dropdowns, popovers
   surfaceOverlay: string;  // modals, dialogs
+  surfaceTint: string;     // hue-neutral translucent overlay — darkens in light mode, lightens in dark mode
   // Borders
   borderDefault: string;
   borderSubtle: string;
@@ -146,9 +147,7 @@ export type Theme = 'light' | 'dark';
  * @example
  * const myTheme = createTheme({
  *   bgBase:          '#ffffff',
- *   surface:         '#f9fafb',
  *   borderDefault:   '#e5e7eb',
- *   textPrimary:     '#111827',
  *   accentDefault:   '#6366f1',
  *   successDefault:  '#22c55e',
  *   warningDefault:  '#f59e0b',
@@ -159,7 +158,6 @@ export type Theme = 'light' | 'dark';
 export type ThemeAnchors = Pick<
   LucentTokens,
   | 'bgBase'
-  | 'surface'
   | 'borderDefault'
   | 'accentDefault'
   | 'successDefault'
@@ -167,4 +165,4 @@ export type ThemeAnchors = Pick<
   | 'dangerDefault'
   | 'infoDefault'
 > &
-  Partial<Pick<LucentTokens, 'textPrimary'>>;
+  Partial<Pick<LucentTokens, 'textPrimary' | 'surface'>>;

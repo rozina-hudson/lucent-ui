@@ -48,7 +48,6 @@ type AccentPreset = 'default' | 'gold' | 'indigo';
 
 const DEFAULT_ANCHORS: ThemeAnchors = {
   bgBase:         '#ffffff',
-  surface:        '#f9fafb',
   borderDefault:  '#e5e7eb',
   textPrimary:    '#111827',
   accentDefault:  '#111827',
@@ -942,12 +941,42 @@ function Inner({
 
       {/* Card */}
       <Section title="Card" tokens={tokens} hidden={!showSection('Card')}>
-        <Row label="Body only" tokens={tokens}>
-          <Card style={{ width: 280 }}>
-            <Text size="sm" color="secondary">A simple card with body content only.</Text>
+        <Row label="Elevation hierarchy" tokens={tokens}>
+          <Card variant="ghost" style={{ width: 200 }}>
+            <Text size="xs" weight="semibold">ghost</Text>
+            <Text size="xs" color="secondary">Transparent, no border</Text>
+          </Card>
+          <Card variant="outline" style={{ width: 200 }}>
+            <Text size="xs" weight="semibold">outline</Text>
+            <Text size="xs" color="secondary">Surface bg, border</Text>
+          </Card>
+          <Card variant="filled" style={{ width: 200 }}>
+            <Text size="xs" weight="semibold">filled</Text>
+            <Text size="xs" color="secondary">Secondary surface, no border</Text>
+          </Card>
+          <Card variant="elevated" style={{ width: 200 }}>
+            <Text size="xs" weight="semibold">elevated</Text>
+            <Text size="xs" color="secondary">Surface bg, shadow</Text>
           </Card>
         </Row>
-        <Row label="Header + footer" tokens={tokens}>
+        <Row label="Combo variant" tokens={tokens}>
+          <Card
+            variant="combo"
+            style={{ width: 320 }}
+            header={<Text weight="semibold" size="sm">Profile</Text>}
+            footer={
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: tokens.space2 }}>
+                <Button variant="ghost" size="sm">Cancel</Button>
+                <Button variant="primary" size="sm">Update</Button>
+              </div>
+            }
+          >
+            <Text size="sm" color="secondary">
+              Body uses primary surface. Header and footer recede into secondary surface.
+            </Text>
+          </Card>
+        </Row>
+        <Row label="Outline with header + footer" tokens={tokens}>
           <Card
             style={{ width: 280 }}
             header={<Text family="display" weight="semibold">Card title</Text>}
@@ -962,11 +991,65 @@ function Inner({
           </Card>
         </Row>
         <Row label="Sizes" tokens={tokens}>
-          <Card padding="sm" shadow="none" radius="sm" style={{ width: 160 }}>
-            <Text size="xs">sm padding, no shadow</Text>
+          <Card variant="outline" padding="sm" radius="sm" style={{ width: 160 }}>
+            <Text size="xs">sm / outline</Text>
           </Card>
-          <Card padding="lg" shadow="lg" radius="lg" style={{ width: 160 }}>
-            <Text size="xs">lg padding + shadow</Text>
+          <Card variant="filled" padding="md" radius="md" style={{ width: 160 }}>
+            <Text size="xs">md / filled</Text>
+          </Card>
+          <Card variant="elevated" padding="lg" radius="lg" style={{ width: 160 }}>
+            <Text size="xs">lg / elevated</Text>
+          </Card>
+        </Row>
+        <Row label="Interactive" tokens={tokens}>
+          <Card variant="elevated" onClick={() => {}} style={{ width: 200 }}>
+            <Text size="xs" weight="semibold">Clickable card</Text>
+            <Text size="xs" color="secondary">Hover, focus, press</Text>
+          </Card>
+          <Card variant="elevated" href="#" style={{ width: 200 }}>
+            <Text size="xs" weight="semibold">Link card</Text>
+            <Text size="xs" color="secondary">Renders as {'<a>'}</Text>
+          </Card>
+          <Card variant="elevated" onClick={() => {}} disabled style={{ width: 200 }}>
+            <Text size="xs" weight="semibold">Disabled</Text>
+            <Text size="xs" color="secondary">No interaction</Text>
+          </Card>
+        </Row>
+        <Row label="Status accent" tokens={tokens}>
+          <Card status="success" style={{ width: 200 }}>
+            <Text size="xs" weight="semibold">Success</Text>
+          </Card>
+          <Card status="warning" style={{ width: 200 }}>
+            <Text size="xs" weight="semibold">Warning</Text>
+          </Card>
+          <Card status="danger" style={{ width: 200 }}>
+            <Text size="xs" weight="semibold">Danger</Text>
+          </Card>
+          <Card status="info" style={{ width: 200 }}>
+            <Text size="xs" weight="semibold">Info</Text>
+          </Card>
+        </Row>
+        <Row label="Selectable" tokens={tokens}>
+          <Card variant="elevated" selected={false} onClick={() => {}} style={{ width: 200 }}>
+            <Text size="xs" weight="semibold">Unselected</Text>
+          </Card>
+          <Card variant="elevated" selected onClick={() => {}} style={{ width: 200 }}>
+            <Text size="xs" weight="semibold">Selected</Text>
+          </Card>
+          <Card variant="outline" selected onClick={() => {}} style={{ width: 200 }}>
+            <Text size="xs" weight="semibold">Selected outline</Text>
+          </Card>
+        </Row>
+        <Row label="Media slot" tokens={tokens}>
+          <Card
+            variant="elevated"
+            style={{ width: 240 }}
+            media={
+              <div style={{ height: 120, background: `linear-gradient(135deg, ${tokens.accentDefault}, ${tokens.accentSubtle})` }} />
+            }
+          >
+            <Text size="xs" weight="semibold">Hero card</Text>
+            <Text size="xs" color="secondary">Full-bleed media at the top.</Text>
           </Card>
         </Row>
         <Row label="CardBleed" tokens={tokens}>
@@ -2017,7 +2100,7 @@ function Inner({
 function Section({ title, tokens, children, hidden }: { title: string; tokens: ReturnType<typeof useLucent>['tokens']; children: React.ReactNode; hidden?: boolean }) {
   if (hidden) return null;
   return (
-    <div style={{ background: tokens.surface, border: `1px solid ${tokens.borderDefault}`, borderRadius: tokens.radiusLg, padding: tokens.space6, marginBottom: tokens.space6 }}>
+    <div style={{ background: tokens.bgSubtle, border: `1px solid ${tokens.borderDefault}`, borderRadius: tokens.radiusLg, padding: tokens.space6, marginBottom: tokens.space6 }}>
       <h2 style={{ fontSize: tokens.fontSizeLg, fontWeight: tokens.fontWeightSemibold, marginBottom: tokens.space5, marginTop: 0 }}>{title}</h2>
       <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.space4 }}>{children}</div>
     </div>
