@@ -1,5 +1,75 @@
 # lucent-ui
 
+## 0.15.0
+
+### Card Elevation Hierarchy & Interactive Props
+
+#### Elevation variants
+
+Five `variant` levels form a visual importance hierarchy, from lowest to highest:
+
+- **ghost** — transparent background, no border. Invisible container for logical groupings.
+- **outline** (default) — transparent background with border. The workhorse card for lists, forms, panels.
+- **filled** — `surfaceTint` background, no border. Contextually darker/lighter than its container via a hue-matched tint derived from `bgBase`.
+- **elevated** — `surface` background with border and shadow. The classic floating card.
+- **combo** — filled wrapper with an elevated body inset. Header/footer recede into the tint while the body pops as a bright surface.
+
+#### Interactive cards
+
+- **`onClick`** — renders the card as `<button>` with hover lift (`translateY(-1px)`), focus ring, and active press state matching the Button component.
+- **`href`** — renders the card as `<a>` with the same interactive states.
+- **`disabled`** — reduces opacity, blocks interaction, sets `cursor: not-allowed`.
+
+#### Status accent
+
+- **`status`** prop (`success | warning | danger | info`) adds a 3px colored bar on the left edge using the corresponding status token.
+
+#### Selectable cards
+
+- **`selected`** prop adds an outer `accent-subtle` ring and subtle background tint. Sets `aria-pressed` on interactive cards. Pairs with `onClick` for toggle behavior.
+
+#### Media slot
+
+- **`media`** prop renders full-bleed content at the top of the card (before header) with no padding. For hero images, illustrations, or any edge-to-edge top content.
+
+### Token System Changes
+
+- **New token: `surfaceTint`.** A hue-matched darker shade of `bgBase` (light: `adjustLightness(bgBase, -0.04)`, dark: `+0.03`). Used by `filled` and `combo` card variants. Derived automatically when `bgBase` is customized.
+- **`surface` auto-derived from `bgBase`.** When `bgBase` is customized and `surface` is not explicitly set, `surface` is pushed 85% toward white (light mode) with 30% saturation retention. All surface variants (`surfaceSecondary`, `surfaceRaised`, `surfaceOverlay`) cascade from it.
+- **`surface` is now optional in `ThemeAnchors`.** Consumers only need to set `bgBase` — the entire surface hierarchy derives automatically.
+- **Card padding is now asymmetric.** Vertical padding is tighter than horizontal (e.g. md = `space-4` vertical, `space-5` horizontal).
+
+### Shadow Presets Updated
+
+- **Subtle preset:** Soft dual-layer shadows (`rgba(17,17,26)` at ~60% of elevated opacity). Diffused and gentle.
+- **Elevated preset:** Same dual-layer structure at full opacity with wider blur radii (`0px 4px 16px` + `0px 8px 32px` for `shadowMd`).
+
+## 0.14.2
+
+### Neutral Text & Control Track Colors
+
+- **Removed `textPrimary` from all palette presets.** Text colors now stay neutral gray (`#111827` light / `#f3f4f6` dark) regardless of accent palette. Previously each palette tinted `textPrimary` to match its accent hue, which made the UI feel too colorful.
+- **Made `textPrimary` optional in `ThemeAnchors`.** Palettes and `createTheme` callers no longer need to specify it — it falls through to the base theme default.
+- **New token: `controlTrack`.** A neutral gray background for inactive control surfaces (light: `#d1d5db`, dark: derived from `bgBase`). Decoupled from `borderDefault` so it isn't affected by accent-tinted palette borders.
+- **Toggle:** Off-state track uses `controlTrack` instead of `borderStrong`.
+- **Slider:** Unfilled track and disabled track use `controlTrack` instead of `borderDefault` (WebKit and Firefox).
+
+## 0.14.1
+
+### Patch Changes
+
+- Fix form field sizing alignment and add DatePicker/DateRangePicker label, helper, and error props.
+
+## 0.14.0
+
+### Form Field Consistency & Picker Labels
+
+- **Textarea:** Label font size is now size-aware, matching Input (sm/md use `font-size-sm`, lg uses `font-size-md`). Horizontal padding aligned with Input (`space-3` for sm, `space-4` for md/lg).
+- **Select:** `lg` value font size corrected from `font-size-lg` to `font-size-md` to match Input.
+- **DatePicker / DateRangePicker:** Added `label`, `helperText`, and `errorText` props. Fixed `box-sizing` from `content-box` to `border-box` so width no longer grows with padding. Horizontal padding is now size-aware, matching Input/Select. Icon-to-text gap is now size-aware (`space-2` for sm, midpoint for md, `space-3` for lg). Focus ring updated to border + `boxShadow` pattern matching Input/Select. Manifests updated with new props and `aria-invalid`.
+- **Chip:** The `accent` variant now uses a solid accent background with auto-derived text-on-accent color for better visual weight and contrast.
+- **Playground:** DatePicker and DateRangePicker entries now include label, helperText, and errorText controls.
+
 ## 0.13.0
 
 ### New: Chip Component
