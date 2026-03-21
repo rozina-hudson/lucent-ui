@@ -91,6 +91,8 @@ export interface SemanticColorTokens {
   borderDefault: string;
   borderSubtle: string;
   borderStrong: string;
+  // Controls
+  controlTrack: string; // neutral inactive track (toggle off, slider unfilled)
   // Text
   textPrimary: string;
   textSecondary: string;
@@ -159,10 +161,10 @@ export type ThemeAnchors = Pick<
   | 'bgBase'
   | 'surface'
   | 'borderDefault'
-  | 'textPrimary'
   | 'accentDefault'
   | 'successDefault'
   | 'warningDefault'
   | 'dangerDefault'
   | 'infoDefault'
->;
+> &
+  Partial<Pick<LucentTokens, 'textPrimary'>>;

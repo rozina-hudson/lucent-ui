@@ -86,6 +86,7 @@ export function deriveDarkFromLight(light: LucentTokens): LucentTokens {
     borderDefault: toBorderDark(light.borderDefault),
     borderSubtle: toBorderDark(light.borderSubtle),
     borderStrong: toBorderDark(light.borderStrong),
+    controlTrack: bgStep(0.10),
 
     // ── Text ─────────────────────────────────────────────────────────────────
     textPrimary: toTextDark(light.textPrimary),

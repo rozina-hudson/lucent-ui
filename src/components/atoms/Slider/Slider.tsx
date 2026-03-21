@@ -39,12 +39,12 @@ const STYLES = `
     to right,
     var(--lucent-accent-default) 0%,
     var(--lucent-accent-default) var(--ls-fill),
-    var(--lucent-border-default) var(--ls-fill),
-    var(--lucent-border-default) 100%
+    var(--lucent-control-track) var(--ls-fill),
+    var(--lucent-control-track) 100%
   );
 }
 .lucent-slider:disabled::-webkit-slider-runnable-track {
-  background: var(--lucent-border-default);
+  background: var(--lucent-control-track);
 }
 
 /* WebKit thumb */
@@ -77,7 +77,7 @@ const STYLES = `
 .lucent-slider::-moz-range-track {
   height: var(--ls-track-h);
   border-radius: 999px;
-  background: var(--lucent-border-default);
+  background: var(--lucent-control-track);
 }
 .lucent-slider::-moz-range-progress {
   height: var(--ls-track-h);

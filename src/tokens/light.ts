@@ -29,6 +29,7 @@ export const lightTokens: LucentTokens = {
   borderDefault: '#e5e7eb',
   borderSubtle: '#f3f4f6',
   borderStrong: '#9ca3af',
+  controlTrack: '#d1d5db',
 
   // Text
   textPrimary: '#111827',
