@@ -48,14 +48,32 @@ export interface DatePickerProps {
   min?: Date;
   max?: Date;
   size?: DatePickerSize;
+  label?: string;
+  helperText?: string;
+  errorText?: string;
   style?: CSSProperties;
 }
 
-const sizeHeights: Record<DatePickerSize, string> = { sm: 'calc(var(--lucent-space-8) * 0.5 + 16px)', md: 'calc(var(--lucent-space-10) * 0.5 + 20px)', lg: 'calc(var(--lucent-space-12) * 0.5 + 24px)' };
+const sizeHeights: Record<DatePickerSize, string> = { sm: 'calc(var(--lucent-space-8) * 0.5 + 18px)', md: 'calc(var(--lucent-space-10) * 0.5 + 22px)', lg: 'calc(var(--lucent-space-12) * 0.5 + 26px)' };
 const sizeFontSizes: Record<DatePickerSize, string> = {
   sm: 'var(--lucent-font-size-sm)',
   md: 'var(--lucent-font-size-md)',
   lg: 'var(--lucent-font-size-md)',
+};
+const sizeLabelFont: Record<DatePickerSize, string> = {
+  sm: 'var(--lucent-font-size-sm)',
+  md: 'var(--lucent-font-size-sm)',
+  lg: 'var(--lucent-font-size-md)',
+};
+const sizePx: Record<DatePickerSize, string> = {
+  sm: 'var(--lucent-space-3)',
+  md: 'var(--lucent-space-4)',
+  lg: 'var(--lucent-space-4)',
+};
+const sizeGap: Record<DatePickerSize, string> = {
+  sm: 'var(--lucent-space-2)',
+  md: 'calc((var(--lucent-space-2) + var(--lucent-space-3)) / 2)',
+  lg: 'var(--lucent-space-3)',
 };
 
 // ─── Nav button ───────────────────────────────────────────────────────────────
@@ -206,12 +224,18 @@ export function DatePicker({
   min,
   max,
   size = 'md',
+  label,
+  helperText,
+  errorText,
   style,
 }: DatePickerProps) {
   const isControlled = controlledValue !== undefined;
   const [internalValue, setInternalValue] = useState<Date | undefined>(defaultValue);
   const selected = isControlled ? controlledValue : internalValue;
+  const hasError = Boolean(errorText);
+  const isDisabled = disabled;
 
+  const inputId = `lucent-datepicker-${Math.random().toString(36).slice(2, 7)}`;
   const today = new Date();
   const [viewYear, setViewYear] = useState((selected ?? today).getFullYear());
   const [viewMonth, setViewMonth] = useState((selected ?? today).getMonth());
@@ -244,32 +268,63 @@ export function DatePicker({
     else setViewMonth(m => m + 1);
   };
 
+  const borderColor = isDisabled
+    ? 'transparent'
+    : hasError
+      ? 'var(--lucent-danger-default)'
+      : focused
+        ? 'var(--lucent-focus-ring)'
+        : 'var(--lucent-border-default)';
+
+  const boxShadow = focused
+    ? `0 0 0 3px ${hasError ? 'var(--lucent-danger-subtle)' : 'var(--lucent-accent-subtle)'}`
+    : 'none';
+
   return (
-    <div ref={containerRef} style={{ position: 'relative', ...style }}>
+    <div ref={containerRef} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--lucent-space-1)', position: 'relative', ...style }}>
+      {label && (
+        <label
+          htmlFor={inputId}
+          style={{
+            fontSize: sizeLabelFont[size],
+            fontWeight: 'var(--lucent-font-weight-medium)',
+            color: isDisabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-primary)',
+            fontFamily: 'var(--lucent-font-family-base)',
+          }}
+        >
+          {label}
+        </label>
+      )}
+
       <button
         type="button"
+        id={inputId}
         disabled={disabled}
         onClick={() => !disabled && setOpen(o => !o)}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         aria-haspopup="dialog"
         aria-expanded={open}
+        aria-invalid={hasError}
         style={{
-          display: 'flex', alignItems: 'center', gap: 'var(--lucent-space-2)',
+          display: 'flex', alignItems: 'center', gap: sizeGap[size],
           width: '100%',
           height: sizeHeights[size],
-          boxSizing: 'content-box',
-          padding: '0 var(--lucent-space-3)',
+          boxSizing: 'border-box',
+          padding: `0 ${sizePx[size]}`,
           borderRadius: 'var(--lucent-radius-lg)',
-          border: `1px solid ${focused ? 'var(--lucent-accent-default)' : 'var(--lucent-border-default)'}`,
-          background: disabled ? 'var(--lucent-surface-secondary)' : 'var(--lucent-surface)',
+          border: `1px solid ${borderColor}`,
+          boxShadow,
+          background: isDisabled ? 'var(--lucent-surface-secondary)' : 'var(--lucent-surface)',
           color: selected ? 'var(--lucent-text-primary)' : 'var(--lucent-text-secondary)',
           fontFamily: 'var(--lucent-font-family-base)',
           fontSize: sizeFontSizes[size],
-          cursor: disabled ? 'not-allowed' : 'pointer',
-          outline: focused ? `2px solid var(--lucent-focus-ring)` : 'none',
-          outlineOffset: 2,
-          transition: 'border-color var(--lucent-duration-fast)',
+          cursor: isDisabled ? 'not-allowed' : 'pointer',
+          outline: 'none',
+          transition: [
+            'border-color var(--lucent-duration-fast) var(--lucent-easing-default)',
+            'box-shadow var(--lucent-duration-fast) var(--lucent-easing-default)',
+          ].join(', '),
         }}
       >
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden style={{ flexShrink: 0 }}>
@@ -281,6 +336,30 @@ export function DatePicker({
           {selected ? formatDate(selected) : placeholder}
         </span>
       </button>
+
+      {hasError && (
+        <span
+          role="alert"
+          style={{
+            fontSize: sizeLabelFont[size],
+            color: 'var(--lucent-danger-text)',
+            fontFamily: 'var(--lucent-font-family-base)',
+          }}
+        >
+          {errorText}
+        </span>
+      )}
+      {!hasError && helperText && (
+        <span
+          style={{
+            fontSize: sizeLabelFont[size],
+            color: 'var(--lucent-text-secondary)',
+            fontFamily: 'var(--lucent-font-family-base)',
+          }}
+        >
+          {helperText}
+        </span>
+      )}
 
       {open && (
         <div

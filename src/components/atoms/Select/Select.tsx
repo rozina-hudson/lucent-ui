@@ -26,7 +26,7 @@ const sizeH: Record<SelectSize, string> = {
 const sizeFont: Record<SelectSize, string> = {
   sm: 'var(--lucent-font-size-sm)',
   md: 'var(--lucent-font-size-md)',
-  lg: 'var(--lucent-font-size-lg)',
+  lg: 'var(--lucent-font-size-md)',
 };
 
 const sizeLabelFont: Record<SelectSize, string> = {

@@ -52,6 +52,24 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
       enumValues: ['sm', 'md', 'lg'],
     },
     {
+      name: 'label',
+      type: 'string',
+      required: false,
+      description: 'Label text rendered above the trigger, with size-aware font sizing matching Input/Select.',
+    },
+    {
+      name: 'helperText',
+      type: 'string',
+      required: false,
+      description: 'Helper text rendered below the trigger. Hidden when errorText is present.',
+    },
+    {
+      name: 'errorText',
+      type: 'string',
+      required: false,
+      description: 'Error text rendered below the trigger in danger color. Takes precedence over helperText.',
+    },
+    {
       name: 'disabled',
       type: 'boolean',
       required: false,
@@ -101,7 +119,7 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
 
   accessibility: {
     role: 'dialog',
-    ariaAttributes: ['aria-haspopup', 'aria-expanded', 'aria-label', 'aria-pressed'],
+    ariaAttributes: ['aria-haspopup', 'aria-expanded', 'aria-invalid', 'aria-label', 'aria-pressed'],
     keyboardInteractions: ['Enter/Space to open calendar', 'Click day to select', 'Escape closes popover (click outside)'],
     notes: 'The calendar popover is role="dialog". Each day button has aria-label with the full date and aria-pressed for selected state. Full arrow-key navigation within the calendar grid is a planned enhancement.',
   },

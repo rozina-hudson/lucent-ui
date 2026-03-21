@@ -50,6 +50,24 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
       enumValues: ['sm', 'md', 'lg'],
     },
     {
+      name: 'label',
+      type: 'string',
+      required: false,
+      description: 'Label text rendered above the trigger, with size-aware font sizing matching Input/Select.',
+    },
+    {
+      name: 'helperText',
+      type: 'string',
+      required: false,
+      description: 'Helper text rendered below the trigger. Hidden when errorText is present.',
+    },
+    {
+      name: 'errorText',
+      type: 'string',
+      required: false,
+      description: 'Error text rendered below the trigger in danger color. Takes precedence over helperText.',
+    },
+    {
       name: 'disabled',
       type: 'boolean',
       required: false,
@@ -95,7 +113,7 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
 
   accessibility: {
     role: 'dialog',
-    ariaAttributes: ['aria-haspopup', 'aria-expanded', 'aria-label', 'aria-pressed'],
+    ariaAttributes: ['aria-haspopup', 'aria-expanded', 'aria-invalid', 'aria-label', 'aria-pressed'],
     keyboardInteractions: ['Enter/Space to open', 'Click first day to set start', 'Click second day to set end', 'Escape/click outside to cancel'],
     notes: 'Inherits Calendar accessibility from DatePicker. The two-step selection flow is reinforced with a visible "Now pick the end date" hint.',
   },

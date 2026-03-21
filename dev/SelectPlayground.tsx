@@ -278,13 +278,19 @@ const registry: Record<string, {
   DatePicker: {
     props: {
       size:        { type: 'select', options: ['sm', 'md', 'lg'], default: 'md' },
+      label:       { type: 'text', default: '' },
       placeholder: { type: 'text', default: 'Pick a date' },
+      helperText:  { type: 'text', default: '' },
+      errorText:   { type: 'text', default: '' },
       disabled:    { type: 'boolean', default: false },
     },
     render: (v) => (
       <DatePicker
         size={v.size as 'sm' | 'md' | 'lg'}
+        {...(v.label ? { label: v.label as string } : {})}
         placeholder={v.placeholder as string}
+        {...(v.helperText ? { helperText: v.helperText as string } : {})}
+        {...(v.errorText ? { errorText: v.errorText as string } : {})}
         disabled={v.disabled as boolean}
       />
     ),
@@ -293,13 +299,19 @@ const registry: Record<string, {
   DateRangePicker: {
     props: {
       size:        { type: 'select', options: ['sm', 'md', 'lg'], default: 'md' },
+      label:       { type: 'text', default: '' },
       placeholder: { type: 'text', default: 'Pick a date range' },
+      helperText:  { type: 'text', default: '' },
+      errorText:   { type: 'text', default: '' },
       disabled:    { type: 'boolean', default: false },
     },
     render: (v) => (
       <DateRangePicker
         size={v.size as 'sm' | 'md' | 'lg'}
+        {...(v.label ? { label: v.label as string } : {})}
         placeholder={v.placeholder as string}
+        {...(v.helperText ? { helperText: v.helperText as string } : {})}
+        {...(v.errorText ? { errorText: v.errorText as string } : {})}
         disabled={v.disabled as boolean}
       />
     ),

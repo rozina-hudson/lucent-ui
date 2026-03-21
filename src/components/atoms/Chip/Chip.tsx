@@ -35,11 +35,11 @@ const variantStyles: Record<ChipVariant, {
     hoverBorder: 'var(--lucent-border-strong)',
   },
   accent: {
-    bg: 'var(--lucent-accent-subtle)',
-    color: 'var(--lucent-accent-active)',
-    border: 'var(--lucent-accent-subtle)',
-    hoverBg: 'color-mix(in srgb, var(--lucent-accent-default) 15%, var(--lucent-accent-subtle))',
-    hoverBorder: 'var(--lucent-accent-default)',
+    bg: 'var(--lucent-accent-default)',
+    color: 'var(--lucent-text-on-accent)',
+    border: 'var(--lucent-accent-default)',
+    hoverBg: 'var(--lucent-accent-hover)',
+    hoverBorder: 'var(--lucent-accent-hover)',
   },
   success: {
     bg: 'var(--lucent-success-subtle)',

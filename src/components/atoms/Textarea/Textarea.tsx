@@ -17,9 +17,14 @@ const sizeFontSizes: Record<TextareaSize, string> = {
   md: 'var(--lucent-font-size-md)',
   lg: 'var(--lucent-font-size-md)',
 };
+const sizeLabelFont: Record<TextareaSize, string> = {
+  sm: 'var(--lucent-font-size-sm)',
+  md: 'var(--lucent-font-size-sm)',
+  lg: 'var(--lucent-font-size-md)',
+};
 const sizePaddings: Record<TextareaSize, string> = {
-  sm: 'var(--lucent-space-2)',
-  md: 'var(--lucent-space-3)',
+  sm: 'var(--lucent-space-3)',
+  md: 'var(--lucent-space-4)',
   lg: 'var(--lucent-space-4)',
 };
 
@@ -50,7 +55,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--lucent-space-1)', width: '100%' }}>
         {label && (
           <label htmlFor={inputId} style={{
-            fontSize: 'var(--lucent-font-size-sm)',
+            fontSize: sizeLabelFont[size],
             fontWeight: 'var(--lucent-font-weight-medium)',
             color: isDisabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-primary)',
             fontFamily: 'var(--lucent-font-family-base)',
