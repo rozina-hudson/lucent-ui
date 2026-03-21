@@ -1,5 +1,48 @@
 # lucent-ui
 
+## 0.16.0
+
+### PageLayout Chrome Theming
+
+- **`chromeBackground` prop** now accepts `"bgBase"` | `"bgSubtle"` | `"surface"`. Chrome regions (header, sidebar, footer) can use a subtle shade of the page background for visual distinction from the main content area.
+- **Outer wrapper background** matches the chrome token, eliminating white gaps behind rounded main content cards.
+- **Hidden scrollbars** on all scrollable regions (sidebar, main, right sidebar) — still scrollable, no visible chrome.
+- **CSS variable fix**: `--lucent-bg-base` was incorrectly referenced as `--lucent-bgBase` (camelCase). Now uses the correct kebab-case form.
+
+### Unified Design Customizer
+
+The dev preview's right sidebar has been rebuilt from three separate panels (Preset / Tokens / Anchors) into a single unified customizer that mirrors the token derivation system:
+
+- **Quick start** presets (Modern / Enterprise / Playful) set palette, shape, shadow, and font/spacing scales in one click.
+- **Palette picker** — 12 color palettes update all anchor colors for the current theme.
+- **Anchor color pickers** with live derived-variant dots showing the derivation chain (e.g. accent → hover, active, subtle, border, textOnAccent).
+- **Accent cascading** — changing the accent color automatically derives hue-tinted `bgBase` and `borderDefault`.
+- **Layout sliders** — Radius (with Sharp / Rounded / Pill snap points), Elevation (Flat / Subtle / Elevated), Font scale, Spacing scale.
+- **All controls use Lucent UI components**: `Collapsible` sections, `SegmentedControl` for presets/shape/shadow, `Slider` for scales, `ColorPicker` with `size="sm" inline` for anchor colors, `ColorSwatch` for derived dots, `Divider`, `Button`.
+
+### NavLink: `inverse` Prop
+
+- **`inverse`** — uses `surface` background with `textPrimary` instead of accent for the active state. Active inverse links render with `border-default` border, `shadow-md` elevation, and a 3px accent-colored right border indicator. Ideal for sidebar navigation on tinted chrome.
+
+### ColorPicker Enhancements
+
+- **`size` prop** (`"sm"` | `"md"`, default `"md"`) — `sm` renders a compact 24px swatch trigger.
+- **`inline` prop** — places the label beside the swatch instead of above it.
+- **Portaled popover** — the color picker panel now renders via `createPortal` to `document.body`, escaping `overflow: hidden` ancestors. Outside-click detection updated for the portal.
+
+### SegmentedControl Improvements
+
+- **Elevation-aware indicator** — uses `shadow-sm` from the active shadow preset, matching the Card elevation system.
+- **Accurate positioning** — indicator uses `getBoundingClientRect` with `ResizeObserver` for pixel-perfect alignment.
+- **Zero-padding track** with 3px inset indicator for guaranteed equal spacing on all edges.
+- **Focus ring** only appears on keyboard navigation (`:focus-visible`), not mouse clicks.
+
+### Dev Preview Restructure
+
+- **PageLayout as app shell** — the entire preview uses `PageLayout` with tab navigation (Components / Tokens / Playground) in the header, component nav in the left sidebar, and the customizer in the right sidebar.
+- **Section containers** use `Card variant="outline"` on a `bgBase` canvas with `chromeBackground="bgSubtle"` on the chrome.
+- **Body styles** — `margin: 0; overflow: hidden` on `<body>` to eliminate viewport scroll artifacts.
+
 ## 0.15.0
 
 ### Card Elevation Hierarchy & Interactive Props
