@@ -41,6 +41,20 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
       description: 'Array of hex color strings shown as clickable swatches. Defaults to a 16-color palette.',
     },
     {
+      name: 'size',
+      type: 'string',
+      required: false,
+      default: '"md"',
+      description: 'Swatch trigger size. "sm" renders a 24px swatch, "md" renders 40px.',
+    },
+    {
+      name: 'inline',
+      type: 'boolean',
+      required: false,
+      default: 'false',
+      description: 'Places the label beside the swatch instead of above it. Useful for compact layouts.',
+    },
+    {
       name: 'disabled',
       type: 'boolean',
       required: false,

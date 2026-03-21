@@ -52,6 +52,15 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
       description: 'Disables interaction and renders muted text. Removes href and onClick.',
     },
     {
+      name: 'inverse',
+      type: 'boolean',
+      required: false,
+      default: 'false',
+      description:
+        'Uses surface background with primary text instead of accent for the active state. ' +
+        'Ideal for sidebar navigation on tinted chrome where the accent highlight would be too heavy.',
+    },
+    {
       name: 'onClick',
       type: 'function',
       required: false,
