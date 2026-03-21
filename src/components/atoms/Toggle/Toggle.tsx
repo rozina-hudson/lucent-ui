@@ -56,11 +56,15 @@ export function Toggle({
 
   const prevChecked = useRef(isChecked);
   const [popKey, setPopKey] = useState(0);
+  const [isSliding, setIsSliding] = useState(false);
 
   useEffect(() => {
     if (!disabled && prevChecked.current !== isChecked) {
       prevChecked.current = isChecked;
       setPopKey(k => k + 1);
+      setIsSliding(true);
+      const timer = setTimeout(() => setIsSliding(false), 150);
+      return () => clearTimeout(timer);
     }
   }, [isChecked, disabled]);
 
@@ -74,30 +78,39 @@ export function Toggle({
 
   const trackEl = (
     <span
-      key={popKey}
       aria-hidden
       style={{
         position: 'relative',
         width: trackW,
         height: trackH,
         borderRadius: trackH / 2,
-        background: disabled ? 'var(--lucent-surface-secondary)' : isChecked ? 'var(--lucent-accent-default)' : 'var(--lucent-control-track)',
         flexShrink: 0,
-        transition: `background var(--lucent-duration-fast) var(--lucent-easing-default)`,
-        animation: popKey > 0 ? `lucent-toggle-pop 240ms ${SPRING} forwards` : undefined,
       }}
     >
+      {/* Track background — remounts for pop animation */}
+      <span
+        key={popKey}
+        style={{
+          position: 'absolute',
+          inset: 0,
+          borderRadius: 'inherit',
+          background: disabled ? 'var(--lucent-surface-secondary)' : isChecked ? 'var(--lucent-accent-default)' : 'var(--lucent-control-track)',
+          transition: `background var(--lucent-duration-fast) var(--lucent-easing-default)`,
+          animation: popKey > 0 ? `lucent-toggle-pop 240ms ${SPRING} forwards` : undefined,
+        }}
+      />
+      {/* Thumb — persists across toggles for smooth slide + stretch */}
       <span
         style={{
           position: 'absolute',
           top: 2,
           left: thumbOffset,
-          width: thumbSize,
+          width: isSliding ? thumbSize * 1.3 : thumbSize,
           height: thumbSize,
-          borderRadius: '50%',
+          borderRadius: thumbSize,
           background: '#ffffff',
           boxShadow: '0 1px 3px rgb(0 0 0 / 0.2)',
-          transition: `left 260ms ${SPRING}`,
+          transition: `left 260ms ${SPRING}, width 200ms cubic-bezier(0.22, 1, 0.36, 1)`,
         }}
       />
     </span>

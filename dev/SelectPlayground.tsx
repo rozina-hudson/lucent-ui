@@ -14,6 +14,7 @@ import { MultiSelect } from '../src/components/molecules/MultiSelect/index.js';
 import { DatePicker } from '../src/components/molecules/DatePicker/index.js';
 import { DateRangePicker } from '../src/components/molecules/DateRangePicker/index.js';
 import { Text } from '../src/components/atoms/Text/index.js';
+import { SegmentedControl } from '../src/components/atoms/SegmentedControl/index.js';
 
 /* ------------------------------------------------------------------ */
 /*  Prop control definitions                                          */
@@ -313,6 +314,27 @@ const registry: Record<string, {
         {...(v.helperText ? { helperText: v.helperText as string } : {})}
         {...(v.errorText ? { errorText: v.errorText as string } : {})}
         disabled={v.disabled as boolean}
+      />
+    ),
+  },
+
+  SegmentedControl: {
+    props: {
+      size:      { type: 'select', options: ['sm', 'md', 'lg'], default: 'md' },
+      fullWidth: { type: 'boolean', default: true },
+      disabled:  { type: 'boolean', default: false },
+    },
+    render: (v) => (
+      <SegmentedControl
+        size={v.size as 'sm' | 'md' | 'lg'}
+        fullWidth={v.fullWidth as boolean}
+        disabled={v.disabled as boolean}
+        defaultValue="alpha"
+        options={[
+          { value: 'alpha', label: 'Alpha' },
+          { value: 'beta', label: 'Beta' },
+          { value: 'gamma', label: 'Gamma' },
+        ]}
       />
     ),
   },

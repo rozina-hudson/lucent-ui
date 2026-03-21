@@ -24,16 +24,20 @@ export interface SegmentedControlProps {
   style?: CSSProperties;
 }
 
-const sizeH:    Record<SegmentedControlSize, string> = { sm: '30px', md: '36px', lg: '42px' };
+const sizeH: Record<SegmentedControlSize, string> = {
+  sm: 'calc(var(--lucent-space-8) * 0.5 + 18px)',
+  md: 'calc(var(--lucent-space-10) * 0.5 + 22px)',
+  lg: 'calc(var(--lucent-space-12) * 0.5 + 26px)',
+};
 const sizeFont: Record<SegmentedControlSize, string> = {
   sm: 'var(--lucent-font-size-sm)',
-  md: 'var(--lucent-font-size-sm)',
-  lg: 'var(--lucent-font-size-md)',
+  md: 'var(--lucent-font-size-md)',
+  lg: 'var(--lucent-font-size-lg)',
 };
 const sizePx: Record<SegmentedControlSize, string> = {
-  sm: 'var(--lucent-space-2)',
-  md: 'var(--lucent-space-3)',
-  lg: 'var(--lucent-space-4)',
+  sm: 'var(--lucent-space-3)',
+  md: 'var(--lucent-space-4)',
+  lg: 'var(--lucent-space-5)',
 };
 
 export function SegmentedControl({
@@ -115,7 +119,7 @@ export function SegmentedControl({
             borderRadius: 'var(--lucent-radius-lg)',
             boxShadow: 'var(--lucent-shadow-sm)',
             transition: indicator.animate
-              ? `left var(--lucent-duration-base) var(--lucent-easing-default), width var(--lucent-duration-base) var(--lucent-easing-default)`
+              ? `left var(--lucent-duration-base) cubic-bezier(0.34, 1.56, 0.64, 1), width var(--lucent-duration-base) cubic-bezier(0.22, 1, 0.36, 1)`
               : 'none',
             zIndex: 0,
             pointerEvents: 'none',

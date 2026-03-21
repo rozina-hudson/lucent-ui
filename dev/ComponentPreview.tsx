@@ -112,10 +112,25 @@ const PALETTE_OPTIONS: { value: PaletteName; label: string; swatch: string }[] =
 const SHAPE_OPTIONS: ShapeName[] = ['sharp', 'rounded', 'pill'];
 const SHADOW_OPTIONS: ShadowName[] = ['flat', 'subtle', 'elevated'];
 
-const QUICK_PRESETS: { name: string; palette: PaletteName; shape: ShapeName; shadow: ShadowName; fontScale: number; spaceScale: number }[] = [
-  { name: 'Modern', palette: 'indigo', shape: 'rounded', shadow: 'subtle', fontScale: 100, spaceScale: 100 },
-  { name: 'Enterprise', palette: 'default', shape: 'sharp', shadow: 'flat', fontScale: 95, spaceScale: 90 },
-  { name: 'Playful', palette: 'rose', shape: 'pill', shadow: 'elevated', fontScale: 105, spaceScale: 110 },
+type DensityPreset = 'compact' | 'default' | 'comfortable';
+type FontScalePreset = 'small' | 'default' | 'large';
+const DENSITY_PERCENT: Record<DensityPreset, number> = { compact: 85, default: 100, comfortable: 115 };
+const FONT_SCALE_PERCENT: Record<FontScalePreset, number> = { small: 90, default: 100, large: 110 };
+const DENSITY_OPTIONS: { value: DensityPreset; label: string }[] = [
+  { value: 'compact', label: 'Compact' },
+  { value: 'default', label: 'Default' },
+  { value: 'comfortable', label: 'Comfortable' },
+];
+const FONT_SCALE_OPTIONS: { value: FontScalePreset; label: string }[] = [
+  { value: 'small', label: 'Small' },
+  { value: 'default', label: 'Default' },
+  { value: 'large', label: 'Large' },
+];
+
+const QUICK_PRESETS: { name: string; palette: PaletteName; shape: ShapeName; shadow: ShadowName; density: DensityPreset; fontScale: FontScalePreset }[] = [
+  { name: 'Modern', palette: 'indigo', shape: 'rounded', shadow: 'subtle', density: 'default', fontScale: 'default' },
+  { name: 'Enterprise', palette: 'default', shape: 'sharp', shadow: 'flat', density: 'compact', fontScale: 'small' },
+  { name: 'Playful', palette: 'rose', shape: 'pill', shadow: 'elevated', density: 'comfortable', fontScale: 'large' },
 ];
 
 // Anchor derivation chain — which live tokens derive from each anchor
@@ -217,16 +232,16 @@ export function ComponentPreview({ tab, setTab }: { tab: DevTab; setTab: (t: Dev
     });
   };
 
-  // Target scale percentages — set by quick presets, applied by Inner
-  const [targetFontScale, setTargetFontScale] = useState(100);
-  const [targetSpaceScale, setTargetSpaceScale] = useState(100);
+  // Target scale presets — set by quick presets, applied by Inner
+  const [targetDensity, setTargetDensity] = useState<DensityPreset>('default');
+  const [targetFontScale, setTargetFontScale] = useState<FontScalePreset>('default');
 
   const applyQuickPreset = (qp: typeof QUICK_PRESETS[number]) => {
     applyPalette(qp.palette);
     applyShape(qp.shape);
     setShadow(qp.shadow);
+    setTargetDensity(qp.density);
     setTargetFontScale(qp.fontScale);
-    setTargetSpaceScale(qp.spaceScale);
     setScaleOverrides({});
   };
 
@@ -240,6 +255,8 @@ export function ComponentPreview({ tab, setTab }: { tab: DevTab; setTab: (t: Dev
     setAnchors({ ...pa, textPrimary: pa.textPrimary ?? (theme === 'light' ? '#111111' : '#eeeeee') });
     setShape('rounded');
     setShadow('subtle');
+    setTargetDensity('default');
+    setTargetFontScale('default');
     setScaleOverrides({});
   };
 
@@ -288,8 +305,8 @@ export function ComponentPreview({ tab, setTab }: { tab: DevTab; setTab: (t: Dev
         onScaleOverride={handleScaleOverride}
         onQuickPreset={applyQuickPreset}
         onReset={resetAll}
+        targetDensity={targetDensity}
         targetFontScale={targetFontScale}
-        targetSpaceScale={targetSpaceScale}
       />
     </LucentProvider>
   );
@@ -298,7 +315,7 @@ export function ComponentPreview({ tab, setTab }: { tab: DevTab; setTab: (t: Dev
 function Inner({
   tab, setTab, theme, palette, anchors, shape, shadow, scaleOverrides,
   onToggleTheme, onChangePalette, onChangeAnchor, onChangeShape, onChangeShadow,
-  onScaleOverride, onQuickPreset, onReset, targetFontScale, targetSpaceScale,
+  onScaleOverride, onQuickPreset, onReset, targetDensity, targetFontScale,
 }: {
   tab: DevTab;
   setTab: (t: DevTab) => void;
@@ -316,8 +333,8 @@ function Inner({
   onScaleOverride: (key: keyof LucentTokens, value: string) => void;
   onQuickPreset: (qp: typeof QUICK_PRESETS[number]) => void;
   onReset: () => void;
-  targetFontScale: number;
-  targetSpaceScale: number;
+  targetDensity: DensityPreset;
+  targetFontScale: FontScalePreset;
 }) {
   const { tokens } = useLucent();
   const [componentFilter, setComponentFilter] = useState('');
@@ -346,9 +363,9 @@ function Inner({
   const [searchQuery, setSearchQuery] = useState('');
   const [alertDismissed, setAlertDismissed] = useState(false);
 
-  // Scale slider state
-  const [fontScalePercent, setFontScalePercent] = useState(100);
-  const [spaceScalePercent, setSpaceScalePercent] = useState(100);
+  // Scale preset state
+  const [density, setDensity] = useState<DensityPreset>('default');
+  const [fontScale, setFontScale] = useState<FontScalePreset>('default');
   // Derive radius slider value from live token
   const radiusPx = (() => {
     const raw = tokens.radiusLg;
@@ -373,25 +390,73 @@ function Inner({
     }
   }, [tokens]);
 
-  // Sync scale sliders when quick preset sets target values
+  // Sync controls when quick preset sets target values
   useEffect(() => {
-    if (targetFontScale !== fontScalePercent) {
-      setFontScalePercent(targetFontScale);
-      const scale = targetFontScale / 100;
+    if (targetFontScale !== fontScale) {
+      setFontScale(targetFontScale);
+      const scale = FONT_SCALE_PERCENT[targetFontScale] / 100;
       Object.entries(baseFontSizesRef.current).forEach(([k, v]) => {
         const num = parseFloat(v); const unit = v.replace(/[\d.]/g, '');
         onScaleOverride(k as keyof LucentTokens, `${num * scale}${unit}`);
       });
     }
-    if (targetSpaceScale !== spaceScalePercent) {
-      setSpaceScalePercent(targetSpaceScale);
-      const scale = targetSpaceScale / 100;
+    if (targetDensity !== density) {
+      setDensity(targetDensity);
+      const scale = DENSITY_PERCENT[targetDensity] / 100;
       Object.entries(baseSpaceRef.current).forEach(([k, v]) => {
         const num = parseFloat(v); const unit = v.replace(/[\d.]/g, '');
         onScaleOverride(k as keyof LucentTokens, `${num * scale}${unit}`);
       });
     }
-  }, [targetFontScale, targetSpaceScale]);
+  }, [targetFontScale, targetDensity]);
+
+  // Handlers for density and font scale controls
+  const handleDensityChange = (v: string) => {
+    const d = v as DensityPreset;
+    setDensity(d);
+    const scale = DENSITY_PERCENT[d] / 100;
+    Object.entries(baseSpaceRef.current).forEach(([k, val]) => {
+      const num = parseFloat(val); const unit = val.replace(/[\d.]/g, '');
+      onScaleOverride(k as keyof LucentTokens, `${num * scale}${unit}`);
+    });
+  };
+  const handleFontScaleChange = (v: string) => {
+    const f = v as FontScalePreset;
+    setFontScale(f);
+    const scale = FONT_SCALE_PERCENT[f] / 100;
+    Object.entries(baseFontSizesRef.current).forEach(([k, val]) => {
+      const num = parseFloat(val); const unit = val.replace(/[\d.]/g, '');
+      onScaleOverride(k as keyof LucentTokens, `${num * scale}${unit}`);
+    });
+  };
+
+  // CSS variable overrides for self-demonstrating controls
+  const tokenToCssVar = (key: string) =>
+    '--lucent-' + key.replace(/([A-Z])/g, m => `-${m.toLowerCase()}`).replace(/([a-z])(\d)/g, (_, a, b) => `${a}-${b}`);
+
+  const densityWrapperStyle = useMemo((): React.CSSProperties => {
+    const pct = DENSITY_PERCENT[density];
+    if (pct === 100 || Object.keys(baseSpaceRef.current).length === 0) return {};
+    const scale = pct / 100;
+    const vars: Record<string, string> = {};
+    Object.entries(baseSpaceRef.current).forEach(([k, v]) => {
+      const num = parseFloat(v); const unit = v.replace(/[\d.]/g, '');
+      vars[tokenToCssVar(k)] = `${num * scale}${unit}`;
+    });
+    return vars as React.CSSProperties;
+  }, [density, tokens]);
+
+  const fontScaleWrapperStyle = useMemo((): React.CSSProperties => {
+    const pct = FONT_SCALE_PERCENT[fontScale];
+    if (pct === 100 || Object.keys(baseFontSizesRef.current).length === 0) return {};
+    const scale = pct / 100;
+    const vars: Record<string, string> = {};
+    Object.entries(baseFontSizesRef.current).forEach(([k, v]) => {
+      const num = parseFloat(v); const unit = v.replace(/[\d.]/g, '');
+      vars[tokenToCssVar(k)] = `${num * scale}${unit}`;
+    });
+    return vars as React.CSSProperties;
+  }, [fontScale, tokens]);
 
   const allFruits = ['Apple', 'Apricot', 'Banana', 'Blueberry', 'Cherry', 'Grape', 'Mango', 'Orange', 'Peach', 'Pear', 'Pineapple', 'Strawberry'];
   const searchResults = searchQuery.length > 0
@@ -556,24 +621,28 @@ function Inner({
               style={{ marginTop: tokens.space2 }}
             />
           </div>
-          <Slider label={`Font (${fontScalePercent}%)`} size="sm" min={50} max={150} value={fontScalePercent} onChange={e => {
-            const pct = parseInt(e.target.value);
-            setFontScalePercent(pct);
-            const scale = pct / 100;
-            Object.entries(baseFontSizesRef.current).forEach(([k, v]) => {
-              const num = parseFloat(v); const unit = v.replace(/[\d.]/g, '');
-              onScaleOverride(k as keyof LucentTokens, `${num * scale}${unit}`);
-            });
-          }} />
-          <Slider label={`Spacing (${spaceScalePercent}%)`} size="sm" min={50} max={150} value={spaceScalePercent} onChange={e => {
-            const pct = parseInt(e.target.value);
-            setSpaceScalePercent(pct);
-            const scale = pct / 100;
-            Object.entries(baseSpaceRef.current).forEach(([k, v]) => {
-              const num = parseFloat(v); const unit = v.replace(/[\d.]/g, '');
-              onScaleOverride(k as keyof LucentTokens, `${num * scale}${unit}`);
-            });
-          }} />
+          <div>
+            <Text as="span" size="xs" color="secondary" style={{ display: 'block', marginBottom: tokens.space1 }}>Density</Text>
+            <div style={densityWrapperStyle}>
+              <SegmentedControl
+                size="sm"
+                options={DENSITY_OPTIONS}
+                value={density}
+                onChange={handleDensityChange}
+              />
+            </div>
+          </div>
+          <div>
+            <Text as="span" size="xs" color="secondary" style={{ display: 'block', marginBottom: tokens.space1 }}>Font scale</Text>
+            <div style={fontScaleWrapperStyle}>
+              <SegmentedControl
+                size="sm"
+                options={FONT_SCALE_OPTIONS}
+                value={fontScale}
+                onChange={handleFontScaleChange}
+              />
+            </div>
+          </div>
         </div>
       </Collapsible>
 
