@@ -31,7 +31,7 @@ export const COMPONENT_MANIFEST = {
             required: false,
             default: 'md',
             description: 'Controls height and font size.',
-            enumValues: ['sm', 'md'],
+            enumValues: ['sm', 'md', 'lg'],
         },
         {
             name: 'onDismiss',

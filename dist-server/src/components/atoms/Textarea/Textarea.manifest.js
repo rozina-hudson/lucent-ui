@@ -18,6 +18,7 @@ export const COMPONENT_MANIFEST = {
         { name: 'value', type: 'string', required: false, description: 'Controlled value.' },
         { name: 'onChange', type: 'function', required: false, description: 'Change handler.' },
         { name: 'placeholder', type: 'string', required: false, description: 'Placeholder text.' },
+        { name: 'size', type: 'enum', required: false, default: 'md', description: 'Controls font size and padding.', enumValues: ['sm', 'md', 'lg'] },
         { name: 'disabled', type: 'boolean', required: false, default: 'false', description: 'Disables the textarea.' },
     ],
     usageExamples: [

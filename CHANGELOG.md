@@ -2,9 +2,23 @@
 
 ## 0.17.0
 
-### Minor Changes
+### Button: Ultra-Dense Size
 
-- 22c64a1: Button: add `size="2xs"` for ultra-dense inline controls (~22px height) and `variant="danger-outline"` / `variant="danger-ghost"` for low-emphasis destructive actions
+- **`size="2xs"`** — 22px height with `space-1` padding and `radius-md`, designed for dashboard toolbars, table-inline actions, and icon triggers where `xs` (26px) is still too tall. This was the most common reason consumers fell back to plain `<button>` elements during migration.
+- 8px chevron icon scaled for the smaller size.
+
+### Button: Danger Compound Variants
+
+- **`variant="danger-outline"`** — red border + red text on surface background. Use for destructive actions that need visual weight without a filled background (e.g. "Revoke access").
+- **`variant="danger-ghost"`** — red text on transparent background, no border. Use for low-emphasis destructive actions in list rows or dense UIs (e.g. "Remove").
+- Both variants share danger-colored hover shadow, press ring, and focus ring with the existing filled `danger` variant.
+- Resolves the API confusion where consumers used `variant="danger"` + `style={{ color }}` and got invisible red-on-red text.
+
+### Manifest Updates
+
+- Expanded variant prop description with per-value usage guidance (when to use each variant).
+- Expanded size prop description with pixel heights and typical use cases for each value.
+- Added usage examples for `danger-outline`, `danger-ghost`, and `2xs` icon trigger patterns.
 
 ## 0.16.0
 

@@ -23,6 +23,8 @@ function buildSystemPrompt(config: Config, engagementLevel: string): string {
         ? config.engagement_levels.forward.trim()
         : config.engagement_levels.direct.trim();
 
+  const featureLines = (config.product.features ?? []).map((f) => `- ${f.trim()}`).join('\n');
+
   return template
     .replace('{{VOICE_TONE}}', config.voice.tone)
     .replace('{{VOICE_RULES}}', voiceRuleLines)
@@ -30,6 +32,8 @@ function buildSystemPrompt(config: Config, engagementLevel: string): string {
     .replace('{{KEY_CONCEPT}}', config.product.key_concept)
     .replace('{{PRODUCT_URL}}', config.product.url)
     .replace('{{PRODUCT_DIFFERENTIATOR}}', config.product.differentiator.trim())
+    .replace('{{PRODUCT_VERSION}}', config.product.current_version ?? '')
+    .replace('{{PRODUCT_FEATURES}}', featureLines)
     .replace('{{ENGAGEMENT_LEVEL}}', engagementLevel)
     .replace('{{ENGAGEMENT_INSTRUCTIONS}}', engagementInstructions)
     .replace(/\{\{KEY_CONCEPT\}\}/g, config.product.key_concept)

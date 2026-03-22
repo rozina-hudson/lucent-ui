@@ -29,6 +29,8 @@ export interface Config {
     differentiator: string;
     url: string;
     key_concept: string;
+    current_version?: string;
+    features?: string[];
   };
   voice: {
     tone: string;

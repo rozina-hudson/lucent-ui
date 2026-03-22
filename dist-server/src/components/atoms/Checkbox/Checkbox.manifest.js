@@ -9,7 +9,12 @@ export const COMPONENT_MANIFEST = {
         'Use a Checkbox for settings that take effect immediately (e.g. "Remember me") or for ' +
         'selecting multiple items from a list. When only one option may be active at a time, use ' +
         'Radio instead. The indeterminate state communicates a "select all" parent whose children ' +
-        'are partially checked — never use it for a third logical state.',
+        'are partially checked — never use it for a third logical state. ' +
+        'Use the contained variant when you want to add visual emphasis to individual options — ' +
+        'for example, plan selection cards, feature toggles, or consent checkboxes. Contained is ' +
+        'especially useful when checkboxes are standalone or unrelated to each other, since the ' +
+        'border gives each option its own visual weight. Pair with helperText to provide additional ' +
+        'context without cluttering the label.',
     props: [
         {
             name: 'checked',
@@ -55,8 +60,21 @@ export const COMPONENT_MANIFEST = {
             type: 'enum',
             required: false,
             default: 'md',
-            description: 'Size of the checkbox box.',
-            enumValues: ['sm', 'md'],
+            description: 'Size of the checkbox box and label text.',
+            enumValues: ['sm', 'md', 'lg'],
+        },
+        {
+            name: 'contained',
+            type: 'boolean',
+            required: false,
+            default: 'false',
+            description: 'Wraps the checkbox in a bordered container. Use for standalone choices that need visual emphasis — plan cards, feature toggles, consent items. The border highlights with the accent colour when checked.',
+        },
+        {
+            name: 'helperText',
+            type: 'string',
+            required: false,
+            description: 'Secondary text below the label for additional context. The label becomes medium-weight for visual hierarchy.',
         },
     ],
     usageExamples: [
@@ -64,6 +82,8 @@ export const COMPONENT_MANIFEST = {
         { title: 'Uncontrolled', code: `<Checkbox defaultChecked label="Send me updates" />` },
         { title: 'Indeterminate', code: `<Checkbox indeterminate label="Select all" />` },
         { title: 'Disabled', code: `<Checkbox disabled label="Unavailable option" />` },
+        { title: 'Contained with helper', code: `<Checkbox contained label="Pro plan" helperText="Unlimited projects, 100 GB storage" />` },
+        { title: 'Contained standalone', code: `<Checkbox contained label="I accept the terms and conditions" />` },
     ],
     compositionGraph: [],
     accessibility: {

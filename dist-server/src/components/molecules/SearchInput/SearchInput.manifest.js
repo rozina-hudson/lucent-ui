@@ -24,6 +24,32 @@ export const COMPONENT_MANIFEST = {
             description: 'Called with the new string value whenever the input changes.',
         },
         {
+            name: 'size',
+            type: 'enum',
+            required: false,
+            default: 'md',
+            description: 'Controls height and font size. Passed to the underlying Input.',
+            enumValues: ['sm', 'md', 'lg'],
+        },
+        {
+            name: 'label',
+            type: 'string',
+            required: false,
+            description: 'Visible label above the search field. Passed to the underlying Input.',
+        },
+        {
+            name: 'helperText',
+            type: 'string',
+            required: false,
+            description: 'Hint text below the field. Passed to the underlying Input.',
+        },
+        {
+            name: 'errorText',
+            type: 'string',
+            required: false,
+            description: 'Validation error text. Triggers error styling on the underlying Input.',
+        },
+        {
             name: 'placeholder',
             type: 'string',
             required: false,

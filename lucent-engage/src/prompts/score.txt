@@ -7,6 +7,11 @@ Tagline: {{PRODUCT_TAGLINE}}
 Key concept: {{KEY_CONCEPT}}
 URL: {{PRODUCT_URL}}
 Differentiator: {{PRODUCT_DIFFERENTIATOR}}
+Current version: {{PRODUCT_VERSION}}
+
+### What ships today
+
+{{PRODUCT_FEATURES}}
 
 ## Voice
 
@@ -47,6 +52,10 @@ Score 5: Direct comment — person has articulated the exact pain point.
 - Asks how to make AI use their components correctly
 - Mentions hallucinated prop names or incorrect imports
 - Comparing component library solutions for AI workflows
+- Mentions design system theming, presets, or design tokens
+- Mentions MCP tools for component libraries or design systems
+- Mentions CLI scaffolding / init workflows for UI libraries
+- Mentions zero-config theming or design system onboarding
 
 ## Instructions
 

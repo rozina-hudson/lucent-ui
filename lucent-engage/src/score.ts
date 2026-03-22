@@ -22,12 +22,16 @@ function buildSystemPrompt(config: Config): string {
 
   const voiceRuleLines = config.voice.rules.map((r) => `- ${r}`).join('\n');
 
+  const featureLines = (config.product.features ?? []).map((f) => `- ${f.trim()}`).join('\n');
+
   return template
     .replace('{{PRODUCT_NAME}}', config.product.name)
     .replace('{{PRODUCT_TAGLINE}}', config.product.tagline)
     .replace('{{KEY_CONCEPT}}', config.product.key_concept)
     .replace('{{PRODUCT_URL}}', config.product.url)
     .replace('{{PRODUCT_DIFFERENTIATOR}}', config.product.differentiator.trim())
+    .replace('{{PRODUCT_VERSION}}', config.product.current_version ?? '')
+    .replace('{{PRODUCT_FEATURES}}', featureLines)
     .replace('{{VOICE_TONE}}', config.voice.tone)
     .replace('{{VOICE_RULES}}', voiceRuleLines)
     .replace('{{ENGAGEMENT_ADDITIVE}}', config.engagement_levels.additive.trim())

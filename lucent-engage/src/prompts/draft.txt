@@ -11,6 +11,11 @@ Product name: {{PRODUCT_NAME}}
 Key concept: {{KEY_CONCEPT}}
 URL: {{PRODUCT_URL}}
 Differentiator: {{PRODUCT_DIFFERENTIATOR}}
+Current version: {{PRODUCT_VERSION}}
+
+### What ships today
+
+{{PRODUCT_FEATURES}}
 
 ## Engagement level for this reply
 

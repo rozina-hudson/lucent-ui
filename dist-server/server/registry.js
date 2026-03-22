@@ -1,6 +1,7 @@
 // Atoms
 import { COMPONENT_MANIFEST as Avatar } from '../src/components/atoms/Avatar/Avatar.manifest.js';
 import { COMPONENT_MANIFEST as Badge } from '../src/components/atoms/Badge/Badge.manifest.js';
+import { COMPONENT_MANIFEST as Chip } from '../src/components/atoms/Chip/Chip.manifest.js';
 import { COMPONENT_MANIFEST as Button } from '../src/components/atoms/Button/Button.manifest.js';
 import { COMPONENT_MANIFEST as Checkbox } from '../src/components/atoms/Checkbox/Checkbox.manifest.js';
 import { COMPONENT_MANIFEST as Divider } from '../src/components/atoms/Divider/Divider.manifest.js';
@@ -25,6 +26,7 @@ export const ALL_MANIFESTS = [
     // Atoms
     Avatar,
     Badge,
+    Chip,
     Button,
     Checkbox,
     Divider,
