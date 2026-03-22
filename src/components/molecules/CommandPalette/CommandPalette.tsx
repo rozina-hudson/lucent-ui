@@ -2,6 +2,7 @@ import {
   useState, useEffect, useRef, useCallback,
   type CSSProperties, type ReactNode, type KeyboardEvent,
 } from 'react';
+import { Button } from '../../atoms/Button/index.js';
 import { Text } from '../../atoms/Text/index.js';
 
 // ─── Keyframes ────────────────────────────────────────────────────────────────
@@ -120,13 +121,15 @@ export function CommandPalette({
     if (e.key === 'Escape') { setOpen(false); return; }
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      setActiveIndex(i => Math.min(i + 1, enabled.length - 1));
-    }
-    if (e.key === 'ArrowUp') {
+      if (enabled.length > 0) {
+        setActiveIndex(i => (i + 1) % enabled.length);
+      }
+    } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      setActiveIndex(i => Math.max(i - 1, 0));
-    }
-    if (e.key === 'Enter') {
+      if (enabled.length > 0) {
+        setActiveIndex(i => (i - 1 + enabled.length) % enabled.length);
+      }
+    } else if (e.key === 'Enter') {
       const item = enabled[activeIndex];
       if (item) handleSelect(item);
     }
@@ -162,7 +165,9 @@ export function CommandPalette({
         alignItems: 'flex-start',
         justifyContent: 'center',
         paddingTop: '15vh',
-        background: 'var(--lucent-bg-overlay)',
+        backdropFilter: 'blur(6px)',
+        WebkitBackdropFilter: 'blur(6px)',
+        background: 'rgba(0, 0, 0, 0.15)',
         ...style,
       }}
     >
@@ -175,10 +180,12 @@ export function CommandPalette({
           width: '100%',
           maxWidth: 560,
           margin: '0 var(--lucent-space-4)',
-          background: 'var(--lucent-surface-overlay)',
+          background: 'color-mix(in srgb, var(--lucent-surface-overlay) 85%, transparent)',
+          backdropFilter: 'blur(6px)',
+          WebkitBackdropFilter: 'blur(6px)',
           borderRadius: 'var(--lucent-radius-xl)',
-          border: '1px solid var(--lucent-border-default)',
-          boxShadow: 'var(--lucent-shadow-xl)',
+          border: '1px solid color-mix(in srgb, var(--lucent-accent-default) 15%, var(--lucent-border-default))',
+          boxShadow: '0 0 24px -4px color-mix(in srgb, var(--lucent-accent-default) 12%, transparent), var(--lucent-shadow-xl)',
           overflow: 'hidden',
           animation: 'lucent-palette-in 150ms var(--lucent-easing-decelerate)',
         }}
@@ -215,17 +222,7 @@ export function CommandPalette({
               lineHeight: 'var(--lucent-line-height-base)',
             }}
           />
-          <kbd style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            padding: '2px 6px',
-            borderRadius: 'var(--lucent-radius-sm)',
-            border: '1px solid var(--lucent-border-default)',
-            background: 'var(--lucent-surface-secondary)',
-            fontFamily: 'var(--lucent-font-family-mono)',
-            fontSize: 'var(--lucent-font-size-xs)',
-            color: 'var(--lucent-text-secondary)',
-          }}>Esc</kbd>
+          <Button size="xs" variant="outline" tabIndex={-1} style={{ pointerEvents: 'none', flexShrink: 0 }}>Esc</Button>
         </div>
 
         {/* Results */}
@@ -233,7 +230,7 @@ export function CommandPalette({
           id="lucent-command-list"
           role="listbox"
           ref={listRef}
-          style={{ maxHeight: 360, overflowY: 'auto', padding: 'var(--lucent-space-1) 0' }}
+          style={{ maxHeight: 360, overflowY: 'auto', padding: 'var(--lucent-space-1) var(--lucent-space-2)' }}
         >
           {filtered.length === 0 ? (
             <div style={{ padding: 'var(--lucent-space-8)', textAlign: 'center' }}>
@@ -244,8 +241,8 @@ export function CommandPalette({
               <div key={gi}>
                 {group && (
                   <div style={{
-                    padding: 'var(--lucent-space-2) var(--lucent-space-4) var(--lucent-space-1)',
-                    ...(gi > 0 ? { borderTop: '1px solid var(--lucent-border-subtle)', marginTop: 'var(--lucent-space-1)' } : {}),
+                    padding: 'var(--lucent-space-2) var(--lucent-space-2) var(--lucent-space-1)',
+                    ...(gi > 0 ? { borderTop: '1px solid var(--lucent-border-subtle)', marginTop: 'var(--lucent-space-2)' } : {}),
                   }}>
                     <Text size="xs" color="secondary" weight="medium">{group}</Text>
                   </div>
@@ -275,9 +272,10 @@ export function CommandPalette({
                         display: 'flex',
                         alignItems: 'center',
                         gap: 'var(--lucent-space-3)',
-                        padding: 'var(--lucent-space-2) var(--lucent-space-4)',
+                        padding: 'var(--lucent-space-2) var(--lucent-space-3)',
+                        borderRadius: 'var(--lucent-radius-md)',
                         cursor: isDisabled ? 'not-allowed' : 'pointer',
-                        background: isActive ? 'var(--lucent-surface-secondary)' : 'transparent',
+                        background: isActive ? 'color-mix(in srgb, var(--lucent-accent-default) 20%, var(--lucent-surface-secondary))' : 'transparent',
                         transition: 'background var(--lucent-duration-fast) var(--lucent-easing-default)',
                         opacity: isDisabled ? 0.5 : 1,
                       }}
@@ -315,15 +313,7 @@ export function CommandPalette({
             ['Esc', 'Close'],
           ].map(([key, label]) => (
             <span key={key} style={{ display: 'flex', alignItems: 'center', gap: 'var(--lucent-space-1)' }}>
-              <kbd style={{
-                padding: '1px 5px',
-                borderRadius: 'var(--lucent-radius-sm)',
-                border: '1px solid var(--lucent-border-default)',
-                background: 'var(--lucent-surface)',
-                fontFamily: 'var(--lucent-font-family-mono)',
-                fontSize: 'var(--lucent-font-size-xs)',
-                color: 'var(--lucent-text-secondary)',
-              }}>{key}</kbd>
+              <Button size="xs" variant="outline" tabIndex={-1} style={{ pointerEvents: 'none' }}>{key}</Button>
               <Text size="xs" color="secondary">{label}</Text>
             </span>
           ))}

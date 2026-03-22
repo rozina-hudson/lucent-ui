@@ -1,7 +1,8 @@
 import {
-  useState, useRef, useEffect, useId,
+  useState, useRef, useEffect, useLayoutEffect, useId,
   type CSSProperties, type KeyboardEvent,
 } from 'react';
+import { createPortal } from 'react-dom';
 import { Text } from '../../atoms/Text/index.js';
 import { Checkbox } from '../../atoms/Checkbox/index.js';
 import { Chip } from '../../atoms/Chip/index.js';
@@ -94,13 +95,16 @@ export function MultiSelect({
 
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const triggerWrapRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
   const listId = useId();
 
   // Close on outside click
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
-      if (!containerRef.current?.contains(e.target as Node)) {
+      if (!containerRef.current?.contains(e.target as Node) && !dropdownRef.current?.contains(e.target as Node)) {
         setOpen(false);
         setQuery('');
       }
@@ -108,6 +112,13 @@ export function MultiSelect({
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [open]);
+
+  // Compute dropdown position for portal
+  useLayoutEffect(() => {
+    if (!open || !triggerWrapRef.current) return;
+    const rect = triggerWrapRef.current.getBoundingClientRect();
+    setDropdownPos({ top: rect.bottom + 4, left: rect.left, width: rect.width });
+  }, [open, selected, query]);
 
   const toggle = (val: string) => {
     const next = selected.includes(val)
@@ -182,8 +193,8 @@ export function MultiSelect({
           {label}
         </label>
       )}
-      {/* Trigger + dropdown wrapper (position anchor) */}
-      <div style={{ position: 'relative' }}>
+      {/* Trigger wrapper */}
+      <div ref={triggerWrapRef}>
       {/* Trigger / tag area */}
       <div
         onClick={() => { if (!disabled) { setOpen(true); inputRef.current?.focus(); } }}
@@ -240,22 +251,25 @@ export function MultiSelect({
         />
       </div>
 
-      {/* Dropdown */}
-      {open && !disabled && (
+      {/* Dropdown — portaled to escape overflow:hidden ancestors */}
+      {open && !disabled && createPortal(
         <div
+          ref={dropdownRef}
           id={listId}
           role="listbox"
           aria-multiselectable="true"
           style={{
-            position: 'absolute',
-            top: 'calc(100% + var(--lucent-space-1))',
-            left: 0,
-            right: 0,
+            position: 'fixed',
+            top: dropdownPos.top,
+            left: dropdownPos.left,
+            width: dropdownPos.width,
             zIndex: 1000,
-            background: 'var(--lucent-surface-overlay)',
-            border: '1px solid var(--lucent-border-default)',
+            background: 'color-mix(in srgb, var(--lucent-surface-overlay) 85%, transparent)',
+            backdropFilter: 'blur(6px)',
+            WebkitBackdropFilter: 'blur(6px)',
+            border: '1px solid color-mix(in srgb, var(--lucent-accent-default) 15%, var(--lucent-border-default))',
             borderRadius: 'var(--lucent-radius-lg)',
-            boxShadow: 'var(--lucent-shadow-md)',
+            boxShadow: '0 0 24px -4px color-mix(in srgb, var(--lucent-accent-default) 12%, transparent), var(--lucent-shadow-md)',
             maxHeight: 240,
             overflowY: 'auto',
             padding: dropdownPadding[size],
@@ -313,7 +327,7 @@ export function MultiSelect({
             </div>
           )}
         </div>
-      )}
+      , document.body)}
       </div>
 
       {hasError && (

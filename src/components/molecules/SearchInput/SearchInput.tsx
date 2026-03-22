@@ -1,4 +1,5 @@
-import { useRef, useState, type CSSProperties } from 'react';
+import { useRef, useState, useLayoutEffect, type CSSProperties } from 'react';
+import { createPortal } from 'react-dom';
 import { Input, type InputSize } from '../../atoms/Input/Input.js';
 import { Spinner } from '../../atoms/Spinner/Spinner.js';
 import { Text } from '../../atoms/Text/Text.js';
@@ -25,6 +26,8 @@ export interface SearchInputProps {
 }
 
 const iconSizes: Record<InputSize, number> = { sm: 14, md: 18, lg: 20 };
+const dropdownTextSize: Record<InputSize, 'sm' | 'md'> = { sm: 'sm', md: 'md', lg: 'md' };
+const dropdownPadding: Record<InputSize, string> = { sm: 'var(--lucent-space-1)', md: 'var(--lucent-space-2)', lg: 'var(--lucent-space-2)' };
 
 const SearchIcon = ({ size = 16 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -57,8 +60,17 @@ export function SearchInput({
   const [focused, setFocused] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
 
   const showDropdown = focused && results.length > 0;
+
+  useLayoutEffect(() => {
+    if (!showDropdown || !wrapperRef.current) return;
+    const rect = wrapperRef.current.getBoundingClientRect();
+    setDropdownPos({ top: rect.bottom + 4, left: rect.left, width: rect.width });
+  }, [showDropdown]);
 
   const handleClear = () => {
     onChange('');
@@ -104,10 +116,10 @@ export function SearchInput({
   ) : null;
 
   return (
-    <div style={{ position: 'relative', ...style }}>
+    <div ref={wrapperRef} style={{ ...style }}>
       <Input
         id={id}
-        type="search"
+        type="text"
         size={size}
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -121,20 +133,23 @@ export function SearchInput({
         {...(helperText !== undefined && { helperText })}
         {...(errorText !== undefined && { errorText })}
       />
-      {showDropdown && (
+      {showDropdown && createPortal(
         <div
+          ref={dropdownRef}
           role="listbox"
           style={{
-            position: 'absolute',
-            top: 'calc(100% + var(--lucent-space-1))',
-            left: 0,
-            right: 0,
-            zIndex: 50,
-            background: 'var(--lucent-surface-overlay)',
-            border: '1px solid var(--lucent-border-default)',
-            borderRadius: 'var(--lucent-radius-md)',
-            boxShadow: 'var(--lucent-shadow-md)',
-            overflow: 'hidden',
+            position: 'fixed',
+            top: dropdownPos.top,
+            left: dropdownPos.left,
+            width: dropdownPos.width,
+            zIndex: 1000,
+            background: 'color-mix(in srgb, var(--lucent-surface-overlay) 85%, transparent)',
+            backdropFilter: 'blur(6px)',
+            WebkitBackdropFilter: 'blur(6px)',
+            border: '1px solid color-mix(in srgb, var(--lucent-accent-default) 15%, var(--lucent-border-default))',
+            borderRadius: 'var(--lucent-radius-lg)',
+            boxShadow: '0 0 24px -4px color-mix(in srgb, var(--lucent-accent-default) 12%, transparent), var(--lucent-shadow-md)',
+            padding: dropdownPadding[size],
           }}
         >
           {results.map((result, idx) => (
@@ -146,16 +161,18 @@ export function SearchInput({
               onMouseEnter={() => setHoveredIndex(idx)}
               onMouseLeave={() => setHoveredIndex(null)}
               style={{
-                padding: 'var(--lucent-space-2) var(--lucent-space-3)',
+                padding: 'var(--lucent-space-2)',
+                borderRadius: 'var(--lucent-radius-md)',
                 cursor: 'pointer',
-                background: hoveredIndex === idx ? 'var(--lucent-surface-secondary)' : 'transparent',
+                background: hoveredIndex === idx ? 'color-mix(in srgb, var(--lucent-accent-default) 20%, var(--lucent-surface-secondary))' : 'transparent',
                 transition: `background var(--lucent-duration-fast) var(--lucent-easing-default)`,
               }}
             >
-              <Text as="span" size="md">{result.label}</Text>
+              <Text as="span" size={dropdownTextSize[size]}>{result.label}</Text>
             </div>
           ))}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

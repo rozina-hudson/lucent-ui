@@ -1,8 +1,10 @@
-import { useState, useRef, useEffect, type CSSProperties } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect, type CSSProperties } from 'react';
+import { createPortal } from 'react-dom';
 import { Text } from '../../atoms/Text/index.js';
 import {
   Calendar, NavButton as _NavButton,
   formatDate, isSameDay, isBeforeDay, isAfterDay,
+  calPadding, calMinWidth,
 } from '../DatePicker/DatePicker.js';
 
 export interface DateRange {
@@ -91,17 +93,25 @@ export function DateRangePicker({
   const [open, setOpen] = useState(false);
   const [focused, setFocused] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0 });
 
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
-      if (!containerRef.current?.contains(e.target as Node)) {
+      if (!containerRef.current?.contains(e.target as Node) && !dropdownRef.current?.contains(e.target as Node)) {
         setOpen(false);
         setSelecting(null);
       }
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  useLayoutEffect(() => {
+    if (!open || !containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    setDropdownPos({ top: rect.bottom + 4, left: rect.left });
   }, [open]);
 
   const handleSelect = (date: Date) => {
@@ -156,7 +166,7 @@ export function DateRangePicker({
     : 'none';
 
   return (
-    <div ref={containerRef} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--lucent-space-1)', position: 'relative', ...style }}>
+    <div ref={containerRef} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--lucent-space-1)', ...style }}>
       {label && (
         <label
           htmlFor={inputId}
@@ -236,26 +246,29 @@ export function DateRangePicker({
         </span>
       )}
 
-      {open && (
+      {open && createPortal(
         <div
+          ref={dropdownRef}
           role="dialog"
           aria-label="Date range picker"
           style={{
-            position: 'absolute',
-            top: 'calc(100% + var(--lucent-space-1))',
-            left: 0,
+            position: 'fixed',
+            top: dropdownPos.top,
+            left: dropdownPos.left,
             zIndex: 1000,
-            background: 'var(--lucent-surface-overlay)',
-            border: '1px solid var(--lucent-border-default)',
+            background: 'color-mix(in srgb, var(--lucent-surface-overlay) 85%, transparent)',
+            backdropFilter: 'blur(6px)',
+            WebkitBackdropFilter: 'blur(6px)',
+            border: '1px solid color-mix(in srgb, var(--lucent-accent-default) 15%, var(--lucent-border-default))',
             borderRadius: 'var(--lucent-radius-lg)',
-            boxShadow: 'var(--lucent-shadow-md)',
-            padding: 'var(--lucent-space-4)',
+            boxShadow: '0 0 24px -4px color-mix(in srgb, var(--lucent-accent-default) 12%, transparent), var(--lucent-shadow-md)',
+            padding: calPadding[size],
             display: 'flex',
             gap: 'var(--lucent-space-6)',
           }}
         >
           {/* Left calendar */}
-          <div style={{ minWidth: 220 }}>
+          <div style={{ minWidth: calMinWidth[size] }}>
             <Calendar
               year={leftYear}
               month={leftMonth}
@@ -268,6 +281,7 @@ export function DateRangePicker({
               onNextMonth={nextLeft}
               {...(highlightRange !== undefined && { highlightRange })}
               {...(selecting && { onDayHover: setHoveredDate })}
+              size={size}
             />
           </div>
 
@@ -275,7 +289,7 @@ export function DateRangePicker({
           <div style={{ width: 1, background: 'var(--lucent-border-subtle)', flexShrink: 0 }} />
 
           {/* Right calendar (next month, nav locked to left) */}
-          <div style={{ minWidth: 220 }}>
+          <div style={{ minWidth: calMinWidth[size] }}>
             <Calendar
               year={rightYear}
               month={rightMonth}
@@ -288,10 +302,11 @@ export function DateRangePicker({
               onNextMonth={nextLeft}
               {...(highlightRange !== undefined && { highlightRange })}
               {...(selecting && { onDayHover: setHoveredDate })}
+              size={size}
             />
           </div>
         </div>
-      )}
+      , document.body)}
 
       {selecting && open && (
         <div style={{ position: 'absolute', top: 'calc(100% + var(--lucent-space-1))', left: 0, zIndex: 1001, pointerEvents: 'none' }}>

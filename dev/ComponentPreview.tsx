@@ -1971,10 +1971,10 @@ function Inner({
         <Row label="⌘K to open" tokens={tokens}>
           <CommandPalette
             commands={[
-              { id: 'new', label: 'New document', description: 'Create a blank document', group: 'Create', onSelect: () => {} },
-              { id: 'open', label: 'Open file…', description: 'Browse and open a file', group: 'Create', onSelect: () => {} },
-              { id: 'settings', label: 'Settings', description: 'Open app settings', group: 'Navigate', onSelect: () => {} },
-              { id: 'logout', label: 'Log out', group: 'Account', onSelect: () => {} },
+              { id: 'new', label: 'New document', description: 'Create a blank document', group: 'Create', onSelect: () => {}, icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg> },
+              { id: 'open', label: 'Open file…', description: 'Browse and open a file', group: 'Create', onSelect: () => {}, icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5v3a1 1 0 001 1h9a1 1 0 001-1v-3M8 3v7M5 6l3-3 3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+              { id: 'settings', label: 'Settings', description: 'Open app settings', group: 'Navigate', onSelect: () => {}, icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.5"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg> },
+              { id: 'logout', label: 'Log out', group: 'Account', onSelect: () => {}, icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 2.5H3.5a1 1 0 00-1 1v9a1 1 0 001 1H6M10.5 11L13.5 8l-3-3M6 8h7.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> },
             ]}
           />
           <Text size="sm" color="secondary">Press <kbd style={{ padding: '1px 5px', borderRadius: tokens.radiusSm, border: `1px solid ${tokens.borderDefault}`, fontFamily: tokens.fontFamilyMono, fontSize: tokens.fontSizeXs }}>⌘K</kbd> to open the palette</Text>

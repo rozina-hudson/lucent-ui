@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect, type CSSProperties } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect, type CSSProperties } from 'react';
+import { createPortal } from 'react-dom';
 import { Text } from '../../atoms/Text/index.js';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -76,10 +77,23 @@ const sizeGap: Record<DatePickerSize, string> = {
   lg: 'var(--lucent-space-3)',
 };
 
+// ─── Calendar size maps ───────────────────────────────────────────────────────
+
+const calCellSize: Record<DatePickerSize, number> = { sm: 28, md: 32, lg: 38 };
+const calFontSize: Record<DatePickerSize, string> = { sm: 'var(--lucent-font-size-xs)', md: 'var(--lucent-font-size-sm)', lg: 'var(--lucent-font-size-md)' };
+const calHeaderSize: Record<DatePickerSize, 'xs' | 'sm' | 'md'> = { sm: 'xs', md: 'sm', lg: 'md' };
+const calWeekdaySize: Record<DatePickerSize, 'xs' | 'sm'> = { sm: 'xs', md: 'xs', lg: 'sm' };
+const calNavSize: Record<DatePickerSize, number> = { sm: 24, md: 28, lg: 32 };
+const calNavIcon: Record<DatePickerSize, number> = { sm: 14, md: 16, lg: 18 };
+const calPadding: Record<DatePickerSize, string> = { sm: 'var(--lucent-space-3)', md: 'var(--lucent-space-4)', lg: 'var(--lucent-space-5)' };
+const calMinWidth: Record<DatePickerSize, number> = { sm: 220, md: 260, lg: 300 };
+
 // ─── Nav button ───────────────────────────────────────────────────────────────
 
-function NavButton({ dir, onClick, disabled }: { dir: 'prev' | 'next'; onClick: () => void; disabled?: boolean }) {
+function NavButton({ dir, onClick, disabled, size = 'md' }: { dir: 'prev' | 'next'; onClick: () => void; disabled?: boolean; size?: DatePickerSize }) {
   const [hovered, setHovered] = useState(false);
+  const s = calNavSize[size];
+  const iconS = calNavIcon[size];
   return (
     <button
       type="button"
@@ -90,7 +104,7 @@ function NavButton({ dir, onClick, disabled }: { dir: 'prev' | 'next'; onClick: 
       aria-label={dir === 'prev' ? 'Previous month' : 'Next month'}
       style={{
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-        width: 28, height: 28,
+        width: s, height: s,
         border: 'none',
         borderRadius: 'var(--lucent-radius-md)',
         background: hovered && !disabled ? 'var(--lucent-surface-secondary)' : 'transparent',
@@ -99,7 +113,7 @@ function NavButton({ dir, onClick, disabled }: { dir: 'prev' | 'next'; onClick: 
         transition: 'background var(--lucent-duration-fast)',
       }}
     >
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
+      <svg width={iconS} height={iconS} viewBox="0 0 16 16" fill="none" aria-hidden>
         <path
           d={dir === 'prev' ? 'M10 12L6 8l4-4' : 'M6 4l4 4-4 4'}
           stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
@@ -115,6 +129,7 @@ function Calendar({
   year, month, selected, today, min, max,
   onSelect, onPrevMonth, onNextMonth,
   highlightRange, onDayHover,
+  size = 'md',
 }: {
   year: number; month: number;
   selected?: Date; today: Date;
@@ -123,6 +138,7 @@ function Calendar({
   onPrevMonth: () => void; onNextMonth: () => void;
   highlightRange?: { start?: Date; end?: Date };
   onDayHover?: (date: Date | null) => void;
+  size?: DatePickerSize;
 }) {
   const totalDays = daysInMonth(year, month);
   const startDay = startDayOfMonth(year, month);
@@ -139,16 +155,16 @@ function Calendar({
     <div>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--lucent-space-3)' }}>
-        <NavButton dir="prev" onClick={onPrevMonth} />
-        <Text weight="medium" size="sm">{MONTHS[month]} {year}</Text>
-        <NavButton dir="next" onClick={onNextMonth} />
+        <NavButton dir="prev" onClick={onPrevMonth} size={size} />
+        <Text weight="medium" size={calHeaderSize[size]}>{MONTHS[month]} {year}</Text>
+        <NavButton dir="next" onClick={onNextMonth} size={size} />
       </div>
 
       {/* Weekday labels */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 2, marginBottom: 'var(--lucent-space-1)' }}>
         {WEEKDAYS.map(d => (
           <div key={d} style={{ textAlign: 'center' }}>
-            <Text size="xs" color="secondary">{d}</Text>
+            <Text size={calWeekdaySize[size]} color="secondary">{d}</Text>
           </div>
         ))}
       </div>
@@ -182,7 +198,7 @@ function Calendar({
               aria-pressed={isSelected}
               style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                height: 32, width: '100%',
+                height: calCellSize[size], width: '100%',
                 border: isToday && !isSelected ? `1px solid var(--lucent-border-strong)` : '1px solid transparent',
                 borderRadius: 'var(--lucent-radius-md)',
                 background: isSelected
@@ -190,14 +206,14 @@ function Calendar({
                   : inRange
                   ? 'var(--lucent-accent-subtle)'
                   : hoveredDay === day && !isDisabled
-                  ? 'var(--lucent-surface-secondary)'
+                  ? 'color-mix(in srgb, var(--lucent-accent-default) 20%, var(--lucent-surface-secondary))'
                   : 'transparent',
                 color: isSelected
                   ? 'var(--lucent-text-on-accent)'
                   : isDisabled
                   ? 'var(--lucent-text-disabled)'
                   : 'var(--lucent-text-primary)',
-                fontSize: 'var(--lucent-font-size-sm)',
+                fontSize: calFontSize[size],
                 fontFamily: 'var(--lucent-font-family-base)',
                 fontWeight: isToday ? 'var(--lucent-font-weight-medium)' : 'var(--lucent-font-weight-regular)',
                 cursor: isDisabled ? 'not-allowed' : 'pointer',
@@ -243,14 +259,22 @@ export function DatePicker({
   const [open, setOpen] = useState(false);
   const [focused, setFocused] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0 });
 
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
-      if (!containerRef.current?.contains(e.target as Node)) setOpen(false);
+      if (!containerRef.current?.contains(e.target as Node) && !dropdownRef.current?.contains(e.target as Node)) setOpen(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  useLayoutEffect(() => {
+    if (!open || !containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    setDropdownPos({ top: rect.bottom + 4, left: rect.left });
   }, [open]);
 
   const handleSelect = (date: Date) => {
@@ -281,7 +305,7 @@ export function DatePicker({
     : 'none';
 
   return (
-    <div ref={containerRef} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--lucent-space-1)', position: 'relative', ...style }}>
+    <div ref={containerRef} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--lucent-space-1)', ...style }}>
       {label && (
         <label
           htmlFor={inputId}
@@ -361,21 +385,24 @@ export function DatePicker({
         </span>
       )}
 
-      {open && (
+      {open && createPortal(
         <div
+          ref={dropdownRef}
           role="dialog"
           aria-label="Date picker"
           style={{
-            position: 'absolute',
-            top: 'calc(100% + var(--lucent-space-1))',
-            left: 0,
+            position: 'fixed',
+            top: dropdownPos.top,
+            left: dropdownPos.left,
             zIndex: 1000,
-            background: 'var(--lucent-surface-overlay)',
-            border: '1px solid var(--lucent-border-default)',
+            background: 'color-mix(in srgb, var(--lucent-surface-overlay) 85%, transparent)',
+            backdropFilter: 'blur(6px)',
+            WebkitBackdropFilter: 'blur(6px)',
+            border: '1px solid color-mix(in srgb, var(--lucent-accent-default) 15%, var(--lucent-border-default))',
             borderRadius: 'var(--lucent-radius-lg)',
-            boxShadow: 'var(--lucent-shadow-md)',
-            padding: 'var(--lucent-space-4)',
-            minWidth: 260,
+            boxShadow: '0 0 24px -4px color-mix(in srgb, var(--lucent-accent-default) 12%, transparent), var(--lucent-shadow-md)',
+            padding: calPadding[size],
+            minWidth: calMinWidth[size],
           }}
         >
           <Calendar
@@ -388,12 +415,13 @@ export function DatePicker({
             onSelect={handleSelect}
             onPrevMonth={prevMonth}
             onNextMonth={nextMonth}
+            size={size}
           />
         </div>
-      )}
+      , document.body)}
     </div>
   );
 }
 
 // Export Calendar for reuse in DateRangePicker
-export { Calendar, NavButton, formatDate, isSameDay, isBeforeDay, isAfterDay, daysInMonth, startDayOfMonth, MONTHS, WEEKDAYS };
+export { Calendar, NavButton, formatDate, isSameDay, isBeforeDay, isAfterDay, daysInMonth, startDayOfMonth, MONTHS, WEEKDAYS, calPadding, calMinWidth };
