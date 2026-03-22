@@ -1,5 +1,17 @@
 # lucent-ui
 
+## 0.21.0
+
+### New Atom: Progress Bar
+
+- **Progress** — horizontal bar for completion, usage, or health metrics. Props: `value`, `max` (default 100), `variant` (accent/success/warning/danger), `size` (sm/md/lg), `label` (true for percentage, or custom ReactNode).
+- **Threshold auto-variant** — `warnAt` and `dangerAt` props auto-switch color based on the current value. Ascending thresholds (`warnAt < dangerAt`) suit "high is bad" metrics (CPU, disk); descending (`warnAt > dangerAt`) suit "low is bad" metrics (battery, health).
+- Accessible `role="progressbar"` with `aria-valuenow`, `aria-valuemin`, `aria-valuemax`.
+- Smooth CSS transitions on value and variant changes.
+- Full manifest with `designIntent` and usage examples.
+- **Playground** — Progress and Slider added to the component playground for side-by-side comparison with prop knobs.
+- **Density preview** — widened compact/comfortable multipliers (65%/140%) so density changes are actually visible.
+
 ## 0.20.0
 
 ### New Atoms: Stack & Row Layout Primitives
