@@ -12,7 +12,8 @@ export const ButtonManifest: ComponentManifest = {
     'Buttons communicate available actions. Variant conveys hierarchy: use "primary" for the ' +
     'single most important action in a view, "secondary" for supporting actions, "ghost" for ' +
     'low-emphasis actions in dense UIs, "outline" for bordered buttons with no fill, and "danger" exclusively for destructive or irreversible ' +
-    'operations. Size should match surrounding content density — prefer "md" as the default, ' +
+    'operations. Use "danger-ghost" for low-emphasis destructive actions (red text, no fill) and ' +
+    '"danger-outline" for bordered destructive buttons. Size should match surrounding content density — prefer "md" as the default, ' +
     '"sm" for toolbars or tables, "xs" for compact UIs like customizer panels, and "2xs" for ' +
     'ultra-dense inline controls (~22px height) such as table-inline actions or toolbar icon triggers.',
   props: [
@@ -22,7 +23,7 @@ export const ButtonManifest: ComponentManifest = {
       required: false,
       default: 'primary',
       description: 'Visual style conveying action hierarchy.',
-      enumValues: ['primary', 'secondary', 'outline', 'ghost', 'danger'],
+      enumValues: ['primary', 'secondary', 'outline', 'ghost', 'danger', 'danger-outline', 'danger-ghost'],
     },
     {
       name: 'size',
@@ -139,6 +140,10 @@ export const ButtonManifest: ComponentManifest = {
     {
       title: 'Dropdown trigger',
       code: `<Button variant="outline" chevron>Options</Button>`,
+    },
+    {
+      title: 'Low-emphasis destructive action',
+      code: `<Button variant="danger-ghost" onClick={handleRemove}>Remove</Button>`,
     },
     {
       title: 'Dense inline action',

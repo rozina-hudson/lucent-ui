@@ -1,6 +1,6 @@
 import { forwardRef, type ButtonHTMLAttributes, type CSSProperties, type ReactNode } from 'react';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
+export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'danger-outline' | 'danger-ghost';
 export type ButtonSize = '2xs' | 'xs' | 'sm' | 'md' | 'lg';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -45,6 +45,16 @@ const variantStyles: Record<ButtonVariant, CSSProperties> = {
     background: 'var(--lucent-danger-default)',
     color: '#ffffff',
     border: '1px solid var(--lucent-danger-default)',
+  },
+  'danger-outline': {
+    background: 'var(--lucent-surface)',
+    color: 'var(--lucent-danger-text)',
+    border: '1px solid var(--lucent-danger-default)',
+  },
+  'danger-ghost': {
+    background: 'transparent',
+    color: 'var(--lucent-danger-text)',
+    border: '1px solid transparent',
   },
 };
 
@@ -103,7 +113,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         }}
         onMouseDown={(e) => {
           if (!isDisabled) {
-            const ring = variant === 'danger' ? 'var(--lucent-danger-default)' : 'var(--lucent-accent-default)';
+            const isDanger = variant === 'danger' || variant === 'danger-outline' || variant === 'danger-ghost';
+            const ring = isDanger ? 'var(--lucent-danger-default)' : 'var(--lucent-accent-default)';
             e.currentTarget.style.transform = 'translateY(1px)';
             e.currentTarget.style.boxShadow = `0 0 0 2px var(--lucent-surface), 0 0 0 4px ${ring}`;
             e.currentTarget.dataset.pressed = '1';
@@ -140,11 +151,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = 'Button';
 
 const hoverShadow: Record<ButtonVariant, string> = {
-  primary:   '0 4px 14px -2px var(--lucent-accent-subtle)',
-  secondary: '0 4px 14px -2px var(--lucent-accent-subtle)',
-  outline:   '0 4px 14px -2px var(--lucent-accent-subtle)',
-  ghost:     '0 4px 14px -2px var(--lucent-accent-subtle)',
-  danger:    '0 4px 14px -2px var(--lucent-danger-subtle)',
+  primary:          '0 4px 14px -2px var(--lucent-accent-subtle)',
+  secondary:        '0 4px 14px -2px var(--lucent-accent-subtle)',
+  outline:          '0 4px 14px -2px var(--lucent-accent-subtle)',
+  ghost:            '0 4px 14px -2px var(--lucent-accent-subtle)',
+  danger:           '0 4px 14px -2px var(--lucent-danger-subtle)',
+  'danger-outline': '0 4px 14px -2px var(--lucent-danger-subtle)',
+  'danger-ghost':   '0 4px 14px -2px var(--lucent-danger-subtle)',
 };
 
 function applyHover(el: HTMLButtonElement, variant: ButtonVariant, bordered?: boolean) {
@@ -162,6 +175,11 @@ function applyHover(el: HTMLButtonElement, variant: ButtonVariant, bordered?: bo
   } else if (variant === 'danger') {
     el.style.background = 'var(--lucent-danger-hover)';
     if (bordered !== false) el.style.borderColor = 'var(--lucent-danger-hover)';
+  } else if (variant === 'danger-outline') {
+    el.style.background = 'color-mix(in srgb, var(--lucent-danger-default) 10%, var(--lucent-surface))';
+    if (bordered !== false) el.style.borderColor = 'var(--lucent-danger-hover)';
+  } else if (variant === 'danger-ghost') {
+    el.style.background = 'color-mix(in srgb, var(--lucent-danger-default) 8%, var(--lucent-surface))';
   }
 }
 
@@ -180,6 +198,11 @@ function removeHover(el: HTMLButtonElement, variant: ButtonVariant, bordered?: b
   } else if (variant === 'danger') {
     el.style.background = 'var(--lucent-danger-default)';
     if (bordered !== false) el.style.borderColor = 'var(--lucent-danger-default)';
+  } else if (variant === 'danger-outline') {
+    el.style.background = 'var(--lucent-surface)';
+    if (bordered !== false) el.style.borderColor = 'var(--lucent-danger-default)';
+  } else if (variant === 'danger-ghost') {
+    el.style.background = 'transparent';
   }
 }
 

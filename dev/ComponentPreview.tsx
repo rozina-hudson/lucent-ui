@@ -1565,7 +1565,8 @@ function Inner({
           <Button variant="outline">Outline</Button>
           <Button variant="ghost">Ghost</Button>
           <Button variant="danger">Danger</Button>
-
+          <Button variant="danger-outline">Danger outline</Button>
+          <Button variant="danger-ghost">Danger ghost</Button>
         </Row>
         <Row label="Pressed" tokens={tokens}>
           {(['primary', 'secondary', 'outline', 'ghost', 'danger'] as const).map((v) => (
@@ -1592,6 +1593,8 @@ function Inner({
           <Button size="2xs" variant="outline" leftIcon={<SmallIcon d="M18 6L6 18M6 6l12 12" />} aria-label="Close" />
           <Button size="2xs" variant="secondary" leftIcon={<SmallIcon d="M12 20h9M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z" />} aria-label="Edit" />
           <Button size="2xs" variant="danger" leftIcon={<SmallIcon d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />} aria-label="Delete" />
+          <Button size="2xs" variant="danger-outline" leftIcon={<SmallIcon d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4M12 17h.01" />} aria-label="Warn" />
+          <Button size="2xs" variant="danger-ghost" leftIcon={<SmallIcon d="M18 6L6 18M6 6l12 12" />} aria-label="Remove" />
         </Row>
         <Row label="Icons" tokens={tokens}>
           <Button leftIcon={<StarIcon />}>With prefix</Button>
