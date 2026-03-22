@@ -1,5 +1,11 @@
 # lucent-ui
 
+## 0.17.0
+
+### Minor Changes
+
+- 22c64a1: Button: add `size="2xs"` for ultra-dense inline controls (~22px height) and `variant="danger-outline"` / `variant="danger-ghost"` for low-emphasis destructive actions
+
 ## 0.16.0
 
 ### PageLayout Chrome Theming
