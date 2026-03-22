@@ -15,6 +15,8 @@ import { DatePicker } from '../src/components/molecules/DatePicker/index.js';
 import { DateRangePicker } from '../src/components/molecules/DateRangePicker/index.js';
 import { Text } from '../src/components/atoms/Text/index.js';
 import { SegmentedControl } from '../src/components/atoms/SegmentedControl/index.js';
+import { Progress } from '../src/components/atoms/Progress/index.js';
+import { Slider } from '../src/components/atoms/Slider/index.js';
 import { Menu, MenuItem, MenuSeparator } from '../src/components/molecules/Menu/index.js';
 
 /* ------------------------------------------------------------------ */
@@ -336,6 +338,47 @@ const registry: Record<string, {
           { value: 'beta', label: 'Beta' },
           { value: 'gamma', label: 'Gamma' },
         ]}
+      />
+    ),
+  },
+
+  Slider: {
+    props: {
+      size:      { type: 'select', options: ['sm', 'md', 'lg'], default: 'md' },
+      label:     { type: 'text', default: 'Volume' },
+      showValue: { type: 'boolean', default: true },
+      disabled:  { type: 'boolean', default: false },
+    },
+    render: (v) => (
+      <Slider
+        size={v.size as 'sm' | 'md' | 'lg'}
+        {...(v.label ? { label: v.label as string } : {})}
+        showValue={v.showValue as boolean}
+        disabled={v.disabled as boolean}
+        defaultValue={40}
+      />
+    ),
+  },
+
+  Progress: {
+    props: {
+      size:     { type: 'select', options: ['sm', 'md', 'lg'], default: 'md' },
+      variant:  { type: 'select', options: ['accent', 'success', 'warning', 'danger'], default: 'accent' },
+      value:    { type: 'text', default: '65' },
+      max:      { type: 'text', default: '100' },
+      warnAt:   { type: 'text', default: '' },
+      dangerAt: { type: 'text', default: '' },
+      label:    { type: 'boolean', default: true },
+    },
+    render: (v) => (
+      <Progress
+        size={v.size as 'sm' | 'md' | 'lg'}
+        variant={v.variant as 'accent' | 'success' | 'warning' | 'danger'}
+        value={Number(v.value) || 0}
+        max={Number(v.max) || 100}
+        {...(v.warnAt && String(v.warnAt).trim() ? { warnAt: Number(v.warnAt) } : {})}
+        {...(v.dangerAt && String(v.dangerAt).trim() ? { dangerAt: Number(v.dangerAt) } : {})}
+        label={v.label as boolean}
       />
     ),
   },
