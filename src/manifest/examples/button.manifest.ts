@@ -13,7 +13,8 @@ export const ButtonManifest: ComponentManifest = {
     'single most important action in a view, "secondary" for supporting actions, "ghost" for ' +
     'low-emphasis actions in dense UIs, "outline" for bordered buttons with no fill, and "danger" exclusively for destructive or irreversible ' +
     'operations. Size should match surrounding content density — prefer "md" as the default, ' +
-    '"sm" for toolbars or tables, and "xs" for compact UIs like customizer panels.',
+    '"sm" for toolbars or tables, "xs" for compact UIs like customizer panels, and "2xs" for ' +
+    'ultra-dense inline controls (~22px height) such as table-inline actions or toolbar icon triggers.',
   props: [
     {
       name: 'variant',
@@ -29,7 +30,7 @@ export const ButtonManifest: ComponentManifest = {
       required: false,
       default: 'md',
       description: 'Controls height and padding.',
-      enumValues: ['xs', 'sm', 'md', 'lg'],
+      enumValues: ['2xs', 'xs', 'sm', 'md', 'lg'],
     },
     {
       name: 'children',
@@ -138,6 +139,10 @@ export const ButtonManifest: ComponentManifest = {
     {
       title: 'Dropdown trigger',
       code: `<Button variant="outline" chevron>Options</Button>`,
+    },
+    {
+      title: 'Dense inline action',
+      code: `<Button variant="ghost" size="2xs" leftIcon={<RefreshIcon />}>Retry</Button>`,
     },
   ],
   compositionGraph: [],

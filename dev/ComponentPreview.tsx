@@ -86,6 +86,14 @@ function NavIcon() {
   );
 }
 
+function SmallIcon({ d }: { d: string }) {
+  return (
+    <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d={d} />
+    </svg>
+  );
+}
+
 function StarIcon() {
   return (
     <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -1570,10 +1578,20 @@ function Inner({
           ))}
         </Row>
         <Row label="Sizes" tokens={tokens}>
+          <Button size="2xs">Tiny</Button>
           <Button size="xs">Extra small</Button>
           <Button size="sm">Small</Button>
           <Button size="md">Medium</Button>
           <Button size="lg">Large</Button>
+        </Row>
+        <Row label="2xs icon-only" tokens={tokens}>
+          <Button size="2xs" variant="ghost" leftIcon={<SmallIcon d="M6 9l6 6 6-6" />} aria-label="Expand" />
+          <Button size="2xs" variant="ghost" leftIcon={<SmallIcon d="M4 12h16M12 4v16" />} aria-label="Add" />
+          <Button size="2xs" variant="ghost" leftIcon={<SmallIcon d="M23 4l-6.5 17L13 12 2 8.5z" />} aria-label="Send" />
+          <Button size="2xs" variant="outline" leftIcon={<SmallIcon d="M1 4v6h6M23 20v-6h-6" />} aria-label="Refresh" />
+          <Button size="2xs" variant="outline" leftIcon={<SmallIcon d="M18 6L6 18M6 6l12 12" />} aria-label="Close" />
+          <Button size="2xs" variant="secondary" leftIcon={<SmallIcon d="M12 20h9M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z" />} aria-label="Edit" />
+          <Button size="2xs" variant="danger" leftIcon={<SmallIcon d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />} aria-label="Delete" />
         </Row>
         <Row label="Icons" tokens={tokens}>
           <Button leftIcon={<StarIcon />}>With prefix</Button>
