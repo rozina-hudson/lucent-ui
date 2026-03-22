@@ -1,5 +1,16 @@
 # lucent-ui
 
+## 0.20.0
+
+### New Atoms: Stack & Row Layout Primitives
+
+- **Stack** — vertical flex container. Props: `gap` (spacing token `"0"`–`"24"`), `align`, `justify`, `as` (polymorphic: `div | section | nav | form | fieldset | ul | ol`), `wrap`. Default: `gap="4"`, `align="stretch"`.
+- **Row** — horizontal flex container with the same API. Default: `gap="3"`, `align="center"` (tuned for horizontal layouts like label/action pairs and button groups).
+- Gap values reference `var(--lucent-space-{n})` tokens, so density presets (compact/default/spacious) scale layout automatically.
+- Full manifests with `designIntent` and usage examples for AI composition.
+- Dev preview sections added for both components.
+- Internal `Section` and `Row` dev helpers refactored to use the new primitives.
+
 ## 0.19.1
 
 ### Overlay Polish
