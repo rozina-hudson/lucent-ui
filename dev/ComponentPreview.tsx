@@ -48,6 +48,7 @@ import { DatePicker } from '../src/components/molecules/DatePicker/index.js';
 import { DateRangePicker } from '../src/components/molecules/DateRangePicker/index.js';
 import { FileUpload } from '../src/components/molecules/FileUpload/index.js';
 import { Timeline } from '../src/components/molecules/Timeline/index.js';
+import { Menu, MenuItem, MenuSeparator, MenuGroup } from '../src/components/molecules/Menu/index.js';
 import { ColorPicker, type ColorPresetGroup } from '../src/components/atoms/ColorPicker/index.js';
 import { ColorSwatch } from '../src/components/atoms/ColorSwatch/index.js';
 import { SegmentedControl } from '../src/components/atoms/SegmentedControl/index.js';
@@ -353,7 +354,7 @@ function Inner({
     'Table', 'ColorSwatch', 'ColorPicker', 'SegmentedControl', 'Select', 'Chip',
     'Tooltip', 'Icon', 'Button', 'Avatar', 'Spinner', 'Divider',
     'Breadcrumb', 'Tabs', 'Collapsible', 'NavLink', 'PageLayout', 'DataTable',
-    'CommandPalette', 'MultiSelect', 'DatePicker', 'DateRangePicker', 'FileUpload', 'Timeline',
+    'CommandPalette', 'MultiSelect', 'DatePicker', 'DateRangePicker', 'FileUpload', 'Timeline', 'Menu',
   ];
 
   const filterLower = componentFilter.toLowerCase();
@@ -370,6 +371,7 @@ function Inner({
   const [tags, setTags] = useState(['React', 'TypeScript', 'Design Systems']);
   const [searchQuery, setSearchQuery] = useState('');
   const [alertDismissed, setAlertDismissed] = useState(false);
+  const [menuSort, setMenuSort] = useState('name');
 
   // Scale preset state
   const [density, setDensity] = useState<DensityPreset>('default');
@@ -2045,6 +2047,83 @@ function Inner({
               ]}
             />
           </div>
+        </Row>
+      </Section>
+
+      {/* Menu */}
+      <Section title="Menu" tokens={tokens} hidden={!showSection('Menu')}>
+        <Row label="Sizes" tokens={tokens}>
+          <Menu size="sm" trigger={<Button size="sm" chevron>Small</Button>}>
+            <MenuItem onSelect={() => {}}>Edit</MenuItem>
+            <MenuItem onSelect={() => {}}>Duplicate</MenuItem>
+            <MenuSeparator />
+            <MenuItem onSelect={() => {}} danger>Delete</MenuItem>
+          </Menu>
+          <Menu size="md" trigger={<Button size="md" chevron>Medium</Button>}>
+            <MenuItem onSelect={() => {}}>Edit</MenuItem>
+            <MenuItem onSelect={() => {}}>Duplicate</MenuItem>
+            <MenuSeparator />
+            <MenuItem onSelect={() => {}} danger>Delete</MenuItem>
+          </Menu>
+          <Menu size="lg" trigger={<Button size="lg" chevron>Large</Button>}>
+            <MenuItem onSelect={() => {}}>Edit</MenuItem>
+            <MenuItem onSelect={() => {}}>Duplicate</MenuItem>
+            <MenuSeparator />
+            <MenuItem onSelect={() => {}} danger>Delete</MenuItem>
+          </Menu>
+        </Row>
+        <Row label="Basic" tokens={tokens}>
+          <Menu trigger={<Button chevron>Actions</Button>}>
+            <MenuItem onSelect={() => console.log('edit')}>Edit</MenuItem>
+            <MenuItem onSelect={() => console.log('duplicate')}>Duplicate</MenuItem>
+            <MenuSeparator />
+            <MenuItem onSelect={() => console.log('delete')} danger>Delete</MenuItem>
+          </Menu>
+        </Row>
+        <Row label="With icons" tokens={tokens}>
+          <Menu trigger={<Button variant="outline" chevron>Options</Button>}>
+            <MenuItem icon={<svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>} shortcut="⌘E" onSelect={() => console.log('edit')}>Edit</MenuItem>
+            <MenuItem icon={<svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>} shortcut="⌘D" onSelect={() => console.log('duplicate')}>Duplicate</MenuItem>
+            <MenuSeparator />
+            <MenuItem icon={<svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>} onSelect={() => console.log('delete')} danger>Delete</MenuItem>
+          </Menu>
+        </Row>
+        <Row label="With groups" tokens={tokens}>
+          <Menu trigger={<Button variant="ghost" chevron>File</Button>} placement="bottom-start">
+            <MenuGroup label="Document">
+              <MenuItem onSelect={() => console.log('new')}>New</MenuItem>
+              <MenuItem onSelect={() => console.log('open')}>Open</MenuItem>
+              <MenuItem onSelect={() => console.log('save')}>Save</MenuItem>
+            </MenuGroup>
+            <MenuSeparator />
+            <MenuGroup label="Export">
+              <MenuItem onSelect={() => console.log('pdf')}>PDF</MenuItem>
+              <MenuItem onSelect={() => console.log('csv')}>CSV</MenuItem>
+              <MenuItem onSelect={() => console.log('json')} disabled>JSON (coming soon)</MenuItem>
+            </MenuGroup>
+          </Menu>
+        </Row>
+        <Row label="Selected" tokens={tokens}>
+          <Menu trigger={<Button variant="outline" chevron>Sort by</Button>}>
+            <MenuItem selected={menuSort === 'name'} onSelect={() => setMenuSort('name')}>Name</MenuItem>
+            <MenuItem selected={menuSort === 'date'} onSelect={() => setMenuSort('date')}>Date modified</MenuItem>
+            <MenuItem selected={menuSort === 'size'} onSelect={() => setMenuSort('size')}>Size</MenuItem>
+            <MenuItem selected={menuSort === 'type'} onSelect={() => setMenuSort('type')}>Type</MenuItem>
+          </Menu>
+        </Row>
+        <Row label="Placements" tokens={tokens}>
+          <Menu trigger={<Button variant="secondary" size="sm">Bottom ↓</Button>} placement="bottom">
+            <MenuItem onSelect={() => {}}>Option A</MenuItem>
+            <MenuItem onSelect={() => {}}>Option B</MenuItem>
+          </Menu>
+          <Menu trigger={<Button variant="secondary" size="sm">Top ↑</Button>} placement="top">
+            <MenuItem onSelect={() => {}}>Option A</MenuItem>
+            <MenuItem onSelect={() => {}}>Option B</MenuItem>
+          </Menu>
+          <Menu trigger={<Button variant="secondary" size="sm">Right →</Button>} placement="right">
+            <MenuItem onSelect={() => {}}>Option A</MenuItem>
+            <MenuItem onSelect={() => {}}>Option B</MenuItem>
+          </Menu>
         </Row>
       </Section>
       </div>

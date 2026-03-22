@@ -41,7 +41,7 @@ const sizeHeights: Record<MultiSelectSize, string> = {
 const sizeFontSizes: Record<MultiSelectSize, string> = {
   sm: 'var(--lucent-font-size-sm)',
   md: 'var(--lucent-font-size-md)',
-  lg: 'var(--lucent-font-size-md)',
+  lg: 'var(--lucent-font-size-lg)',
 };
 const sizePaddings: Record<MultiSelectSize, string> = {
   sm: 'var(--lucent-space-1) var(--lucent-space-2)',
@@ -60,6 +60,9 @@ const sizeLabelFont: Record<MultiSelectSize, string> = {
   md: 'var(--lucent-font-size-sm)',
   lg: 'var(--lucent-font-size-md)',
 };
+
+// Dropdown item text size — matches Button font at each tier
+const dropdownTextSize: Record<MultiSelectSize, 'sm' | 'md' | 'lg'> = { sm: 'sm', md: 'md', lg: 'lg' };
 
 // Map MultiSelect size → Chip size that fits inside the trigger
 const chipSizeMap: Record<MultiSelectSize, 'sm' | 'md' | 'lg'> = { sm: 'sm', md: 'md', lg: 'lg' };
@@ -260,7 +263,7 @@ export function MultiSelect({
         >
           {filtered.length === 0 ? (
             <div style={{ padding: 'var(--lucent-space-2)' }}>
-              <Text color="secondary" size="sm">No options</Text>
+              <Text color="secondary" size={dropdownTextSize[size]}>No options</Text>
             </div>
           ) : (
             filtered.map((opt, i) => {
@@ -295,7 +298,7 @@ export function MultiSelect({
                     aria-hidden
                     readOnly
                   />
-                  <Text size="sm">{opt.label}</Text>
+                  <Text size={dropdownTextSize[size]}>{opt.label}</Text>
                 </div>
               );
             })
@@ -306,7 +309,7 @@ export function MultiSelect({
               padding: 'var(--lucent-space-2)',
               borderTop: '1px solid var(--lucent-border-subtle)',
             }}>
-              <Text size="xs" color="secondary">Max {max} selected</Text>
+              <Text size={size === 'lg' ? 'sm' : 'xs'} color="secondary">Max {max} selected</Text>
             </div>
           )}
         </div>

@@ -15,6 +15,7 @@ import { DatePicker } from '../src/components/molecules/DatePicker/index.js';
 import { DateRangePicker } from '../src/components/molecules/DateRangePicker/index.js';
 import { Text } from '../src/components/atoms/Text/index.js';
 import { SegmentedControl } from '../src/components/atoms/SegmentedControl/index.js';
+import { Menu, MenuItem, MenuSeparator } from '../src/components/molecules/Menu/index.js';
 
 /* ------------------------------------------------------------------ */
 /*  Prop control definitions                                          */
@@ -337,6 +338,45 @@ const registry: Record<string, {
         ]}
       />
     ),
+  },
+
+  Menu: {
+    props: {
+      size:          { type: 'select', options: ['sm', 'md', 'lg'], default: 'md' },
+      placement:    { type: 'select', options: ['bottom-start', 'bottom', 'bottom-end', 'top-start', 'top', 'top-end', 'left', 'right'], default: 'bottom-start' },
+      buttonVariant: { type: 'select', options: ['primary', 'secondary', 'outline', 'ghost'], default: 'outline' },
+      showIcons:    { type: 'boolean', default: false },
+      showSelected: { type: 'boolean', default: false },
+      hasDanger:    { type: 'boolean', default: true },
+      disabled:     { type: 'boolean', default: false },
+    },
+    render: (v) => {
+      const editIcon = v.showIcons ? <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> : undefined;
+      const copyIcon = v.showIcons ? <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> : undefined;
+      const trashIcon = v.showIcons ? <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> : undefined;
+      return (
+        <Menu
+          size={v.size as 'sm' | 'md' | 'lg'}
+          placement={v.placement as 'bottom-start'}
+          trigger={
+            <Button
+              size={v.size as 'sm' | 'md' | 'lg'}
+              variant={v.buttonVariant as 'outline'}
+              chevron
+              disabled={v.disabled as boolean}
+            >
+              Actions
+            </Button>
+          }
+        >
+          <MenuItem icon={editIcon} selected={v.showSelected as boolean} onSelect={() => {}}>Edit</MenuItem>
+          <MenuItem icon={copyIcon} onSelect={() => {}}>Duplicate</MenuItem>
+          <MenuItem onSelect={() => {}} disabled={v.disabled as boolean}>Archive</MenuItem>
+          {v.hasDanger && <MenuSeparator />}
+          {v.hasDanger && <MenuItem icon={trashIcon} danger onSelect={() => {}}>Delete</MenuItem>}
+        </Menu>
+      );
+    },
   },
 };
 
