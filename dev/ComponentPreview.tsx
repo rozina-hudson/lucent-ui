@@ -49,6 +49,7 @@ import { DateRangePicker } from '../src/components/molecules/DateRangePicker/ind
 import { FileUpload } from '../src/components/molecules/FileUpload/index.js';
 import { Timeline } from '../src/components/molecules/Timeline/index.js';
 import { Menu, MenuItem, MenuSeparator, MenuGroup } from '../src/components/molecules/Menu/index.js';
+import { ToastProvider, useToast, type ToastPosition } from '../src/components/molecules/Toast/index.js';
 import { ColorPicker, type ColorPresetGroup } from '../src/components/atoms/ColorPicker/index.js';
 import { ColorSwatch } from '../src/components/atoms/ColorSwatch/index.js';
 import { SegmentedControl } from '../src/components/atoms/SegmentedControl/index.js';
@@ -75,6 +76,42 @@ function ColorPickerDemo({ presetGroups }: { presetGroups?: ColorPresetGroup[] }
       <span style={{ fontSize: 'var(--lucent-font-size-sm)', fontFamily: 'var(--lucent-font-family-mono)', color: 'var(--lucent-text-secondary)' }}>
         {color}
       </span>
+    </div>
+  );
+}
+
+const TOAST_POSITIONS: ToastPosition[] = ['top-left', 'top-center', 'top-right', 'bottom-left', 'bottom-center', 'bottom-right'];
+
+function ToastButtons({ position, onChangePosition }: { position: ToastPosition; onChangePosition: (p: ToastPosition) => void }) {
+  const { toast } = useToast();
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--lucent-space-4)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--lucent-space-3)' }}>
+        <Text as="span" size="sm" color="secondary">Position:</Text>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, auto)', gap: 'var(--lucent-space-1)' }}>
+          {TOAST_POSITIONS.map((p) => (
+            <Button
+              key={p}
+              size="sm"
+              variant={p === position ? 'primary' : 'ghost'}
+              onClick={() => onChangePosition(p)}
+              style={{ fontSize: 'var(--lucent-font-size-xs)', padding: '2px 8px', minWidth: 0, height: 26 }}
+            >
+              {p}
+            </Button>
+          ))}
+        </div>
+      </div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--lucent-space-2)' }}>
+        <Button size="sm" variant="outline" onClick={() => toast({ title: 'Changes saved' })}>Default</Button>
+        <Button size="sm" variant="outline" onClick={() => toast({ title: 'Profile updated', description: 'Your changes have been saved successfully.', variant: 'success' })}>Success</Button>
+        <Button size="sm" variant="outline" onClick={() => toast({ title: 'Approaching limit', description: 'You have used 80% of your monthly quota.\nConsider upgrading your plan.', variant: 'warning' })}>Warning (multi-line)</Button>
+        <Button size="sm" variant="outline" onClick={() => toast({ title: 'Payment failed', description: 'Check your card details and try again.', variant: 'danger' })}>Danger</Button>
+        <Button size="sm" variant="outline" onClick={() => toast({ title: 'New version available', description: 'v2.1.0 includes performance improvements and bug fixes.', variant: 'info' })}>Info</Button>
+        <Button size="sm" variant="outline" onClick={() => toast({ title: 'Message deleted', variant: 'danger', action: { label: 'Undo', onClick: () => toast({ title: 'Message restored', variant: 'success' }) } })}>Action (button)</Button>
+        <Button size="sm" variant="outline" onClick={() => toast({ title: 'Event created', description: 'Sunday, December 03, 2023 at 9:00 AM', action: { label: 'Undo', style: 'link', onClick: () => toast({ title: 'Event removed', variant: 'success' }) } })}>Action (link)</Button>
+        <Button size="sm" variant="outline" onClick={() => toast({ title: 'Persistent toast', description: 'This toast will not auto-dismiss.', duration: Infinity })}>No auto-dismiss</Button>
+      </div>
     </div>
   );
 }
@@ -176,6 +213,7 @@ export function ComponentPreview({ tab, setTab }: { tab: DevTab; setTab: (t: Dev
   const [shape, setShape] = useState<ShapeName>('rounded');
   const [shadow, setShadow] = useState<ShadowName>('subtle');
   const [scaleOverrides, setScaleOverrides] = useState<Partial<LucentTokens>>({});
+  const [toastPosition, setToastPosition] = useState<ToastPosition>('bottom-right');
 
   // Derive tinted bgBase and borderDefault from an accent color
   const deriveFromAccent = (accent: string, t: Theme): { bgBase: string; borderDefault: string } => {
@@ -297,26 +335,30 @@ export function ComponentPreview({ tab, setTab }: { tab: DevTab; setTab: (t: Dev
 
   return (
     <LucentProvider theme={theme} tokens={finalTokens}>
-      <Inner
-        tab={tab}
-        setTab={setTab}
-        theme={theme}
-        palette={palette}
-        anchors={anchors}
-        shape={shape}
-        shadow={shadow}
-        scaleOverrides={scaleOverrides}
-        onToggleTheme={() => setTheme(t => t === 'light' ? 'dark' : 'light')}
-        onChangePalette={applyPalette}
-        onChangeAnchor={handleAnchorChange}
-        onChangeShape={applyShape}
-        onChangeShadow={setShadow}
-        onScaleOverride={handleScaleOverride}
-        onQuickPreset={applyQuickPreset}
-        onReset={resetAll}
-        targetDensity={targetDensity}
-        targetFontScale={targetFontScale}
-      />
+      <ToastProvider position={toastPosition}>
+        <Inner
+          tab={tab}
+          setTab={setTab}
+          theme={theme}
+          palette={palette}
+          anchors={anchors}
+          shape={shape}
+          shadow={shadow}
+          scaleOverrides={scaleOverrides}
+          onToggleTheme={() => setTheme(t => t === 'light' ? 'dark' : 'light')}
+          onChangePalette={applyPalette}
+          onChangeAnchor={handleAnchorChange}
+          onChangeShape={applyShape}
+          onChangeShadow={setShadow}
+          onScaleOverride={handleScaleOverride}
+          onQuickPreset={applyQuickPreset}
+          onReset={resetAll}
+          targetDensity={targetDensity}
+          targetFontScale={targetFontScale}
+          toastPosition={toastPosition}
+          onChangeToastPosition={setToastPosition}
+        />
+      </ToastProvider>
     </LucentProvider>
   );
 }
@@ -325,6 +367,7 @@ function Inner({
   tab, setTab, theme, palette, anchors, shape, shadow, scaleOverrides,
   onToggleTheme, onChangePalette, onChangeAnchor, onChangeShape, onChangeShadow,
   onScaleOverride, onQuickPreset, onReset, targetDensity, targetFontScale,
+  toastPosition, onChangeToastPosition,
 }: {
   tab: DevTab;
   setTab: (t: DevTab) => void;
@@ -344,6 +387,8 @@ function Inner({
   onReset: () => void;
   targetDensity: DensityPreset;
   targetFontScale: FontScalePreset;
+  toastPosition: ToastPosition;
+  onChangeToastPosition: (p: ToastPosition) => void;
 }) {
   const { tokens } = useLucent();
   const [componentFilter, setComponentFilter] = useState('');
@@ -354,7 +399,7 @@ function Inner({
     'Table', 'ColorSwatch', 'ColorPicker', 'SegmentedControl', 'Select', 'Chip',
     'Tooltip', 'Icon', 'Button', 'Avatar', 'Spinner', 'Divider',
     'Breadcrumb', 'Tabs', 'Collapsible', 'NavLink', 'PageLayout', 'DataTable',
-    'CommandPalette', 'MultiSelect', 'DatePicker', 'DateRangePicker', 'FileUpload', 'Timeline', 'Menu',
+    'CommandPalette', 'MultiSelect', 'DatePicker', 'DateRangePicker', 'FileUpload', 'Timeline', 'Menu', 'Toast',
   ];
 
   const filterLower = componentFilter.toLowerCase();
@@ -2124,6 +2169,12 @@ function Inner({
             <MenuItem onSelect={() => {}}>Option A</MenuItem>
             <MenuItem onSelect={() => {}}>Option B</MenuItem>
           </Menu>
+        </Row>
+      </Section>
+
+      <Section title="Toast" tokens={tokens} hidden={!showSection('Toast')}>
+        <Row label="All variants" tokens={tokens}>
+          <ToastButtons position={toastPosition} onChangePosition={onChangeToastPosition} />
         </Row>
       </Section>
       </div>

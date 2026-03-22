@@ -1,5 +1,25 @@
 # lucent-ui
 
+## 0.19.0
+
+### New: Toast Molecule
+
+- **ToastProvider + useToast hook** — imperative API for ephemeral notifications. Wrap your app with `<ToastProvider>`, call `toast({ title, description, variant })` from anywhere via `useToast()`. Returns a dismissible id.
+- **Variants** — `default`, `success`, `warning`, `danger`, `info` with matching semantic border colors and built-in 16×16 SVG icons (same icon set as Alert).
+- **Multi-line text** — `title` (semibold) + optional `description` (secondary, supports `\n` via `white-space: pre-line`).
+- **Action buttons** — inline action with two styles: bordered pill button (default, Sonner-style "Undo") or underlined link. Clicking fires the callback and auto-dismisses.
+- **Cascading card stack** — multiple toasts stack as empty card shells behind the front toast with progressive `scaleX` reduction and opacity fade. Shells are height-matched to the front toast for perfectly uniform peek gaps. Up to 3 shells visible.
+- **Hover to expand** — hovering the stack smoothly fans out all toasts into a full list with content fading in, card heights animating, and shadows appearing. 150ms debounced collapse prevents flicker between gaps.
+- **Stable positioning** — the toast's anchored edge is pinned at a fixed distance from the screen edge (40px top, 120px bottom), so varying toast heights never cause the stack to jump. Six positions supported: `top-left`, `top-center`, `top-right`, `bottom-left`, `bottom-center`, `bottom-right`.
+- **Enter/exit animations** — new toasts slide in from the screen edge with opacity fade and scale-up (double `requestAnimationFrame` CSS transition trigger). Dismissed toasts slide back and fade out.
+- **Auto-dismiss** — configurable per-provider (default 5s) and per-toast. Pass `Infinity` to disable. Programmatic dismiss via `dismiss(id)`.
+- **Portal rendering** — renders via `createPortal` to `document.body` (or custom `portalContainer` prop).
+- **Accessibility** — `role="status"` + `aria-live="polite"` on each toast, `aria-hidden` on stacked shells, `aria-label="Dismiss"` on close button.
+
+### Preview
+
+- Toast section added to ComponentPreview with interactive position switcher (3×2 grid), variant trigger buttons, action style demos, and persistent toast button.
+
 ## 0.18.1
 
 ### Portal Container Prop
