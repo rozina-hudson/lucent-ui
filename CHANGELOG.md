@@ -1,5 +1,13 @@
 # lucent-ui
 
+## 0.18.1
+
+### Portal Container Prop
+
+- **Menu** and **ColorPicker** now accept a `portalContainer` prop (`HTMLElement | null`) to control where the portal renders. Defaults to `document.body` (no breaking change).
+- Fixes CSS custom property inheritance for per-section theming — consumers applying `--lucent-*` overrides on a wrapper element can now pass that element as `portalContainer` so portaled popovers inherit the overrides.
+- CommandPalette is unaffected (renders inline with `position: fixed`, no portal).
+
 ## 0.18.0
 
 ### New: Menu Molecule

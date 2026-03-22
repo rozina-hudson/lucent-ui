@@ -62,6 +62,14 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
       description: 'Prevents interaction and dims the label.',
     },
     {
+      name: 'portalContainer',
+      type: 'HTMLElement | null',
+      required: false,
+      description:
+        'DOM element to portal the popover into. Defaults to document.body. ' +
+        'Set this to a wrapper element to preserve CSS custom property inheritance for per-section theming.',
+    },
+    {
       name: 'id',
       type: 'string',
       required: false,

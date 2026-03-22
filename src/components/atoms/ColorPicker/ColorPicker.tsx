@@ -261,6 +261,8 @@ export interface ColorPickerProps {
   inline?: boolean;
   disabled?: boolean;
   presetGroups?: ColorPresetGroup[];
+  /** DOM element to portal the popover into. Defaults to document.body. Use this to preserve CSS custom property inheritance for per-section theming. */
+  portalContainer?: HTMLElement | null;
   id?: string;
   style?: CSSProperties;
 }
@@ -273,6 +275,7 @@ export function ColorPicker({
   inline = false,
   disabled = false,
   presetGroups = DEFAULT_PRESET_GROUPS,
+  portalContainer,
   id,
   style,
 }: ColorPickerProps) {
@@ -664,7 +667,7 @@ export function ColorPicker({
             )}
           </div>
         </div>,
-        document.body,
+        portalContainer ?? document.body,
       )}
     </div>
   );

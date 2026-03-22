@@ -42,6 +42,8 @@ export interface MenuProps {
   open?: boolean;
   /** Callback when open state changes. */
   onOpenChange?: (open: boolean) => void;
+  /** DOM element to portal the popover into. Defaults to document.body. Use this to preserve CSS custom property inheritance for per-section theming. */
+  portalContainer?: HTMLElement | null;
   /** Style overrides for the popover panel. */
   style?: CSSProperties;
 }
@@ -348,6 +350,7 @@ export function Menu({
   size = 'md',
   open: controlledOpen,
   onOpenChange,
+  portalContainer,
   style,
 }: MenuProps) {
   const isControlled = controlledOpen !== undefined;
@@ -634,7 +637,7 @@ export function Menu({
             {children}
           </div>
         </MenuContext.Provider>,
-        document.body,
+        portalContainer ?? document.body,
       )}
     </>
   );

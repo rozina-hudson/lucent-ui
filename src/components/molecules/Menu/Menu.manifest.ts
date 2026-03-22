@@ -34,9 +34,10 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
     'on mount and rendered via `position: fixed` in a portal.\n\n' +
 
     '## Portal rendering\n' +
-    'The popover is portaled to `document.body` via `createPortal`. This prevents overflow clipping from ' +
+    'The popover is portaled via `createPortal` (default: `document.body`). This prevents overflow clipping from ' +
     'parent containers with `overflow: hidden`. The trigger wrapper stays inline in the DOM tree so it ' +
-    'participates in layout normally.\n\n' +
+    'participates in layout normally. The `portalContainer` prop lets consumers render the portal inside a ' +
+    'wrapper element that sets `--lucent-*` CSS custom property overrides, preserving per-section theming.\n\n' +
 
     '## Keyboard navigation\n' +
     'Follows WAI-ARIA Menu Button pattern. Arrow keys cycle through enabled items (wrapping). Enter/Space ' +
@@ -105,6 +106,14 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
       type: 'function',
       required: false,
       description: 'Callback fired when the menu opens or closes. Receives the new open state.',
+    },
+    {
+      name: 'portalContainer',
+      type: 'HTMLElement | null',
+      required: false,
+      description:
+        'DOM element to portal the popover into. Defaults to document.body. ' +
+        'Set this to a wrapper element to preserve CSS custom property inheritance for per-section theming.',
     },
     {
       name: 'style',
@@ -290,6 +299,6 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
       'Focus returns to the trigger element after the menu is dismissed via Escape or selection. ' +
       'Disabled items are skipped during keyboard navigation and have aria-disabled. ' +
       'Selected items use role="menuitemcheckbox" with aria-checked for screen reader announcement. ' +
-      'The popover is portaled to document.body but remains semantically linked to the trigger via aria-controls.',
+      'The popover is portaled to document.body (or portalContainer) but remains semantically linked to the trigger via aria-controls.',
   },
 };
