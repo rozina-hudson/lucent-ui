@@ -1,7 +1,7 @@
 import { forwardRef, type ButtonHTMLAttributes, type CSSProperties, type ReactNode } from 'react';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
-export type ButtonSize = 'xs' | 'sm' | 'md' | 'lg';
+export type ButtonSize = '2xs' | 'xs' | 'sm' | 'md' | 'lg';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
@@ -49,6 +49,7 @@ const variantStyles: Record<ButtonVariant, CSSProperties> = {
 };
 
 const sizeStyles: Record<ButtonSize, CSSProperties> = {
+  '2xs': { height: '22px', padding: '0 var(--lucent-space-1)', fontSize: 'var(--lucent-font-size-xs)', borderRadius: 'var(--lucent-radius-md)' },
   xs: { height: '26px', padding: '0 var(--lucent-space-2)', fontSize: 'var(--lucent-font-size-xs)' },
   sm: { height: 'calc(var(--lucent-space-8) * 0.5 + 18px)', padding: '0 var(--lucent-space-3)', fontSize: 'var(--lucent-font-size-sm)' },
   md: { height: 'calc(var(--lucent-space-10) * 0.5 + 22px)', padding: '0 var(--lucent-space-4)', fontSize: 'var(--lucent-font-size-md)' },
@@ -182,7 +183,7 @@ function removeHover(el: HTMLButtonElement, variant: ButtonVariant, bordered?: b
   }
 }
 
-const chevronSizePx: Record<ButtonSize, number> = { xs: 10, sm: 12, md: 14, lg: 16 };
+const chevronSizePx: Record<ButtonSize, number> = { '2xs': 8, xs: 10, sm: 12, md: 14, lg: 16 };
 
 function ButtonChevron({ size }: { size: ButtonSize }) {
   const px = chevronSizePx[size];
