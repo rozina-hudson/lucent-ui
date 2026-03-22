@@ -21,3 +21,5 @@ export * from './Table/index.js';
 export * from './ColorPicker/index.js';
 export * from './ColorSwatch/index.js';
 export * from './SegmentedControl/index.js';
+export * from './Stack/index.js';
+export * from './Row/index.js';
