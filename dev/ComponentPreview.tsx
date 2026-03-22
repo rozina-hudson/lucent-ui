@@ -55,6 +55,7 @@ import { ColorSwatch } from '../src/components/atoms/ColorSwatch/index.js';
 import { SegmentedControl } from '../src/components/atoms/SegmentedControl/index.js';
 import { Stack as StackAtom } from '../src/components/atoms/Stack/index.js';
 import { Row as RowAtom } from '../src/components/atoms/Row/index.js';
+import { Progress } from '../src/components/atoms/Progress/index.js';
 import type { LucentTokens, Theme, ThemeAnchors, UploadFile } from '../src/index.js';
 
 // ─── Palette map ────────────────────────────────────────────────────────────
@@ -162,7 +163,7 @@ const SHADOW_OPTIONS: ShadowName[] = ['flat', 'subtle', 'elevated'];
 
 type DensityPreset = 'compact' | 'default' | 'comfortable';
 type FontScalePreset = 'small' | 'default' | 'large';
-const DENSITY_PERCENT: Record<DensityPreset, number> = { compact: 85, default: 100, comfortable: 115 };
+const DENSITY_PERCENT: Record<DensityPreset, number> = { compact: 65, default: 100, comfortable: 140 };
 const FONT_SCALE_PERCENT: Record<FontScalePreset, number> = { small: 90, default: 100, large: 110 };
 const DENSITY_OPTIONS: { value: DensityPreset; label: string }[] = [
   { value: 'compact', label: 'Compact' },
@@ -402,7 +403,7 @@ function Inner({
     'Tooltip', 'Icon', 'Button', 'Avatar', 'Spinner', 'Divider',
     'Breadcrumb', 'Tabs', 'Collapsible', 'NavLink', 'PageLayout', 'DataTable',
     'CommandPalette', 'MultiSelect', 'DatePicker', 'DateRangePicker', 'FileUpload', 'Timeline', 'Menu', 'Toast',
-    'Stack', 'Row',
+    'Stack', 'Row', 'Progress',
   ];
 
   const filterLower = componentFilter.toLowerCase();
@@ -1265,6 +1266,44 @@ function Inner({
         <Row label="Disabled" tokens={tokens}>
           <div style={{ width: 280 }}>
             <Slider label="Locked" disabled defaultValue={40} showValue />
+          </div>
+        </Row>
+      </Section>
+
+      {/* Progress */}
+      <Section title="Progress" tokens={tokens} hidden={!showSection('Progress')}>
+        <Row label="Basic" tokens={tokens}>
+          <div style={{ width: 320, display: 'flex', flexDirection: 'column', gap: 'var(--lucent-space-4)' }}>
+            <Progress value={60} label />
+            <Progress value={30} variant="success" label />
+            <Progress value={75} variant="warning" label />
+            <Progress value={90} variant="danger" label />
+          </div>
+        </Row>
+        <Row label="Sizes" tokens={tokens}>
+          <div style={{ width: 320, display: 'flex', flexDirection: 'column', gap: 'var(--lucent-space-4)' }}>
+            <Progress size="sm" value={50} label />
+            <Progress size="md" value={50} label />
+            <Progress size="lg" value={50} label />
+          </div>
+        </Row>
+        <Row label="Thresholds (ascending)" tokens={tokens}>
+          <div style={{ width: 320, display: 'flex', flexDirection: 'column', gap: 'var(--lucent-space-4)' }}>
+            <Progress value={40} warnAt={60} dangerAt={85} label />
+            <Progress value={72} warnAt={60} dangerAt={85} label />
+            <Progress value={92} warnAt={60} dangerAt={85} label />
+          </div>
+        </Row>
+        <Row label="Thresholds (descending)" tokens={tokens}>
+          <div style={{ width: 320, display: 'flex', flexDirection: 'column', gap: 'var(--lucent-space-4)' }}>
+            <Progress value={80} warnAt={30} dangerAt={10} label />
+            <Progress value={22} warnAt={30} dangerAt={10} label />
+            <Progress value={5} warnAt={30} dangerAt={10} label />
+          </div>
+        </Row>
+        <Row label="Custom label" tokens={tokens}>
+          <div style={{ width: 320 }}>
+            <Progress value={3} max={5} label={<span>3 of 5 tasks</span>} />
           </div>
         </Row>
       </Section>
