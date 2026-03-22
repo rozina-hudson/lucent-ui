@@ -1,5 +1,31 @@
 # lucent-ui
 
+## 0.18.0
+
+### New: Menu Molecule
+
+- **Compound component API** — `Menu`, `MenuItem`, `MenuSeparator`, `MenuGroup` compose naturally as JSX children. Menu items support divergent structures (icons, shortcuts, danger state, selected state, disabled) without data-array boilerplate.
+- **Portal rendering** — popover portals to `document.body` via `createPortal`, escaping `overflow: hidden` ancestors.
+- **Placement & auto-flip** — 8-direction placement (`top`, `top-start`, `top-end`, `bottom`, `bottom-start`, `bottom-end`, `left`, `right`) with automatic viewport-edge flipping. Position computed via `getBoundingClientRect` on mount.
+- **Keyboard navigation** — full WAI-ARIA Menu Button pattern: arrow keys (wrapping), Enter/Space to select, Escape to close with focus return, Tab to dismiss, Home/End for first/last item.
+- **Outside-click & scroll dismissal** — mousedown handler deferred via `requestAnimationFrame` to avoid catching the opening click. Scroll handler armed after 50ms to skip mount-triggered reflows.
+- **Selected state** — `selected` prop on `MenuItem` renders a trailing accent-colored checkmark with `color-mix(in srgb, accent-default 12%, surface-overlay)` background and `shadow-sm` elevation. Visually stronger than hover (`surface-secondary`).
+- **Size variants** — `sm` | `md` | `lg` flows from root `Menu` through context. Font sizes aligned with Button: sm → `font-size-sm`, md → `font-size-md`, lg → `font-size-lg`. Padding and checkmark icon scale proportionally.
+- **Entrance + exit animations** — scale + fade (`scale(0.97) ↔ 1`, `opacity 0 ↔ 1`) over 120ms. Transform-origin derived from actual placement after auto-flip. Portal stays mounted during exit with `pointerEvents: none`.
+- **Danger items** — `danger` prop renders text and icon in danger color.
+- **Shortcut hints** — `shortcut` prop renders trailing secondary text (e.g. "⌘E").
+- **Hover interaction** — `onMouseEnter` updates `activeIndex` to highlight items on hover, matching MultiSelect dropdown behavior.
+
+### MultiSelect: Dropdown Font Scaling
+
+- Dropdown item text now scales with the `size` prop: sm → `font-size-sm`, md → `font-size-md`, lg → `font-size-lg`. Previously hardcoded to `font-size-sm` at all sizes.
+- Placeholder/input font for `lg` corrected from `font-size-md` to `font-size-lg`.
+- "No options" and "Max N selected" text scale proportionally.
+
+### Playground
+
+- Menu added to the component comparison playground with knobs for size, placement, trigger variant, icons, selected state, and danger items.
+
 ## 0.17.0
 
 ### Button: Ultra-Dense Size
