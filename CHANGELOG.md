@@ -1,5 +1,18 @@
 # lucent-ui
 
+## 0.19.1
+
+### Overlay Polish
+
+- **Frosted glass** — all overlay components (CommandPalette, Menu, MultiSelect, DatePicker, DateRangePicker, SearchInput, ColorPicker) now use a frosted glass backdrop: 85% opacity `surface-overlay` with `backdrop-filter: blur(6px)`.
+- **Accent glow** — overlay borders are tinted with 15% `accent-default` via `color-mix`, and a soft 24px accent glow shadow adapts automatically to any palette preset.
+- **Portal dropdowns** — MultiSelect, DatePicker, DateRangePicker, and SearchInput dropdowns now render via `createPortal` with `position: fixed`, so they escape Card `overflow: hidden`.
+- **CommandPalette arrow keys (#91)** — fixed keyboard navigation cycling through items; added wrapping at top/bottom. Active highlight now uses accent-tinted background visible in both light and dark mode.
+- **CommandPalette UI** — rounded inset item highlights, Button `xs` keycaps in footer and search bar, frosted glass panel with blurred backdrop.
+- **DatePicker/DateRangePicker size scaling** — Calendar content (cell height, font size, nav buttons, padding, minWidth) now scales with the `size` prop (sm/md/lg).
+- **DatePicker dark mode hover** — day hover uses `color-mix(accent-default 20%, surface-secondary)` for visibility in dark mode.
+- **SearchInput** — fixed duplicate clear button (native `type="search"` X), aligned dropdown text/spacing/rounding with Menu pattern, text size now matches input size.
+
 ## 0.19.0
 
 ### New: Toast Molecule
