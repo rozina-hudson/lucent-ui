@@ -1561,6 +1561,36 @@ function Inner({
           <Chip variant="danger" dot>Offline</Chip>
           <Chip variant="neutral" dot>Suspended</Chip>
         </Row>
+        <Row label="Pulse" tokens={tokens}>
+          <Chip variant="success" dot pulse>Running</Chip>
+          <Chip variant="warning" dot pulse>Deploying</Chip>
+          <Chip variant="danger" dot pulse>Live incident</Chip>
+          <Chip variant="info" dot pulse>Syncing</Chip>
+        </Row>
+        <Row label="Ghost" tokens={tokens}>
+          <Chip variant="success" ghost dot>Online</Chip>
+          <Chip variant="danger" ghost dot>Offline</Chip>
+          <Chip variant="warning" ghost dot>Away</Chip>
+          <Chip variant="neutral" ghost dot>Idle</Chip>
+        </Row>
+        <Row label="Ghost + Pulse" tokens={tokens}>
+          <Chip variant="success" ghost dot pulse>Running</Chip>
+          <Chip variant="warning" ghost dot pulse>Deploying</Chip>
+          <Chip variant="danger" ghost dot pulse>Live incident</Chip>
+          <Chip variant="info" ghost dot pulse>Syncing</Chip>
+        </Row>
+        <Row label="Dot only" tokens={tokens}>
+          <Chip variant="success" dot />
+          <Chip variant="danger" dot />
+          <Chip variant="warning" dot />
+          <Chip variant="info" dot />
+        </Row>
+        <Row label="Dot only + Pulse" tokens={tokens}>
+          <Chip variant="success" dot pulse />
+          <Chip variant="danger" dot pulse />
+          <Chip variant="warning" dot pulse />
+          <Chip variant="info" dot pulse />
+        </Row>
         <Row label="With swatch" tokens={tokens}>
           <Chip swatch="#6366f1" onDismiss={() => {}}>Indigo</Chip>
           <Chip swatch="#10b981" onDismiss={() => {}}>Emerald</Chip>

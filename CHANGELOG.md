@@ -1,5 +1,15 @@
 # lucent-ui
 
+## 0.22.0
+
+### Chip: pulse, ghost, and dot-only mode
+
+- **`pulse` prop** — pulsing ring animation on the status dot for in-progress/live states (deploying, syncing, live incident). Only applies when `dot=true`. Uses injected `@keyframes lucent-chip-pulse` following the existing pattern.
+- **`ghost` prop** — transparent background with text color only, no border. Subtle 8% tint on hover when interactive. Ideal for inline status indicators in tables and lists.
+- **Dot-only mode** — omit `children` with `dot=true` to render a compact circular indicator (no padding, `border-radius: 50%`). Works with `pulse` for a minimal pulsing dot.
+- `children` is now optional on Chip.
+- Manifest updated with status-first design intent and reorganized usage examples.
+
 ## 0.21.0
 
 ### New Atom: Progress Bar

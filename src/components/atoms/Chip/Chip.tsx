@@ -4,7 +4,7 @@ export type ChipVariant = 'neutral' | 'accent' | 'success' | 'warning' | 'danger
 export type ChipSize = 'sm' | 'md' | 'lg';
 
 export interface ChipProps {
-  children: ReactNode;
+  children?: ReactNode;
   variant?: ChipVariant;
   size?: ChipSize;
   /** Renders an × button. Fires when clicked. */
@@ -17,8 +17,12 @@ export interface ChipProps {
   swatch?: string;
   /** Status dot rendered before the label (uses variant color). */
   dot?: boolean;
+  /** Adds a pulsing ring animation to the status dot. Only applies when dot=true. */
+  pulse?: boolean;
   /** Removes the border for a filled-only look. */
   borderless?: boolean;
+  /** Transparent background with text color only. Overrides borderless. */
+  ghost?: boolean;
   disabled?: boolean;
   style?: CSSProperties;
 }
@@ -98,6 +102,12 @@ const sizeStyles: Record<ChipSize, {
   },
 };
 
+const PULSE_STYLES = `
+@keyframes lucent-chip-pulse {
+  0%   { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(2.8); opacity: 0; }
+}`;
+
 export function Chip({
   children,
   variant = 'neutral',
@@ -107,35 +117,48 @@ export function Chip({
   leftIcon,
   swatch,
   dot = false,
+  pulse = false,
   borderless = false,
+  ghost = false,
   disabled = false,
   style,
 }: ChipProps) {
   const v = variantStyles[variant];
   const s = sizeStyles[size];
   const [hovered, setHovered] = useState(false);
+  const showPulse = dot && pulse;
+  const dotOnly = dot && !children;
 
   const isInteractive = !disabled && (onDismiss || onClick);
+
+  const ghostHoverBg = `color-mix(in srgb, ${v.color} 8%, transparent)`;
+
+  // Dot-only: compact circle just big enough for the dot + pulse overflow
+  const dotOnlySize = s.dotSize * 3;
 
   const chipStyle: CSSProperties = {
     display: 'inline-flex',
     alignItems: 'center',
-    gap: s.gap,
-    height: s.height,
-    padding: onDismiss ? s.paddingDismiss : s.padding,
+    justifyContent: dotOnly ? 'center' : undefined,
+    gap: dotOnly ? undefined : s.gap,
+    height: dotOnly ? dotOnlySize : s.height,
+    width: dotOnly ? dotOnlySize : undefined,
+    padding: dotOnly ? 0 : (onDismiss ? s.paddingDismiss : s.padding),
     fontSize: s.fontSize,
     fontFamily: 'var(--lucent-font-family-base)',
     fontWeight: 'var(--lucent-font-weight-medium)',
     lineHeight: 1,
-    borderRadius: 'var(--lucent-radius-lg)',
-    background: hovered && isInteractive ? v.hoverBg : v.bg,
+    borderRadius: dotOnly ? 'var(--lucent-radius-full)' : 'var(--lucent-radius-lg)',
+    background: ghost
+      ? (hovered && isInteractive ? ghostHoverBg : 'transparent')
+      : (hovered && isInteractive ? v.hoverBg : v.bg),
     color: v.color,
-    border: borderless ? '1px solid transparent' : `1px solid ${hovered && isInteractive ? v.hoverBorder : v.border}`,
+    border: ghost || borderless ? '1px solid transparent' : `1px solid ${hovered && isInteractive ? v.hoverBorder : v.border}`,
     whiteSpace: 'nowrap',
     boxSizing: 'border-box',
     opacity: disabled ? 0.5 : 1,
     transform: hovered && isInteractive ? 'translateY(-1px)' : 'none',
-    boxShadow: hovered && isInteractive ? `0 2px 4px ${v.hoverBorder}22` : 'none',
+    boxShadow: hovered && isInteractive && !ghost ? `0 2px 4px ${v.hoverBorder}22` : 'none',
     transition: [
       'transform var(--lucent-duration-fast) var(--lucent-easing-default)',
       'box-shadow var(--lucent-duration-fast) var(--lucent-easing-default)',
@@ -150,6 +173,7 @@ export function Chip({
 
   const content = (
     <>
+      {showPulse && <style>{PULSE_STYLES}</style>}
       {/* Swatch dot */}
       {swatch && (
         <span style={{
@@ -165,12 +189,27 @@ export function Chip({
       {/* Status dot */}
       {dot && !swatch && (
         <span style={{
+          position: 'relative',
           width: s.dotSize,
           height: s.dotSize,
-          borderRadius: '50%',
-          background: 'currentColor',
           flexShrink: 0,
-        }} />
+        }}>
+          <span style={{
+            position: 'absolute',
+            inset: 0,
+            borderRadius: '50%',
+            background: 'currentColor',
+          }} />
+          {showPulse && (
+            <span style={{
+              position: 'absolute',
+              inset: 0,
+              borderRadius: '50%',
+              background: 'currentColor',
+              animation: 'lucent-chip-pulse 1.5s ease-out infinite',
+            }} />
+          )}
+        </span>
       )}
 
       {/* Left icon */}
