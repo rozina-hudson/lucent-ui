@@ -22,7 +22,15 @@ export const ButtonManifest: ComponentManifest = {
       type: 'enum',
       required: false,
       default: 'primary',
-      description: 'Visual style conveying action hierarchy.',
+      description:
+        'Visual style conveying action hierarchy. ' +
+        '"primary" — filled accent for the single most important action. ' +
+        '"secondary" — subtle accent-tinted fill for supporting actions. ' +
+        '"outline" — bordered with no fill, for neutral secondary actions. ' +
+        '"ghost" — transparent with no border, for low-emphasis or inline actions. ' +
+        '"danger" — filled red for irreversible destructive actions (e.g. "Delete account"). ' +
+        '"danger-outline" — red border + red text for destructive actions that need visual weight without a filled background. ' +
+        '"danger-ghost" — red text only, for low-emphasis destructive actions (e.g. "Remove" in a list row).',
       enumValues: ['primary', 'secondary', 'outline', 'ghost', 'danger', 'danger-outline', 'danger-ghost'],
     },
     {
@@ -30,7 +38,13 @@ export const ButtonManifest: ComponentManifest = {
       type: 'enum',
       required: false,
       default: 'md',
-      description: 'Controls height and padding.',
+      description:
+        'Controls height and padding. ' +
+        '"lg" (48px) — hero sections, onboarding flows. ' +
+        '"md" (42px) — default for most forms and dialogs. ' +
+        '"sm" (34px) — toolbars, table headers, card actions. ' +
+        '"xs" (26px) — compact UIs like customizer panels, inline controls. ' +
+        '"2xs" (22px) — ultra-dense inline icon triggers, table-row actions, dashboard toolbar buttons.',
       enumValues: ['2xs', 'xs', 'sm', 'md', 'lg'],
     },
     {
@@ -140,6 +154,10 @@ export const ButtonManifest: ComponentManifest = {
     {
       title: 'Dropdown trigger',
       code: `<Button variant="outline" chevron>Options</Button>`,
+    },
+    {
+      title: 'Bordered destructive action',
+      code: `<Button variant="danger-outline" onClick={handleRevoke}>Revoke access</Button>`,
     },
     {
       title: 'Low-emphasis destructive action',
