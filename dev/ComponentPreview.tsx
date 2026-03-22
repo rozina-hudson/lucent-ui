@@ -53,6 +53,8 @@ import { ToastProvider, useToast, type ToastPosition } from '../src/components/m
 import { ColorPicker, type ColorPresetGroup } from '../src/components/atoms/ColorPicker/index.js';
 import { ColorSwatch } from '../src/components/atoms/ColorSwatch/index.js';
 import { SegmentedControl } from '../src/components/atoms/SegmentedControl/index.js';
+import { Stack as StackAtom } from '../src/components/atoms/Stack/index.js';
+import { Row as RowAtom } from '../src/components/atoms/Row/index.js';
 import type { LucentTokens, Theme, ThemeAnchors, UploadFile } from '../src/index.js';
 
 // ─── Palette map ────────────────────────────────────────────────────────────
@@ -400,6 +402,7 @@ function Inner({
     'Tooltip', 'Icon', 'Button', 'Avatar', 'Spinner', 'Divider',
     'Breadcrumb', 'Tabs', 'Collapsible', 'NavLink', 'PageLayout', 'DataTable',
     'CommandPalette', 'MultiSelect', 'DatePicker', 'DateRangePicker', 'FileUpload', 'Timeline', 'Menu', 'Toast',
+    'Stack', 'Row',
   ];
 
   const filterLower = componentFilter.toLowerCase();
@@ -2177,6 +2180,77 @@ function Inner({
           <ToastButtons position={toastPosition} onChangePosition={onChangeToastPosition} />
         </Row>
       </Section>
+
+      {/* Stack */}
+      <Section title="Stack" tokens={tokens} hidden={!showSection('Stack')}>
+        <Row label="Vertical spacing" tokens={tokens}>
+          <StackAtom gap="3" style={{ padding: tokens.space4, background: tokens.surfaceSecondary, borderRadius: tokens.radiusMd, width: 200 }}>
+            <Text size="sm" weight="semibold">Title</Text>
+            <Text size="xs" color="secondary">Subtitle text here</Text>
+            <Button variant="primary" size="sm">Action</Button>
+          </StackAtom>
+        </Row>
+        <Row label="Gap sizes" tokens={tokens}>
+          {(['1', '3', '6'] as const).map(g => (
+            <StackAtom key={g} gap={g} style={{ padding: tokens.space3, background: tokens.surfaceSecondary, borderRadius: tokens.radiusMd }}>
+              <Text size="xs" color="secondary">gap="{g}"</Text>
+              <Badge>A</Badge>
+              <Badge>B</Badge>
+              <Badge>C</Badge>
+            </StackAtom>
+          ))}
+        </Row>
+        <Row label="Centered content" tokens={tokens}>
+          <StackAtom gap="3" align="center" justify="center" style={{ minHeight: 120, padding: tokens.space4, background: tokens.surfaceSecondary, borderRadius: tokens.radiusMd, width: 200 }}>
+            <Spinner size="sm" />
+            <Text size="sm" color="secondary">Loading...</Text>
+          </StackAtom>
+        </Row>
+      </Section>
+
+      {/* Row */}
+      <Section title="Row" tokens={tokens} hidden={!showSection('Row')}>
+        <Row label="Horizontal layout" tokens={tokens}>
+          <RowAtom gap="3" align="center">
+            <Text size="sm">Push notifications</Text>
+            <Toggle checked={toggled} onChange={setToggled} />
+          </RowAtom>
+        </Row>
+        <Row label="justify=between" tokens={tokens}>
+          <RowAtom gap="3" justify="between" style={{ width: '100%', maxWidth: 400 }}>
+            <Text as="span" size="sm" weight="semibold">Dashboard</Text>
+            <RowAtom gap="2">
+              <Button variant="outline" size="sm">Export</Button>
+              <Button variant="primary" size="sm">New</Button>
+            </RowAtom>
+          </RowAtom>
+        </Row>
+        <Row label="Wrap" tokens={tokens}>
+          <RowAtom gap="2" wrap style={{ maxWidth: 260 }}>
+            {['React', 'TypeScript', 'Design', 'Systems', 'Tokens', 'Layout'].map(t => (
+              <Badge key={t}>{t}</Badge>
+            ))}
+          </RowAtom>
+        </Row>
+        <Row label="Stack + Row composition" tokens={tokens}>
+          <Card variant="outline" padding="md" style={{ width: 280 }}>
+            <StackAtom gap="4">
+              <RowAtom gap="3" align="center">
+                <Avatar alt="Jane Doe" size="md" />
+                <StackAtom gap="1">
+                  <Text size="sm" weight="semibold">Jane Doe</Text>
+                  <Text size="xs" color="secondary">Software Engineer</Text>
+                </StackAtom>
+              </RowAtom>
+              <Divider />
+              <RowAtom gap="2" justify="end">
+                <Button variant="outline" size="sm">Message</Button>
+                <Button variant="primary" size="sm">Follow</Button>
+              </RowAtom>
+            </StackAtom>
+          </Card>
+        </Row>
+      </Section>
       </div>
       ) : tab === 'tokens' ? (
         <TokenPreview />
@@ -2192,16 +2266,16 @@ function Section({ title, tokens, children, hidden }: { title: string; tokens: R
   return (
     <Card variant="outline" padding="lg" style={{ marginBottom: tokens.space6 }}>
       <Text as="h2" size="lg" weight="semibold" style={{ marginBottom: tokens.space5, marginTop: 0 }}>{title}</Text>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.space4 }}>{children}</div>
+      <StackAtom gap="4">{children}</StackAtom>
     </Card>
   );
 }
 
 function Row({ label, tokens, children }: { label: string; tokens: ReturnType<typeof useLucent>['tokens']; children: React.ReactNode }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.space2 }}>
+    <StackAtom gap="2">
       <span style={{ fontSize: tokens.fontSizeXs, color: tokens.textSecondary, fontFamily: tokens.fontFamilyMono, letterSpacing: tokens.letterSpacingWide, textTransform: 'uppercase' }}>{label}</span>
-      <div style={{ display: 'flex', alignItems: 'center', gap: tokens.space3, flexWrap: 'wrap' }}>{children}</div>
-    </div>
+      <RowAtom gap="3" wrap>{children}</RowAtom>
+    </StackAtom>
   );
 }
