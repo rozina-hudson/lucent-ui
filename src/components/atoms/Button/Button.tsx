@@ -32,7 +32,7 @@ const variantStyles: Record<ButtonVariant, CSSProperties> = {
     border: '1px solid transparent',
   },
   outline: {
-    background: 'var(--lucent-surface)',
+    background: 'transparent',
     color: 'var(--lucent-text-primary)',
     border: '1px solid var(--lucent-border-default)',
   },
@@ -47,7 +47,7 @@ const variantStyles: Record<ButtonVariant, CSSProperties> = {
     border: '1px solid var(--lucent-danger-default)',
   },
   'danger-outline': {
-    background: 'var(--lucent-surface)',
+    background: 'transparent',
     color: 'var(--lucent-danger-text)',
     border: '1px solid var(--lucent-danger-default)',
   },
@@ -59,16 +59,17 @@ const variantStyles: Record<ButtonVariant, CSSProperties> = {
 };
 
 const sizeStyles: Record<ButtonSize, CSSProperties> = {
-  '2xs': { height: '22px', padding: '0 var(--lucent-space-1)', fontSize: 'var(--lucent-font-size-xs)', borderRadius: 'var(--lucent-radius-md)' },
-  xs: { height: '26px', padding: '0 var(--lucent-space-2)', fontSize: 'var(--lucent-font-size-xs)' },
-  sm: { height: 'calc(var(--lucent-space-8) * 0.5 + 18px)', padding: '0 var(--lucent-space-3)', fontSize: 'var(--lucent-font-size-sm)' },
-  md: { height: 'calc(var(--lucent-space-10) * 0.5 + 22px)', padding: '0 var(--lucent-space-4)', fontSize: 'var(--lucent-font-size-md)' },
-  lg: { height: 'calc(var(--lucent-space-12) * 0.5 + 26px)', padding: '0 var(--lucent-space-5)', fontSize: 'var(--lucent-font-size-lg)' },
+  '2xs': { height: '22px', padding: '0 var(--lucent-space-2)', fontSize: 'var(--lucent-font-size-xs)', borderRadius: 'var(--lucent-radius-md)' },
+  xs: { height: '26px', padding: '0 var(--lucent-space-3)', fontSize: 'var(--lucent-font-size-xs)' },
+  sm: { height: 'calc(var(--lucent-space-8) * 0.5 + 18px)', padding: '0 var(--lucent-space-4)', fontSize: 'var(--lucent-font-size-sm)' },
+  md: { height: 'calc(var(--lucent-space-10) * 0.5 + 22px)', padding: '0 var(--lucent-space-5)', fontSize: 'var(--lucent-font-size-md)' },
+  lg: { height: 'calc(var(--lucent-space-12) * 0.5 + 26px)', padding: '0 var(--lucent-space-6)', fontSize: 'var(--lucent-font-size-lg)' },
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ variant = 'primary', size = 'md', loading = false, fullWidth = false, spread = false, leftIcon, rightIcon, chevron = false, disableHoverStyles = false, bordered = true, children, disabled, style, ...rest }, ref) => {
     const isDisabled = disabled ?? loading;
+    const isIconOnly = !children && !loading && (!!leftIcon || !!rightIcon);
 
     return (
       <button
@@ -93,6 +94,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           outline: 'none',
           margin: 0,
           ...sizeStyles[size],
+          ...(isIconOnly && { padding: 0, aspectRatio: '1' }),
           ...variantStyles[variant],
           ...style,
           ...(isDisabled && {
@@ -192,14 +194,14 @@ function removeHover(el: HTMLButtonElement, variant: ButtonVariant, bordered?: b
   } else if (variant === 'secondary') {
     el.style.background = 'var(--lucent-surface-secondary)';
   } else if (variant === 'outline') {
-    el.style.background = 'var(--lucent-surface)';
+    el.style.background = 'transparent';
   } else if (variant === 'ghost') {
     el.style.background = 'transparent';
   } else if (variant === 'danger') {
     el.style.background = 'var(--lucent-danger-default)';
     if (bordered !== false) el.style.borderColor = 'var(--lucent-danger-default)';
   } else if (variant === 'danger-outline') {
-    el.style.background = 'var(--lucent-surface)';
+    el.style.background = 'transparent';
     if (bordered !== false) el.style.borderColor = 'var(--lucent-danger-default)';
   } else if (variant === 'danger-ghost') {
     el.style.background = 'transparent';
