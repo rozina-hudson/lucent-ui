@@ -1,5 +1,23 @@
 # lucent-ui
 
+## 0.23.0
+
+### New Atoms: SplitButton & ButtonGroup
+
+- **SplitButton** — compound button pairing a primary action with a chevron dropdown for secondary actions. Each half is an independent button with its own hover lift and press ring, separated by a token-scaled gap with subtle inner corner radius (`radius-sm`). Composes the Menu molecule for dropdown keyboard navigation, positioning, and portal rendering.
+  - All 7 variants: `primary`, `secondary`, `outline`, `ghost`, `danger`, `danger-outline`, `danger-ghost`.
+  - All 5 sizes: `2xs`, `xs`, `sm`, `md`, `lg`.
+  - Props: `onClick`, `menuItems` (with `label`, `onSelect`, `disabled?`, `danger?`, `icon?`), `leftIcon`, `disabled`, `loading`, `bordered`, `menuPlacement`.
+  - Ghost variants use tighter inner padding to keep the halves visually close.
+  - Full manifest with designIntent, 7 usage examples, and accessibility metadata.
+- **ButtonGroup** — layout wrapper that visually groups Button or SplitButton children with a small token-based gap and flattened inner corner radius so the set reads as a unit. Works with any variant combination including ghost toolbars.
+
+### Button enhancements
+
+- **Wider horizontal padding** — increased one spacing step across all sizes for better breathing room on text buttons.
+- **Icon-only auto-sizing** — buttons without `children` (only `leftIcon`/`rightIcon`) automatically render as squares via `aspect-ratio: 1`.
+- **Transparent outline backgrounds** — `outline` and `danger-outline` variants now use `transparent` instead of `var(--lucent-surface)`, so they work correctly on any container background.
+
 ## 0.22.0
 
 ### Chip: pulse, ghost, and dot-only mode
