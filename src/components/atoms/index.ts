@@ -24,3 +24,5 @@ export * from './SegmentedControl/index.js';
 export * from './Stack/index.js';
 export * from './Row/index.js';
 export * from './Progress/index.js';
+export * from './SplitButton/index.js';
+export * from './ButtonGroup/index.js';

@@ -56,6 +56,8 @@ import { SegmentedControl } from '../src/components/atoms/SegmentedControl/index
 import { Stack as StackAtom } from '../src/components/atoms/Stack/index.js';
 import { Row as RowAtom } from '../src/components/atoms/Row/index.js';
 import { Progress } from '../src/components/atoms/Progress/index.js';
+import { SplitButton } from '../src/components/atoms/SplitButton/index.js';
+import { ButtonGroup } from '../src/components/atoms/ButtonGroup/index.js';
 import type { LucentTokens, Theme, ThemeAnchors, UploadFile } from '../src/index.js';
 
 // ─── Palette map ────────────────────────────────────────────────────────────
@@ -403,7 +405,7 @@ function Inner({
     'Tooltip', 'Icon', 'Button', 'Avatar', 'Spinner', 'Divider',
     'Breadcrumb', 'Tabs', 'Collapsible', 'NavLink', 'PageLayout', 'DataTable',
     'CommandPalette', 'MultiSelect', 'DatePicker', 'DateRangePicker', 'FileUpload', 'Timeline', 'Menu', 'Toast',
-    'Stack', 'Row', 'Progress',
+    'Stack', 'Row', 'Progress', 'SplitButton', 'ButtonGroup',
   ];
 
   const filterLower = componentFilter.toLowerCase();
@@ -1731,6 +1733,128 @@ function Inner({
         <Row label="States" tokens={tokens}>
           <Button loading>Loading</Button>
           <Button variant="primary" fullWidth>Full width</Button>
+        </Row>
+      </Section>
+
+      {/* SplitButton */}
+      <Section title="SplitButton" tokens={tokens} hidden={!showSection('SplitButton')}>
+        <StackAtom gap="2">
+          <span style={{ fontSize: tokens.fontSizeXs, color: tokens.textSecondary, fontFamily: tokens.fontFamilyMono, letterSpacing: tokens.letterSpacingWide, textTransform: 'uppercase' }}>Variants</span>
+          <RowAtom gap="5" wrap>
+            {(['primary', 'secondary', 'outline', 'ghost', 'danger', 'danger-outline', 'danger-ghost'] as const).map((v) => (
+              <SplitButton key={v} variant={v} onClick={() => alert(`${v} primary`)} menuItems={[{ label: 'Alternative A', onSelect: () => alert('A') }, { label: 'Alternative B', onSelect: () => alert('B') }]}>
+                {v.charAt(0).toUpperCase() + v.slice(1)}
+              </SplitButton>
+            ))}
+          </RowAtom>
+        </StackAtom>
+        <StackAtom gap="2">
+          <span style={{ fontSize: tokens.fontSizeXs, color: tokens.textSecondary, fontFamily: tokens.fontFamilyMono, letterSpacing: tokens.letterSpacingWide, textTransform: 'uppercase' }}>Sizes</span>
+          <RowAtom gap="5" wrap>
+            {(['2xs', 'xs', 'sm', 'md', 'lg'] as const).map((s) => (
+              <SplitButton key={s} size={s} onClick={() => {}} menuItems={[{ label: 'Option', onSelect: () => {} }]}>
+                {s}
+              </SplitButton>
+            ))}
+          </RowAtom>
+        </StackAtom>
+        <StackAtom gap="2">
+          <span style={{ fontSize: tokens.fontSizeXs, color: tokens.textSecondary, fontFamily: tokens.fontFamilyMono, letterSpacing: tokens.letterSpacingWide, textTransform: 'uppercase' }}>Bordered ghost</span>
+          <RowAtom gap="5" wrap>
+            <SplitButton variant="ghost" size="2xs" bordered onClick={() => {}} menuItems={[{ label: 'Reset layout', onSelect: () => {} }]}>Collapse all</SplitButton>
+            <SplitButton variant="ghost" size="sm" bordered onClick={() => {}} menuItems={[{ label: 'Export config', onSelect: () => {} }]}>Options</SplitButton>
+            <SplitButton variant="outline" size="sm" onClick={() => {}} menuItems={[{ label: 'Save as draft', onSelect: () => {} }, { label: 'Discard', onSelect: () => {}, danger: true }]}>Save</SplitButton>
+          </RowAtom>
+        </StackAtom>
+        <StackAtom gap="2">
+          <span style={{ fontSize: tokens.fontSizeXs, color: tokens.textSecondary, fontFamily: tokens.fontFamilyMono, letterSpacing: tokens.letterSpacingWide, textTransform: 'uppercase' }}>With icons</span>
+          <RowAtom gap="5" wrap>
+            <SplitButton leftIcon={<StarIcon />} onClick={() => {}} menuItems={[{ label: 'Save as draft', onSelect: () => {}, icon: <SmallIcon d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" /> }, { label: 'Export', onSelect: () => {}, icon: <SmallIcon d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" /> }]}>Save</SplitButton>
+            <SplitButton variant="outline" leftIcon={<SmallIcon d="M12 19V5M5 12l7-7 7 7" />} onClick={() => {}} menuItems={[{ label: 'Deploy to staging', onSelect: () => {}, icon: <SmallIcon d="M22 12h-4l-3 9L9 3l-3 9H2" /> }, { label: 'Rollback', onSelect: () => {}, danger: true, icon: <SmallIcon d="M1 4v6h6M23 20v-6h-6" /> }]}>Deploy</SplitButton>
+            <SplitButton variant="danger" leftIcon={<SmallIcon d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />} onClick={() => {}} menuItems={[{ label: 'Move to trash', onSelect: () => {}, icon: <SmallIcon d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" /> }, { label: 'Delete forever', onSelect: () => {}, danger: true, icon: <SmallIcon d="M18 6L6 18M6 6l12 12" /> }]}>Delete</SplitButton>
+          </RowAtom>
+        </StackAtom>
+        <StackAtom gap="2">
+          <span style={{ fontSize: tokens.fontSizeXs, color: tokens.textSecondary, fontFamily: tokens.fontFamilyMono, letterSpacing: tokens.letterSpacingWide, textTransform: 'uppercase' }}>Disabled & loading</span>
+          <RowAtom gap="5" wrap>
+            <SplitButton disabled onClick={() => {}} menuItems={[{ label: 'Nope', onSelect: () => {} }]}>Disabled</SplitButton>
+            <SplitButton loading onClick={() => {}} menuItems={[{ label: 'Nope', onSelect: () => {} }]}>Loading</SplitButton>
+            <SplitButton variant="outline" disabled onClick={() => {}} menuItems={[{ label: 'Nope', onSelect: () => {} }]}>Outline disabled</SplitButton>
+          </RowAtom>
+        </StackAtom>
+      </Section>
+
+      {/* ButtonGroup */}
+      <Section title="ButtonGroup" tokens={tokens} hidden={!showSection('ButtonGroup')}>
+        <Row label="Outline toolbar" tokens={tokens}>
+          <ButtonGroup>
+            <Button variant="outline" leftIcon={<SmallIcon d="M6 4h8a4 4 0 010 8H6z" />} aria-label="Bold" />
+            <Button variant="outline" leftIcon={<SmallIcon d="M19 4h-9M14 20H5M15 4L9 20" />} aria-label="Italic" />
+            <Button variant="outline" leftIcon={<SmallIcon d="M6 3v7a6 6 0 0012 0V3M4 21h16" />} aria-label="Underline" />
+          </ButtonGroup>
+          <ButtonGroup>
+            <Button variant="outline">Left</Button>
+            <Button variant="outline">Center</Button>
+            <Button variant="outline">Right</Button>
+          </ButtonGroup>
+        </Row>
+        <Row label="Ghost toolbar" tokens={tokens}>
+          <ButtonGroup>
+            <Button variant="ghost" leftIcon={<SmallIcon d="M6 4h8a4 4 0 010 8H6z" />} aria-label="Bold" />
+            <Button variant="ghost" leftIcon={<SmallIcon d="M19 4h-9M14 20H5M15 4L9 20" />} aria-label="Italic" />
+            <Button variant="ghost" leftIcon={<SmallIcon d="M6 3v7a6 6 0 0012 0V3M4 21h16" />} aria-label="Underline" />
+          </ButtonGroup>
+          <ButtonGroup>
+            <Button variant="ghost">Left</Button>
+            <Button variant="ghost">Center</Button>
+            <Button variant="ghost">Right</Button>
+          </ButtonGroup>
+        </Row>
+        <Row label="Ghost xs" tokens={tokens}>
+          <ButtonGroup>
+            <Button variant="ghost" size="xs" leftIcon={<SmallIcon d="M6 4h8a4 4 0 010 8H6z" />} aria-label="Bold" />
+            <Button variant="ghost" size="xs" leftIcon={<SmallIcon d="M19 4h-9M14 20H5M15 4L9 20" />} aria-label="Italic" />
+            <Button variant="ghost" size="xs" leftIcon={<SmallIcon d="M6 3v7a6 6 0 0012 0V3M4 21h16" />} aria-label="Underline" />
+          </ButtonGroup>
+          <ButtonGroup>
+            <Button variant="ghost" size="xs">Left</Button>
+            <Button variant="ghost" size="xs">Center</Button>
+            <Button variant="ghost" size="xs">Right</Button>
+          </ButtonGroup>
+        </Row>
+        <Row label="Mixed variants" tokens={tokens}>
+          <ButtonGroup>
+            <Button variant="primary">Save</Button>
+            <Button variant="outline">Cancel</Button>
+          </ButtonGroup>
+          <ButtonGroup>
+            <Button variant="secondary">Edit</Button>
+            <Button variant="secondary">Duplicate</Button>
+            <Button variant="danger-outline">Delete</Button>
+          </ButtonGroup>
+        </Row>
+        <Row label="With SplitButton" tokens={tokens}>
+          <ButtonGroup>
+            <SplitButton onClick={() => {}} menuItems={[{ label: 'Deploy to staging', onSelect: () => {} }]}>Deploy</SplitButton>
+            <Button variant="outline">Logs</Button>
+          </ButtonGroup>
+        </Row>
+        <Row label="Sizes" tokens={tokens}>
+          <ButtonGroup>
+            <Button variant="outline" size="xs">A</Button>
+            <Button variant="outline" size="xs">B</Button>
+            <Button variant="outline" size="xs">C</Button>
+          </ButtonGroup>
+          <ButtonGroup>
+            <Button variant="outline" size="sm">A</Button>
+            <Button variant="outline" size="sm">B</Button>
+            <Button variant="outline" size="sm">C</Button>
+          </ButtonGroup>
+          <ButtonGroup>
+            <Button variant="outline" size="md">A</Button>
+            <Button variant="outline" size="md">B</Button>
+            <Button variant="outline" size="md">C</Button>
+          </ButtonGroup>
         </Row>
       </Section>
 
