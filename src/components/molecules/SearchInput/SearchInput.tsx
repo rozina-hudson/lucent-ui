@@ -9,9 +9,12 @@ export interface SearchResult {
   label: string;
 }
 
+export type SearchInputMode = 'search' | 'filter';
+
 export interface SearchInputProps {
   value: string;
   onChange: (value: string) => void;
+  mode?: SearchInputMode;
   placeholder?: string;
   size?: InputSize;
   label?: string;
@@ -36,6 +39,12 @@ const SearchIcon = ({ size = 16 }: { size?: number }) => (
   </svg>
 );
 
+const FilterIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <path d="M2 3h12M4 8h8M6 13h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+  </svg>
+);
+
 const ClearIcon = () => (
   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
     <path d="M3 3L11 11M11 3L3 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
@@ -45,7 +54,8 @@ const ClearIcon = () => (
 export function SearchInput({
   value,
   onChange,
-  placeholder = 'Search…',
+  mode = 'search',
+  placeholder,
   size = 'md',
   label,
   helperText,
@@ -57,6 +67,7 @@ export function SearchInput({
   id,
   style,
 }: SearchInputProps) {
+  const resolvedPlaceholder = placeholder ?? (mode === 'filter' ? 'Filter…' : 'Search…');
   const [focused, setFocused] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -64,7 +75,7 @@ export function SearchInput({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
 
-  const showDropdown = focused && results.length > 0;
+  const showDropdown = mode === 'search' && focused && results.length > 0;
 
   useLayoutEffect(() => {
     if (!showDropdown || !wrapperRef.current) return;
@@ -96,7 +107,7 @@ export function SearchInput({
   ) : value ? (
     <button
       type="button"
-      aria-label="Clear search"
+      aria-label={mode === 'filter' ? 'Clear filter' : 'Clear search'}
       onClick={handleClear}
       style={{
         display: 'flex',
@@ -123,9 +134,9 @@ export function SearchInput({
         size={size}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
+        placeholder={resolvedPlaceholder}
         disabled={disabled}
-        leftElement={<SearchIcon size={iconSizes[size]} />}
+        leftElement={mode === 'filter' ? <FilterIcon size={iconSizes[size]} /> : <SearchIcon size={iconSizes[size]} />}
         rightElement={rightSlot ?? undefined}
         onFocus={handleFocus}
         onBlur={handleBlur}
