@@ -58,6 +58,7 @@ import { Row as RowAtom } from '../src/components/atoms/Row/index.js';
 import { Progress } from '../src/components/atoms/Progress/index.js';
 import { SplitButton } from '../src/components/atoms/SplitButton/index.js';
 import { ButtonGroup } from '../src/components/atoms/ButtonGroup/index.js';
+import { NavMenu } from '../src/components/molecules/NavMenu/index.js';
 import type { LucentTokens, Theme, ThemeAnchors, UploadFile } from '../src/index.js';
 
 // ─── Palette map ────────────────────────────────────────────────────────────
@@ -123,7 +124,7 @@ function ToastButtons({ position, onChangePosition }: { position: ToastPosition;
 
 function NavIcon() {
   return (
-    <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
       <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" />
     </svg>
   );
@@ -398,18 +399,34 @@ function Inner({
   const { tokens } = useLucent();
   const [componentFilter, setComponentFilter] = useState('');
 
-  const allSections = [
-    'Text', 'Input', 'Textarea', 'FormField', 'SearchInput', 'Card', 'Alert',
-    'EmptyState', 'Skeleton', 'Checkbox', 'Radio', 'Toggle', 'Slider', 'CodeBlock',
-    'Table', 'ColorSwatch', 'ColorPicker', 'SegmentedControl', 'Select', 'Chip',
-    'Tooltip', 'Icon', 'Button', 'Avatar', 'Spinner', 'Divider',
-    'Breadcrumb', 'Tabs', 'Collapsible', 'NavLink', 'PageLayout', 'DataTable',
-    'CommandPalette', 'MultiSelect', 'DatePicker', 'DateRangePicker', 'FileUpload', 'Timeline', 'Menu', 'Toast',
-    'Stack', 'Row', 'Progress', 'SplitButton', 'ButtonGroup',
-  ];
+  const sectionGroups: Record<string, { label: string; tier: 'atom' | 'molecule'; items: string[] }> = {
+    buttons:     { label: 'Buttons & Actions', tier: 'atom', items: ['Button', 'SplitButton', 'ButtonGroup', 'Toggle', 'SegmentedControl'] },
+    inputs:      { label: 'Input Fields',      tier: 'atom', items: ['Input', 'Textarea', 'Select', 'Checkbox', 'Radio', 'Slider', 'ColorPicker', 'ColorSwatch'] },
+    text:        { label: 'Text & Labels',      tier: 'atom', items: ['Text', 'Badge', 'Chip', 'Tag', 'Icon', 'Tooltip', 'CodeBlock'] },
+    media:       { label: 'Media & Status',     tier: 'atom', items: ['Avatar', 'Spinner', 'Progress', 'Divider'] },
+    layout:      { label: 'Layout',             tier: 'atom', items: ['Stack', 'Row', 'Table'] },
+    forms:       { label: 'Forms',              tier: 'molecule', items: ['FormField', 'SearchInput', 'MultiSelect', 'DatePicker', 'DateRangePicker', 'FileUpload'] },
+    containers:  { label: 'Containers',         tier: 'molecule', items: ['Card', 'Alert', 'EmptyState', 'Skeleton', 'Collapsible'] },
+    navigation:  { label: 'Navigation',         tier: 'molecule', items: ['Breadcrumb', 'Tabs', 'NavLink', 'NavMenu', 'PageLayout'] },
+    data:        { label: 'Data & Tables',      tier: 'molecule', items: ['DataTable', 'Timeline'] },
+    overlays:    { label: 'Overlays & Menus',   tier: 'molecule', items: ['Menu', 'CommandPalette', 'Toast'] },
+  };
+
+  const allSections = Object.values(sectionGroups).flatMap(g => g.items);
+
+  // Groups where clicking the parent selects all children (not a specific one)
+  const selectAllGroups = new Set(['text']);
 
   const filterLower = componentFilter.toLowerCase();
-  const showSection = (name: string) => !filterLower || name.toLowerCase().includes(filterLower);
+  const showSection = (name: string) => {
+    if (!filterLower) return true;
+    if (componentFilter.startsWith('group:')) {
+      const groupKey = componentFilter.slice(6);
+      const group = sectionGroups[groupKey];
+      return group ? group.items.includes(name) : false;
+    }
+    return name.toLowerCase().includes(filterLower);
+  };
 
   const [inputVal, setInputVal] = useState('');
   const [textareaVal, setTextareaVal] = useState('');
@@ -423,6 +440,9 @@ function Inner({
   const [searchQuery, setSearchQuery] = useState('');
   const [alertDismissed, setAlertDismissed] = useState(false);
   const [menuSort, setMenuSort] = useState('name');
+  const [navInverse, setNavInverse] = useState(false);
+  const [navIcons, setNavIcons] = useState(false);
+  const [navSize, setNavSize] = useState<'sm' | 'md' | 'lg'>('sm');
 
   // Scale preset state
   const [density, setDensity] = useState<DensityPreset>('default');
@@ -526,59 +546,102 @@ function Inner({
         .map((f, i) => ({ id: i, label: f }))
     : [];
 
+  const atomGroups = Object.entries(sectionGroups).filter(([, g]) => g.tier === 'atom');
+  const moleculeGroups = Object.entries(sectionGroups).filter(([, g]) => g.tier === 'molecule');
+
   const navSidebar = (
-    <div style={{ padding: tokens.space4, display: 'flex', flexDirection: 'column', gap: tokens.space1 }}>
-      <div style={{ marginBottom: tokens.space2 }}>
-        <input
-          type="text"
-          value={componentFilter}
-          onChange={(e) => setComponentFilter(e.target.value)}
-          placeholder="Filter…"
-          style={{
-            width: '100%',
-            height: 30,
-            padding: '0 8px',
-            boxSizing: 'border-box',
-            border: `1px solid ${tokens.borderDefault}`,
-            borderRadius: tokens.radiusMd,
-            background: tokens.surface,
-            color: tokens.textPrimary,
-            fontFamily: tokens.fontFamilyBase,
-            fontSize: tokens.fontSizeXs,
-            outline: 'none',
-          }}
+    <div style={{ padding: tokens.space3, display: 'flex', flexDirection: 'column', gap: tokens.space2 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.space2 }}>
+        <SegmentedControl
+          size="sm"
+          options={[{ value: 'sm', label: 'SM' }, { value: 'md', label: 'MD' }, { value: 'lg', label: 'LG' }]}
+          value={navSize}
+          onChange={(v) => setNavSize(v as 'sm' | 'md' | 'lg')}
         />
+        <div style={{ display: 'flex', alignItems: 'center', gap: tokens.space3 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: tokens.space2 }}>
+            <Text size="xs" color="secondary">Inverse</Text>
+            <Toggle size="sm" checked={navInverse} onChange={(e) => setNavInverse(e.target.checked)} />
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: tokens.space2 }}>
+            <Text size="xs" color="secondary">Icons</Text>
+            <Toggle size="sm" checked={navIcons} onChange={(e) => setNavIcons(e.target.checked)} />
+          </div>
+        </div>
       </div>
-      {allSections.filter(s => showSection(s)).map(name => (
-        <NavLink
-          key={name}
-          href={`#section-${name}`}
-          onClick={(e: React.MouseEvent) => {
-            e.preventDefault();
-            setComponentFilter(name);
-          }}
-          isActive={componentFilter === name}
-          inverse
-        >
-          {name}
-        </NavLink>
-      ))}
-      {componentFilter && (
-        <button
+      <NavMenu orientation="vertical" size={navSize} inverse={navInverse} hasIcons={navIcons}>
+        <NavMenu.Item
+          as="button"
+          isActive={!componentFilter}
           onClick={() => setComponentFilter('')}
-          style={{
-            border: 'none',
-            background: 'none',
-            color: tokens.textSecondary,
-            cursor: 'pointer',
-            fontSize: tokens.fontSizeXs,
-            padding: `${tokens.space1} ${tokens.space2}`,
-            textAlign: 'left',
-          }}
+          icon={navIcons ? <NavIcon /> : undefined}
         >
-          Clear filter
-        </button>
-      )}
+          All components
+        </NavMenu.Item>
+        <NavMenu.Separator />
+        <NavMenu.Group label="Atoms">
+          {atomGroups.map(([key, group]) => {
+            const isSelectAll = selectAllGroups.has(key);
+            return (
+              <NavMenu.Item
+                key={key}
+                as="button"
+                isActive={isSelectAll
+                  ? componentFilter === `group:${key}`
+                  : group.items.includes(componentFilter)
+                }
+                onClick={() => setComponentFilter(isSelectAll ? `group:${key}` : group.items[0])}
+                icon={navIcons ? <NavIcon /> : undefined}
+              >
+                {group.label}
+                <NavMenu.Sub>
+                  {group.items.map(name => (
+                    <NavMenu.Item
+                      key={name}
+                      as="button"
+                      isActive={componentFilter === name}
+                      onClick={() => setComponentFilter(name)}
+                    >
+                      {name}
+                    </NavMenu.Item>
+                  ))}
+                </NavMenu.Sub>
+              </NavMenu.Item>
+            );
+          })}
+          <NavMenu.Item as="button" isActive={componentFilter === 'atoms-overview'} onClick={() => setComponentFilter('atoms-overview')} icon={navIcons ? <NavIcon /> : undefined}>Overview</NavMenu.Item>
+          <NavMenu.Item as="button" isActive={componentFilter === 'atoms-guidelines'} onClick={() => setComponentFilter('atoms-guidelines')} icon={navIcons ? <NavIcon /> : undefined}>Guidelines</NavMenu.Item>
+        </NavMenu.Group>
+        <NavMenu.Group label="Molecules">
+          {moleculeGroups.map(([key, group]) => (
+            <NavMenu.Item
+              key={key}
+              as="button"
+              isActive={group.items.includes(componentFilter)}
+              onClick={() => setComponentFilter(group.items[0])}
+              icon={navIcons ? <NavIcon /> : undefined}
+            >
+              {group.label}
+              <NavMenu.Sub>
+                {group.items.map(name => (
+                  <NavMenu.Item
+                    key={name}
+                    as="button"
+                    isActive={componentFilter === name}
+                    onClick={() => setComponentFilter(name)}
+                  >
+                    {name}
+                  </NavMenu.Item>
+                ))}
+              </NavMenu.Sub>
+            </NavMenu.Item>
+          ))}
+          <NavMenu.Item as="button" isActive={componentFilter === 'mol-patterns'} onClick={() => setComponentFilter('mol-patterns')} icon={navIcons ? <NavIcon /> : undefined}>Patterns</NavMenu.Item>
+        </NavMenu.Group>
+        <NavMenu.Separator />
+        <NavMenu.Item as="button" isActive={componentFilter === 'changelog'} onClick={() => setComponentFilter('changelog')} icon={navIcons ? <NavIcon /> : undefined}>Changelog</NavMenu.Item>
+        <NavMenu.Item as="button" isActive={componentFilter === 'about'} onClick={() => setComponentFilter('about')} icon={navIcons ? <NavIcon /> : undefined}>About</NavMenu.Item>
+      </NavMenu>
     </div>
   );
 
@@ -756,7 +819,7 @@ function Inner({
       headerHeight={48}
       chromeBackground="bgSubtle"
       mainStyle={{ background: tokens.bgBase }}
-      {...(tab === 'components' && { sidebar: navSidebar, sidebarWidth: 180 })}
+      {...(tab === 'components' && { sidebar: navSidebar, sidebarWidth: navSize === 'lg' ? 280 : navSize === 'md' ? 250 : 220 })}
       {...(tab === 'components' && { rightSidebar: customizerSidebar, rightSidebarWidth: 260 })}
     >
       {tab === 'components' ? (
@@ -2442,6 +2505,73 @@ function Inner({
               </RowAtom>
             </StackAtom>
           </Card>
+        </Row>
+      </Section>
+
+      <Section title="NavMenu" tokens={tokens} hidden={!showSection('NavMenu')}>
+        <Row label="Vertical — child active (parent highlights)" tokens={tokens}>
+          <div style={{ width: 220, background: tokens.bgSubtle, borderRadius: tokens.radiusMd, padding: tokens.space3 }}>
+            <NavMenu orientation="vertical">
+              <NavMenu.Item href="#" icon={<NavIcon />}>Dashboard</NavMenu.Item>
+              <NavMenu.Item href="#" icon={<NavIcon />} badge={<Chip size="sm" variant="neutral">12</Chip>}>Projects</NavMenu.Item>
+              <NavMenu.Item icon={<NavIcon />} badge={<Chip size="sm" variant="accent">3</Chip>}>
+                Settings
+                <NavMenu.Sub>
+                  <NavMenu.Item href="#" isActive>General</NavMenu.Item>
+                  <NavMenu.Item href="#">Team</NavMenu.Item>
+                  <NavMenu.Item href="#">Billing</NavMenu.Item>
+                </NavMenu.Sub>
+              </NavMenu.Item>
+              <NavMenu.Item href="#" icon={<NavIcon />} disabled>Disabled</NavMenu.Item>
+            </NavMenu>
+          </div>
+        </Row>
+        <Row label="Vertical with groups (inverse)" tokens={tokens}>
+          <div style={{ width: 220, background: tokens.bgSubtle, borderRadius: tokens.radiusMd, padding: tokens.space3 }}>
+            <NavMenu orientation="vertical" inverse>
+              <NavMenu.Group label="Main">
+                <NavMenu.Item href="#" isActive>Dashboard</NavMenu.Item>
+                <NavMenu.Item href="#" badge={<Chip size="sm" variant="neutral">5</Chip>}>Analytics</NavMenu.Item>
+              </NavMenu.Group>
+              <NavMenu.Separator />
+              <NavMenu.Group label="Admin" defaultOpen={false}>
+                <NavMenu.Item href="#">Users</NavMenu.Item>
+                <NavMenu.Item href="#">Roles</NavMenu.Item>
+              </NavMenu.Group>
+            </NavMenu>
+          </div>
+        </Row>
+        <Row label="Compact (size=sm)" tokens={tokens}>
+          <div style={{ width: 200, background: tokens.bgSubtle, borderRadius: tokens.radiusMd, padding: tokens.space2 }}>
+            <NavMenu orientation="vertical" size="sm">
+              <NavMenu.Item href="#" icon={<NavIcon />} isActive>Dashboard</NavMenu.Item>
+              <NavMenu.Item href="#" icon={<NavIcon />}>Projects</NavMenu.Item>
+              <NavMenu.Item icon={<NavIcon />}>
+                Settings
+                <NavMenu.Sub>
+                  <NavMenu.Item href="#">General</NavMenu.Item>
+                  <NavMenu.Item href="#">Team</NavMenu.Item>
+                </NavMenu.Sub>
+              </NavMenu.Item>
+            </NavMenu>
+          </div>
+        </Row>
+        <Row label="Horizontal (top bar)" tokens={tokens}>
+          <div style={{ borderBottom: `1px solid ${tokens.borderDefault}`, padding: `0 ${tokens.space2}` }}>
+            <NavMenu orientation="horizontal">
+              <NavMenu.Item href="#" isActive>Dashboard</NavMenu.Item>
+              <NavMenu.Item href="#">Projects</NavMenu.Item>
+              <NavMenu.Item>
+                Settings
+                <NavMenu.Sub>
+                  <NavMenu.Item href="#" isActive>General</NavMenu.Item>
+                  <NavMenu.Item href="#">Team</NavMenu.Item>
+                  <NavMenu.Item href="#">Billing</NavMenu.Item>
+                </NavMenu.Sub>
+              </NavMenu.Item>
+              <NavMenu.Item href="#" disabled>Disabled</NavMenu.Item>
+            </NavMenu>
+          </div>
         </Row>
       </Section>
       </div>
