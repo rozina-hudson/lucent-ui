@@ -1,5 +1,20 @@
 # lucent-ui
 
+## 0.24.0
+
+### New Molecule: NavMenu
+
+- **NavMenu** — hierarchical navigation for sidebar and top-bar layouts with a DOM-driven sliding highlight pill. Root-driven measurement via `MutationObserver` + `ResizeObserver` + `requestAnimationFrame` — zero timeout coordination.
+  - Compound API: `NavMenu.Item`, `NavMenu.Group`, `NavMenu.Sub`, `NavMenu.Separator`.
+  - **Sliding highlight pill** — always-in-DOM, positioned via direct style mutation. Queries `data-active` / `data-active-parent` attributes; uses `aria-hidden` ancestry for collapsed-item detection.
+  - **Three highlight states:** child active (full accent), collapsed-with-active-child (12% accent tint), self-active parent (full accent on parent itself for section-level pages).
+  - **CSS hover** — injected `[data-lucent-navitem]` rule with `:not()` exclusions. 5% translucent `text-primary` tint that never conflicts with the accent pill.
+  - **Inverse mode** — surface background with accent right-border (`inset -3px`) and elevation shadow.
+  - **`hasIcons` prop** — controls left-padding alignment globally. Group headers, items, and sub-menu children all respond via context (`parentHasIcon`) for consistent text alignment.
+  - Three sizes (`sm`/`md`/`lg`), collapsible groups with height animation, horizontal dropdown with viewport collision detection.
+  - Props: `orientation`, `inverse`, `size`, `hasIcons`, `aria-label`, `style`.
+  - Full manifest with 8 usage examples, composition graph, and accessibility metadata.
+
 ## 0.23.0
 
 ### New Atoms: SplitButton & ButtonGroup
