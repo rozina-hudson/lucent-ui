@@ -8,30 +8,36 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
   specVersion: '0.1',
 
   description:
-    'Multi-level navigation menu supporting vertical (sidebar) and horizontal (top bar) orientations with a sliding highlight pill, CSS-driven hover states, collapsible groups, and nested sub-menus.',
+    'Multi-level navigation menu supporting vertical (sidebar) and horizontal (top bar) orientations with a sliding highlight pill, CSS-driven hover states, collapsible section groups, and expandable tree items.',
 
   designIntent:
-    'NavMenu provides hierarchical navigation for sidebar and top-bar layouts. ' +
-    'A single sliding highlight pill follows the active item, driven entirely from the root via DOM measurement — ' +
-    'the root queries for data-active / data-active-parent attributes and positions an absolutely-placed pill ' +
-    'using requestAnimationFrame. MutationObserver and ResizeObserver auto-trigger re-measurement; ' +
-    'aria-hidden ancestry is used to detect collapsed items (not offsetHeight), eliminating all timeout-based coordination. ' +
-    'Hover states use a CSS rule on [data-lucent-navitem] with :not() exclusions for active, parent-active, hint, and disabled states, ' +
-    'rendering a 5% translucent text-primary tint that never conflicts with the accent pill. ' +
-    'In vertical orientation, parent items expand inline with smooth height animation (same pattern as Collapsible) ' +
-    'and children are indented by depth level. When a parent with an active child is collapsed, the pill slides ' +
-    'to the parent button with a lighter visual style (12% accent tint or surface-secondary in inverse mode) ' +
-    'so text remains readable without on-accent color. When re-expanded, the pill slides back to the child. ' +
-    'Parent items support "self-active" mode: setting isActive on a parent with no active children ' +
-    'highlights the parent with the full accent pill, useful for section-level pages that represent all children. ' +
+    // ── Composition pattern (most important for correct usage) ──
+    'CRITICAL COMPOSITION PATTERN — There are two different nesting mechanisms that serve different purposes:\n\n' +
+    '1. NavMenu.Sub (tree nesting): Place <NavMenu.Sub> as a DIRECT CHILD of <NavMenu.Item> to make that item ' +
+    'expandable with nested children. NavMenu.Sub is a bare fragment — it accepts ONLY children, no other props ' +
+    '(no label, no icon). The parent Item auto-detects the Sub child and renders itself as a collapsible toggle ' +
+    'with expand/collapse behavior. The label, icon, and badge props all go on the parent Item, not on Sub.\n' +
+    'Example: <NavMenu.Item icon={<Gear />}>Settings<NavMenu.Sub><NavMenu.Item>General</NavMenu.Item></NavMenu.Sub></NavMenu.Item>\n\n' +
+    '2. NavMenu.Group (section grouping): Wraps multiple sibling items under an uppercase section header. ' +
+    'Groups are for visual organization — they do NOT create parent-child navigation relationships. ' +
+    'A Group with label="Admin" containing Users and Roles items means "these items are in the Admin section", ' +
+    'NOT "Admin is a parent page with Users and Roles as sub-pages". Groups have their own independent collapse.\n' +
+    'Example: <NavMenu.Group label="Admin"><NavMenu.Item>Users</NavMenu.Item><NavMenu.Item>Roles</NavMenu.Item></NavMenu.Group>\n\n' +
+    'WHEN TO USE WHICH:\n' +
+    '- Use NavMenu.Sub when an item IS a parent page with child pages (tree hierarchy, e.g. Settings → General, Team, Billing)\n' +
+    '- Use NavMenu.Group when items BELONG to a section but are all peers (flat grouping, e.g. "Admin" section containing Users, Roles)\n' +
+    '- They can be combined: a Group can contain Items that themselves have Sub children\n\n' +
+    // ── Highlight system ──
+    'SLIDING HIGHLIGHT: A single pill follows the active item, driven from the root via DOM measurement. ' +
+    'The root queries for data-active / data-active-parent attributes and positions an always-in-DOM pill ' +
+    'using requestAnimationFrame. MutationObserver + ResizeObserver auto-trigger re-measurement; ' +
+    'aria-hidden ancestry detects collapsed items. Three highlight states: ' +
+    '(1) child active — full accent pill, ' +
+    '(2) collapsed with active child — lighter pill (12% accent tint) on the parent button, ' +
+    '(3) self-active parent — full accent pill on the parent itself (isActive on parent, no active children). ' +
+    'Hover uses a CSS rule on [data-lucent-navitem] with :not() exclusions, rendering a 5% translucent tint. ' +
     'Inverse mode uses surface background with accent right-border (inset -3px) and elevation shadow. ' +
-    'The hasIcons prop controls left-padding alignment globally: when true, items use tighter padding (space-2) ' +
-    'and group headers align with icon start; sub-menu children inherit parentHasIcon via context so their ' +
-    'text aligns with the parent label text regardless of whether they have icons themselves. ' +
-    'In horizontal orientation, parent items show dropdown sub-menus on hover/click with enter/exit animation ' +
-    'and viewport collision detection. Groups are flattened in horizontal mode. ' +
-    'Three sizes (sm/md/lg) scale font, padding, gap, and icon width via a token map. ' +
-    'The compound API (NavMenu.Item, NavMenu.Group, NavMenu.Sub, NavMenu.Separator) keeps the tree declarative.',
+    'The hasIcons prop controls left-padding alignment globally for items, group headers, and sub-menu children.',
 
   props: [
     {
@@ -84,63 +90,27 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
 
   usageExamples: [
     {
-      title: 'Vertical sidebar with icons',
-      code: `<NavMenu orientation="vertical" hasIcons>
-  <NavMenu.Item icon={<DashIcon />} href="/dashboard" isActive>Dashboard</NavMenu.Item>
-  <NavMenu.Group label="Workspace">
-    <NavMenu.Item icon={<FolderIcon />} href="/projects">Projects</NavMenu.Item>
-    <NavMenu.Item icon={<GearIcon />}>
-      Settings
-      <NavMenu.Sub>
-        <NavMenu.Item href="/settings/general" isActive>General</NavMenu.Item>
-        <NavMenu.Item href="/settings/team">Team</NavMenu.Item>
-      </NavMenu.Sub>
-    </NavMenu.Item>
-  </NavMenu.Group>
-  <NavMenu.Separator />
-  <NavMenu.Item icon={<HelpIcon />} href="/help">Help</NavMenu.Item>
-</NavMenu>`,
-      description:
-        'Sidebar with icons, groups, and nested sub-menu. hasIcons tightens padding so group headers align with icons ' +
-        'and sub-menu children align with parent text.',
-    },
-    {
-      title: 'Vertical sidebar without icons',
+      title: 'Expandable parent item with NavMenu.Sub (tree nesting)',
       code: `<NavMenu orientation="vertical">
   <NavMenu.Item href="/dashboard" isActive>Dashboard</NavMenu.Item>
-  <NavMenu.Group label="Workspace">
-    <NavMenu.Item href="/projects">Projects</NavMenu.Item>
-    <NavMenu.Item>
-      Settings
-      <NavMenu.Sub>
-        <NavMenu.Item href="/settings/general">General</NavMenu.Item>
-        <NavMenu.Item href="/settings/team">Team</NavMenu.Item>
-      </NavMenu.Sub>
-    </NavMenu.Item>
-  </NavMenu.Group>
-</NavMenu>`,
-      description:
-        'Without hasIcons, items and group headers use standard padding (space-4) for comfortable text-only layout.',
-    },
-    {
-      title: 'Horizontal top navigation',
-      code: `<NavMenu orientation="horizontal">
-  <NavMenu.Item href="/dashboard" isActive>Dashboard</NavMenu.Item>
-  <NavMenu.Item href="/projects">Projects</NavMenu.Item>
   <NavMenu.Item>
     Settings
     <NavMenu.Sub>
       <NavMenu.Item href="/settings/general">General</NavMenu.Item>
       <NavMenu.Item href="/settings/team">Team</NavMenu.Item>
+      <NavMenu.Item href="/settings/billing">Billing</NavMenu.Item>
     </NavMenu.Sub>
   </NavMenu.Item>
+  <NavMenu.Item href="/help">Help</NavMenu.Item>
 </NavMenu>`,
       description:
-        'Top bar layout. Parent items show dropdown sub-menus on hover/click with viewport collision detection.',
+        'NavMenu.Sub goes INSIDE a NavMenu.Item to make it expandable. The parent Item ("Settings") becomes a ' +
+        'toggle button — clicking it expands/collapses the child items. NavMenu.Sub is a bare fragment that only ' +
+        'accepts children. The label "Settings" and any icon/badge props go on the parent Item, never on Sub.',
     },
     {
-      title: 'Inverse mode with section groups',
-      code: `<NavMenu orientation="vertical" inverse>
+      title: 'Section grouping with NavMenu.Group (flat organization)',
+      code: `<NavMenu orientation="vertical">
   <NavMenu.Group label="Main">
     <NavMenu.Item href="/dashboard" isActive>Dashboard</NavMenu.Item>
     <NavMenu.Item href="/analytics">Analytics</NavMenu.Item>
@@ -152,7 +122,31 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
   </NavMenu.Group>
 </NavMenu>`,
       description:
-        'Inverse highlight: surface background with accent right-border and elevation shadow. Text stays text-primary.',
+        'NavMenu.Group wraps peer items under an uppercase section header. It does NOT create a parent-child ' +
+        'navigation relationship — items inside a Group are all at the same level. Groups have their own ' +
+        'independent collapse via the label header toggle. Use Group for sections, use Sub for tree nesting.',
+    },
+    {
+      title: 'Combined: Groups containing items with Sub children',
+      code: `<NavMenu orientation="vertical" hasIcons>
+  <NavMenu.Group label="Workspace">
+    <NavMenu.Item icon={<FolderIcon />} href="/projects">Projects</NavMenu.Item>
+    <NavMenu.Item icon={<GearIcon />}>
+      Settings
+      <NavMenu.Sub>
+        <NavMenu.Item href="/settings/general" isActive>General</NavMenu.Item>
+        <NavMenu.Item href="/settings/team">Team</NavMenu.Item>
+      </NavMenu.Sub>
+    </NavMenu.Item>
+  </NavMenu.Group>
+  <NavMenu.Separator />
+  <NavMenu.Group label="Admin">
+    <NavMenu.Item icon={<UserIcon />} href="/users">Users</NavMenu.Item>
+  </NavMenu.Group>
+</NavMenu>`,
+      description:
+        'Groups and Sub can be combined. Here the "Workspace" Group contains a "Settings" Item with Sub children. ' +
+        'The Group provides section organization; the Sub provides tree hierarchy within an item.',
     },
     {
       title: 'Self-active parent (section-level page)',
@@ -174,16 +168,27 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
   </NavMenu.Item>
 </NavMenu>`,
       description:
-        'Setting isActive on a parent with no active children gives it the full accent highlight. ' +
-        'The sub-nav expands but no child is individually selected — the parent represents all items. ' +
-        'Clicking a specific child moves the highlight to that child.',
+        'Setting isActive on a parent Item (with Sub) while no child has isActive highlights the parent itself ' +
+        'with the full accent pill. The sub-nav expands but no child is individually selected — the parent ' +
+        'represents "all items in this section". Clicking a specific child moves the highlight to that child.',
     },
     {
-      title: 'Compact sidebar (sm size)',
-      code: `<NavMenu orientation="vertical" size="sm" hasIcons>
-  <NavMenu.Item href="/dash" icon={<DashIcon />} isActive>Dashboard</NavMenu.Item>
-  <NavMenu.Item href="/projects" icon={<FolderIcon />}>Projects</NavMenu.Item>
-  <NavMenu.Item icon={<GearIcon />}>
+      title: 'Inverse mode',
+      code: `<NavMenu orientation="vertical" inverse>
+  <NavMenu.Group label="Main">
+    <NavMenu.Item href="/dashboard" isActive>Dashboard</NavMenu.Item>
+    <NavMenu.Item href="/analytics">Analytics</NavMenu.Item>
+  </NavMenu.Group>
+</NavMenu>`,
+      description:
+        'Inverse highlight: surface background with accent right-border and elevation shadow. Text stays text-primary.',
+    },
+    {
+      title: 'Horizontal top navigation with dropdown',
+      code: `<NavMenu orientation="horizontal">
+  <NavMenu.Item href="/dashboard" isActive>Dashboard</NavMenu.Item>
+  <NavMenu.Item href="/projects">Projects</NavMenu.Item>
+  <NavMenu.Item>
     Settings
     <NavMenu.Sub>
       <NavMenu.Item href="/settings/general">General</NavMenu.Item>
@@ -191,24 +196,20 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
     </NavMenu.Sub>
   </NavMenu.Item>
 </NavMenu>`,
-      description: 'Small size variant for compact sidebar layouts with tighter padding and smaller font.',
+      description:
+        'In horizontal orientation, Items with Sub children render as dropdown menus instead of inline expand. ' +
+        'The Sub pattern is the same — only the visual rendering changes based on orientation.',
     },
     {
-      title: 'Badges and disabled items',
+      title: 'Badges, disabled items, and polymorphic rendering',
       code: `<NavMenu orientation="vertical" hasIcons>
   <NavMenu.Item href="/inbox" icon={<InboxIcon />} badge={<Chip size="sm" variant="accent">3</Chip>}>Inbox</NavMenu.Item>
-  <NavMenu.Item href="/settings" icon={<GearIcon />} isActive>Settings</NavMenu.Item>
+  <NavMenu.Item as={Link} href="/settings" icon={<GearIcon />} isActive>Settings</NavMenu.Item>
   <NavMenu.Item href="/archive" icon={<ArchiveIcon />} disabled>Archived</NavMenu.Item>
 </NavMenu>`,
-      description: 'Items with badge counts and disabled state. Disabled items use not-allowed cursor and muted text.',
-    },
-    {
-      title: 'Polymorphic items with React Router',
-      code: `<NavMenu orientation="vertical">
-  <NavMenu.Item as={Link} href="/dashboard" isActive>Dashboard</NavMenu.Item>
-  <NavMenu.Item as={Link} href="/projects">Projects</NavMenu.Item>
-</NavMenu>`,
-      description: 'Using the "as" prop to render items as React Router Link components instead of anchor tags.',
+      description:
+        'Items support badge (right-aligned content), disabled state, and polymorphic rendering via the "as" prop ' +
+        '(e.g. React Router Link). Disabled items use not-allowed cursor and muted text.',
     },
   ],
 
@@ -216,19 +217,31 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
     {
       componentId: 'nav-menu-item',
       componentName: 'NavMenu.Item',
-      role: 'Individual navigation link or parent toggle. Sets data-active when self-active, data-active-parent when collapsed with an active child. Uses data-lucent-navitem for CSS hover targeting.',
+      role:
+        'Navigation link or expandable parent. When it contains a NavMenu.Sub child, it automatically becomes ' +
+        'a collapsible toggle with expand/collapse behavior — the label, icon, and badge go on the Item. ' +
+        'Props: children, href, isActive, icon, badge, disabled, onClick, as, style.',
       required: true,
     },
     {
       componentId: 'nav-menu-sub',
       componentName: 'NavMenu.Sub',
-      role: 'Marker wrapper for nested sub-menu children inside a parent NavMenu.Item.',
+      role:
+        'Bare fragment placed as a DIRECT CHILD of NavMenu.Item to make that item expandable with nested children. ' +
+        'Accepts ONLY children — no label, icon, or other props. The parent Item detects it and switches to ' +
+        'parent-toggle rendering. In vertical orientation, children expand inline below the parent; ' +
+        'in horizontal orientation, children render as a dropdown. ' +
+        'Do NOT confuse with NavMenu.Group — Sub creates tree hierarchy, Group creates flat section organization.',
       required: false,
     },
     {
       componentId: 'nav-menu-group',
       componentName: 'NavMenu.Group',
-      role: 'Section grouping with optional uppercase label header and independent collapse. Header left padding responds to hasIcons context.',
+      role:
+        'Section grouping that wraps peer items under an uppercase header label. Does NOT create parent-child ' +
+        'navigation relationships — items inside are all at the same level. Has its own independent collapse. ' +
+        'Props: children, label, defaultOpen, open, onOpenChange, collapsible, style. ' +
+        'Do NOT confuse with NavMenu.Sub — Group is for flat section headers, Sub is for tree nesting inside an Item.',
       required: false,
     },
     {
@@ -243,7 +256,7 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
     role: 'navigation',
     ariaAttributes: [
       'aria-label on root <nav>',
-      'aria-expanded on parent items with sub-menus',
+      'aria-expanded on parent items (Items with Sub children)',
       'aria-current="page" on active leaf items',
       'aria-disabled on disabled items',
       'aria-hidden on collapsed sub-menu content and the highlight pill',
@@ -256,7 +269,7 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
       'Escape — close open sub-menu',
     ],
     notes:
-      'Parent items use aria-expanded to communicate open/closed state. ' +
+      'Parent items (Items containing NavMenu.Sub) use aria-expanded to communicate open/closed state. ' +
       'Active leaf items use aria-current="page". Disabled items use aria-disabled with no click handler. ' +
       'Collapsed sections are marked aria-hidden="true", which the sliding highlight uses to detect ' +
       'visibility — items inside aria-hidden containers are skipped in favor of the parent fallback. ' +
