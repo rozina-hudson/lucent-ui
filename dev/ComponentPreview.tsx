@@ -438,6 +438,7 @@ function Inner({
   const [selectVal, setSelectVal] = useState('');
   const [tags, setTags] = useState(['React', 'TypeScript', 'Design Systems']);
   const [searchQuery, setSearchQuery] = useState('');
+  const [filterQuery, setFilterQuery] = useState('');
   const [alertDismissed, setAlertDismissed] = useState(false);
   const [menuSort, setMenuSort] = useState('name');
   const [navInverse, setNavInverse] = useState(false);
@@ -981,6 +982,16 @@ function Inner({
         <Row label="Disabled" tokens={tokens}>
           <div style={{ width: 320 }}>
             <SearchInput value="" onChange={() => {}} disabled placeholder="Search disabled…" />
+          </div>
+        </Row>
+        <Row label="Filter mode" tokens={tokens}>
+          <div style={{ width: 320 }}>
+            <SearchInput mode="filter" value={filterQuery} onChange={setFilterQuery} placeholder="Filter items…" />
+          </div>
+        </Row>
+        <Row label="Filter mode (disabled)" tokens={tokens}>
+          <div style={{ width: 320 }}>
+            <SearchInput mode="filter" value="" onChange={() => {}} disabled placeholder="Filter disabled…" />
           </div>
         </Row>
       </Section>

@@ -7,14 +7,16 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
   domain: 'neutral',
   specVersion: '0.1',
 
-  description: 'A search field with a built-in magnifier icon, clear button, and an optional results dropdown.',
+  description: 'A search field with a built-in magnifier icon, clear button, and an optional results dropdown. Use mode="filter" for a simple filter input with a funnel icon and no dropdown.',
 
   designIntent:
     'SearchInput is intentionally dumb about filtering — the consumer passes already-filtered results ' +
     'so the component stays stateless and flexible. The clear button appears only when the input has a ' +
     'value, keeping the right side clean at rest. The results dropdown is rendered absolutely below the ' +
     'input and closes after a 150ms delay on blur to allow result clicks to register before focus is lost. ' +
-    'Spinner replaces the clear button during loading to communicate async state without layout shift.',
+    'Spinner replaces the clear button during loading to communicate async state without layout shift. ' +
+    'Use mode="filter" when you only need a text input with a funnel icon and clear button — no dropdown, ' +
+    'no results array, just a clean filter field.',
 
   props: [
     {
@@ -28,6 +30,14 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
       type: 'function',
       required: true,
       description: 'Called with the new string value whenever the input changes.',
+    },
+    {
+      name: 'mode',
+      type: 'enum',
+      required: false,
+      default: 'search',
+      description: 'Controls variant. "filter" swaps the magnifier for a funnel icon and disables the results dropdown.',
+      enumValues: ['search', 'filter'],
     },
     {
       name: 'size',
@@ -59,8 +69,8 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
       name: 'placeholder',
       type: 'string',
       required: false,
-      default: '"Search…"',
-      description: 'Placeholder text for the input.',
+      default: '"Search…" (or "Filter…" in filter mode)',
+      description: 'Placeholder text for the input. Defaults to "Search…" in search mode and "Filter…" in filter mode.',
     },
     {
       name: 'results',
@@ -115,6 +125,10 @@ const [results, setResults] = useState([]);
   results={results}
   onResultSelect={(r) => console.log(r)}
 />`,
+    },
+    {
+      title: 'Filter mode (no dropdown)',
+      code: `<SearchInput mode="filter" value={filter} onChange={setFilter} placeholder="Filter items…" />`,
     },
     {
       title: 'Loading state',
