@@ -226,7 +226,7 @@ export function Tabs({ tabs, defaultValue, value, onChange, variant = 'underline
                 color: isDisabled
                   ? 'var(--lucent-text-disabled)'
                   : isPills && isActive
-                  ? 'var(--lucent-text-on-accent)'
+                  ? 'var(--lucent-accent-fg)'
                   : isActive
                   ? 'var(--lucent-text-primary)'
                   : 'var(--lucent-text-secondary)',

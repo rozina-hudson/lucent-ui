@@ -38,7 +38,7 @@ const colorMap: Record<TextColor, string> = {
   secondary: 'var(--lucent-text-secondary)',
   disabled:  'var(--lucent-text-disabled)',
   inverse:   'var(--lucent-text-inverse)',
-  onAccent:  'var(--lucent-text-on-accent)',
+  onAccent:  'var(--lucent-accent-fg)',
   success:   'var(--lucent-success-text)',
   warning:   'var(--lucent-warning-text)',
   danger:    'var(--lucent-danger-text)',

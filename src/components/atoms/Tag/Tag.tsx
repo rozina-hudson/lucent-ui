@@ -13,7 +13,7 @@ export interface TagProps {
 
 const variantStyles: Record<TagVariant, { bg: string; color: string; border: string; dismissHover: string }> = {
   neutral: { bg: 'var(--lucent-surface-secondary)', color: 'var(--lucent-text-secondary)', border: 'var(--lucent-border-default)', dismissHover: 'var(--lucent-border-strong)' },
-  accent:  { bg: 'var(--lucent-accent-subtle)', color: 'var(--lucent-accent-active)',  border: 'var(--lucent-accent-subtle)',  dismissHover: 'var(--lucent-accent-default)' },
+  accent:  { bg: 'var(--lucent-accent-subtle)', color: 'var(--lucent-accent-default)',  border: 'var(--lucent-accent-subtle)',  dismissHover: 'var(--lucent-accent-default)' },
   success: { bg: 'var(--lucent-success-subtle)', color: 'var(--lucent-success-text)', border: 'var(--lucent-success-subtle)', dismissHover: 'var(--lucent-success-default)' },
   warning: { bg: 'var(--lucent-warning-subtle)', color: 'var(--lucent-warning-text)', border: 'var(--lucent-warning-subtle)', dismissHover: 'var(--lucent-warning-default)' },
   danger:  { bg: 'var(--lucent-danger-subtle)',  color: 'var(--lucent-danger-text)',  border: 'var(--lucent-danger-subtle)',  dismissHover: 'var(--lucent-danger-default)' },

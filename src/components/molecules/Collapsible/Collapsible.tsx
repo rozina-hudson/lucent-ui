@@ -125,7 +125,7 @@ export function Collapsible({ trigger, children, defaultOpen = false, open, onOp
             background: 'none',
             border: 'none',
             borderRadius: 'var(--lucent-radius-md)',
-            padding: 'var(--lucent-space-3) var(--lucent-space-4)',
+            padding: 'var(--lucent-space-4)',
             cursor: disabled ? 'not-allowed' : 'pointer',
             textAlign: 'left',
             outline: 'none',
@@ -148,7 +148,7 @@ export function Collapsible({ trigger, children, defaultOpen = false, open, onOp
         >
           <div
             style={{
-              ...(padded ? { padding: 'var(--lucent-space-2) var(--lucent-space-4) var(--lucent-space-3)' } : {}),
+              ...(padded ? { padding: 'var(--lucent-space-3) var(--lucent-space-4) var(--lucent-space-4)' } : {}),
               opacity: isOpen ? 1 : 0,
               transform: isOpen ? 'translateY(0)' : 'translateY(-4px)',
               transition: `opacity ${CONTENT_FADE_MS}ms ${HEIGHT_EASING}, transform ${CONTENT_FADE_MS}ms ${HEIGHT_EASING}`,

@@ -85,7 +85,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       : hasError
         ? 'var(--lucent-danger-default)'
         : isFocused
-          ? 'var(--lucent-focus-ring)'
+          ? 'var(--lucent-accent-border)'
           : isHovered
             ? 'var(--lucent-border-strong)'
             : 'var(--lucent-border-default)';
@@ -132,7 +132,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             border: `1px solid ${borderColor}`,
             borderRadius: 'var(--lucent-radius-lg)',
             boxShadow,
-            background: isDisabled ? 'var(--lucent-surface-secondary)' : 'var(--lucent-surface)',
+            background: isDisabled ? 'color-mix(in srgb, var(--lucent-text-primary) 6%, transparent)' : 'var(--lucent-surface)',
             overflow: 'hidden',
             cursor: isDisabled ? 'not-allowed' : undefined,
             transition: [

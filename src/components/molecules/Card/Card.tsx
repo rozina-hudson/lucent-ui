@@ -99,7 +99,7 @@ const variantConfig: Record<CardVariant, VariantConfig> = {
     dividers: true,
   },
   filled: {
-    background: 'var(--lucent-surface-tint)',
+    background: 'color-mix(in srgb, var(--lucent-text-primary) 5%, transparent)',
     border: 'none',
     shadowDefault: 'none',
     dividers: true,
@@ -111,7 +111,7 @@ const variantConfig: Record<CardVariant, VariantConfig> = {
     dividers: true,
   },
   combo: {
-    background: 'var(--lucent-surface-tint)',
+    background: 'color-mix(in srgb, var(--lucent-text-primary) 5%, transparent)',
     border: 'none',
     shadowDefault: 'none',
     dividers: false,

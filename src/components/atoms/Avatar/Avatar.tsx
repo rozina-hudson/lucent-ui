@@ -66,7 +66,7 @@ export function Avatar({ src, alt, size = 'md', initials, style, ...rest }: Avat
       style={{
         ...base,
         background: 'var(--lucent-accent-default)',
-        color: 'var(--lucent-text-on-accent)',
+        color: 'var(--lucent-accent-fg)',
         fontSize: fontSizes[size],
         fontWeight: 'var(--lucent-font-weight-semibold)',
         fontFamily: 'var(--lucent-font-family-base)',

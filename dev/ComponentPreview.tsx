@@ -27,7 +27,7 @@ import { Icon } from '../src/components/atoms/Icon/index.js';
 import { Text } from '../src/components/atoms/Text/index.js';
 import { FormField } from '../src/components/molecules/FormField/index.js';
 import { SearchInput } from '../src/components/molecules/SearchInput/index.js';
-import { Card, CardBleed } from '../src/components/molecules/Card/index.js';
+import { Card, CardBleed, CardPaddingContext } from '../src/components/molecules/Card/index.js';
 import { Alert } from '../src/components/molecules/Alert/index.js';
 import { EmptyState } from '../src/components/molecules/EmptyState/index.js';
 import { Skeleton } from '../src/components/molecules/Skeleton/index.js';
@@ -197,9 +197,9 @@ const ANCHOR_DERIVATIONS: { anchor: keyof ThemeAnchors; label: string; derived: 
     { key: 'textSecondary', label: 'secondary' }, { key: 'textDisabled', label: 'disabled' },
   ]},
   { anchor: 'accentDefault', label: 'Accent', derived: [
-    { key: 'accentHover', label: 'hover' }, { key: 'accentActive', label: 'active' },
+    { key: 'accentHover', label: 'hover' },
     { key: 'accentSubtle', label: 'subtle' }, { key: 'accentBorder', label: 'border' },
-    { key: 'textOnAccent', label: 'text' },
+    { key: 'accentFg', label: 'fg' },
   ]},
 ];
 
@@ -848,7 +848,7 @@ function Inner({
         </div>
       }
       headerHeight={48}
-      chromeBackground="bgSubtle"
+      chromeBackground="surfaceSecondary"
       mainStyle={{ background: tokens.bgBase }}
       {...(tab === 'components' && { sidebar: navSidebar, sidebarWidth: navSize === 'lg' ? 280 : navSize === 'md' ? 250 : 220 })}
       {...(tab === 'components' && { rightSidebar: customizerSidebar, rightSidebarWidth: 260 })}
@@ -2086,18 +2086,22 @@ function Inner({
 
       <Section title="Collapsible" tokens={tokens} hidden={!showSection('Collapsible')}>
         <Row label="Default" tokens={tokens}>
-          <div style={{ width: '100%', maxWidth: 400, borderBottom: `1px solid ${tokens.borderDefault}` }}>
-            <Collapsible trigger={<Text weight="medium">Advanced options</Text>}>
-              <Text color="secondary">Hidden content that expands when you click the trigger above. Can contain any ReactNode.</Text>
-            </Collapsible>
-          </div>
+          <CardPaddingContext.Provider value={{ px: '0', py: '0' }}>
+            <div style={{ width: '100%', maxWidth: 400 }}>
+              <Collapsible trigger={<Text weight="medium">Advanced options</Text>}>
+                <Text color="secondary">Hidden content that expands when you click the trigger above. Can contain any ReactNode.</Text>
+              </Collapsible>
+            </div>
+          </CardPaddingContext.Provider>
         </Row>
         <Row label="Default open" tokens={tokens}>
-          <div style={{ width: '100%', maxWidth: 400, borderBottom: `1px solid ${tokens.borderDefault}` }}>
-            <Collapsible defaultOpen trigger={<Text weight="medium">Expanded by default</Text>}>
-              <Text color="secondary">This section starts expanded.</Text>
-            </Collapsible>
-          </div>
+          <CardPaddingContext.Provider value={{ px: '0', py: '0' }}>
+            <div style={{ width: '100%', maxWidth: 400 }}>
+              <Collapsible defaultOpen trigger={<Text weight="medium">Expanded by default</Text>}>
+                <Text color="secondary">This section starts expanded.</Text>
+              </Collapsible>
+            </div>
+          </CardPaddingContext.Provider>
         </Row>
         <Row label="CollapsibleCard recipe" tokens={tokens}>
           <Card variant="ghost" padding="none" hoverable style={{ width: '100%', maxWidth: 360 }}>

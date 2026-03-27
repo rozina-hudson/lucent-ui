@@ -1,5 +1,44 @@
 # lucent-ui
 
+## 0.27.0
+
+### BREAKING: Accent token revamp & color-mix architecture
+
+**Token renames (CSS vars changed):**
+- `--lucent-text-on-accent` renamed to `--lucent-accent-fg` (moved into accent group)
+- `--lucent-focus-ring` removed (merged into `--lucent-accent-border`)
+- `--lucent-accent-active` removed (not in the 5-token accent model)
+
+**Accent layer: 5 tokens derived from a single color**
+- `accentDefault` — primary button bg, active toggle, checkbox fill
+- `accentHover` — hover state of the above
+- `accentSubtle` — low-opacity tint for selected rows, active nav items
+- `accentBorder` — focus rings, selected item borders, active tab underline
+- `accentFg` — hue-tinted text/icon on accent surfaces (no longer pure black/white)
+
+**New: `accentTokens(color, theme?)` function** — standalone helper that derives all 5 accent tokens from a single hex input. Exported from the public API.
+
+**New: `getAccentFg(color)` function** — returns a hue-tinted foreground color instead of pure `#000000`/`#ffffff`. Bright accents get `hsl(H, min(S,60%), 12%)`, dark accents get `hsl(H, min(S,20%), 95%)`.
+
+**Button variant updates:**
+- Secondary: `color-mix(accent 16%, transparent)` fill, `textPrimary` text
+- Outline: `textPrimary` text, softened accent-tinted border
+- Ghost: `textPrimary` text, transparent bg
+- All disabled: `color-mix(textPrimary 6%, transparent)` fill, no border
+- Press ring: single translucent halo (`accent@40%`) replaces opaque double ring
+- Hover shadows: `color-mix(accent, transparent)` replaces opaque `accent-subtle`
+
+**color-mix(transparent) architecture for neutral fills:**
+- SegmentedControl, Toggle off track, Slider unfilled, Progress bar track, CodeBlock, Card filled/combo, Table/DataTable headers & stripes, disabled inputs — all use `color-mix(in srgb, var(--lucent-text-primary) N%, transparent)` instead of opaque `surfaceSecondary`. Adapts to any parent background, eliminates accent bleed from palette derivation.
+
+**PageLayout: `surfaceSecondary` chrome option**
+- New `chromeBackground="surfaceSecondary"` option for visible stage/chrome separation.
+- Playground switched from `bgSubtle` to `surfaceSecondary` for sidebars.
+
+**Collapsible padding increase:**
+- Trigger vertical padding bumped from `space-3` to `space-4`
+- Content padding bumped from `space-2/space-3` to `space-3/space-4`
+
 ## 0.26.0
 
 ### Composition recipes: manifest type + MCP tool + preview sections

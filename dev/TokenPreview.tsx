@@ -14,7 +14,6 @@ const DERIVED_FROM: Partial<Record<keyof LucentTokens, keyof LucentTokens>> = {
   textSecondary: 'textPrimary',
   textDisabled: 'textPrimary',
   accentHover: 'accentDefault',
-  accentActive: 'accentDefault',
   accentSubtle: 'accentDefault',
 };
 
@@ -31,10 +30,10 @@ export function TokenPreview() {
 
   // In dark mode, derive from the current light customization so both modes
   // share the same hue/character, then layer any dark-specific adjustments.
-  // textOnAccent and accentBorder are excluded so LucentProvider recomputes them.
+  // accentFg and accentBorder are excluded so LucentProvider recomputes them.
   const effectiveTokens = useMemo((): Partial<LucentTokens> => {
     if (theme === 'dark') {
-      const { textOnAccent: _toa, accentBorder: _ab, ...derivedDark } =
+      const { accentFg: _afg, accentBorder: _ab, ...derivedDark } =
         deriveDarkFromLight({ ...lightTokens, ...lightOverrides });
       return { ...derivedDark, ...darkOverrides };
     }
@@ -91,13 +90,12 @@ function Inner({ theme, overrides, hasOverrides, onToggle, onOverride, onReset }
     'Background': ['bgBase', 'bgSubtle'],
     'Surface': ['surface', 'surfaceSecondary', 'surfaceRaised', 'surfaceOverlay'],
     'Border': ['borderDefault', 'borderSubtle', 'borderStrong'],
-    'Text': ['textPrimary', 'textSecondary', 'textDisabled', 'textInverse', 'textOnAccent'],
-    'Accent': ['accentDefault', 'accentHover', 'accentActive', 'accentSubtle'],
+    'Text': ['textPrimary', 'textSecondary', 'textDisabled', 'textInverse'],
+    'Accent': ['accentDefault', 'accentHover', 'accentSubtle', 'accentBorder', 'accentFg'],
     'Success': ['successDefault', 'successSubtle', 'successText'],
     'Warning': ['warningDefault', 'warningSubtle', 'warningText'],
     'Danger': ['dangerDefault', 'dangerHover', 'dangerSubtle', 'dangerText'],
     'Info': ['infoDefault', 'infoSubtle', 'infoText'],
-    'Focus': ['focusRing'],
   };
 
   const typographyKeys = Object.keys(tokens).filter(k =>
@@ -157,7 +155,7 @@ function Inner({ theme, overrides, hasOverrides, onToggle, onOverride, onReset }
             onClick={onToggle}
             style={{
               background: tokens.accentDefault,
-              color: tokens.textOnAccent,
+              color: tokens.accentFg,
               border: 'none',
               borderRadius: tokens.radiusMd,
               padding: `${tokens.space2} ${tokens.space4}`,
@@ -355,7 +353,7 @@ function MiniUIPreview({ tokens }: { tokens: ReturnType<typeof useLucent>['token
           borderRadius: t.radiusFull,
           background: t.accentDefault,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: t.textOnAccent,
+          color: t.accentFg,
           fontSize: t.fontSizeXs,
           fontWeight: t.fontWeightSemibold,
         }}>
@@ -379,7 +377,7 @@ function MiniUIPreview({ tokens }: { tokens: ReturnType<typeof useLucent>['token
           {/* Primary button */}
           <button style={{
             background: t.accentDefault,
-            color: t.textOnAccent,
+            color: t.accentFg,
             border: 'none',
             borderRadius: t.radiusMd,
             padding: `${t.space2} ${t.space3}`,
@@ -409,13 +407,13 @@ function MiniUIPreview({ tokens }: { tokens: ReturnType<typeof useLucent>['token
               <div style={{
                 fontSize: t.fontSizeXl,
                 fontWeight: t.fontWeightBold,
-                color: accent ? t.textOnAccent : t.textPrimary,
+                color: accent ? t.accentFg : t.textPrimary,
               }}>
                 {value}
               </div>
               <div style={{
                 fontSize: t.fontSizeXs,
-                color: accent ? t.textOnAccent : t.textSecondary,
+                color: accent ? t.accentFg : t.textSecondary,
                 marginTop: 2,
                 opacity: accent ? 0.8 : 1,
               }}>
@@ -452,7 +450,7 @@ function MiniUIPreview({ tokens }: { tokens: ReturnType<typeof useLucent>['token
           <div style={{ display: 'flex', gap: t.space2 }}>
             <button style={{
               background: t.accentDefault,
-              color: t.textOnAccent,
+              color: t.accentFg,
               border: 'none',
               borderRadius: t.radiusMd,
               padding: `${t.space2} ${t.space3}`,

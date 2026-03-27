@@ -99,17 +99,14 @@ export interface SemanticColorTokens {
   textSecondary: string;
   textDisabled: string;
   textInverse: string;
-  textOnAccent: string;
-  // Accent (brand)
-  accentDefault: string;
-  accentHover: string;
-  accentActive: string;
-  accentSubtle: string;
-  // A slightly adjusted border color that pairs with `accentDefault`.
-  // Calculated automatically by `LucentProvider` so that a custom accent
-  // colour looks good on either light or dark backgrounds.
-  // Consumers may still override if they want precise control.
-  accentBorder: string;
+  // Accent (brand) — the 5 tokens derived from a single accent color.
+  // Everything else (backgrounds, surfaces, borders, text) is neutral and
+  // accent-independent.
+  accentDefault: string;  // primary button bg, active toggle, checkbox fill, progress bar
+  accentHover: string;    // hover state of the above
+  accentSubtle: string;   // 8-12% tint for selected row bg, active nav item bg, pill backgrounds
+  accentBorder: string;   // focus rings, selected item borders, active tab underline
+  accentFg: string;       // text/icon color on top of an accent-colored surface
   // Status
   successDefault: string;
   successSubtle: string;
@@ -124,8 +121,6 @@ export interface SemanticColorTokens {
   infoDefault: string;
   infoSubtle: string;
   infoText: string;
-  // Focus
-  focusRing: string;
 }
 
 export interface LucentTokens

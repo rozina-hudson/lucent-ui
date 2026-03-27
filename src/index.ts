@@ -6,8 +6,8 @@ export * from './components/molecules/index.js';
 export { LucentProvider, useLucent, LucentProviderManifest, ThemeAnchorsSpec } from './provider/index.js';
 export type { LucentProviderProps } from './provider/index.js';
 
-export { lightTokens, darkTokens, makeLibraryCSS, getContrastText, brandTokens, deriveTokens, deriveDarkFromLight, createTheme } from './tokens/index.js';
-export type { LucentTokens, Theme, ThemeAnchors } from './tokens/index.js';
+export { lightTokens, darkTokens, makeLibraryCSS, getContrastText, getAccentFg, brandTokens, deriveTokens, deriveDarkFromLight, createTheme, accentTokens } from './tokens/index.js';
+export type { LucentTokens, Theme, ThemeAnchors, AccentTokens } from './tokens/index.js';
 
 // Presets
 export {

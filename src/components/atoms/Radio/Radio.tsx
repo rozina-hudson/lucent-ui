@@ -125,7 +125,7 @@ export function Radio({ value, label, size = 'md', contained = false, helperText
     width: px / 2,
     height: px / 2,
     borderRadius: '50%',
-    background: isDisabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-on-accent)',
+    background: isDisabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-accent-fg)',
     animation: isChecked ? 'lucent-radio-dot 200ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards' : undefined,
     opacity: isChecked ? 1 : 0,
   };

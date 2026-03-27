@@ -110,7 +110,7 @@ export function Progress({
           flex: 1,
           height: s.height,
           borderRadius: s.radius,
-          background: 'var(--lucent-surface-secondary)',
+          background: 'color-mix(in srgb, var(--lucent-text-primary) 8%, transparent)',
           overflow: 'hidden',
         }}
       >

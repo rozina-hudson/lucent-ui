@@ -52,7 +52,7 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
     '## Selected state\n' +
     'MenuItem accepts a `selected` prop that renders a trailing accent-colored checkmark. The selected item ' +
     'gets a `color-mix(in srgb, accent-default 12%, surface-overlay)` background with `shadow-sm` elevation, ' +
-    'making it visually stronger than the hover state (`surface-secondary`). Uses `role="menuitemcheckbox"` ' +
+    'making it visually stronger than the hover state (subtle `color-mix` tint). Uses `role="menuitemcheckbox"` ' +
     'with `aria-checked` for accessibility.\n\n' +
 
     '## Animation\n' +

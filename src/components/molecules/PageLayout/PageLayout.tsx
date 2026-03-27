@@ -24,7 +24,7 @@ export interface PageLayoutProps {
   /** Footer height in px or any CSS value. Default: 48 */
   footerHeight?: number | string;
   /** Background token for chrome regions (header, sidebar, footer). Default: "bgBase" */
-  chromeBackground?: 'bgBase' | 'bgSubtle' | 'surface';
+  chromeBackground?: 'bgBase' | 'bgSubtle' | 'surface' | 'surfaceSecondary';
   /** Style overrides for the main content card (border, borderRadius, boxShadow, etc.) */
   mainStyle?: CSSProperties;
   style?: CSSProperties;
@@ -54,11 +54,13 @@ export function PageLayout({
   const sidebarW = toCss(sidebarWidth);
   const rightSidebarW = toCss(rightSidebarWidth);
   const footerH = toCss(footerHeight);
-  const chromeBg = chromeBackground === 'bgBase'
-    ? 'var(--lucent-bg-base)'
-    : chromeBackground === 'bgSubtle'
-      ? 'var(--lucent-bg-subtle)'
-      : 'var(--lucent-surface)';
+  const chromeBgMap: Record<string, string> = {
+    bgBase: 'var(--lucent-bg-base)',
+    bgSubtle: 'var(--lucent-bg-subtle)',
+    surface: 'var(--lucent-surface)',
+    surfaceSecondary: 'var(--lucent-surface-secondary)',
+  };
+  const chromeBg = chromeBgMap[chromeBackground] ?? 'var(--lucent-bg-base)';
 
   return (
     <div

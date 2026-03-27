@@ -188,7 +188,7 @@ export function CodeBlock({
             justifyContent: currentLanguage ? 'space-between' : 'flex-end',
             padding: '0 var(--lucent-space-3)',
             height: 36,
-            background: 'var(--lucent-surface-secondary)',
+            background: 'color-mix(in srgb, var(--lucent-text-primary) 5%, transparent)',
             borderBottom: '1px solid var(--lucent-border-default)',
           }}
         >
@@ -216,7 +216,7 @@ export function CodeBlock({
             fontSize: 'var(--lucent-font-size-xs)',
             color: 'var(--lucent-text-secondary)',
             fontFamily: 'var(--lucent-font-family-base)',
-            background: 'var(--lucent-surface-secondary)',
+            background: 'color-mix(in srgb, var(--lucent-text-primary) 5%, transparent)',
             borderBottom: '1px solid var(--lucent-border-default)',
           }}
         >
@@ -232,7 +232,7 @@ export function CodeBlock({
               margin: 0,
               padding: 'var(--lucent-space-4)',
               paddingRight: hasTabs && showCopyButton ? 'var(--lucent-space-16)' : 'var(--lucent-space-4)',
-              background: 'var(--lucent-surface-secondary)',
+              background: 'color-mix(in srgb, var(--lucent-text-primary) 5%, transparent)',
               overflowX: 'auto',
               lineHeight: 1.65,
             }}
@@ -261,7 +261,7 @@ export function CodeBlock({
             alignItems: 'center',
             gap: 'var(--lucent-space-3)',
             padding: 'var(--lucent-space-3) var(--lucent-space-4)',
-            background: 'var(--lucent-surface-secondary)',
+            background: 'color-mix(in srgb, var(--lucent-text-primary) 5%, transparent)',
           }}
         >
           <span

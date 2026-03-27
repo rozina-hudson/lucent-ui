@@ -375,7 +375,7 @@ export function NavMenuItem({
         color: disabled
           ? 'var(--lucent-text-disabled)'
           : isActive
-          ? (inverse ? 'var(--lucent-text-primary)' : 'var(--lucent-text-on-accent)')
+          ? (inverse ? 'var(--lucent-text-primary)' : 'var(--lucent-accent-fg)')
           : 'var(--lucent-text-secondary)',
         border: 0,
         borderBottom: isActive && orientation === 'horizontal'
@@ -692,7 +692,7 @@ function NavMenuParentItem({
           color: disabled
             ? 'var(--lucent-text-disabled)'
             : selfActive
-            ? (inverse ? 'var(--lucent-text-primary)' : 'var(--lucent-text-on-accent)')
+            ? (inverse ? 'var(--lucent-text-primary)' : 'var(--lucent-accent-fg)')
             : collapsedWithActiveChild
             ? 'var(--lucent-text-primary)'
             : showHint

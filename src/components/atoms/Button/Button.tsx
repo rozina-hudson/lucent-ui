@@ -23,18 +23,18 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 const variantStyles: Record<ButtonVariant, CSSProperties> = {
   primary: {
     background: 'var(--lucent-accent-default)',
-    color: 'var(--lucent-text-on-accent)',
+    color: 'var(--lucent-accent-fg)',
     border: '1px solid transparent',
   },
   secondary: {
-    background: 'color-mix(in srgb, var(--lucent-accent-default) 14%, var(--lucent-surface-secondary))',
+    background: 'color-mix(in srgb, var(--lucent-accent-default) 16%, transparent)',
     color: 'var(--lucent-text-primary)',
     border: '1px solid transparent',
   },
   outline: {
     background: 'transparent',
     color: 'var(--lucent-text-primary)',
-    border: '1px solid var(--lucent-border-default)',
+    border: '1px solid color-mix(in srgb, var(--lucent-accent-default) 35%, var(--lucent-border-default))',
   },
   ghost: {
     background: 'transparent',
@@ -98,8 +98,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           ...variantStyles[variant],
           ...style,
           ...(isDisabled && {
-            background: 'color-mix(in srgb, var(--lucent-surface-secondary) 70%, var(--lucent-border-default))',
-            color: 'color-mix(in srgb, var(--lucent-text-disabled) 50%, var(--lucent-border-default))',
+            background: 'color-mix(in srgb, var(--lucent-text-primary) 6%, transparent)',
+            color: 'var(--lucent-text-disabled)',
             borderColor: 'transparent',
           }),
           // hide border entirely when bordered prop is false
@@ -116,9 +116,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         onMouseDown={(e) => {
           if (!isDisabled) {
             const isDanger = variant === 'danger' || variant === 'danger-outline' || variant === 'danger-ghost';
-            const ring = isDanger ? 'var(--lucent-danger-default)' : 'var(--lucent-accent-default)';
+            const ring = isDanger
+              ? 'color-mix(in srgb, var(--lucent-danger-default) 40%, transparent)'
+              : 'color-mix(in srgb, var(--lucent-accent-default) 40%, transparent)';
             e.currentTarget.style.transform = 'translateY(1px)';
-            e.currentTarget.style.boxShadow = `0 0 0 2px var(--lucent-surface), 0 0 0 4px ${ring}`;
+            e.currentTarget.style.boxShadow = `0 0 0 4px ${ring}`;
             e.currentTarget.dataset.pressed = '1';
           }
           rest.onMouseDown?.(e);
@@ -153,13 +155,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = 'Button';
 
 const hoverShadow: Record<ButtonVariant, string> = {
-  primary:          '0 4px 14px -2px var(--lucent-accent-subtle)',
-  secondary:        '0 4px 14px -2px var(--lucent-accent-subtle)',
-  outline:          '0 4px 14px -2px var(--lucent-accent-subtle)',
-  ghost:            '0 4px 14px -2px var(--lucent-accent-subtle)',
-  danger:           '0 4px 14px -2px var(--lucent-danger-subtle)',
-  'danger-outline': '0 4px 14px -2px var(--lucent-danger-subtle)',
-  'danger-ghost':   '0 4px 14px -2px var(--lucent-danger-subtle)',
+  primary:          '0 4px 14px -2px color-mix(in srgb, var(--lucent-accent-default) 25%, transparent)',
+  secondary:        '0 4px 14px -2px color-mix(in srgb, var(--lucent-accent-default) 20%, transparent)',
+  outline:          '0 4px 14px -2px color-mix(in srgb, var(--lucent-accent-default) 20%, transparent)',
+  ghost:            '0 4px 14px -2px color-mix(in srgb, var(--lucent-accent-default) 15%, transparent)',
+  danger:           '0 4px 14px -2px color-mix(in srgb, var(--lucent-danger-default) 25%, transparent)',
+  'danger-outline': '0 4px 14px -2px color-mix(in srgb, var(--lucent-danger-default) 20%, transparent)',
+  'danger-ghost':   '0 4px 14px -2px color-mix(in srgb, var(--lucent-danger-default) 15%, transparent)',
 };
 
 function applyHover(el: HTMLButtonElement, variant: ButtonVariant, bordered?: boolean) {
@@ -169,11 +171,11 @@ function applyHover(el: HTMLButtonElement, variant: ButtonVariant, bordered?: bo
   if (variant === 'primary') {
     el.style.background = 'var(--lucent-accent-hover)';
   } else if (variant === 'secondary') {
-    el.style.background = 'color-mix(in srgb, var(--lucent-accent-default) 10%, var(--lucent-surface-secondary))';
+    el.style.background = 'color-mix(in srgb, var(--lucent-accent-default) 22%, transparent)';
   } else if (variant === 'outline') {
-    el.style.background = 'color-mix(in srgb, var(--lucent-accent-default) 10%, var(--lucent-surface))';
+    el.style.background = 'color-mix(in srgb, var(--lucent-accent-default) 10%, transparent)';
   } else if (variant === 'ghost') {
-    el.style.background = 'color-mix(in srgb, var(--lucent-accent-default) 8%, var(--lucent-surface))';
+    el.style.background = 'color-mix(in srgb, var(--lucent-accent-default) 8%, transparent)';
   } else if (variant === 'danger') {
     el.style.background = 'var(--lucent-danger-hover)';
     if (bordered !== false) el.style.borderColor = 'var(--lucent-danger-hover)';
@@ -192,7 +194,7 @@ function removeHover(el: HTMLButtonElement, variant: ButtonVariant, bordered?: b
   if (variant === 'primary') {
     el.style.background = 'var(--lucent-accent-default)';
   } else if (variant === 'secondary') {
-    el.style.background = 'var(--lucent-surface-secondary)';
+    el.style.background = 'color-mix(in srgb, var(--lucent-accent-default) 16%, transparent)';
   } else if (variant === 'outline') {
     el.style.background = 'transparent';
   } else if (variant === 'ghost') {

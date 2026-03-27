@@ -105,7 +105,8 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
         'Background token for chrome regions (header, sidebar, footer). ' +
         '"bgBase" uses the page canvas color so the main content card feels elevated; ' +
         '"bgSubtle" uses a subtle shade of bgBase for chrome distinction; ' +
-        '"surface" matches the old behavior where chrome and content share the same background.',
+        '"surface" matches the old behavior where chrome and content share the same background; ' +
+        '"surfaceSecondary" uses the tinted fill token for a more visible chrome/stage separation.',
     },
     {
       name: 'mainStyle',

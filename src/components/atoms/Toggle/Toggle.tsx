@@ -94,7 +94,7 @@ export function Toggle({
           position: 'absolute',
           inset: 0,
           borderRadius: 'inherit',
-          background: disabled ? 'var(--lucent-surface-secondary)' : isChecked ? 'var(--lucent-accent-default)' : 'var(--lucent-control-track)',
+          background: disabled ? 'var(--lucent-surface-secondary)' : isChecked ? 'var(--lucent-accent-default)' : 'color-mix(in srgb, var(--lucent-text-primary) 12%, transparent)',
           transition: `background var(--lucent-duration-fast) var(--lucent-easing-default)`,
           animation: popKey > 0 ? `lucent-toggle-pop 240ms ${SPRING} forwards` : undefined,
         }}

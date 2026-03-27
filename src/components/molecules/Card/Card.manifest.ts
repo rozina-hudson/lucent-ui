@@ -65,7 +65,7 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
     '- `ghost` and `outline` use `transparent` — they inherit from whatever they\'re placed on. ' +
     'The border is the only visual differentiator for `outline`.\n' +
     '- Never use `bgBase` or `bgSubtle` on a Card — those tokens are reserved for the page canvas.\n' +
-    '- Content nested inside a Card that needs a tinted fill should use `surfaceSecondary`.',
+    '- Content nested inside a Card that needs a tinted fill should use `color-mix(in srgb, var(--lucent-text-primary) 5%, transparent)` for accent-neutral insets.',
 
   props: [
     {

@@ -95,7 +95,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       onChange?.(e);
     };
 
-    const stroke = disabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-on-accent)';
+    const stroke = disabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-accent-fg)';
 
     const boxStyle: CSSProperties = {
       width: px,

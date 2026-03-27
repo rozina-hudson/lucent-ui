@@ -8,7 +8,7 @@ import {
 import { lightTokens } from '../tokens/light.js';
 import { darkTokens } from '../tokens/dark.js';
 import { makeLibraryCSS } from '../tokens/css.js';
-import { getContrastText, ensureContrast } from '../tokens/contrast.js';
+import { getAccentFg, ensureContrast } from '../tokens/contrast.js';
 import { adjustLightness } from '../tokens/color.js';
 import { deriveTokens } from '../tokens/derive.js';
 import { createTheme } from '../tokens/createTheme.js';
@@ -114,30 +114,23 @@ export function LucentProvider({
     // explicit user values. Skipped entirely when no overrides are passed.
     const derived = effectiveOverrides ? deriveTokens(effectiveOverrides, merged, theme) : {};
 
-    // Auto-compute textOnAccent from the resolved accent color unless the consumer
-    // explicitly overrides it. This guarantees WCAG AA contrast on accent surfaces
-    // regardless of which accent color is in use.
-    //
-    // We also derive a slightly tweaked border colour for the primary/accent
-    // variant so that when people supply a custom accent the border still has
-    // enough contrast against the surrounding surface in both light & dark
-    // themes.  The consumer can still override `accentBorder` if they really
-    // want to pick a specific value; this computation only applies when the
-    // token is _not_ provided.
+    // Auto-compute accentBorder (focus rings, selected borders) and accentFg
+    // (text/icons on accent surfaces) from the resolved accent color unless
+    // the consumer explicitly overrides them.
     const computedBorder = effectiveOverrides?.accentBorder
       ?? (theme === 'light'
         ? adjustLightness(merged.accentDefault, -0.15)
         : adjustLightness(merged.accentDefault, 0.15));
 
-    // Pick the best text color, then nudge the accent if APCA contrast is too low
-    const textOnAccent = effectiveOverrides?.textOnAccent ?? getContrastText(merged.accentDefault);
-    const adjustedAccent = ensureContrast(merged.accentDefault, textOnAccent);
+    // Pick a hue-tinted foreground, then nudge the accent if APCA contrast is too low
+    const accentFg = effectiveOverrides?.accentFg ?? getAccentFg(merged.accentDefault);
+    const adjustedAccent = ensureContrast(merged.accentDefault, accentFg);
 
     return {
       ...merged,
       ...derived,
       accentDefault: adjustedAccent,
-      textOnAccent,
+      accentFg,
       accentBorder: computedBorder,
     };
   })();

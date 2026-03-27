@@ -158,7 +158,7 @@ export function DateRangePicker({
     : hasError
       ? 'var(--lucent-danger-default)'
       : focused
-        ? 'var(--lucent-focus-ring)'
+        ? 'var(--lucent-accent-border)'
         : 'var(--lucent-border-default)';
 
   const boxShadow = focused
@@ -200,7 +200,7 @@ export function DateRangePicker({
           borderRadius: 'var(--lucent-radius-lg)',
           border: `1px solid ${borderColor}`,
           boxShadow,
-          background: isDisabled ? 'var(--lucent-surface-secondary)' : 'var(--lucent-surface)',
+          background: isDisabled ? 'color-mix(in srgb, var(--lucent-text-primary) 6%, transparent)' : 'var(--lucent-surface)',
           color: selected ? 'var(--lucent-text-primary)' : 'var(--lucent-text-secondary)',
           fontFamily: 'var(--lucent-font-family-base)',
           fontSize: sizeFontSizes[size],

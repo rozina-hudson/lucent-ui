@@ -95,14 +95,12 @@ export function deriveDarkFromLight(light: LucentTokens): LucentTokens {
     textDisabled: toTextDark(light.textDisabled),
     // textInverse flips to dark bg so it reads on light accent surfaces
     textInverse: darkBgBase,
-    textOnAccent: light.textOnAccent, // auto-recomputed by LucentProvider
-
     // ── Accent ───────────────────────────────────────────────────────────────
     accentDefault: toAccentDark(light.accentDefault),
     accentHover: toAccentDark(light.accentHover),
-    accentActive: toAccentDark(light.accentActive),
     accentSubtle: toAccentDark(light.accentSubtle),
     accentBorder: light.accentBorder, // auto-recomputed by LucentProvider
+    accentFg: light.accentFg, // auto-recomputed by LucentProvider
 
     // ── Status: lighten defaults for visibility; darken for subtle bg ─────────
     successDefault: adjustLightness(light.successDefault, +0.10),
@@ -122,7 +120,5 @@ export function deriveDarkFromLight(light: LucentTokens): LucentTokens {
     infoSubtle: adjustLightness(light.infoDefault, -0.25),
     infoText: adjustLightness(light.infoText, +0.15),
 
-    // ── Focus ─────────────────────────────────────────────────────────────────
-    focusRing: toAccentDark(light.focusRing),
   };
 }
