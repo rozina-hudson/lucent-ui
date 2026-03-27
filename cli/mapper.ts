@@ -17,15 +17,15 @@ import {
 const LUCENT_TOKEN_KEYS = new Set<keyof LucentTokens>([
   // SemanticColorTokens
   'bgBase', 'bgSubtle', 'bgOverlay',
-  'surface', 'surfaceSecondary', 'surfaceRaised', 'surfaceOverlay',
+  'surface', 'surfaceSecondary', 'surfaceRaised', 'surfaceOverlay', 'surfaceTint',
   'borderDefault', 'borderSubtle', 'borderStrong',
-  'textPrimary', 'textSecondary', 'textDisabled', 'textInverse', 'textOnAccent',
-  'accentDefault', 'accentHover', 'accentActive', 'accentSubtle',
+  'controlTrack',
+  'textPrimary', 'textSecondary', 'textDisabled', 'textInverse',
+  'accentDefault', 'accentHover', 'accentSubtle', 'accentBorder', 'accentFg',
   'successDefault', 'successSubtle', 'successText',
   'warningDefault', 'warningSubtle', 'warningText',
   'dangerDefault', 'dangerHover', 'dangerSubtle', 'dangerText',
   'infoDefault', 'infoSubtle', 'infoText',
-  'focusRing',
   // TypographyTokens
   'fontFamilyBase', 'fontFamilyMono', 'fontFamilyDisplay',
   'fontSizeXs', 'fontSizeSm', 'fontSizeMd', 'fontSizeLg',
