@@ -1,5 +1,13 @@
 # lucent-ui
 
+## 0.27.2
+
+### Contained variant & Card selected: neutral fills
+
+- **Checkbox/Radio/Toggle contained wrapper**: border is now always `border-strong` (no accent tint). Checked background uses `color-mix(textPrimary 6%, transparent)` — neutral, adapts to parent. Unchecked is `transparent` (outline only).
+- **Removed hover state** from contained wrappers — simplified to static `border-strong`, removed unused `hovered`/`setHovered` and mouse handlers.
+- **Card selected state**: unified to `accent-subtle` for all variants instead of per-variant `color-mix` into opaque backgrounds.
+
 ## 0.27.1
 
 ### BREAKING: Accent token revamp & color-mix architecture
