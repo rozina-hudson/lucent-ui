@@ -63,7 +63,6 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
 
     const isControlled = checked !== undefined;
     const [internalChecked, setInternalChecked] = useState(defaultChecked ?? false);
-    const [hovered, setHovered] = useState(false);
     const isChecked = isControlled ? Boolean(checked) : internalChecked;
 
     // Track when checked state changes to trigger the box pop animation.
@@ -190,22 +189,14 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
         <style>{STYLES}</style>
         {contained ? (
           <div
-            onMouseEnter={() => { if (!disabled) setHovered(true); }}
-            onMouseLeave={() => setHovered(false)}
             style={{
-              border: `1px solid ${
-                isChecked && !disabled
-                  ? 'var(--lucent-accent-default)'
-                  : hovered && !disabled
-                  ? 'var(--lucent-border-strong)'
-                  : 'var(--lucent-border-default)'
-              }`,
+              border: `1px solid var(--lucent-border-strong)`,
               borderRadius: 'var(--lucent-radius-lg)',
               ...(helperText ? {} : { minHeight: containedHeight[size] }),
               padding: helperText ? 'var(--lucent-space-3)' : '0 var(--lucent-space-3)',
               display: 'flex',
               alignItems: helperText ? 'flex-start' : 'center',
-              background: isChecked && !disabled ? 'var(--lucent-accent-subtle)' : 'var(--lucent-surface)',
+              background: isChecked && !disabled ? 'color-mix(in srgb, var(--lucent-text-primary) 6%, transparent)' : 'transparent',
               transition: 'border-color var(--lucent-duration-fast) var(--lucent-easing-default), background var(--lucent-duration-fast) var(--lucent-easing-default)',
               cursor: disabled ? 'not-allowed' : 'pointer',
               ...style,

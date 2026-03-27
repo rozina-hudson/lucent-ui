@@ -52,7 +52,6 @@ export function Toggle({
   const isControlled = checked !== undefined;
   const [internalChecked, setInternalChecked] = useState(defaultChecked ?? false);
   const isChecked = isControlled ? Boolean(checked) : internalChecked;
-  const [hovered, setHovered] = useState(false);
 
   const prevChecked = useRef(isChecked);
   const [popKey, setPopKey] = useState(0);
@@ -169,19 +168,11 @@ export function Toggle({
       <style>{STYLES}</style>
       {contained ? (
         <div
-          onMouseEnter={() => { if (!disabled) setHovered(true); }}
-          onMouseLeave={() => setHovered(false)}
           style={{
-            border: `1px solid ${
-              isChecked && !disabled
-                ? 'var(--lucent-accent-default)'
-                : hovered && !disabled
-                ? 'var(--lucent-border-strong)'
-                : 'var(--lucent-border-default)'
-            }`,
+            border: `1px solid var(--lucent-border-strong)`,
             borderRadius: 'var(--lucent-radius-lg)',
             ...(helperText ? { padding: 'var(--lucent-space-3)' } : { minHeight: containedHeight[size], padding: '0 var(--lucent-space-3)', display: 'flex', alignItems: 'center' }),
-            background: isChecked && !disabled ? 'var(--lucent-accent-subtle)' : 'var(--lucent-surface)',
+            background: isChecked && !disabled ? 'color-mix(in srgb, var(--lucent-text-primary) 6%, transparent)' : 'transparent',
             transition: 'border-color var(--lucent-duration-fast) var(--lucent-easing-default), background var(--lucent-duration-fast) var(--lucent-easing-default)',
             cursor: disabled ? 'not-allowed' : 'pointer',
             ...(style as React.CSSProperties),

@@ -143,8 +143,7 @@ function combineShadows(...parts: (string | undefined)[]): string | undefined {
 
 function getSelectedBg(config: VariantConfig, selected: boolean, disabled: boolean): string {
   if (!selected || disabled) return config.background;
-  if (config.background === 'transparent') return 'var(--lucent-accent-subtle)';
-  return `color-mix(in srgb, var(--lucent-accent-default) 6%, ${config.background})`;
+  return 'var(--lucent-accent-subtle)';
 }
 
 // ── Card ─────────────────────────────────────────────────────────────────────
