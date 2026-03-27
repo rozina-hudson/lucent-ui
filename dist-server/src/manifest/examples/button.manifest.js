@@ -7,11 +7,12 @@ export const ButtonManifest = {
     description: 'A clickable control that triggers an action. The primary interactive primitive in Lucent UI.',
     designIntent: 'Buttons communicate available actions. Variant conveys hierarchy: use "primary" for the ' +
         'single most important action in a view, "secondary" for supporting actions, "ghost" for ' +
-        'low-emphasis actions in dense UIs, "outline" for bordered buttons with no fill, and "danger" exclusively for destructive or irreversible ' +
+        'low-emphasis actions in dense UIs, "outline" for bordered buttons with transparent background, and "danger" exclusively for destructive or irreversible ' +
         'operations. Use "danger-ghost" for low-emphasis destructive actions (red text, no fill) and ' +
-        '"danger-outline" for bordered destructive buttons. Size should match surrounding content density — prefer "md" as the default, ' +
+        '"danger-outline" for bordered destructive buttons (also transparent background). Size should match surrounding content density — prefer "md" as the default, ' +
         '"sm" for toolbars or tables, "xs" for compact UIs like customizer panels, and "2xs" for ' +
-        'ultra-dense inline controls (~22px height) such as table-inline actions or toolbar icon triggers.',
+        'ultra-dense inline controls (~22px height) such as table-inline actions or toolbar icon triggers. ' +
+        'Icon-only buttons (leftIcon/rightIcon without children) automatically render as square with aspect-ratio: 1.',
     props: [
         {
             name: 'variant',
@@ -44,8 +45,8 @@ export const ButtonManifest = {
         {
             name: 'children',
             type: 'ReactNode',
-            required: true,
-            description: 'Button label or content.',
+            required: false,
+            description: 'Button label or content. Omit for icon-only buttons (provide leftIcon or rightIcon instead).',
         },
         {
             name: 'disabled',
@@ -160,6 +161,11 @@ export const ButtonManifest = {
         {
             title: 'Dense inline action',
             code: `<Button variant="ghost" size="2xs" leftIcon={<RefreshIcon />}>Retry</Button>`,
+        },
+        {
+            title: 'Icon-only (square)',
+            code: `<Button variant="outline" size="2xs" leftIcon={<CloseIcon />} aria-label="Close" />`,
+            description: 'Omitting children auto-sizes the button as a square via aspect-ratio: 1.',
         },
     ],
     compositionGraph: [],

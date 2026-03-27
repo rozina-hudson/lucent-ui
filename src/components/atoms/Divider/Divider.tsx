@@ -9,7 +9,7 @@ export interface DividerProps {
   style?: CSSProperties;
 }
 
-export function Divider({ orientation = 'horizontal', label, spacing = 'var(--lucent-space-4)', style }: DividerProps) {
+export function Divider({ orientation = 'horizontal', label, spacing = '0', style }: DividerProps) {
   if (orientation === 'vertical') {
     return (
       <span

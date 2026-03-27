@@ -86,7 +86,9 @@ export const COMPONENT_MANIFEST = {
             name: 'style',
             type: 'object',
             required: false,
-            description: 'Inline style overrides. Applied after computed token styles.',
+            description: 'Inline style overrides. Applied after computed token styles, so any property you set here wins. ' +
+                'This is the official escape hatch for one-off styling outside the token system — e.g. a custom ' +
+                'color via style={{ color: "var(--my-green)" }}. See docs/style-escape-hatch.md.',
         },
     ],
     usageExamples: [
@@ -96,6 +98,10 @@ export const COMPONENT_MANIFEST = {
         { title: 'Inline code', code: `<Text as="code" family="mono" size="sm">const x = 1;</Text>` },
         { title: 'Truncated', code: `<Text truncate style={{ maxWidth: 200 }}>Very long text that will be clipped</Text>` },
         { title: 'Status color', code: `<Text color="danger" size="xs">This field is required</Text>` },
+        {
+            title: 'Custom color via style escape hatch',
+            code: `<Text style={{ color: 'var(--chart-series-a)' }}>Revenue</Text>`,
+        },
     ],
     compositionGraph: [],
     accessibility: {

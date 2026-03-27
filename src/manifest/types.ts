@@ -83,6 +83,41 @@ export interface AccessibilityDescriptor {
   notes?: string;
 }
 
+// ─── Composition recipe ─────────────────────────────────────────────────────
+
+export type RecipeCategory = 'card' | 'form' | 'nav' | 'dashboard' | 'settings' | 'action';
+
+/**
+ * A composition recipe describes how multiple components compose into a
+ * real UI pattern.  Recipes bridge the gap between individual component
+ * manifests and production-quality layouts — an AI agent can use the
+ * structure tree, working code, and design notes to produce correct
+ * multi-component compositions on the first try.
+ */
+export interface CompositionRecipe {
+  /** Unique kebab-case identifier, e.g. "profile-card" */
+  id: string;
+  /** Human-readable name, e.g. "Profile Card" */
+  name: string;
+  /** One-line AI-optimised summary of what this recipe builds */
+  description: string;
+  /** Broad UI category for filtering */
+  category: RecipeCategory;
+  /** Component IDs used in the recipe (from ComponentManifest.id) */
+  components: readonly string[];
+  /** ASCII / indented tree showing layout hierarchy */
+  structure: string;
+  /** Full working JSX example */
+  code: string;
+  /** Optional named variants */
+  variants?: readonly {
+    title: string;
+    code: string;
+  }[];
+  /** Why this arrangement works — spacing rationale, hierarchy reasoning */
+  designNotes: string;
+}
+
 // ─── Main manifest interface ─────────────────────────────────────────────────
 
 export interface ComponentManifest {

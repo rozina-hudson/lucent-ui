@@ -48,7 +48,7 @@ export interface CardBleedProps {
   style?: CSSProperties;
 }
 
-const CardPaddingContext = createContext<string>('0');
+export const CardPaddingContext = createContext<{ px: string; py: string }>({ px: '0', py: '0' });
 
 const paddingMap: Record<CardPadding, { py: string; px: string }> = {
   none: { py: '0',                        px: '0' },
@@ -223,9 +223,9 @@ export function Card({
     background: bg,
     border: config.border,
     borderRadius,
-    // Outer box-shadow rings (selected, focus) get clipped by overflow:hidden,
-    // so we switch to overflow:visible when a ring is active.
-    overflow: isSelected || (hasHoverEffects && isFocused) ? 'visible' : 'hidden',
+    // Only clip overflow when media is present (to round image corners).
+    // Default to visible so nested child shadows (e.g. elevated Card inside combo) aren't cut off.
+    overflow: media != null && !(isSelected || (hasHoverEffects && isFocused)) ? 'hidden' : 'visible',
     boxSizing: 'border-box',
     position: 'relative',
     ...(rootShadow !== undefined && { boxShadow: rootShadow }),
@@ -289,7 +289,7 @@ export function Card({
     >
       {/* Media slot — full-bleed, no padding */}
       {media != null && (
-        <div style={{ lineHeight: 0 }}>{media}</div>
+        <div style={{ lineHeight: 0, overflow: 'hidden', borderRadius: `${borderRadius} ${borderRadius} 0 0` }}>{media}</div>
       )}
 
       {/* Status accent bar — rendered via inset box-shadow on root (see rootShadow) */}
@@ -309,7 +309,7 @@ export function Card({
       )}
 
       {/* Body */}
-      <CardPaddingContext.Provider value={px}>
+      <CardPaddingContext.Provider value={{ px, py }}>
         <div
           style={{
             padding: pad,
@@ -350,7 +350,7 @@ export function Card({
 // ── CardBleed ────────────────────────────────────────────────────────────────
 
 export function CardBleed({ children, style }: CardBleedProps) {
-  const p = useContext(CardPaddingContext);
+  const { px: p } = useContext(CardPaddingContext);
 
   return (
     <div

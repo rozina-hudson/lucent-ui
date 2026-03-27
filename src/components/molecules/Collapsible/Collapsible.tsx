@@ -1,4 +1,5 @@
-import { useState, useRef, useLayoutEffect, useEffect, type CSSProperties, type ReactNode } from 'react';
+import { useState, useRef, useContext, useLayoutEffect, useEffect, type CSSProperties, type ReactNode } from 'react';
+import { CardPaddingContext } from '../Card/Card.js';
 
 const CONTENT_FADE_MS = 80;
 const HEIGHT_MS = 180;
@@ -42,6 +43,9 @@ export interface CollapsibleProps {
 }
 
 export function Collapsible({ trigger, children, defaultOpen = false, open, onOpenChange, padded = true, disabled = false, style }: CollapsibleProps) {
+  const cardPad = useContext(CardPaddingContext);
+  const inCard = cardPad.px !== '0' || cardPad.py !== '0';
+
   const isControlled = open !== undefined;
   const [internalOpen, setInternalOpen] = useState(defaultOpen);
   const isOpen = isControlled ? open! : internalOpen;
@@ -64,17 +68,20 @@ export function Collapsible({ trigger, children, defaultOpen = false, open, onOp
 
     if (isOpen) {
       // Expand: set explicit height to animate, then clear for reflow
+      el.style.overflow = 'hidden';
       const scrollH = el.scrollHeight;
       el.style.height = `${scrollH}px`;
       el.style.transition = HEIGHT_TRANSITION;
       clearTimeout(timerRef.current);
       timerRef.current = setTimeout(() => {
         el.style.height = 'auto';
+        el.style.overflow = 'visible';
         el.style.transition = '';
       }, HEIGHT_MS + 20);
     } else if (mounted.current) {
       // Collapse: snapshot current height, force reflow, then animate to 0
       clearTimeout(timerRef.current);
+      el.style.overflow = 'hidden';
       el.style.transition = '';
       el.style.height = `${el.scrollHeight}px`;
       // Force the browser to commit the starting height
@@ -103,7 +110,7 @@ export function Collapsible({ trigger, children, defaultOpen = false, open, onOp
   };
 
   return (
-      <div style={{ display: 'flex', flexDirection: 'column', fontFamily: 'var(--lucent-font-family-base)', fontSize: 'var(--lucent-font-size-md)', ...style }}>
+      <div style={{ display: 'flex', flexDirection: 'column', fontFamily: 'var(--lucent-font-family-base)', fontSize: 'var(--lucent-font-size-md)', ...(inCard && { margin: `calc(-1 * ${cardPad.py}) calc(-1 * ${cardPad.px})` }), ...style }}>
         {/* Trigger button */}
         <button
           data-lucent-collapsible-trigger
@@ -137,7 +144,7 @@ export function Collapsible({ trigger, children, defaultOpen = false, open, onOp
         <div
           ref={contentRef}
           aria-hidden={!isOpen}
-          style={{ overflow: 'hidden' }}
+          style={{ overflow: isOpen ? 'visible' : 'hidden' }}
         >
           <div
             style={{

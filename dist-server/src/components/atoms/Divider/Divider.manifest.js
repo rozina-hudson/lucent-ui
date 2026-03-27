@@ -10,7 +10,7 @@ export const COMPONENT_MANIFEST = {
     props: [
         { name: 'orientation', type: 'enum', required: false, default: 'horizontal', description: 'Direction of the divider line.', enumValues: ['horizontal', 'vertical'] },
         { name: 'label', type: 'string', required: false, description: 'Optional centered label (horizontal only). Common use: "OR", "AND", section titles.' },
-        { name: 'spacing', type: 'string', required: false, default: 'var(--lucent-space-4)', description: 'Margin on the axis perpendicular to the line.' },
+        { name: 'spacing', type: 'string', required: false, default: '0', description: 'Margin on the axis perpendicular to the line. Defaults to 0 so parent gap-based layouts (Stack, Row) control spacing. Pass an explicit value like "var(--lucent-space-4)" for standalone use outside flex/grid containers.' },
     ],
     usageExamples: [
         { title: 'Section separator', code: `<Divider />` },

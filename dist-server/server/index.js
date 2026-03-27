@@ -3,6 +3,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
 import { ALL_MANIFESTS } from './registry.js';
+import { ALL_RECIPES } from './recipe-registry.js';
 import { PALETTES, SHAPES, DENSITIES, SHADOWS, COMBINED, generatePresetConfig } from './presets.js';
 // ─── Auth stub ───────────────────────────────────────────────────────────────
 // LUCENT_API_KEY is reserved for the future paid tier.
@@ -34,6 +35,29 @@ function scoreManifest(m, query) {
             score += 2;
         if (p.description.toLowerCase().includes(q))
             score += 1;
+    }
+    return score;
+}
+function findRecipe(nameOrId) {
+    const q = nameOrId.trim().toLowerCase();
+    return ALL_RECIPES.find((r) => r.id.toLowerCase() === q || r.name.toLowerCase() === q);
+}
+function scoreRecipe(r, query) {
+    const q = query.toLowerCase();
+    let score = 0;
+    if (r.name.toLowerCase().includes(q))
+        score += 10;
+    if (r.id.toLowerCase().includes(q))
+        score += 8;
+    if (r.category.toLowerCase().includes(q))
+        score += 5;
+    if (r.description.toLowerCase().includes(q))
+        score += 4;
+    if (r.designNotes.toLowerCase().includes(q))
+        score += 3;
+    for (const c of r.components) {
+        if (c.toLowerCase().includes(q))
+            score += 2;
     }
     return score;
 }
@@ -86,8 +110,8 @@ server.tool('get_component_manifest', 'Returns the full manifest JSON for a Luce
     };
 });
 // Tool: search_components
-server.tool('search_components', 'Searches Lucent UI components by description or concept. Returns matching components ranked by relevance.', { query: z.string().describe('Natural language or keyword query, e.g. "loading indicator" or "form validation"') }, async ({ query }) => {
-    const results = ALL_MANIFESTS
+server.tool('search_components', 'Searches Lucent UI components and composition recipes by description or concept. Returns matching components and recipes ranked by relevance.', { query: z.string().describe('Natural language or keyword query, e.g. "loading indicator", "form validation", or "profile card"') }, async ({ query }) => {
+    const componentResults = ALL_MANIFESTS
         .map((m) => ({ manifest: m, score: scoreManifest(m, query) }))
         .filter(({ score }) => score > 0)
         .sort((a, b) => b.score - a.score)
@@ -98,11 +122,96 @@ server.tool('search_components', 'Searches Lucent UI components by description o
         description: manifest.description,
         score,
     }));
+    const recipeResults = ALL_RECIPES
+        .map((r) => ({ recipe: r, score: scoreRecipe(r, query) }))
+        .filter(({ score }) => score > 0)
+        .sort((a, b) => b.score - a.score)
+        .map(({ recipe, score }) => ({
+        id: recipe.id,
+        name: recipe.name,
+        category: recipe.category,
+        description: recipe.description,
+        score,
+    }));
     return {
         content: [
             {
                 type: 'text',
-                text: JSON.stringify({ query, results }, null, 2),
+                text: JSON.stringify({ query, components: componentResults, recipes: recipeResults }, null, 2),
+            },
+        ],
+    };
+});
+// Tool: get_composition_recipe
+server.tool('get_composition_recipe', 'Returns a full composition recipe with structure tree, working JSX code, variants, and design notes. Query by recipe name/id or by category to get all recipes in that category.', {
+    name: z.string().optional().describe('Recipe name or id, e.g. "Profile Card" or "settings-panel"'),
+    category: z.string().optional().describe('Recipe category: "card", "form", "nav", "dashboard", "settings", or "action"'),
+}, async ({ name, category }) => {
+    if (name) {
+        const recipe = findRecipe(name);
+        if (!recipe) {
+            return {
+                content: [
+                    {
+                        type: 'text',
+                        text: JSON.stringify({
+                            error: `Recipe "${name}" not found.`,
+                            available: ALL_RECIPES.map((r) => ({ id: r.id, name: r.name, category: r.category })),
+                        }),
+                    },
+                ],
+                isError: true,
+            };
+        }
+        return {
+            content: [
+                {
+                    type: 'text',
+                    text: JSON.stringify(recipe, null, 2),
+                },
+            ],
+        };
+    }
+    if (category) {
+        const cat = category.trim().toLowerCase();
+        const recipes = ALL_RECIPES.filter((r) => r.category === cat);
+        if (recipes.length === 0) {
+            return {
+                content: [
+                    {
+                        type: 'text',
+                        text: JSON.stringify({
+                            error: `No recipes found in category "${category}".`,
+                            availableCategories: [...new Set(ALL_RECIPES.map((r) => r.category))],
+                        }),
+                    },
+                ],
+                isError: true,
+            };
+        }
+        return {
+            content: [
+                {
+                    type: 'text',
+                    text: JSON.stringify({ category: cat, recipes }, null, 2),
+                },
+            ],
+        };
+    }
+    // No filter — return all recipes
+    return {
+        content: [
+            {
+                type: 'text',
+                text: JSON.stringify({
+                    recipes: ALL_RECIPES.map((r) => ({
+                        id: r.id,
+                        name: r.name,
+                        category: r.category,
+                        description: r.description,
+                        components: r.components,
+                    })),
+                }, null, 2),
             },
         ],
     };

@@ -1,5 +1,36 @@
 # lucent-ui
 
+## 0.26.0
+
+### Composition recipes: manifest type + MCP tool + preview sections
+
+- **`CompositionRecipe` type** — new manifest type in `src/manifest/types.ts` describing how multiple components compose into real UIs. Fields: `id`, `name`, `description`, `category`, `components`, `structure` (ASCII tree), `code` (working JSX), `variants`, and `designNotes`.
+- **7 initial recipes** in `src/manifest/recipes/`:
+  - **Profile Card** — avatar, name (display font), bio, borderless clickable chips, stat row (2xl display), action buttons. Compact collapsible variant on filled Card.
+  - **Settings Panel** — toggle rows with descriptions, select dropdown, action footer. Drill-down variant with NavMenu sidebar.
+  - **Stats Row** — individual stat cards with trend chips and comparison text. Revenue variant with avatar headers.
+  - **Action Bar** — page header (breadcrumb + 3xl display title + divider) and card header (uppercase label + md title, tight letter-spacing).
+  - **Form Layout** — stacked form with section grouping, side-by-side fields, dividers, and submit/cancel footer.
+  - **Empty State Card** — icon illustration + heading + description + CTA in three variants (no results, getting started, error).
+  - **Collapsible Card** — all card variants (ghost/outline/filled/elevated) with auto-bleed Collapsible, plus combo two-tone layout.
+- **New MCP tool: `get_composition_recipe`** — query by name/id, by category, or list all. Returns full recipe with structure tree, working code, variants, and design notes.
+- **`search_components` extended** — now returns both `components` and `recipes` in results.
+- **Recipes nav group in ComponentPreview** — new "Recipes" section in the sidebar with Cards and Layouts sub-groups, each recipe rendered as a live interactive demo.
+
+### Divider: zero default spacing
+
+- **`spacing` default changed from `var(--lucent-space-4)` to `0`** — Dividers inside gap-based layouts (Stack, Row) no longer double up spacing. Pass `spacing` explicitly for standalone use outside flex containers.
+
+## 0.25.1
+
+### Collapsible + Card composition fix
+
+- **Collapsible auto-bleed inside Card** — Collapsible now consumes `CardPaddingContext` and applies negative margins to cancel the Card body's padding. `<Card hoverable><Collapsible>` just works — no `padding="none"` on Card required.
+- **Card overflow:visible by default** — cards without a `media` prop now default to `overflow: visible` so nested child shadows (e.g. an elevated Card inside a combo recipe) are never clipped. Cards with `media` keep `overflow: hidden` to clip images at rounded corners; the media slot also self-clips with matching top border-radius.
+- **Collapsible dynamic overflow** — the animated content wrapper uses `overflow: hidden` only during the height transition and switches to `overflow: visible` once fully expanded, preventing shadow clipping in the resting state.
+- **Combo recipe tighter spacing** — reduced top margin between trigger and inner elevated Card from `space-3` to `space-1`.
+- Updated Card and Collapsible manifests with simplified CollapsibleCard recipe examples (no `padding="none"` needed).
+
 ## 0.25.0
 
 ### Collapsible: smooth collapse animation, hover feedback, and polish

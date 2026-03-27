@@ -17,13 +17,19 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
     'on expand, scrollHeight is snapshotted and transitioned to, then the fixed height is cleared for reflow; ' +
     'on collapse, the current height is flushed to the DOM, a reflow is forced, then height is set to 0. ' +
     'Content fades in/out with opacity + translateY(-4px) at 80ms, while height transitions at 180ms ' +
-    'using the easing-default token. ' +
+    'using the easing-default token. The animated content wrapper uses overflow:hidden only during the ' +
+    'height transition and switches to overflow:visible once open, so nested child shadows (e.g. an ' +
+    'elevated Card in the combo recipe) are never clipped in the resting state.\n\n' +
     'A built-in chevron rotates 180° on open, giving clear directional affordance. ' +
     'Hover feedback uses a CSS rule via data-lucent-collapsible-trigger (same pattern as NavMenu): ' +
     '5% text-primary tint on the trigger background, chevron darkens to text-primary. ' +
     'The `trigger` prop accepts only label content — the chevron and button chrome are owned by the component ' +
     'so callers cannot accidentally break the expand/collapse contract. ' +
-    'The component supports controlled (open + onOpenChange) and uncontrolled (defaultOpen) modes.',
+    'The component supports controlled (open + onOpenChange) and uncontrolled (defaultOpen) modes.\n\n' +
+    '**Card-aware auto-bleed** — when placed inside a Card, Collapsible consumes CardPaddingContext and ' +
+    'applies negative margins to cancel the Card body\'s padding, so the trigger spans the full card width ' +
+    'and only the Collapsible\'s own padding applies. This means `<Card hoverable><Collapsible>` just works — ' +
+    'no `padding="none"` on Card required.',
 
   props: [
     {
@@ -104,18 +110,18 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
 </Collapsible>`,
     },
     {
-      title: 'CollapsibleCard recipe',
-      code: `<Card variant="outline" padding="none" hoverable>
+      title: 'CollapsibleCard recipe (auto-bleed)',
+      code: `<Card variant="outline" hoverable>
   <Collapsible trigger={<Text as="span" weight="semibold" size="sm">Filters</Text>} defaultOpen>
-    <Text size="sm" color="secondary">Card + Collapsible composed together.</Text>
+    <Text size="sm" color="secondary">Card + Collapsible composed together. No padding="none" needed.</Text>
   </Collapsible>
 </Card>`,
     },
     {
       title: 'CollapsibleCard combo recipe (padded={false})',
-      code: `<Card variant="filled" padding="none" hoverable>
+      code: `<Card variant="filled" hoverable>
   <Collapsible trigger={<Text as="span" weight="semibold" size="sm">Details</Text>} padded={false}>
-    <Card variant="elevated" padding="sm">
+    <Card variant="elevated" padding="sm" style={{ margin: 'var(--lucent-space-1) var(--lucent-space-2) var(--lucent-space-2)' }}>
       <Text size="sm" color="secondary">Nested elevated card inside a filled card.</Text>
     </Card>
   </Collapsible>

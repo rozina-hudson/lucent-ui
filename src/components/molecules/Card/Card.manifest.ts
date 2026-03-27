@@ -203,8 +203,9 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
       required: false,
       description:
         'Full-bleed content rendered at the top of the card (before header). No padding is applied. ' +
-        'Use for hero images, illustrations, or any edge-to-edge top content. The card\'s overflow:hidden ' +
-        'clips media to the border-radius.',
+        'Use for hero images, illustrations, or any edge-to-edge top content. The media slot self-clips ' +
+        'to the card\'s top border-radius. Cards without media default to overflow:visible so nested child ' +
+        'shadows (e.g. an elevated Card inside a Collapsible) are never cut off.',
     },
   ],
 
@@ -301,17 +302,17 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
     },
     {
       title: 'CollapsibleCard recipe — outline',
-      code: `<Card variant="outline" padding="none" hoverable>
+      code: `<Card variant="outline" hoverable>
   <Collapsible trigger={<Text as="span" weight="semibold" size="sm">Filters</Text>} defaultOpen>
-    <Text size="sm" color="secondary">Card + Collapsible composed together.</Text>
+    <Text size="sm" color="secondary">Card + Collapsible composed together. Collapsible auto-bleeds to card edges.</Text>
   </Collapsible>
 </Card>`,
     },
     {
       title: 'CollapsibleCard recipe — combo (filled + elevated)',
-      code: `<Card variant="filled" padding="none" hoverable>
+      code: `<Card variant="filled" hoverable>
   <Collapsible trigger={<Text as="span" weight="semibold" size="sm">Details</Text>} padded={false}>
-    <Card variant="elevated" padding="sm">
+    <Card variant="elevated" padding="sm" style={{ margin: 'var(--lucent-space-1) var(--lucent-space-2) var(--lucent-space-2)' }}>
       <Text size="sm" color="secondary">Two-tone: flat trigger on filled surface, content in elevated body.</Text>
     </Card>
   </Collapsible>
