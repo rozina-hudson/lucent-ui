@@ -121,7 +121,7 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
       name: 'radius',
       type: 'enum',
       required: false,
-      default: 'md',
+      default: 'lg',
       description: 'Border radius of the card.',
       enumValues: ['none', 'sm', 'md', 'lg'],
     },
@@ -172,8 +172,10 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
       type: 'enum',
       required: false,
       description:
-        'Adds a 3px colored accent bar on the left edge of the card. Uses the corresponding status ' +
-        'token (successDefault, warningDefault, dangerDefault, infoDefault). Works with all variants.',
+        'Adds a 3px colored inset box-shadow on the left edge of the card. Rendered as an inset shadow ' +
+        '(same technique as NavMenu inverse highlight) so it naturally follows the card\'s border-radius. ' +
+        'Uses the corresponding status token (successDefault, warningDefault, dangerDefault, infoDefault). ' +
+        'Works with all variants.',
       enumValues: ['success', 'warning', 'danger', 'info'],
     },
     {
@@ -184,6 +186,16 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
         'Adds an inset accent ring and subtle background tint to indicate selection. Used for card grids ' +
         'where cards act as radio/checkbox options. Pairs with onClick for toggle behavior. ' +
         'Sets aria-pressed on interactive cards. Disabled takes precedence — ring is hidden when disabled.',
+    },
+    {
+      name: 'hoverable',
+      type: 'boolean',
+      required: false,
+      description:
+        'Enables hover lift (translateY -1px) and neutral glow shadow without making the card a button or link. ' +
+        'Use when the card contains its own interactive content (e.g. a Collapsible trigger) and the whole card ' +
+        'surface should hint at interactivity. Interactive cards (onClick/href) get accent-colored hover glow; ' +
+        'hoverable-only cards get a neutral glow (12% text-primary).',
     },
     {
       name: 'media',
@@ -285,6 +297,24 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
 >
   <Text weight="semibold">Article title</Text>
   <Text color="secondary" size="sm">A card with a full-bleed hero image.</Text>
+</Card>`,
+    },
+    {
+      title: 'CollapsibleCard recipe — outline',
+      code: `<Card variant="outline" padding="none" hoverable>
+  <Collapsible trigger={<Text as="span" weight="semibold" size="sm">Filters</Text>} defaultOpen>
+    <Text size="sm" color="secondary">Card + Collapsible composed together.</Text>
+  </Collapsible>
+</Card>`,
+    },
+    {
+      title: 'CollapsibleCard recipe — combo (filled + elevated)',
+      code: `<Card variant="filled" padding="none" hoverable>
+  <Collapsible trigger={<Text as="span" weight="semibold" size="sm">Details</Text>} padded={false}>
+    <Card variant="elevated" padding="sm">
+      <Text size="sm" color="secondary">Two-tone: flat trigger on filled surface, content in elevated body.</Text>
+    </Card>
+  </Collapsible>
 </Card>`,
     },
   ],

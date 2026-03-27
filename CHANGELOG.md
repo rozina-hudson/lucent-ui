@@ -1,5 +1,36 @@
 # lucent-ui
 
+## 0.25.0
+
+### Collapsible: smooth collapse animation, hover feedback, and polish
+
+- **Smooth collapse animation** — height animation now uses direct DOM manipulation via `useLayoutEffect` to avoid React 18 batching issues. Expand and collapse both animate reliably with `scrollHeight` snapshot → forced reflow → transition.
+- **Snappier timing** — height transition tightened to 180ms (from 250ms), content fade to 80ms (from 100ms). All durations and easings now use design tokens (`duration-fast`, `easing-default`).
+- **CSS-driven hover feedback** — trigger gets a 5% `text-primary` tint on hover (same `color-mix` pattern as NavMenu). Chevron darkens from `text-secondary` to `text-primary`. Uses injected `[data-lucent-collapsible-trigger]` CSS rule instead of JS hover state.
+- **Focus-visible ring** — keyboard focus now shows a `2px surface + 4px accent-default` ring matching the system focus pattern. Previously had `outline: none` with no replacement.
+- **Style deduplication** — CSS rules are injected once to `<head>` via a module-level guard, instead of a `<style>` tag per instance.
+- **`disabled` prop** — reduces trigger opacity to 0.5, sets `cursor: not-allowed`, prevents toggling. Hover rules skip `:disabled`.
+- **`padded` prop** — when `false`, removes the built-in content padding so children (e.g. a nested Card) can provide their own spacing.
+- **`color: inherit`** — trigger button now explicitly inherits text color instead of relying on browser UA defaults.
+- **Unmount safety** — animation timers are tracked in a ref and cleared on unmount.
+
+### Card: hoverable prop, larger default radius, inset status accent
+
+- **`hoverable` prop** — enables hover lift (`translateY(-1px)`) and neutral glow shadow without making the card a button or link. Interactive cards (`onClick`/`href`) get accent-colored glow; `hoverable`-only cards get a neutral glow (12% `text-primary`). Use when the card wraps its own interactive content (e.g. a Collapsible).
+- **Default radius bumped to `lg`** — cards now use `radius-lg` (0.5rem) by default instead of `radius-md` (0.375rem) for a more container-appropriate feel.
+- **Inset status accent** — the colored left-edge status bar is now rendered as an `inset 3px 0 0` box-shadow instead of a positioned `<div>`. This follows the same technique as NavMenu's inverse highlight, so the accent naturally curves with the card's border-radius.
+
+### CollapsibleCard recipe (docs + preview)
+
+- Added CollapsibleCard recipe row to `ComponentPreview` showing all five card variants (ghost, outline, filled, elevated, combo) with Collapsible inside.
+- Combo recipe: filled Card wrapping a Collapsible with `padded={false}`, containing an elevated Card for the body — two-tone layout via pure composition.
+- Recipe examples added to both Card and Collapsible manifests.
+
+### Docs
+
+- `docs/style-escape-hatch.md` — documents the `style` prop as the official escape hatch for one-off custom styling beyond the token system.
+- `docs/collapsible-card-recipe.md` — CollapsibleCard composition recipe with localStorage persistence pattern.
+
 ## 0.24.0
 
 ### New Molecule: NavMenu
