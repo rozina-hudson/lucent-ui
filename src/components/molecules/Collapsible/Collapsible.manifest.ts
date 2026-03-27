@@ -8,13 +8,19 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
   specVersion: '0.1',
 
   description:
-    'Animated expand/collapse container with a built-in chevron trigger and smooth height transition.',
+    'Animated expand/collapse container with a built-in chevron trigger, smooth height transition, ' +
+    'and CSS-driven hover feedback.',
 
   designIntent:
     'Collapsible hides secondary content behind a trigger button to reduce visual noise. ' +
-    'Height is animated by snapshotting scrollHeight before closing and transitioning to 0, ' +
-    'then removing the fixed height after the open transition completes so content can reflow freely. ' +
+    'Height animation uses direct DOM manipulation via useLayoutEffect to avoid React batching issues: ' +
+    'on expand, scrollHeight is snapshotted and transitioned to, then the fixed height is cleared for reflow; ' +
+    'on collapse, the current height is flushed to the DOM, a reflow is forced, then height is set to 0. ' +
+    'Content fades in/out with opacity + translateY(-4px) at 80ms, while height transitions at 180ms ' +
+    'using the easing-default token. ' +
     'A built-in chevron rotates 180° on open, giving clear directional affordance. ' +
+    'Hover feedback uses a CSS rule via data-lucent-collapsible-trigger (same pattern as NavMenu): ' +
+    '5% text-primary tint on the trigger background, chevron darkens to text-primary. ' +
     'The `trigger` prop accepts only label content — the chevron and button chrome are owned by the component ' +
     'so callers cannot accidentally break the expand/collapse contract. ' +
     'The component supports controlled (open + onOpenChange) and uncontrolled (defaultOpen) modes.',
@@ -52,6 +58,23 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
       description: 'Callback fired with the new open boolean when the trigger is clicked.',
     },
     {
+      name: 'disabled',
+      type: 'boolean',
+      required: false,
+      default: 'false',
+      description: 'Disables the trigger button. Reduces opacity, sets cursor to not-allowed, and prevents toggling.',
+    },
+    {
+      name: 'padded',
+      type: 'boolean',
+      required: false,
+      default: 'true',
+      description:
+        'When true (default), applies built-in content padding (space-2 top, space-4 sides, space-3 bottom). ' +
+        'Set to false when children provide their own padding — e.g. when nesting a Card inside the Collapsible ' +
+        'for the CollapsibleCard combo recipe.',
+    },
+    {
       name: 'style',
       type: 'object',
       required: false,
@@ -79,6 +102,24 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
       code: `<Collapsible trigger="Description" defaultOpen>
   <Text size="sm" color="secondary">This section starts expanded.</Text>
 </Collapsible>`,
+    },
+    {
+      title: 'CollapsibleCard recipe',
+      code: `<Card variant="outline" padding="none" hoverable>
+  <Collapsible trigger={<Text as="span" weight="semibold" size="sm">Filters</Text>} defaultOpen>
+    <Text size="sm" color="secondary">Card + Collapsible composed together.</Text>
+  </Collapsible>
+</Card>`,
+    },
+    {
+      title: 'CollapsibleCard combo recipe (padded={false})',
+      code: `<Card variant="filled" padding="none" hoverable>
+  <Collapsible trigger={<Text as="span" weight="semibold" size="sm">Details</Text>} padded={false}>
+    <Card variant="elevated" padding="sm">
+      <Text size="sm" color="secondary">Nested elevated card inside a filled card.</Text>
+    </Card>
+  </Collapsible>
+</Card>`,
     },
   ],
 

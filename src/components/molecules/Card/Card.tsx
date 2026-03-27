@@ -36,6 +36,9 @@ export interface CardProps {
   /** Accent inset ring indicating selection. */
   selected?: boolean;
 
+  /** Enables hover/press visual feedback without making the card a button or link. */
+  hoverable?: boolean;
+
   /** Full-bleed content rendered at the top (before header). */
   media?: ReactNode;
 }
@@ -125,6 +128,7 @@ const TRANSITION = [
 ].join(', ');
 
 const HOVER_GLOW = '0 4px 14px -2px var(--lucent-accent-subtle)';
+const HOVER_GLOW_NEUTRAL = '0 4px 14px -2px color-mix(in srgb, var(--lucent-text-primary) 12%, transparent)';
 const FOCUS_RING = '0 0 0 3px var(--lucent-accent-subtle)';
 const PRESS_RING =
   '0 0 0 2px var(--lucent-surface), 0 0 0 4px var(--lucent-accent-default)';
@@ -152,7 +156,7 @@ export function Card({
   children,
   padding = 'md',
   shadow,
-  radius = 'md',
+  radius = 'lg',
   style,
   onClick,
   href,
@@ -161,6 +165,7 @@ export function Card({
   disabled,
   status,
   selected,
+  hoverable,
   media,
 }: CardProps) {
   const config = variantConfig[variant];
@@ -173,6 +178,7 @@ export function Card({
   // Interactive state
   const isLink = href != null;
   const isInteractive = onClick != null || isLink;
+  const hasHoverEffects = isInteractive || (hoverable ?? false);
   const isDisabled = (disabled ?? false) && isInteractive;
   const Tag = (isLink ? 'a' : isInteractive ? 'button' : 'div') as React.ElementType;
 
@@ -185,23 +191,29 @@ export function Card({
   const selectedRing = isSelected ? SELECTED_RING : undefined;
   const bg = getSelectedBg(config, selected ?? false, isDisabled);
 
-  // Shadow composition: variant shadow + selected ring + interactive state
+  // Status accent — inset shadow so it follows border-radius (same technique as NavMenu inverse)
+  const statusShadow = status != null
+    ? `inset 3px 0 0 ${statusColorMap[status]}`
+    : undefined;
+
+  // Shadow composition: variant shadow + selected ring + interactive state + status accent
   let rootShadow: string | undefined;
   if (isCombo) {
     // Combo: outer wrapper only gets selected ring (elevation shadow is on the body)
-    rootShadow = selectedRing;
-  } else if (isInteractive && !isDisabled) {
+    rootShadow = combineShadows(selectedRing, statusShadow);
+  } else if (hasHoverEffects && !isDisabled) {
     if (isPressed) {
-      rootShadow = combineShadows(PRESS_RING, selectedRing);
+      rootShadow = combineShadows(PRESS_RING, selectedRing, statusShadow);
     } else if (isFocused) {
-      rootShadow = combineShadows(FOCUS_RING, selectedRing);
+      rootShadow = combineShadows(FOCUS_RING, selectedRing, statusShadow);
     } else if (isHovered) {
-      rootShadow = combineShadows(HOVER_GLOW, shadowMap[effectiveShadow], selectedRing);
+      const glow = isInteractive ? HOVER_GLOW : HOVER_GLOW_NEUTRAL;
+      rootShadow = combineShadows(glow, shadowMap[effectiveShadow], selectedRing, statusShadow);
     } else {
-      rootShadow = combineShadows(shadowMap[effectiveShadow], selectedRing);
+      rootShadow = combineShadows(shadowMap[effectiveShadow], selectedRing, statusShadow);
     }
   } else {
-    rootShadow = combineShadows(shadowMap[effectiveShadow], selectedRing);
+    rootShadow = combineShadows(shadowMap[effectiveShadow], selectedRing, statusShadow);
   }
 
   // Root style
@@ -213,17 +225,16 @@ export function Card({
     borderRadius,
     // Outer box-shadow rings (selected, focus) get clipped by overflow:hidden,
     // so we switch to overflow:visible when a ring is active.
-    overflow: isSelected || (isInteractive && isFocused) ? 'visible' : 'hidden',
+    overflow: isSelected || (hasHoverEffects && isFocused) ? 'visible' : 'hidden',
     boxSizing: 'border-box',
     position: 'relative',
     ...(rootShadow !== undefined && { boxShadow: rootShadow }),
-    // Interactive transform
-    ...(isInteractive && !isDisabled && isPressed && { transform: 'translateY(1px)' }),
-    ...(isInteractive && !isDisabled && isHovered && !isPressed && { transform: 'translateY(-1px)' }),
-    // Interactive base styles
-    ...(isInteractive && {
+    // Hover/press transform
+    ...(hasHoverEffects && !isDisabled && isPressed && { transform: 'translateY(1px)' }),
+    ...(hasHoverEffects && !isDisabled && isHovered && !isPressed && { transform: 'translateY(-1px)' }),
+    // Hover/interactive base styles
+    ...(hasHoverEffects && {
       cursor: isDisabled ? 'not-allowed' : 'pointer',
-      outline: 'none',
       transition: TRANSITION,
     }),
     // Button UA reset
@@ -247,8 +258,8 @@ export function Card({
     ...style,
   };
 
-  // Interactive event handlers
-  const handlers = isInteractive && !isDisabled
+  // Hover/interactive event handlers
+  const handlers = (hasHoverEffects && !isDisabled)
     ? {
         onMouseEnter: () => setIsHovered(true),
         onMouseLeave: () => { setIsHovered(false); setIsPressed(false); },
@@ -281,21 +292,7 @@ export function Card({
         <div style={{ lineHeight: 0 }}>{media}</div>
       )}
 
-      {/* Status accent bar */}
-      {status != null && (
-        <div
-          aria-hidden
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            bottom: 0,
-            width: 3,
-            background: statusColorMap[status],
-            zIndex: 1,
-          }}
-        />
-      )}
+      {/* Status accent bar — rendered via inset box-shadow on root (see rootShadow) */}
 
       {/* Header */}
       {header != null && (
