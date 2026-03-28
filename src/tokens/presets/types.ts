@@ -30,11 +30,11 @@ export interface DesignPreset {
   shadow: ShadowPreset;
 }
 
-export type PresetName = 'modern' | 'enterprise' | 'playful';
+export type PresetName = 'modern' | 'enterprise' | 'playful' | 'liquidGlass' | 'bento' | 'brutalist' | 'terminal' | 'softUI' | 'bloom' | 'minimal';
 export type PaletteName = 'default' | 'brand' | 'indigo' | 'violet' | 'emerald' | 'teal' | 'rose' | 'coral' | 'amber' | 'ocean' | 'slate' | 'sage';
 export type ShapeName = 'sharp' | 'rounded' | 'pill';
 export type DensityName = 'compact' | 'default' | 'spacious';
-export type ShadowName = 'flat' | 'subtle' | 'elevated';
+export type ShadowName = 'flat' | 'subtle' | 'elevated' | 'liquidGlass' | 'brutalist' | 'neumorphic' | 'natural' | 'glow';
 
 export type PresetProp =
   | PresetName

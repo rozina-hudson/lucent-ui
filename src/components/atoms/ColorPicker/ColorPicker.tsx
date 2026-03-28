@@ -444,7 +444,7 @@ export function ColorPicker({
             position: 'fixed',
             top: popoverPos.top,
             left: popoverPos.left,
-            zIndex: 1000,
+            zIndex: 999999,
             background: 'color-mix(in srgb, var(--lucent-surface-overlay) 85%, transparent)',
             backdropFilter: 'blur(6px)',
             WebkitBackdropFilter: 'blur(6px)',

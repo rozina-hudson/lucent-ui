@@ -1,5 +1,70 @@
 # lucent-ui
 
+## 0.28.0
+
+### LucentDevTools — Live Token Editor & Design System Explorer
+
+**New: `lucent-ui/devtools` entry point** — a floating panel for real-time design system manipulation. Drop `<LucentDevTools />` inside your `<LucentProvider>` and toggle with Cmd+Shift+D.
+
+**Three-tab panel:**
+- **Design** — preset gallery (10 design personalities), accent/background/surface/border color pickers with auto-derivation, density slider, roundness slider, shadow style selector (9 styles), font family per preset
+- **Typography** — font family picker with 14 Google Fonts (auto-loaded on demand), category filter (sans/serif/mono/display), type scale controls (base size + ratio + named presets), text color pickers, live paragraph preview
+- **Tokens** — raw token editor for all ~80 tokens with per-token color pickers, sliders, and text inputs
+
+**10 curated design presets:** Default, Modern, Liquid Glass, Bento, Brutalist, Terminal, Soft UI, Bloom, Minimal, Enterprise — each a harmonious combination of accent color, font family, type scale, density, roundness, and shadow style.
+
+**Panel features:**
+- Overlay or push mode (push shifts page content left)
+- Theme toggle (light/dark)
+- Copy Config — exports current overrides as a `<LucentProvider tokens={...}>` snippet
+- Reset All — clears all overrides instantly
+- Override count badge
+- CSS var override mechanism — instant visual updates, no React re-render
+- Built with lucent-ui components (Tabs, Button, Toggle, Badge, Text, Slider, Input, Select, SegmentedControl, ColorPicker) scoped to a fixed dark theme via `DevToolsScope`
+- Separate entry point — zero devtools code in the main `lucent-ui` bundle
+
+### 8 new shadow presets + dark-mode-native shadows
+
+**New shadow styles:** Liquid Glass, Brutalist, Neumorphic, Natural, Glow — added to the existing Flat, Subtle, Elevated.
+
+**Dark mode paradigm shift:** Every dark-mode shadow variant rewritten from scratch. Instead of darkening (invisible on dark backgrounds), shadows now simulate light sources:
+
+| Preset | Dark mode technique |
+|--------|-------------------|
+| Default | Lit edge — `inset 0 1px` white highlight simulating overhead light |
+| Subtle | Ambient — large soft accent-tinted glow via `color-mix()` |
+| Elevated | Inset glow — internal luminosity via `inset 0 0 Npx rgba(255,255,255)` |
+| Natural | Layered lit edges — stacked `inset` highlights at increasing intensity |
+| Liquid Glass | Frosted backlight — inner white glow + outer white diffusion |
+| Neumorphic | Chromatic — accent-colored glow on one side, white highlight on the other |
+| Brutalist | Accent outline — bright accent ring + accent offset block (not dark) |
+| Glow | Pure accent glow (already dark-mode-native) |
+
+**Brutalist shadows** use `color-mix()` with `var(--lucent-accent-default)` for the thick outline ring and offset block — automatically follows palette changes.
+
+### 7 new combined design presets
+
+Full design personalities that bundle palette + shape + density + shadow:
+
+| Preset | Shadow | Shape | Density | Palette |
+|--------|--------|-------|---------|---------|
+| `liquidGlass` | Liquid Glass | Pill | Spacious | Ocean |
+| `bento` | Natural | Rounded | Default | Indigo |
+| `brutalist` | Brutalist | Sharp | Compact | Coral |
+| `terminal` | Glow | Sharp | Compact | Emerald |
+| `softUI` | Neumorphic | Pill | Default | Violet |
+| `bloom` | Glow | Rounded | Spacious | Indigo |
+| `minimal` | Flat | Rounded | Default | Slate |
+
+Usage: `<LucentProvider preset="brutalist">` or `<LucentProvider preset={{ shadow: 'glow', shape: 'pill' }}>`.
+
+### Other changes
+
+- **Tabs:** `content` is now optional on `TabItem` — when no tab has content, panel rendering is skipped (header-only / controlled mode)
+- **ColorPicker:** `zIndex` increased to `999999` to render above high-z-index containers
+- **`tokenToCssVar`** exported from `src/tokens/css.ts` — converts camelCase token keys to `--lucent-*` CSS var names
+- **Dynamic Google Font loading** — devtools automatically injects `<link>` tags for fonts when presets or the font picker are used
+
 ## 0.27.2
 
 ### Contained variant & Card selected: neutral fills

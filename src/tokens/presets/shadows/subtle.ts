@@ -1,5 +1,11 @@
 import type { ShadowPreset } from '../types.js';
 
+/**
+ * Subtle — light mode uses wide, low-opacity diffused shadows.
+ * Dark mode shifts to "ambient" — an enormous, barely-visible
+ * accent-tinted glow that makes surfaces feel warm without
+ * creating visible shadow edges.
+ */
 export const subtleShadow: ShadowPreset = {
   name: 'subtle',
   light: {
@@ -11,9 +17,16 @@ export const subtleShadow: ShadowPreset = {
   },
   dark: {
     shadowNone: 'none',
-    shadowSm: 'rgba(0, 0, 0, 0.12) 0px 2px 8px, rgba(0, 0, 0, 0.08) 0px 4px 16px',
-    shadowMd: 'rgba(0, 0, 0, 0.18) 0px 4px 16px, rgba(0, 0, 0, 0.1) 0px 8px 32px',
-    shadowLg: 'rgba(0, 0, 0, 0.18) 0px 8px 24px, rgba(0, 0, 0, 0.12) 0px 16px 48px',
-    shadowXl: 'rgba(0, 0, 0, 0.2) 0px 12px 32px, rgba(0, 0, 0, 0.15) 0px 24px 64px',
+    shadowSm:
+      '0 0 20px color-mix(in srgb, var(--lucent-accent-default) 5%, transparent)',
+    shadowMd:
+      '0 0 30px color-mix(in srgb, var(--lucent-accent-default) 7%, transparent), ' +
+      'inset 0 1px 0 0 rgba(255, 255, 255, 0.04)',
+    shadowLg:
+      '0 0 40px color-mix(in srgb, var(--lucent-accent-default) 9%, transparent), ' +
+      'inset 0 1px 0 0 rgba(255, 255, 255, 0.05)',
+    shadowXl:
+      '0 0 56px color-mix(in srgb, var(--lucent-accent-default) 12%, transparent), ' +
+      'inset 0 1px 0 0 rgba(255, 255, 255, 0.06)',
   },
 };

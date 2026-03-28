@@ -14,8 +14,8 @@ export {
   defaultPalette, brandPalette, indigoPalette, emeraldPalette, rosePalette, oceanPalette,
   sharpShape, roundedShape, pillShape,
   compactDensity, defaultDensity, spaciousDensity,
-  flatShadow, subtleShadow, elevatedShadow,
-  modernPreset, enterprisePreset, playfulPreset,
+  flatShadow, subtleShadow, elevatedShadow, liquidGlassShadow, brutalistShadow, neumorphicShadow, naturalShadow, glowShadow,
+  modernPreset, enterprisePreset, playfulPreset, liquidGlassPreset, bentoPreset, brutalistPreset, terminalPreset, softUIPreset, bloomPreset, minimalPreset,
   resolvePreset,
 } from './tokens/index.js';
 export type {

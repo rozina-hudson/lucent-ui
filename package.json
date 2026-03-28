@@ -12,7 +12,12 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
-    "./styles": "./dist/index.css"
+    "./styles": "./dist/index.css",
+    "./devtools": {
+      "types": "./dist/devtools.d.ts",
+      "import": "./dist/devtools.js",
+      "require": "./dist/devtools.cjs"
+    }
   },
   "bin": {
     "lucent-ui": "./dist-cli/cli/entry.js",

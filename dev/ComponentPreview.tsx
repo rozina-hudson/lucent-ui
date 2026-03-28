@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { LucentProvider, useLucent, createTheme } from '../src/index.js';
+import { LucentDevTools } from '../src/devtools/index.js';
 import { hexToHsl, hslToHex } from '../src/tokens/color.js';
 import type { PaletteName, ShapeName, ShadowName } from '../src/tokens/presets/types.js';
 import type { ColorPalette } from '../src/tokens/presets/types.js';
@@ -365,6 +366,7 @@ export function ComponentPreview({ tab, setTab }: { tab: DevTab; setTab: (t: Dev
           onChangeToastPosition={setToastPosition}
         />
       </ToastProvider>
+      <LucentDevTools onThemeChange={setTheme} />
     </LucentProvider>
   );
 }
@@ -848,8 +850,8 @@ function Inner({
         </div>
       }
       headerHeight={48}
-      chromeBackground="surfaceSecondary"
-      mainStyle={{ background: tokens.bgBase }}
+      chromeBackground="bgBase"
+      mainStyle={{ background: 'var(--lucent-surface)' }}
       {...(tab === 'components' && { sidebar: navSidebar, sidebarWidth: navSize === 'lg' ? 280 : navSize === 'md' ? 250 : 220 })}
       {...(tab === 'components' && { rightSidebar: customizerSidebar, rightSidebarWidth: 260 })}
     >
