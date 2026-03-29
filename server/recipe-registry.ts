@@ -7,6 +7,7 @@ import { RECIPE as ActionBar } from '../src/manifest/recipes/action-bar.recipe.j
 import { RECIPE as FormLayout } from '../src/manifest/recipes/form-layout.recipe.js';
 import { RECIPE as EmptyStateCard } from '../src/manifest/recipes/empty-state-card.recipe.js';
 import { RECIPE as CollapsibleCard } from '../src/manifest/recipes/collapsible-card.recipe.js';
+import { RECIPE as SearchFilterBar } from '../src/manifest/recipes/search-filter-bar.recipe.js';
 
 export const ALL_RECIPES: CompositionRecipe[] = [
   ProfileCard,
@@ -16,4 +17,5 @@ export const ALL_RECIPES: CompositionRecipe[] = [
   FormLayout,
   EmptyStateCard,
   CollapsibleCard,
+  SearchFilterBar,
 ];

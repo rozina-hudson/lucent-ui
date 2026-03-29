@@ -1,7 +1,6 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { LucentProvider, useLucent, createTheme } from '../src/index.js';
 import { LucentDevTools } from '../src/devtools/index.js';
-import { hexToHsl, hslToHex } from '../src/tokens/color.js';
 import type { PaletteName, ShapeName, ShadowName } from '../src/tokens/presets/types.js';
 import type { ColorPalette } from '../src/tokens/presets/types.js';
 import {
@@ -60,7 +59,7 @@ import { Progress } from '../src/components/atoms/Progress/index.js';
 import { SplitButton } from '../src/components/atoms/SplitButton/index.js';
 import { ButtonGroup } from '../src/components/atoms/ButtonGroup/index.js';
 import { NavMenu } from '../src/components/molecules/NavMenu/index.js';
-import type { LucentTokens, Theme, ThemeAnchors, UploadFile } from '../src/index.js';
+import type { Theme, ThemeAnchors, UploadFile } from '../src/index.js';
 
 // ─── Palette map ────────────────────────────────────────────────────────────
 
@@ -147,198 +146,21 @@ function StarIcon() {
   );
 }
 
-const PALETTE_OPTIONS: { value: PaletteName; label: string; swatch: string }[] = [
-  { value: 'default', label: 'Default', swatch: '#111827' },
-  { value: 'brand', label: 'Brand', swatch: '#e9c96b' },
-  { value: 'indigo', label: 'Indigo', swatch: '#6366f1' },
-  { value: 'violet', label: 'Violet', swatch: '#8b5cf6' },
-  { value: 'emerald', label: 'Emerald', swatch: '#10b981' },
-  { value: 'teal', label: 'Teal', swatch: '#0d9488' },
-  { value: 'rose', label: 'Rose', swatch: '#f43f5e' },
-  { value: 'coral', label: 'Coral', swatch: '#e8624a' },
-  { value: 'amber', label: 'Amber', swatch: '#d97706' },
-  { value: 'ocean', label: 'Ocean', swatch: '#0ea5e9' },
-  { value: 'slate', label: 'Slate', swatch: '#475569' },
-  { value: 'sage', label: 'Sage', swatch: '#5f8c6e' },
-];
-
-const SHAPE_OPTIONS: ShapeName[] = ['sharp', 'rounded', 'pill'];
-const SHADOW_OPTIONS: ShadowName[] = ['flat', 'subtle', 'elevated'];
-
-type DensityPreset = 'compact' | 'default' | 'comfortable';
-type FontScalePreset = 'small' | 'default' | 'large';
-const DENSITY_PERCENT: Record<DensityPreset, number> = { compact: 65, default: 100, comfortable: 140 };
-const FONT_SCALE_PERCENT: Record<FontScalePreset, number> = { small: 90, default: 100, large: 110 };
-const DENSITY_OPTIONS: { value: DensityPreset; label: string }[] = [
-  { value: 'compact', label: 'Compact' },
-  { value: 'default', label: 'Default' },
-  { value: 'comfortable', label: 'Comfortable' },
-];
-const FONT_SCALE_OPTIONS: { value: FontScalePreset; label: string }[] = [
-  { value: 'small', label: 'Small' },
-  { value: 'default', label: 'Default' },
-  { value: 'large', label: 'Large' },
-];
-
-const QUICK_PRESETS: { name: string; palette: PaletteName; shape: ShapeName; shadow: ShadowName; density: DensityPreset; fontScale: FontScalePreset }[] = [
-  { name: 'Modern', palette: 'indigo', shape: 'rounded', shadow: 'subtle', density: 'default', fontScale: 'default' },
-  { name: 'Enterprise', palette: 'default', shape: 'sharp', shadow: 'flat', density: 'compact', fontScale: 'small' },
-  { name: 'Playful', palette: 'rose', shape: 'pill', shadow: 'elevated', density: 'comfortable', fontScale: 'large' },
-];
-
-// Anchor derivation chain — which live tokens derive from each anchor
-const ANCHOR_DERIVATIONS: { anchor: keyof ThemeAnchors; label: string; derived: { key: keyof LucentTokens; label: string }[] }[] = [
-  { anchor: 'bgBase', label: 'Background', derived: [
-    { key: 'bgSubtle', label: 'subtle' }, { key: 'surface', label: 'surface' }, { key: 'surfaceTint', label: 'tint' },
-  ]},
-  { anchor: 'borderDefault', label: 'Border', derived: [
-    { key: 'borderSubtle', label: 'subtle' }, { key: 'borderStrong', label: 'strong' },
-  ]},
-  { anchor: 'textPrimary', label: 'Text', derived: [
-    { key: 'textSecondary', label: 'secondary' }, { key: 'textDisabled', label: 'disabled' },
-  ]},
-  { anchor: 'accentDefault', label: 'Accent', derived: [
-    { key: 'accentHover', label: 'hover' },
-    { key: 'accentSubtle', label: 'subtle' }, { key: 'accentBorder', label: 'border' },
-    { key: 'accentFg', label: 'fg' },
-  ]},
-];
-
-const STATUS_ANCHORS: { anchor: keyof ThemeAnchors; label: string; derived: { key: keyof LucentTokens; label: string }[] }[] = [
-  { anchor: 'successDefault', label: 'Success', derived: [{ key: 'successSubtle', label: 'subtle' }, { key: 'successText', label: 'text' }] },
-  { anchor: 'warningDefault', label: 'Warning', derived: [{ key: 'warningSubtle', label: 'subtle' }, { key: 'warningText', label: 'text' }] },
-  { anchor: 'dangerDefault', label: 'Danger', derived: [{ key: 'dangerSubtle', label: 'subtle' }, { key: 'dangerText', label: 'text' }] },
-  { anchor: 'infoDefault', label: 'Info', derived: [{ key: 'infoSubtle', label: 'subtle' }, { key: 'infoText', label: 'text' }] },
-];
-
 export type DevTab = 'components' | 'tokens' | 'playground';
 
 export function ComponentPreview({ tab, setTab }: { tab: DevTab; setTab: (t: DevTab) => void }) {
   const [theme, setTheme] = useState<Theme>('light');
-  const [palette, setPalette] = useState<PaletteName | null>('default');
-  const [anchors, setAnchors] = useState<ThemeAnchors>(() => ({ ...PALETTE_MAP.default.light, textPrimary: '#111111' }));
-  const [shape, setShape] = useState<ShapeName>('rounded');
-  const [shadow, setShadow] = useState<ShadowName>('subtle');
-  const [scaleOverrides, setScaleOverrides] = useState<Partial<LucentTokens>>({});
   const [toastPosition, setToastPosition] = useState<ToastPosition>('bottom-right');
 
-  // Derive tinted bgBase and borderDefault from an accent color
-  const deriveFromAccent = (accent: string, t: Theme): { bgBase: string; borderDefault: string } => {
-    const [h, s] = hexToHsl(accent);
-    if (t === 'light') {
-      return {
-        bgBase: hslToHex(h, Math.min(s, 0.3), 0.99),
-        borderDefault: hslToHex(h, Math.min(s, 0.15), 0.88),
-      };
-    }
-    return {
-      bgBase: hslToHex(h, Math.min(s, 0.2), 0.07),
-      borderDefault: hslToHex(h, Math.min(s, 0.12), 0.18),
-    };
-  };
-
-  const handleAnchorChange = (key: keyof ThemeAnchors, value: string) => {
-    setPalette(null); // clear palette — colors are now custom
-    if (key === 'accentDefault') {
-      // Cascade: accent drives bgBase + borderDefault; keep text neutral; drop surface to re-derive
-      const derived = deriveFromAccent(value, theme);
-      setAnchors(prev => {
-        const next = {
-          ...prev,
-          accentDefault: value,
-          bgBase: derived.bgBase,
-          borderDefault: derived.borderDefault,
-          textPrimary: theme === 'light' ? '#111111' : '#eeeeee',
-        };
-        delete next.surface;
-        return next;
-      });
-    } else if (key === 'bgBase') {
-      // When bgBase changes manually, drop explicit surface so it re-derives
-      setAnchors(prev => {
-        const next = { ...prev, bgBase: value };
-        delete next.surface;
-        return next;
-      });
-    } else {
-      setAnchors(prev => ({ ...prev, [key]: value }));
-    }
-  };
-
-  const applyPalette = (p: PaletteName) => {
-    setPalette(p);
-    const paletteAnchors = PALETTE_MAP[p][theme];
-    setAnchors({
-      ...paletteAnchors,
-      // textPrimary is optional in ThemeAnchors; ensure it's always set
-      textPrimary: paletteAnchors.textPrimary ?? (theme === 'light' ? '#111111' : '#eeeeee'),
-    });
-  };
-
-  const applyShape = (s: ShapeName) => {
-    setShape(s);
-    // Clear any radius scale overrides so the preset takes effect
-    setScaleOverrides(prev => {
-      const next = { ...prev };
-      delete next.radiusSm; delete next.radiusMd; delete next.radiusLg;
-      delete next.radiusXl; delete next.radiusFull;
-      return next;
-    });
-  };
-
-  // Target scale presets — set by quick presets, applied by Inner
-  const [targetDensity, setTargetDensity] = useState<DensityPreset>('default');
-  const [targetFontScale, setTargetFontScale] = useState<FontScalePreset>('default');
-
-  const applyQuickPreset = (qp: typeof QUICK_PRESETS[number]) => {
-    applyPalette(qp.palette);
-    applyShape(qp.shape);
-    setShadow(qp.shadow);
-    setTargetDensity(qp.density);
-    setTargetFontScale(qp.fontScale);
-    setScaleOverrides({});
-  };
-
-  const handleScaleOverride = (key: keyof LucentTokens, value: string) => {
-    setScaleOverrides(prev => ({ ...prev, [key]: value }));
-  };
-
-  const resetAll = () => {
-    setPalette('default');
-    const pa = PALETTE_MAP.default[theme];
-    setAnchors({ ...pa, textPrimary: pa.textPrimary ?? (theme === 'light' ? '#111111' : '#eeeeee') });
-    setShape('rounded');
-    setShadow('subtle');
-    setTargetDensity('default');
-    setTargetFontScale('default');
-    setScaleOverrides({});
-  };
-
-  // Compute final tokens: anchor-derived colors + shape/shadow presets + scale overrides
+  // Compute final tokens synchronously from theme
   const finalTokens = useMemo(() => {
+    const pa = PALETTE_MAP.default[theme];
+    const anchors: ThemeAnchors = { ...pa, textPrimary: pa.textPrimary ?? (theme === 'light' ? '#111111' : '#eeeeee') };
     const colorTokens = createTheme(anchors, theme);
-    const shapeTokens = SHAPE_MAP[shape].tokens;
-    const shadowTokens = SHADOW_MAP[shadow][theme];
-    return { ...colorTokens, ...shapeTokens, ...shadowTokens, ...scaleOverrides };
-  }, [anchors, theme, shape, shadow, scaleOverrides]);
-
-  // Sync anchors when theme toggles (use the palette's light/dark anchors, or re-derive custom)
-  const prevThemeRef = useRef(theme);
-  useEffect(() => {
-    if (prevThemeRef.current !== theme) {
-      prevThemeRef.current = theme;
-      if (palette) {
-        const pa = PALETTE_MAP[palette][theme];
-        setAnchors({ ...pa, textPrimary: pa.textPrimary ?? (theme === 'light' ? '#111111' : '#eeeeee') });
-      } else {
-        // Custom colors — re-derive bg/border from current accent for new theme
-        setAnchors(prev => {
-          const derived = deriveFromAccent(prev.accentDefault, theme);
-          return { ...prev, ...derived, textPrimary: theme === 'light' ? '#111111' : '#eeeeee' };
-        });
-      }
-    }
-  }, [theme, palette]);
+    const shapeTokens = SHAPE_MAP.rounded.tokens;
+    const shadowTokens = SHADOW_MAP.subtle[theme];
+    return { ...colorTokens, ...shapeTokens, ...shadowTokens };
+  }, [theme]);
 
   return (
     <LucentProvider theme={theme} tokens={finalTokens}>
@@ -347,21 +169,7 @@ export function ComponentPreview({ tab, setTab }: { tab: DevTab; setTab: (t: Dev
           tab={tab}
           setTab={setTab}
           theme={theme}
-          palette={palette}
-          anchors={anchors}
-          shape={shape}
-          shadow={shadow}
-          scaleOverrides={scaleOverrides}
           onToggleTheme={() => setTheme(t => t === 'light' ? 'dark' : 'light')}
-          onChangePalette={applyPalette}
-          onChangeAnchor={handleAnchorChange}
-          onChangeShape={applyShape}
-          onChangeShadow={setShadow}
-          onScaleOverride={handleScaleOverride}
-          onQuickPreset={applyQuickPreset}
-          onReset={resetAll}
-          targetDensity={targetDensity}
-          targetFontScale={targetFontScale}
           toastPosition={toastPosition}
           onChangeToastPosition={setToastPosition}
         />
@@ -372,29 +180,14 @@ export function ComponentPreview({ tab, setTab }: { tab: DevTab; setTab: (t: Dev
 }
 
 function Inner({
-  tab, setTab, theme, palette, anchors, shape, shadow, scaleOverrides,
-  onToggleTheme, onChangePalette, onChangeAnchor, onChangeShape, onChangeShadow,
-  onScaleOverride, onQuickPreset, onReset, targetDensity, targetFontScale,
+  tab, setTab, theme,
+  onToggleTheme,
   toastPosition, onChangeToastPosition,
 }: {
   tab: DevTab;
   setTab: (t: DevTab) => void;
   theme: Theme;
-  palette: PaletteName | null;
-  anchors: ThemeAnchors;
-  shape: ShapeName;
-  shadow: ShadowName;
-  scaleOverrides: Partial<LucentTokens>;
   onToggleTheme: () => void;
-  onChangePalette: (p: PaletteName) => void;
-  onChangeAnchor: (key: keyof ThemeAnchors, value: string) => void;
-  onChangeShape: (s: ShapeName) => void;
-  onChangeShadow: (s: ShadowName) => void;
-  onScaleOverride: (key: keyof LucentTokens, value: string) => void;
-  onQuickPreset: (qp: typeof QUICK_PRESETS[number]) => void;
-  onReset: () => void;
-  targetDensity: DensityPreset;
-  targetFontScale: FontScalePreset;
   toastPosition: ToastPosition;
   onChangeToastPosition: (p: ToastPosition) => void;
 }) {
@@ -414,6 +207,7 @@ function Inner({
     overlays:    { label: 'Overlays & Menus',   tier: 'molecule', items: ['Menu', 'CommandPalette', 'Toast'] },
     'r-cards':   { label: 'Cards',              tier: 'recipe', items: ['ProfileCard', 'CollapsibleCard', 'EmptyStateCard'] },
     'r-layouts': { label: 'Layouts',            tier: 'recipe', items: ['SettingsPanel', 'FormLayout', 'StatsRow', 'ActionBar'] },
+    'r-filters': { label: 'Filters',           tier: 'recipe', items: ['SearchFilterBar'] },
   };
 
   const allSections = Object.values(sectionGroups).flatMap(g => g.items);
@@ -450,101 +244,16 @@ function Inner({
   const [navIcons, setNavIcons] = useState(false);
   const [navSize, setNavSize] = useState<'sm' | 'md' | 'lg'>('sm');
   const [settingsTab, setSettingsTab] = useState<'profile' | 'notifications' | 'security'>('profile');
-
-  // Scale preset state
-  const [density, setDensity] = useState<DensityPreset>('default');
-  const [fontScale, setFontScale] = useState<FontScalePreset>('default');
-  // Derive radius slider value from live token
-  const radiusPx = (() => {
-    const raw = tokens.radiusLg;
-    if (raw.endsWith('px')) return parseInt(raw);
-    if (raw.endsWith('rem')) return Math.round(parseFloat(raw) * 14); // 14px base
-    return 8;
-  })();
-  const baseFontSizesRef = useRef<Record<string, string>>({});
-  const baseSpaceRef = useRef<Record<string, string>>({});
-
-  // Capture base font/space values once for scaling
-  useEffect(() => {
-    if (Object.keys(baseFontSizesRef.current).length === 0) {
-      ['fontSizeXs','fontSizeSm','fontSizeMd','fontSizeLg','fontSizeXl','fontSize2xl','fontSize3xl'].forEach(k => {
-        baseFontSizesRef.current[k] = tokens[k as keyof typeof tokens] as string;
-      });
-    }
-    if (Object.keys(baseSpaceRef.current).length === 0) {
-      Object.keys(tokens).filter(k => k.startsWith('space')).forEach(k => {
-        baseSpaceRef.current[k] = tokens[k as keyof typeof tokens] as string;
-      });
-    }
-  }, [tokens]);
-
-  // Sync controls when quick preset sets target values
-  useEffect(() => {
-    if (targetFontScale !== fontScale) {
-      setFontScale(targetFontScale);
-      const scale = FONT_SCALE_PERCENT[targetFontScale] / 100;
-      Object.entries(baseFontSizesRef.current).forEach(([k, v]) => {
-        const num = parseFloat(v); const unit = v.replace(/[\d.]/g, '');
-        onScaleOverride(k as keyof LucentTokens, `${num * scale}${unit}`);
-      });
-    }
-    if (targetDensity !== density) {
-      setDensity(targetDensity);
-      const scale = DENSITY_PERCENT[targetDensity] / 100;
-      Object.entries(baseSpaceRef.current).forEach(([k, v]) => {
-        const num = parseFloat(v); const unit = v.replace(/[\d.]/g, '');
-        onScaleOverride(k as keyof LucentTokens, `${num * scale}${unit}`);
-      });
-    }
-  }, [targetFontScale, targetDensity]);
-
-  // Handlers for density and font scale controls
-  const handleDensityChange = (v: string) => {
-    const d = v as DensityPreset;
-    setDensity(d);
-    const scale = DENSITY_PERCENT[d] / 100;
-    Object.entries(baseSpaceRef.current).forEach(([k, val]) => {
-      const num = parseFloat(val); const unit = val.replace(/[\d.]/g, '');
-      onScaleOverride(k as keyof LucentTokens, `${num * scale}${unit}`);
-    });
-  };
-  const handleFontScaleChange = (v: string) => {
-    const f = v as FontScalePreset;
-    setFontScale(f);
-    const scale = FONT_SCALE_PERCENT[f] / 100;
-    Object.entries(baseFontSizesRef.current).forEach(([k, val]) => {
-      const num = parseFloat(val); const unit = val.replace(/[\d.]/g, '');
-      onScaleOverride(k as keyof LucentTokens, `${num * scale}${unit}`);
-    });
-  };
-
-  // CSS variable overrides for self-demonstrating controls
-  const tokenToCssVar = (key: string) =>
-    '--lucent-' + key.replace(/([A-Z])/g, m => `-${m.toLowerCase()}`).replace(/([a-z])(\d)/g, (_, a, b) => `${a}-${b}`);
-
-  const densityWrapperStyle = useMemo((): React.CSSProperties => {
-    const pct = DENSITY_PERCENT[density];
-    if (pct === 100 || Object.keys(baseSpaceRef.current).length === 0) return {};
-    const scale = pct / 100;
-    const vars: Record<string, string> = {};
-    Object.entries(baseSpaceRef.current).forEach(([k, v]) => {
-      const num = parseFloat(v); const unit = v.replace(/[\d.]/g, '');
-      vars[tokenToCssVar(k)] = `${num * scale}${unit}`;
-    });
-    return vars as React.CSSProperties;
-  }, [density, tokens]);
-
-  const fontScaleWrapperStyle = useMemo((): React.CSSProperties => {
-    const pct = FONT_SCALE_PERCENT[fontScale];
-    if (pct === 100 || Object.keys(baseFontSizesRef.current).length === 0) return {};
-    const scale = pct / 100;
-    const vars: Record<string, string> = {};
-    Object.entries(baseFontSizesRef.current).forEach(([k, v]) => {
-      const num = parseFloat(v); const unit = v.replace(/[\d.]/g, '');
-      vars[tokenToCssVar(k)] = `${num * scale}${unit}`;
-    });
-    return vars as React.CSSProperties;
-  }, [fontScale, tokens]);
+  const [sfbSearchOpen, setSfbSearchOpen] = useState(false);
+  const [sfbTags, setSfbTags] = useState<Set<string>>(new Set(['data-science']));
+  const [sfbTagsOpen, setSfbTagsOpen] = useState(false);
+  const toggleSfbTag = (tag: string) => setSfbTags(prev => { const next = new Set(prev); if (next.has(tag)) next.delete(tag); else next.add(tag); return next; });
+  const [sfbStatuses, setSfbStatuses] = useState<Set<string>>(new Set());
+  const [sfbStatusOpen, setSfbStatusOpen] = useState(false);
+  const toggleSfbStatus = (s: string) => setSfbStatuses(prev => { if (s === 'all') return new Set(); const next = new Set(prev); if (next.has(s)) next.delete(s); else next.add(s); return next; });
+  const [sfbDateRange, setSfbDateRange] = useState<{ start: Date; end: Date } | undefined>();
+  const sfbHasFilters = sfbStatuses.size > 0 || sfbTags.size > 0 || sfbDateRange !== undefined;
+  const sfbClearAll = () => { setSfbStatuses(new Set()); setSfbTags(new Set()); setSfbDateRange(undefined); };
 
   const allFruits = ['Apple', 'Apricot', 'Banana', 'Blueberry', 'Cherry', 'Grape', 'Mango', 'Orange', 'Peach', 'Pear', 'Pineapple', 'Strawberry'];
   const searchResults = searchQuery.length > 0
@@ -678,143 +387,43 @@ function Inner({
     </div>
   );
 
-  // ─── Derived-variant dot ────────────────────────────────────────────────────
-  const dot = (color: string, label: string) => (
-    <Tooltip content={label}>
-      <ColorSwatch color={color} size="xs" shape="circle" />
-    </Tooltip>
-  );
-
-  // Match current state to a quick preset (or null if custom)
-  const activeQuickPreset = QUICK_PRESETS.find(
-    qp => palette === qp.palette && shape === qp.shape && shadow === qp.shadow
-  )?.name ?? undefined;
-
-  const customizerSidebar = (
-    <div style={{ padding: tokens.space3, display: 'flex', flexDirection: 'column', gap: tokens.space1 }}>
-      {/* ── Quick Presets ── */}
-      <Collapsible trigger="Quick start" defaultOpen>
-        <div style={{ paddingTop: tokens.space2 }}>
-          <SegmentedControl
-            size="sm"
-            options={QUICK_PRESETS.map(qp => ({ value: qp.name, label: qp.name }))}
-            value={activeQuickPreset}
-            onChange={v => {
-              const qp = QUICK_PRESETS.find(p => p.name === v);
-              if (qp) onQuickPreset(qp);
-            }}
-          />
-        </div>
-      </Collapsible>
-
-      {/* ── Palette ── */}
-      <Collapsible trigger="Palette" defaultOpen>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: tokens.space1, paddingTop: tokens.space2 }}>
-          {PALETTE_OPTIONS.map(p => (
-            <Button key={p.value} size="xs" variant={palette === p.value ? 'primary' : 'outline'}
-              onClick={() => onChangePalette(p.value)}
-              leftIcon={<ColorSwatch color={p.swatch} size="xs" />}>
-              {p.label}
-            </Button>
-          ))}
-        </div>
-      </Collapsible>
-
-      {/* ── Anchor Colors + Derivations ── */}
-      <Collapsible trigger="Colors" defaultOpen>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.space2, paddingTop: tokens.space2 }}>
-          {ANCHOR_DERIVATIONS.map(({ anchor, label, derived }) => (
-            <div key={anchor} style={{ display: 'flex', alignItems: 'center', gap: tokens.space2 }}>
-              <ColorPicker value={anchors[anchor]} onChange={v => onChangeAnchor(anchor, v)} label={label} size="sm" inline presetGroups={[]} />
-              <div style={{ display: 'flex', gap: 3, marginLeft: 'auto' }}>
-                {derived.map(d => dot(tokens[d.key] as string, d.label))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </Collapsible>
-
-      {/* ── Status Colors ── */}
-      <Collapsible trigger="Status" defaultOpen>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.space2, paddingTop: tokens.space2 }}>
-          {STATUS_ANCHORS.map(({ anchor, label, derived }) => (
-            <div key={anchor} style={{ display: 'flex', alignItems: 'center', gap: tokens.space2 }}>
-              <ColorPicker value={anchors[anchor]} onChange={v => onChangeAnchor(anchor, v)} label={label} size="sm" inline presetGroups={[]} />
-              <div style={{ display: 'flex', gap: 3, marginLeft: 'auto' }}>
-                {derived.map(d => dot(tokens[d.key] as string, d.label))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </Collapsible>
-
-      {/* ── Layout ── */}
-      <Collapsible trigger="Layout" defaultOpen>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.space3, paddingTop: tokens.space2 }}>
-          <div>
-            <Slider label={`Radius (${radiusPx}px)`} size="sm" min={0} max={32} value={radiusPx} onChange={e => {
-              const v = parseInt(e.target.value);
-              ['radiusSm','radiusMd','radiusLg','radiusXl','radiusFull'].forEach(k =>
-                onScaleOverride(k as keyof LucentTokens, `${v}px`)
-              );
-            }} />
-            <SegmentedControl
-              size="sm"
-              options={SHAPE_OPTIONS.map(s => ({ value: s, label: s[0].toUpperCase() + s.slice(1) }))}
-              value={shape}
-              onChange={v => onChangeShape(v as ShapeName)}
-              style={{ marginTop: tokens.space2 }}
-            />
-          </div>
-          <div>
-            <Slider label="Elevation" size="sm" min={0} max={2} step={1} value={SHADOW_OPTIONS.indexOf(shadow)} onChange={e => {
-              onChangeShadow(SHADOW_OPTIONS[parseInt(e.target.value)]);
-            }} />
-            <SegmentedControl
-              size="sm"
-              options={SHADOW_OPTIONS.map(s => ({ value: s, label: s[0].toUpperCase() + s.slice(1) }))}
-              value={shadow}
-              onChange={v => onChangeShadow(v as ShadowName)}
-              style={{ marginTop: tokens.space2 }}
-            />
-          </div>
-          <div>
-            <Text as="span" size="xs" color="secondary" style={{ display: 'block', marginBottom: tokens.space1 }}>Density</Text>
-            <div style={densityWrapperStyle}>
-              <SegmentedControl
-                size="sm"
-                options={DENSITY_OPTIONS}
-                value={density}
-                onChange={handleDensityChange}
-              />
-            </div>
-          </div>
-          <div>
-            <Text as="span" size="xs" color="secondary" style={{ display: 'block', marginBottom: tokens.space1 }}>Font scale</Text>
-            <div style={fontScaleWrapperStyle}>
-              <SegmentedControl
-                size="sm"
-                options={FONT_SCALE_OPTIONS}
-                value={fontScale}
-                onChange={handleFontScaleChange}
-              />
-            </div>
-          </div>
-        </div>
-      </Collapsible>
-
-      <Divider spacing={tokens.space2} />
-      <Button size="sm" variant="outline" onClick={onReset}>Reset</Button>
-    </div>
-  );
-
   const tabItems: { key: DevTab; label: string }[] = [
     { key: 'components', label: 'Components' },
     { key: 'tokens', label: 'Tokens' },
     { key: 'playground', label: 'Playground' },
   ];
 
+  // ─── Cmd+K command palette items ──────────────────────────────────────────
+  const paletteCommands = useMemo(() => {
+    const items: import('../src/components/molecules/CommandPalette/CommandPalette.js').CommandItem[] = [];
+
+    // All component sections grouped by tier
+    for (const [, group] of Object.entries(sectionGroups)) {
+      const tierLabel = group.tier === 'atom' ? 'Atoms' : group.tier === 'molecule' ? 'Molecules' : 'Recipes';
+      for (const name of group.items) {
+        items.push({
+          id: name,
+          label: name,
+          description: group.label,
+          group: tierLabel,
+          onSelect: () => { setTab('components'); setComponentFilter(name); },
+        });
+      }
+    }
+
+    // Special pages
+    items.push(
+      { id: 'tokens-page', label: 'Tokens', description: 'Token reference', group: 'Pages', onSelect: () => setTab('tokens') },
+      { id: 'playground-page', label: 'Playground', description: 'Select playground', group: 'Pages', onSelect: () => setTab('playground') },
+      { id: 'all-components', label: 'All Components', description: 'Show everything', group: 'Pages', onSelect: () => { setTab('components'); setComponentFilter(''); } },
+    );
+
+    return items;
+  }, [sectionGroups]);
+
   return (
+    <>
+    <CommandPalette commands={paletteCommands} placeholder="Jump to component…" />
     <PageLayout
       header={
         <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: `0 ${tokens.space5}` }}>
@@ -842,9 +451,6 @@ function Inner({
                 </button>
               ))}
             </nav>
-            <Text as="span" size="xs" color="secondary">
-              {theme} · {palette ?? 'custom'} / {shape} / {shadow}
-            </Text>
           </div>
           <Toggle label="Dark" checked={theme === 'dark'} onChange={onToggleTheme} />
         </div>
@@ -853,7 +459,6 @@ function Inner({
       chromeBackground="bgBase"
       mainStyle={{ background: 'var(--lucent-surface)' }}
       {...(tab === 'components' && { sidebar: navSidebar, sidebarWidth: navSize === 'lg' ? 280 : navSize === 'md' ? 250 : 220 })}
-      {...(tab === 'components' && { rightSidebar: customizerSidebar, rightSidebarWidth: 260 })}
     >
       {tab === 'components' ? (
       <div style={{ padding: tokens.space6 }}>
@@ -2339,6 +1944,7 @@ function Inner({
       <Section title="CommandPalette" tokens={tokens} hidden={!showSection('CommandPalette')}>
         <Row label="⌘K to open" tokens={tokens}>
           <CommandPalette
+            shortcutKey=""
             commands={[
               { id: 'new', label: 'New document', description: 'Create a blank document', group: 'Create', onSelect: () => {}, icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg> },
               { id: 'open', label: 'Open file…', description: 'Browse and open a file', group: 'Create', onSelect: () => {}, icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5v3a1 1 0 001 1h9a1 1 0 001-1v-3M8 3v7M5 6l3-3 3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> },
@@ -3167,6 +2773,60 @@ function Inner({
         </Row>
       </Section>
 
+      <Section title="SearchFilterBar" tokens={tokens} hidden={!showSection('SearchFilterBar')}>
+        <Row label="Candidates — compact filter bar" tokens={tokens}>
+          <RowAtom gap="2" align="center" wrap>
+            {sfbSearchOpen ? (
+              <Input placeholder="Search by name, email, or skill…" size="sm" style={{ width: 260 }} autoFocus onBlur={(e) => { if (!e.target.value) setSfbSearchOpen(false); }} />
+            ) : (
+              <Button variant="secondary" size="sm" onClick={() => setSfbSearchOpen(true)} aria-label="Search" leftIcon={
+                <svg width={16} height={16} viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <circle cx="6.5" cy="6.5" r="4" stroke="currentColor" strokeWidth="1.5"/>
+                  <path d="M9.5 9.5L13 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                </svg>
+              } />
+            )}
+            <Menu trigger={<Button variant="secondary" size="sm" chevron>Availability</Button>} size="sm">
+              <MenuItem selected onSelect={() => {}}>All</MenuItem>
+              <MenuItem onSelect={() => {}}>Available</MenuItem>
+              <MenuItem onSelect={() => {}}>On notice</MenuItem>
+              <MenuItem onSelect={() => {}}>Unavailable</MenuItem>
+            </Menu>
+            <Menu trigger={<Button variant="secondary" size="sm" chevron>Status{sfbStatuses.size > 0 && <Chip variant="accent" size="sm">{sfbStatuses.size}</Chip>}</Button>} size="sm" open={sfbStatusOpen} onOpenChange={setSfbStatusOpen}>
+              <MenuItem selected={sfbStatuses.size === 0} onSelect={() => { toggleSfbStatus('all'); setSfbStatusOpen(true); }}>All</MenuItem>
+              <MenuSeparator />
+              <MenuItem selected={sfbStatuses.has('active')} onSelect={() => { toggleSfbStatus('active'); setSfbStatusOpen(true); }}>Active</MenuItem>
+              <MenuItem selected={sfbStatuses.has('archived')} onSelect={() => { toggleSfbStatus('archived'); setSfbStatusOpen(true); }}>Archived</MenuItem>
+              <MenuItem selected={sfbStatuses.has('on-hold')} onSelect={() => { toggleSfbStatus('on-hold'); setSfbStatusOpen(true); }}>On hold</MenuItem>
+            </Menu>
+            <Menu trigger={<Button variant="secondary" size="sm" chevron>Tags{sfbTags.size > 0 && <Chip variant="accent" size="sm">{sfbTags.size}</Chip>}</Button>} size="sm" open={sfbTagsOpen} onOpenChange={setSfbTagsOpen}>
+              <MenuItem onSelect={() => { toggleSfbTag('data-science'); setSfbTagsOpen(true); }}><RowAtom gap="2" align="center"><Checkbox checked={sfbTags.has('data-science')} onChange={() => {}} /><Chip size="sm" swatch="#6366f1">Data Science</Chip></RowAtom></MenuItem>
+              <MenuItem onSelect={() => { toggleSfbTag('devops'); setSfbTagsOpen(true); }}><RowAtom gap="2" align="center"><Checkbox checked={sfbTags.has('devops')} onChange={() => {}} /><Chip size="sm" swatch="#10b981">DevOps</Chip></RowAtom></MenuItem>
+              <MenuItem onSelect={() => { toggleSfbTag('hot'); setSfbTagsOpen(true); }}><RowAtom gap="2" align="center"><Checkbox checked={sfbTags.has('hot')} onChange={() => {}} /><Chip size="sm" swatch="#f59e0b">Hot Candidate</Chip></RowAtom></MenuItem>
+              <MenuItem onSelect={() => { toggleSfbTag('react'); setSfbTagsOpen(true); }}><RowAtom gap="2" align="center"><Checkbox checked={sfbTags.has('react')} onChange={() => {}} /><Chip size="sm" swatch="#3b82f6">React</Chip></RowAtom></MenuItem>
+            </Menu>
+            <DateRangePicker placeholder="Date range" size="sm" value={sfbDateRange} onChange={setSfbDateRange} trigger={<Button variant="secondary" size="sm" chevron>{sfbDateRange ? `${sfbDateRange.start.toLocaleDateString()} → ${sfbDateRange.end.toLocaleDateString()}` : 'Date range'}</Button>} />
+            {sfbHasFilters && <Button variant="ghost" size="sm" onClick={sfbClearAll}>Clear all</Button>}
+            <div style={{ flex: 1 }} />
+            <RowAtom gap="2" align="center">
+              <Menu trigger={<Button variant="secondary" size="sm" chevron leftIcon={<svg width={14} height={14} viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 2v12M4 14l-3-3M4 14l3-3M12 14V2M12 2l-3 3M12 2l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}>Newest first</Button>} size="sm">
+                <MenuItem selected onSelect={() => {}}>Newest first</MenuItem>
+                <MenuItem onSelect={() => {}}>Oldest first</MenuItem>
+                <MenuItem onSelect={() => {}}>Name A–Z</MenuItem>
+              </Menu>
+              <SegmentedControl
+                size="sm"
+                defaultValue="grid"
+                options={[
+                  { value: 'grid', label: <svg width={14} height={14} viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="1" y="1" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5"/><rect x="9" y="1" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5"/><rect x="1" y="9" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5"/><rect x="9" y="9" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5"/></svg> },
+                  { value: 'list', label: <svg width={14} height={14} viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 3h12M2 8h12M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg> },
+                ]}
+              />
+            </RowAtom>
+          </RowAtom>
+        </Row>
+      </Section>
+
       </div>
       ) : tab === 'tokens' ? (
         <TokenPreview />
@@ -3174,6 +2834,7 @@ function Inner({
         <SelectPlayground />
       )}
     </PageLayout>
+    </>
   );
 }
 
