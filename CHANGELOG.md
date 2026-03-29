@@ -1,5 +1,27 @@
 # lucent-ui
 
+## 0.29.0
+
+### Recipe: Search / Filter Bar
+
+**New composition recipe** — `search-filter-bar` — a compact toolbar pattern for filtering and sorting lists and data tables.
+
+**Compact button-based design:** All filters are secondary buttons that open popovers — no visible input fields or select dropdowns cluttering the bar.
+
+- **Collapsible search** — square icon-only button that expands to an Input on click, collapses back when blurred empty
+- **Single-select filters** — secondary button + chevron opens a Menu with selectable items (e.g. Availability)
+- **Multi-select filters** — controlled Menu that stays open on toggle, with accent Chip count badge in the button label (e.g. Status, Tags)
+- **Tags with visual identity** — Menu items combine Checkbox + Chip with colored swatches for rich multi-select visuals
+- **Date range filter** — DateRangePicker with new `trigger` prop renders a Button instead of default input-style trigger
+- **Conditional "Clear all"** — ghost button appears when any filter is active, resets all on click
+- **Sort + view toggle** — pushed to right edge via flex spacer; sort button with icon + chevron, SegmentedControl with grid/list icons
+
+**DateRangePicker enhancement:** New optional `trigger` prop accepts a custom ReactNode, replacing the default input-style button. Same pattern as Menu's trigger prop.
+
+**Recipe variants:** Default (full toolbar), Minimal (search + sort only), Pipeline (multi-select filters only).
+
+Registered in MCP tools (`get_composition_recipe`, `search_components`) and added to ComponentPreview.
+
 ## 0.28.0
 
 ### LucentDevTools — Live Token Editor & Design System Explorer

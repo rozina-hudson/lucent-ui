@@ -49,6 +49,10 @@ import { DateRangePicker } from '../src/components/molecules/DateRangePicker/ind
 import { FileUpload } from '../src/components/molecules/FileUpload/index.js';
 import { Timeline } from '../src/components/molecules/Timeline/index.js';
 import { Menu, MenuItem, MenuSeparator, MenuGroup } from '../src/components/molecules/Menu/index.js';
+import { FilterMultiSelect } from '../src/components/molecules/FilterMultiSelect/index.js';
+import { FilterSelect } from '../src/components/molecules/FilterSelect/index.js';
+import { FilterSearch } from '../src/components/molecules/FilterSearch/index.js';
+import { FilterDateRange } from '../src/components/molecules/FilterDateRange/index.js';
 import { ToastProvider, useToast, type ToastPosition } from '../src/components/molecules/Toast/index.js';
 import { ColorPicker, type ColorPresetGroup } from '../src/components/atoms/ColorPicker/index.js';
 import { ColorSwatch } from '../src/components/atoms/ColorSwatch/index.js';
@@ -201,6 +205,7 @@ function Inner({
     media:       { label: 'Media & Status',     tier: 'atom', items: ['Avatar', 'Spinner', 'Progress', 'Divider'] },
     layout:      { label: 'Layout',             tier: 'atom', items: ['Stack', 'Row', 'Table'] },
     forms:       { label: 'Forms',              tier: 'molecule', items: ['FormField', 'SearchInput', 'MultiSelect', 'DatePicker', 'DateRangePicker', 'FileUpload'] },
+    filters:     { label: 'Filters',            tier: 'molecule', items: ['FilterSearch', 'FilterSelect', 'FilterMultiSelect', 'FilterDateRange'] },
     containers:  { label: 'Containers',         tier: 'molecule', items: ['Card', 'Alert', 'EmptyState', 'Skeleton', 'Collapsible'] },
     navigation:  { label: 'Navigation',         tier: 'molecule', items: ['Breadcrumb', 'Tabs', 'NavLink', 'NavMenu', 'PageLayout'] },
     data:        { label: 'Data & Tables',      tier: 'molecule', items: ['DataTable', 'Timeline'] },
@@ -246,14 +251,41 @@ function Inner({
   const [settingsTab, setSettingsTab] = useState<'profile' | 'notifications' | 'security'>('profile');
   const [sfbSearchOpen, setSfbSearchOpen] = useState(false);
   const [sfbTags, setSfbTags] = useState<Set<string>>(new Set(['data-science']));
-  const [sfbTagsOpen, setSfbTagsOpen] = useState(false);
   const toggleSfbTag = (tag: string) => setSfbTags(prev => { const next = new Set(prev); if (next.has(tag)) next.delete(tag); else next.add(tag); return next; });
   const [sfbStatuses, setSfbStatuses] = useState<Set<string>>(new Set());
-  const [sfbStatusOpen, setSfbStatusOpen] = useState(false);
   const toggleSfbStatus = (s: string) => setSfbStatuses(prev => { if (s === 'all') return new Set(); const next = new Set(prev); if (next.has(s)) next.delete(s); else next.add(s); return next; });
+  const [sfbOpenMenu, setSfbOpenMenu] = useState<string | null>(null);
+  const sfbMenuProps = (id: string) => ({ open: sfbOpenMenu === id, onOpenChange: (open: boolean) => setSfbOpenMenu(open ? id : null) });
+  const sfbKeepOpen = (id: string) => setSfbOpenMenu(id);
   const [sfbDateRange, setSfbDateRange] = useState<{ start: Date; end: Date } | undefined>();
   const sfbHasFilters = sfbStatuses.size > 0 || sfbTags.size > 0 || sfbDateRange !== undefined;
-  const sfbClearAll = () => { setSfbStatuses(new Set()); setSfbTags(new Set()); setSfbDateRange(undefined); };
+  const sfbClearAll = () => { setSfbStatuses(new Set()); setSfbTags(new Set()); setSfbDateRange(undefined); setSfbSearch(''); setSfbSearchOpen(false); };
+
+  // Filter bar + DataTable composition
+  const [sfbSearch, setSfbSearch] = useState('');
+  const sfbTagOptions = [
+    { value: 'data-science', label: 'Data Science', swatch: '#6366f1' },
+    { value: 'devops', label: 'DevOps', swatch: '#10b981' },
+    { value: 'hot', label: 'Hot Candidate', swatch: '#f59e0b' },
+    { value: 'react', label: 'React', swatch: '#3b82f6' },
+  ] as const;
+  const sfbCandidates = [
+    { name: 'Alice Chen', role: 'Engineer', status: 'Active', tags: ['react', 'data-science'], added: new Date(2026, 2, 5) },
+    { name: 'Bob Martinez', role: 'Designer', status: 'Active', tags: ['devops'], added: new Date(2026, 2, 10) },
+    { name: 'Carol Park', role: 'Product', status: 'Archived', tags: ['data-science'], added: new Date(2026, 1, 20) },
+    { name: 'Dan Okafor', role: 'Engineer', status: 'On hold', tags: ['react', 'devops'], added: new Date(2026, 2, 15) },
+    { name: 'Eve Johansson', role: 'Marketing', status: 'Active', tags: ['hot'], added: new Date(2026, 2, 22) },
+    { name: 'Frank Liu', role: 'Engineer', status: 'Active', tags: ['react'], added: new Date(2026, 2, 1) },
+    { name: 'Grace Kim', role: 'Designer', status: 'Archived', tags: ['data-science', 'hot'], added: new Date(2026, 1, 14) },
+    { name: 'Hiro Tanaka', role: 'Engineer', status: 'Active', tags: ['devops', 'react'], added: new Date(2026, 2, 28) },
+  ];
+  const sfbFilteredCandidates = sfbCandidates.filter(c => {
+    if (sfbSearch && !c.name.toLowerCase().includes(sfbSearch.toLowerCase()) && !c.role.toLowerCase().includes(sfbSearch.toLowerCase())) return false;
+    if (sfbStatuses.size > 0 && !sfbStatuses.has(c.status.toLowerCase().replace(' ', '-'))) return false;
+    if (sfbTags.size > 0 && !c.tags.some(t => sfbTags.has(t))) return false;
+    if (sfbDateRange && (c.added < sfbDateRange.start || c.added > sfbDateRange.end)) return false;
+    return true;
+  });
 
   const allFruits = ['Apple', 'Apricot', 'Banana', 'Blueberry', 'Cherry', 'Grape', 'Mango', 'Orange', 'Peach', 'Pear', 'Pineapple', 'Strawberry'];
   const searchResults = searchQuery.length > 0
@@ -1917,24 +1949,51 @@ function Inner({
           />
         </Row>
         <Row label="Sortable + filterable + paginated" tokens={tokens}>
-          <DataTable
-            style={{ width: '100%' }}
-            pageSize={5}
-            columns={[
-              { key: 'name', header: 'Name', sortable: true, filterable: true },
-              { key: 'role', header: 'Role', sortable: true, filterable: true },
-              { key: 'status', header: 'Status', render: (row: { name: string; role: string; status: string }) => <Badge variant={row.status === 'Active' ? 'success' : 'neutral'}>{row.status}</Badge> },
-            ]}
-            rows={[
-              { name: 'Alice', role: 'Engineer', status: 'Active' },
-              { name: 'Bob', role: 'Designer', status: 'Active' },
-              { name: 'Carol', role: 'Product', status: 'Away' },
-              { name: 'Dan', role: 'Engineer', status: 'Active' },
-              { name: 'Eve', role: 'Marketing', status: 'Away' },
-              { name: 'Frank', role: 'Engineer', status: 'Active' },
-              { name: 'Grace', role: 'Designer', status: 'Away' },
-            ]}
-          />
+          <StackAtom gap="3" style={{ width: '100%' }}>
+            <RowAtom gap="2" align="center" wrap>
+              <FilterMultiSelect
+                label="Name"
+                size="sm"
+                options={[
+                  { value: 'Alice', label: 'Alice' },
+                  { value: 'Bob', label: 'Bob' },
+                  { value: 'Carol', label: 'Carol' },
+                  { value: 'Dan', label: 'Dan' },
+                  { value: 'Eve', label: 'Eve' },
+                  { value: 'Frank', label: 'Frank' },
+                  { value: 'Grace', label: 'Grace' },
+                ]}
+              />
+              <FilterMultiSelect
+                label="Role"
+                size="sm"
+                options={[
+                  { value: 'Engineer', label: 'Engineer' },
+                  { value: 'Designer', label: 'Designer' },
+                  { value: 'Product', label: 'Product' },
+                  { value: 'Marketing', label: 'Marketing' },
+                ]}
+              />
+            </RowAtom>
+            <DataTable
+              style={{ width: '100%' }}
+              pageSize={5}
+              columns={[
+                { key: 'name', header: 'Name', sortable: true },
+                { key: 'role', header: 'Role', sortable: true },
+                { key: 'status', header: 'Status', render: (row: { name: string; role: string; status: string }) => <Badge variant={row.status === 'Active' ? 'success' : 'neutral'}>{row.status}</Badge> },
+              ]}
+              rows={[
+                { name: 'Alice', role: 'Engineer', status: 'Active' },
+                { name: 'Bob', role: 'Designer', status: 'Active' },
+                { name: 'Carol', role: 'Product', status: 'Away' },
+                { name: 'Dan', role: 'Engineer', status: 'Active' },
+                { name: 'Eve', role: 'Marketing', status: 'Away' },
+                { name: 'Frank', role: 'Engineer', status: 'Active' },
+                { name: 'Grace', role: 'Designer', status: 'Away' },
+              ]}
+            />
+          </StackAtom>
         </Row>
         <Row label="Empty state" tokens={tokens}>
           <DataTable columns={[{ key: 'name', header: 'Name' }]} rows={[]} style={{ width: 320 }} />
@@ -2288,6 +2347,103 @@ function Inner({
               <NavMenu.Item href="#" disabled>Disabled</NavMenu.Item>
             </NavMenu>
           </div>
+        </Row>
+      </Section>
+
+      {/* ─── Filter Molecules ────────────────────────────────────────────── */}
+
+      <Section title="FilterSearch" tokens={tokens} hidden={!showSection('FilterSearch')}>
+        <Row label="Collapsed (default)" tokens={tokens}>
+          <FilterSearch placeholder="Search…" size="sm" />
+          <FilterSearch placeholder="Search…" size="md" />
+          <FilterSearch placeholder="Search…" size="lg" />
+        </Row>
+        <Row label="Expanded (has value)" tokens={tokens}>
+          <FilterSearch placeholder="Search candidates…" size="sm" defaultValue="Alice" />
+        </Row>
+        <Row label="Disabled" tokens={tokens}>
+          <FilterSearch placeholder="Search…" size="sm" disabled />
+        </Row>
+        <Row label="Outline variant" tokens={tokens}>
+          <FilterSearch placeholder="Search…" size="sm" variant="outline" />
+        </Row>
+      </Section>
+
+      <Section title="FilterSelect" tokens={tokens} hidden={!showSection('FilterSelect')}>
+        <Row label="Sizes" tokens={tokens}>
+          <FilterSelect label="Sort" size="sm" options={[
+            { value: 'newest', label: 'Newest first' },
+            { value: 'oldest', label: 'Oldest first' },
+            { value: 'name', label: 'Name A–Z' },
+          ]} />
+          <FilterSelect label="Sort" size="md" options={[
+            { value: 'newest', label: 'Newest first' },
+            { value: 'oldest', label: 'Oldest first' },
+            { value: 'name', label: 'Name A–Z' },
+          ]} />
+          <FilterSelect label="Sort" size="lg" options={[
+            { value: 'newest', label: 'Newest first' },
+            { value: 'oldest', label: 'Oldest first' },
+            { value: 'name', label: 'Name A–Z' },
+          ]} />
+        </Row>
+        <Row label="With icon" tokens={tokens}>
+          <FilterSelect label="Newest first" size="sm" icon={<svg width={14} height={14} viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 2v12M4 14l-3-3M4 14l3-3M12 14V2M12 2l-3 3M12 2l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>} options={[
+            { value: 'newest', label: 'Newest first' },
+            { value: 'oldest', label: 'Oldest first' },
+            { value: 'name', label: 'Name A–Z' },
+          ]} />
+        </Row>
+        <Row label="Disabled" tokens={tokens}>
+          <FilterSelect label="Status" size="sm" disabled options={[
+            { value: 'active', label: 'Active' },
+          ]} />
+        </Row>
+        <Row label="Outline variant (active → secondary)" tokens={tokens}>
+          <FilterSelect label="Sort" size="sm" variant="outline" options={[
+            { value: 'newest', label: 'Newest first' },
+            { value: 'oldest', label: 'Oldest first' },
+            { value: 'name', label: 'Name A–Z' },
+          ]} />
+        </Row>
+      </Section>
+
+      <Section title="FilterMultiSelect" tokens={tokens} hidden={!showSection('FilterMultiSelect')}>
+        <Row label="With swatches" tokens={tokens}>
+          <FilterMultiSelect label="Tags" size="sm" options={sfbTagOptions} />
+        </Row>
+        <Row label="Plain labels" tokens={tokens}>
+          <FilterMultiSelect label="Role" size="sm" options={[
+            { value: 'engineer', label: 'Engineer' },
+            { value: 'designer', label: 'Designer' },
+            { value: 'product', label: 'Product' },
+            { value: 'marketing', label: 'Marketing' },
+          ]} />
+        </Row>
+        <Row label="Sizes" tokens={tokens}>
+          <FilterMultiSelect label="Tags" size="sm" options={sfbTagOptions} defaultValue={['react']} />
+          <FilterMultiSelect label="Tags" size="md" options={sfbTagOptions} defaultValue={['react']} />
+          <FilterMultiSelect label="Tags" size="lg" options={sfbTagOptions} defaultValue={['react']} />
+        </Row>
+        <Row label="Disabled" tokens={tokens}>
+          <FilterMultiSelect label="Tags" size="sm" disabled options={sfbTagOptions} />
+        </Row>
+        <Row label="Outline variant (active → secondary)" tokens={tokens}>
+          <FilterMultiSelect label="Tags" size="sm" variant="outline" options={sfbTagOptions} />
+        </Row>
+      </Section>
+
+      <Section title="FilterDateRange" tokens={tokens} hidden={!showSection('FilterDateRange')}>
+        <Row label="Sizes" tokens={tokens}>
+          <FilterDateRange label="Date range" size="sm" />
+          <FilterDateRange label="Date range" size="md" />
+          <FilterDateRange label="Date range" size="lg" />
+        </Row>
+        <Row label="Disabled" tokens={tokens}>
+          <FilterDateRange label="Date range" size="sm" disabled />
+        </Row>
+        <Row label="Outline variant (active → secondary)" tokens={tokens}>
+          <FilterDateRange label="Date range" size="sm" variant="outline" />
         </Row>
       </Section>
 
@@ -2776,36 +2932,20 @@ function Inner({
       <Section title="SearchFilterBar" tokens={tokens} hidden={!showSection('SearchFilterBar')}>
         <Row label="Candidates — compact filter bar" tokens={tokens}>
           <RowAtom gap="2" align="center" wrap>
-            {sfbSearchOpen ? (
-              <Input placeholder="Search by name, email, or skill…" size="sm" style={{ width: 260 }} autoFocus onBlur={(e) => { if (!e.target.value) setSfbSearchOpen(false); }} />
-            ) : (
-              <Button variant="secondary" size="sm" onClick={() => setSfbSearchOpen(true)} aria-label="Search" leftIcon={
-                <svg width={16} height={16} viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <circle cx="6.5" cy="6.5" r="4" stroke="currentColor" strokeWidth="1.5"/>
-                  <path d="M9.5 9.5L13 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                </svg>
-              } />
-            )}
-            <Menu trigger={<Button variant="secondary" size="sm" chevron>Availability</Button>} size="sm">
-              <MenuItem selected onSelect={() => {}}>All</MenuItem>
-              <MenuItem onSelect={() => {}}>Available</MenuItem>
-              <MenuItem onSelect={() => {}}>On notice</MenuItem>
-              <MenuItem onSelect={() => {}}>Unavailable</MenuItem>
-            </Menu>
-            <Menu trigger={<Button variant="secondary" size="sm" chevron>Status{sfbStatuses.size > 0 && <Chip variant="accent" size="sm">{sfbStatuses.size}</Chip>}</Button>} size="sm" open={sfbStatusOpen} onOpenChange={setSfbStatusOpen}>
-              <MenuItem selected={sfbStatuses.size === 0} onSelect={() => { toggleSfbStatus('all'); setSfbStatusOpen(true); }}>All</MenuItem>
-              <MenuSeparator />
-              <MenuItem selected={sfbStatuses.has('active')} onSelect={() => { toggleSfbStatus('active'); setSfbStatusOpen(true); }}>Active</MenuItem>
-              <MenuItem selected={sfbStatuses.has('archived')} onSelect={() => { toggleSfbStatus('archived'); setSfbStatusOpen(true); }}>Archived</MenuItem>
-              <MenuItem selected={sfbStatuses.has('on-hold')} onSelect={() => { toggleSfbStatus('on-hold'); setSfbStatusOpen(true); }}>On hold</MenuItem>
-            </Menu>
-            <Menu trigger={<Button variant="secondary" size="sm" chevron>Tags{sfbTags.size > 0 && <Chip variant="accent" size="sm">{sfbTags.size}</Chip>}</Button>} size="sm" open={sfbTagsOpen} onOpenChange={setSfbTagsOpen}>
-              <MenuItem onSelect={() => { toggleSfbTag('data-science'); setSfbTagsOpen(true); }}><RowAtom gap="2" align="center"><Checkbox checked={sfbTags.has('data-science')} onChange={() => {}} /><Chip size="sm" swatch="#6366f1">Data Science</Chip></RowAtom></MenuItem>
-              <MenuItem onSelect={() => { toggleSfbTag('devops'); setSfbTagsOpen(true); }}><RowAtom gap="2" align="center"><Checkbox checked={sfbTags.has('devops')} onChange={() => {}} /><Chip size="sm" swatch="#10b981">DevOps</Chip></RowAtom></MenuItem>
-              <MenuItem onSelect={() => { toggleSfbTag('hot'); setSfbTagsOpen(true); }}><RowAtom gap="2" align="center"><Checkbox checked={sfbTags.has('hot')} onChange={() => {}} /><Chip size="sm" swatch="#f59e0b">Hot Candidate</Chip></RowAtom></MenuItem>
-              <MenuItem onSelect={() => { toggleSfbTag('react'); setSfbTagsOpen(true); }}><RowAtom gap="2" align="center"><Checkbox checked={sfbTags.has('react')} onChange={() => {}} /><Chip size="sm" swatch="#3b82f6">React</Chip></RowAtom></MenuItem>
-            </Menu>
-            <DateRangePicker placeholder="Date range" size="sm" value={sfbDateRange} onChange={setSfbDateRange} trigger={<Button variant="secondary" size="sm" chevron>{sfbDateRange ? `${sfbDateRange.start.toLocaleDateString()} → ${sfbDateRange.end.toLocaleDateString()}` : 'Date range'}</Button>} />
+            <FilterSearch placeholder="Search by name, email, or skill…" size="sm" />
+            <FilterSelect label="Availability" size="sm" options={[
+              { value: 'all', label: 'All' },
+              { value: 'available', label: 'Available' },
+              { value: 'notice', label: 'On notice' },
+              { value: 'unavailable', label: 'Unavailable' },
+            ]} />
+            <FilterMultiSelect label="Status" size="sm" options={[
+              { value: 'active', label: 'Active' },
+              { value: 'archived', label: 'Archived' },
+              { value: 'on-hold', label: 'On hold' },
+            ]} value={[...sfbStatuses]} onChange={(vals) => setSfbStatuses(new Set(vals))} />
+            <FilterMultiSelect label="Tags" size="sm" options={sfbTagOptions} value={[...sfbTags]} onChange={(vals) => setSfbTags(new Set(vals))} />
+            <FilterDateRange label="Date range" size="sm" value={sfbDateRange} onChange={setSfbDateRange} />
             {sfbHasFilters && <Button variant="ghost" size="sm" onClick={sfbClearAll}>Clear all</Button>}
             <div style={{ flex: 1 }} />
             <RowAtom gap="2" align="center">
@@ -2824,6 +2964,53 @@ function Inner({
               />
             </RowAtom>
           </RowAtom>
+        </Row>
+        <Row label="Filter bar + DataTable" tokens={tokens}>
+          <StackAtom gap="3" style={{ width: '100%' }}>
+            <RowAtom gap="2" align="center" wrap>
+              <FilterSearch placeholder="Search by name or role…" size="sm" value={sfbSearch} onChange={setSfbSearch} />
+              <FilterMultiSelect label="Status" size="sm" options={[
+                { value: 'active', label: 'Active' },
+                { value: 'archived', label: 'Archived' },
+                { value: 'on-hold', label: 'On hold' },
+              ]} value={[...sfbStatuses]} onChange={(vals) => setSfbStatuses(new Set(vals))} />
+              <FilterMultiSelect label="Tags" size="sm" options={sfbTagOptions} value={[...sfbTags]} onChange={(vals) => setSfbTags(new Set(vals))} />
+              <FilterDateRange label="Date added" size="sm" value={sfbDateRange} onChange={setSfbDateRange} />
+            </RowAtom>
+            {sfbHasFilters && (
+              <RowAtom gap="2" align="center">
+                <Text size="sm" color="secondary">
+                  Showing {sfbFilteredCandidates.length} of {sfbCandidates.length} candidates
+                </Text>
+                <Button variant="ghost" size="xs" onClick={sfbClearAll}>Clear all</Button>
+              </RowAtom>
+            )}
+            <DataTable
+              style={{ width: '100%' }}
+              pageSize={5}
+              columns={[
+                { key: 'name', header: 'Name', sortable: true },
+                { key: 'role', header: 'Role', sortable: true },
+                { key: 'status', header: 'Status',
+                  headerFilter: (
+                    <FilterMultiSelect label="" size="sm" options={[
+                      { value: 'active', label: 'Active' },
+                      { value: 'archived', label: 'Archived' },
+                      { value: 'on-hold', label: 'On hold' },
+                    ]} value={[...sfbStatuses]} onChange={(vals) => setSfbStatuses(new Set(vals))} icon={<svg width={12} height={12} viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 3h12M4 8h8M6 13h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>} />
+                  ),
+                  render: (row: typeof sfbCandidates[0]) => <Chip size="sm" variant={row.status === 'Active' ? 'success' : row.status === 'Archived' ? 'neutral' : 'warning'} dot>{row.status}</Chip> },
+                { key: 'tags', header: 'Tags',
+                  headerFilter: (
+                    <FilterMultiSelect label="" size="sm" options={sfbTagOptions} value={[...sfbTags]} onChange={(vals) => setSfbTags(new Set(vals))} icon={<svg width={12} height={12} viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 3h12M4 8h8M6 13h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>} />
+                  ),
+                  render: (row: typeof sfbCandidates[0]) => <RowAtom gap="1" wrap>{row.tags.map(t => <Chip key={t} size="sm" swatch={{ 'data-science': '#6366f1', devops: '#10b981', hot: '#f59e0b', react: '#3b82f6' }[t]}>{t}</Chip>)}</RowAtom> },
+                { key: 'added', header: 'Added', sortable: true, render: (row: typeof sfbCandidates[0]) => <Text size="sm" color="secondary">{row.added.toLocaleDateString()}</Text> },
+              ]}
+              rows={sfbFilteredCandidates}
+              emptyState={<Text size="sm" color="secondary">No candidates match your filters.</Text>}
+            />
+          </StackAtom>
         </Row>
       </Section>
 
