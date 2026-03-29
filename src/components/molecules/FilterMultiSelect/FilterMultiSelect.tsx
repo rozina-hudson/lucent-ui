@@ -35,9 +35,9 @@ export interface FilterMultiSelectOption {
   disabled?: boolean;
 }
 
-export type FilterMultiSelectSize = 'sm' | 'md' | 'lg';
+export type FilterMultiSelectSize = 'xs' | 'sm' | 'md' | 'lg';
 
-export type FilterMultiSelectVariant = 'secondary' | 'outline';
+export type FilterMultiSelectVariant = 'secondary' | 'outline' | 'ghost';
 
 export interface FilterMultiSelectProps {
   /** Label shown on the trigger button. */
@@ -60,12 +60,14 @@ export interface FilterMultiSelectProps {
 // ─── Size maps ───────────────────────────────────────────────────────────────
 
 const padMap: Record<FilterMultiSelectSize, string> = {
+  xs: 'var(--lucent-space-1)',
   sm: 'var(--lucent-space-2)',
   md: 'var(--lucent-space-2)',
   lg: 'var(--lucent-space-3)',
 };
 
 const fontMap: Record<FilterMultiSelectSize, 'sm' | 'md' | 'lg'> = {
+  xs: 'sm',
   sm: 'sm',
   md: 'md',
   lg: 'lg',
@@ -225,16 +227,16 @@ export function FilterMultiSelect({
   return (
     <span ref={containerRef} style={{ display: 'inline-flex', ...style }}>
       <Button
-        variant={variant === 'outline' && selected.length > 0 ? 'secondary' : variant}
+        variant={variant === 'outline' && selected.length > 0 ? 'secondary' : variant === 'ghost' ? 'ghost' : variant}
         size={size}
-        chevron
+        {...(label ? { chevron: true } : {})}
         disabled={disabled}
         onClick={() => !disabled && setOpen(o => !o)}
         {...(icon !== undefined && { leftIcon: icon })}
       >
-        {label}
+        {label || undefined}
         {selected.length > 0 && (
-          <Chip variant="accent" size={size}>{selected.length}</Chip>
+          <Chip variant="accent" size={size === 'xs' ? 'sm' : size}>{selected.length}</Chip>
         )}
       </Button>
 
@@ -302,7 +304,7 @@ export function FilterMultiSelect({
                   style={{ pointerEvents: 'none' }}
                 />
                 {opt.swatch ? (
-                  <Chip size={size} swatch={opt.swatch}>{opt.label}</Chip>
+                  <Chip size={size === 'xs' ? 'sm' : size} swatch={opt.swatch}>{opt.label}</Chip>
                 ) : (
                   <Text size={fontSize}>{opt.label}</Text>
                 )}

@@ -2127,6 +2127,33 @@ function Inner({
             />
           </div>
         </Row>
+        <Row label="Activity feed" tokens={tokens}>
+          <div style={{ width: '100%', maxWidth: 480 }}>
+            <Timeline
+              items={[
+                { id: '1', title: 'Submitted for review', date: 'week ago', status: 'success' },
+                {
+                  id: '2',
+                  title: 'Changes requested',
+                  date: '4 days ago',
+                  status: 'warning',
+                  content: (
+                    <Card variant="elevated" padding="md" radius="md">
+                      <Text size="sm" weight="semibold">Oliver Brown</Text>
+                      <div style={{ marginTop: 'var(--lucent-space-2)' }}>
+                        <Text size="sm" color="secondary">
+                          Please update the error handling in the auth module before merging.
+                        </Text>
+                      </div>
+                    </Card>
+                  ),
+                },
+                { id: '3', title: 'Resubmitted for review', date: '4h ago', status: 'info' },
+                { id: '4', title: 'Approved', date: 'just now', status: 'success' },
+              ]}
+            />
+          </div>
+        </Row>
       </Section>
 
       {/* Menu */}
@@ -2993,7 +3020,7 @@ function Inner({
                 { key: 'role', header: 'Role', sortable: true },
                 { key: 'status', header: 'Status',
                   headerFilter: (
-                    <FilterMultiSelect label="" size="sm" options={[
+                    <FilterMultiSelect label="" variant="ghost" size="xs" options={[
                       { value: 'active', label: 'Active' },
                       { value: 'archived', label: 'Archived' },
                       { value: 'on-hold', label: 'On hold' },
@@ -3002,7 +3029,7 @@ function Inner({
                   render: (row: typeof sfbCandidates[0]) => <Chip size="sm" variant={row.status === 'Active' ? 'success' : row.status === 'Archived' ? 'neutral' : 'warning'} dot>{row.status}</Chip> },
                 { key: 'tags', header: 'Tags',
                   headerFilter: (
-                    <FilterMultiSelect label="" size="sm" options={sfbTagOptions} value={[...sfbTags]} onChange={(vals) => setSfbTags(new Set(vals))} icon={<svg width={12} height={12} viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 3h12M4 8h8M6 13h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>} />
+                    <FilterMultiSelect label="" variant="ghost" size="xs" options={sfbTagOptions} value={[...sfbTags]} onChange={(vals) => setSfbTags(new Set(vals))} icon={<svg width={12} height={12} viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 3h12M4 8h8M6 13h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>} />
                   ),
                   render: (row: typeof sfbCandidates[0]) => <RowAtom gap="1" wrap>{row.tags.map(t => <Chip key={t} size="sm" swatch={{ 'data-science': '#6366f1', devops: '#10b981', hot: '#f59e0b', react: '#3b82f6' }[t]}>{t}</Chip>)}</RowAtom> },
                 { key: 'added', header: 'Added', sortable: true, render: (row: typeof sfbCandidates[0]) => <Text size="sm" color="secondary">{row.added.toLocaleDateString()}</Text> },
