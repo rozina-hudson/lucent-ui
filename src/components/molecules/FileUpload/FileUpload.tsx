@@ -224,12 +224,12 @@ export function FileUpload({
           <path d="M8 24h16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
         </svg>
 
-        <div style={{ textAlign: 'center' }}>
-          <Text color={disabled ? 'disabled' : 'primary'} weight="medium">
+        <div style={{ textAlign: 'center', width: '100%' }}>
+          <Text color={disabled ? 'disabled' : 'primary'} weight="medium" align="center">
             {dragging ? 'Drop to upload' : 'Drop files here or click to browse'}
           </Text>
           {(accept || maxSize) && (
-            <Text size="xs" color="secondary">
+            <Text size="xs" color="secondary" align="center">
               {[
                 accept && `Accepted: ${accept}`,
                 maxSize && `Max size: ${formatBytes(maxSize)}`,
