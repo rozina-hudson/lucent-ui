@@ -2134,6 +2134,35 @@ function Inner({
             </Collapsible>
           </Card>
         </Row>
+        <Row label="CollapsibleCard recipe" tokens={tokens}>
+          <Card variant="ghost" padding="none" hoverable style={{ width: '100%', maxWidth: 360 }}>
+            <Collapsible trigger={<Text as="span" weight="semibold" size="sm">ghost</Text>} defaultOpen>
+              <Text size="sm" color="secondary">Transparent container, content floats on page.</Text>
+            </Collapsible>
+          </Card>
+          <Card variant="outline" padding="none" hoverable style={{ width: '100%', maxWidth: 360 }}>
+            <Collapsible trigger={<Text as="span" weight="semibold" size="sm">outline</Text>} defaultOpen>
+              <Text size="sm" color="secondary">Bordered card — the default variant.</Text>
+            </Collapsible>
+          </Card>
+          <Card variant="filled" padding="none" hoverable style={{ width: '100%', maxWidth: 360 }}>
+            <Collapsible trigger={<Text as="span" weight="semibold" size="sm">filled</Text>} defaultOpen>
+              <Text size="sm" color="secondary">Tinted background, no border.</Text>
+            </Collapsible>
+          </Card>
+          <Card variant="elevated" padding="none" hoverable style={{ width: '100%', maxWidth: 360 }}>
+            <Collapsible trigger={<Text as="span" weight="semibold" size="sm">elevated</Text>} defaultOpen>
+              <Text size="sm" color="secondary">Surface with shadow depth.</Text>
+            </Collapsible>
+          </Card>
+          <Card variant="filled" padding="none" hoverable style={{ width: '100%', maxWidth: 360 }}>
+            <Collapsible open={comboOpen} onOpenChange={setComboOpen} padded={false} trigger={<Text as="span" weight="semibold" size="sm">combo</Text>}>
+              <Card variant="elevated" padding="sm" style={{ margin: 'var(--lucent-space-3) var(--lucent-space-2) var(--lucent-space-2)' }}>
+                <Text size="sm" color="secondary">Two-tone — flat trigger, elevated body.</Text>
+              </Card>
+            </Collapsible>
+          </Card>
+        </Row>
       </Section>
 
       <Section title="NavLink" tokens={tokens} hidden={!showSection('NavLink')}>
