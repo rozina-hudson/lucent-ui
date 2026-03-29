@@ -51,7 +51,7 @@ export const COMPONENT_MANIFEST = {
         '- `ghost` and `outline` use `transparent` — they inherit from whatever they\'re placed on. ' +
         'The border is the only visual differentiator for `outline`.\n' +
         '- Never use `bgBase` or `bgSubtle` on a Card — those tokens are reserved for the page canvas.\n' +
-        '- Content nested inside a Card that needs a tinted fill should use `surfaceSecondary`.',
+        '- Content nested inside a Card that needs a tinted fill should use `color-mix(in srgb, var(--lucent-text-primary) 5%, transparent)` for accent-neutral insets.',
     props: [
         {
             name: 'variant',
@@ -102,7 +102,7 @@ export const COMPONENT_MANIFEST = {
             name: 'radius',
             type: 'enum',
             required: false,
-            default: 'md',
+            default: 'lg',
             description: 'Border radius of the card.',
             enumValues: ['none', 'sm', 'md', 'lg'],
         },
@@ -149,8 +149,10 @@ export const COMPONENT_MANIFEST = {
             name: 'status',
             type: 'enum',
             required: false,
-            description: 'Adds a 3px colored accent bar on the left edge of the card. Uses the corresponding status ' +
-                'token (successDefault, warningDefault, dangerDefault, infoDefault). Works with all variants.',
+            description: 'Adds a 3px colored inset box-shadow on the left edge of the card. Rendered as an inset shadow ' +
+                '(same technique as NavMenu inverse highlight) so it naturally follows the card\'s border-radius. ' +
+                'Uses the corresponding status token (successDefault, warningDefault, dangerDefault, infoDefault). ' +
+                'Works with all variants.',
             enumValues: ['success', 'warning', 'danger', 'info'],
         },
         {
@@ -162,12 +164,22 @@ export const COMPONENT_MANIFEST = {
                 'Sets aria-pressed on interactive cards. Disabled takes precedence — ring is hidden when disabled.',
         },
         {
+            name: 'hoverable',
+            type: 'boolean',
+            required: false,
+            description: 'Enables hover lift (translateY -1px) and neutral glow shadow without making the card a button or link. ' +
+                'Use when the card contains its own interactive content (e.g. a Collapsible trigger) and the whole card ' +
+                'surface should hint at interactivity. Interactive cards (onClick/href) get accent-colored hover glow; ' +
+                'hoverable-only cards get a neutral glow (12% text-primary).',
+        },
+        {
             name: 'media',
             type: 'ReactNode',
             required: false,
             description: 'Full-bleed content rendered at the top of the card (before header). No padding is applied. ' +
-                'Use for hero images, illustrations, or any edge-to-edge top content. The card\'s overflow:hidden ' +
-                'clips media to the border-radius.',
+                'Use for hero images, illustrations, or any edge-to-edge top content. The media slot self-clips ' +
+                'to the card\'s top border-radius. Cards without media default to overflow:visible so nested child ' +
+                'shadows (e.g. an elevated Card inside a Collapsible) are never cut off.',
         },
     ],
     usageExamples: [
@@ -259,6 +271,24 @@ export const COMPONENT_MANIFEST = {
 >
   <Text weight="semibold">Article title</Text>
   <Text color="secondary" size="sm">A card with a full-bleed hero image.</Text>
+</Card>`,
+        },
+        {
+            title: 'CollapsibleCard recipe — outline',
+            code: `<Card variant="outline" hoverable>
+  <Collapsible trigger={<Text as="span" weight="semibold" size="sm">Filters</Text>} defaultOpen>
+    <Text size="sm" color="secondary">Card + Collapsible composed together. Collapsible auto-bleeds to card edges.</Text>
+  </Collapsible>
+</Card>`,
+        },
+        {
+            title: 'CollapsibleCard recipe — combo (filled + elevated)',
+            code: `<Card variant="filled" hoverable>
+  <Collapsible trigger={<Text as="span" weight="semibold" size="sm">Details</Text>} padded={false}>
+    <Card variant="elevated" padding="sm" style={{ margin: 'var(--lucent-space-1) var(--lucent-space-2) var(--lucent-space-2)' }}>
+      <Text size="sm" color="secondary">Two-tone: flat trigger on filled surface, content in elevated body.</Text>
+    </Card>
+  </Collapsible>
 </Card>`,
         },
     ],

@@ -1,5 +1,148 @@
 # lucent-ui
 
+## 0.28.0
+
+### LucentDevTools — Live Token Editor & Design System Explorer
+
+**New: `lucent-ui/devtools` entry point** — a floating panel for real-time design system manipulation. Drop `<LucentDevTools />` inside your `<LucentProvider>` and toggle with Cmd+Shift+D.
+
+**Three-tab panel:**
+- **Design** — preset gallery (10 design personalities), accent/background/surface/border color pickers with auto-derivation, density slider, roundness slider, shadow style selector (9 styles), font family per preset
+- **Typography** — font family picker with 14 Google Fonts (auto-loaded on demand), category filter (sans/serif/mono/display), type scale controls (base size + ratio + named presets), text color pickers, live paragraph preview
+- **Tokens** — raw token editor for all ~80 tokens with per-token color pickers, sliders, and text inputs
+
+**10 curated design presets:** Default, Modern, Liquid Glass, Bento, Brutalist, Terminal, Soft UI, Bloom, Minimal, Enterprise — each a harmonious combination of accent color, font family, type scale, density, roundness, and shadow style.
+
+**Panel features:**
+- Overlay or push mode (push shifts page content left)
+- Theme toggle (light/dark)
+- Copy Config — exports current overrides as a `<LucentProvider tokens={...}>` snippet
+- Reset All — clears all overrides instantly
+- Override count badge
+- CSS var override mechanism — instant visual updates, no React re-render
+- Built with lucent-ui components (Tabs, Button, Toggle, Badge, Text, Slider, Input, Select, SegmentedControl, ColorPicker) scoped to a fixed dark theme via `DevToolsScope`
+- Separate entry point — zero devtools code in the main `lucent-ui` bundle
+
+### 8 new shadow presets + dark-mode-native shadows
+
+**New shadow styles:** Liquid Glass, Brutalist, Neumorphic, Natural, Glow — added to the existing Flat, Subtle, Elevated.
+
+**Dark mode paradigm shift:** Every dark-mode shadow variant rewritten from scratch. Instead of darkening (invisible on dark backgrounds), shadows now simulate light sources:
+
+| Preset | Dark mode technique |
+|--------|-------------------|
+| Default | Lit edge — `inset 0 1px` white highlight simulating overhead light |
+| Subtle | Ambient — large soft accent-tinted glow via `color-mix()` |
+| Elevated | Inset glow — internal luminosity via `inset 0 0 Npx rgba(255,255,255)` |
+| Natural | Layered lit edges — stacked `inset` highlights at increasing intensity |
+| Liquid Glass | Frosted backlight — inner white glow + outer white diffusion |
+| Neumorphic | Chromatic — accent-colored glow on one side, white highlight on the other |
+| Brutalist | Accent outline — bright accent ring + accent offset block (not dark) |
+| Glow | Pure accent glow (already dark-mode-native) |
+
+**Brutalist shadows** use `color-mix()` with `var(--lucent-accent-default)` for the thick outline ring and offset block — automatically follows palette changes.
+
+### 7 new combined design presets
+
+Full design personalities that bundle palette + shape + density + shadow:
+
+| Preset | Shadow | Shape | Density | Palette |
+|--------|--------|-------|---------|---------|
+| `liquidGlass` | Liquid Glass | Pill | Spacious | Ocean |
+| `bento` | Natural | Rounded | Default | Indigo |
+| `brutalist` | Brutalist | Sharp | Compact | Coral |
+| `terminal` | Glow | Sharp | Compact | Emerald |
+| `softUI` | Neumorphic | Pill | Default | Violet |
+| `bloom` | Glow | Rounded | Spacious | Indigo |
+| `minimal` | Flat | Rounded | Default | Slate |
+
+Usage: `<LucentProvider preset="brutalist">` or `<LucentProvider preset={{ shadow: 'glow', shape: 'pill' }}>`.
+
+### Other changes
+
+- **Tabs:** `content` is now optional on `TabItem` — when no tab has content, panel rendering is skipped (header-only / controlled mode)
+- **ColorPicker:** `zIndex` increased to `999999` to render above high-z-index containers
+- **`tokenToCssVar`** exported from `src/tokens/css.ts` — converts camelCase token keys to `--lucent-*` CSS var names
+- **Dynamic Google Font loading** — devtools automatically injects `<link>` tags for fonts when presets or the font picker are used
+
+## 0.27.2
+
+### Contained variant & Card selected: neutral fills
+
+- **Checkbox/Radio/Toggle contained wrapper**: border is now always `border-strong` (no accent tint). Checked background uses `color-mix(textPrimary 6%, transparent)` — neutral, adapts to parent. Unchecked is `transparent` (outline only).
+- **Removed hover state** from contained wrappers — simplified to static `border-strong`, removed unused `hovered`/`setHovered` and mouse handlers.
+- **Card selected state**: unified to `accent-subtle` for all variants instead of per-variant `color-mix` into opaque backgrounds.
+
+## 0.27.1
+
+### BREAKING: Accent token revamp & color-mix architecture
+
+**Token renames (CSS vars changed):**
+- `--lucent-text-on-accent` renamed to `--lucent-accent-fg` (moved into accent group)
+- `--lucent-focus-ring` removed (merged into `--lucent-accent-border`)
+- `--lucent-accent-active` removed (not in the 5-token accent model)
+
+**Accent layer: 5 tokens derived from a single color**
+- `accentDefault` — primary button bg, active toggle, checkbox fill
+- `accentHover` — hover state of the above
+- `accentSubtle` — low-opacity tint for selected rows, active nav items
+- `accentBorder` — focus rings, selected item borders, active tab underline
+- `accentFg` — hue-tinted text/icon on accent surfaces (no longer pure black/white)
+
+**New: `accentTokens(color, theme?)` function** — standalone helper that derives all 5 accent tokens from a single hex input. Exported from the public API.
+
+**New: `getAccentFg(color)` function** — returns a hue-tinted foreground color instead of pure `#000000`/`#ffffff`. Bright accents get `hsl(H, min(S,60%), 12%)`, dark accents get `hsl(H, min(S,20%), 95%)`.
+
+**Button variant updates:**
+- Secondary: `color-mix(accent 16%, transparent)` fill, `textPrimary` text
+- Outline: `textPrimary` text, softened accent-tinted border
+- Ghost: `textPrimary` text, transparent bg
+- All disabled: `color-mix(textPrimary 6%, transparent)` fill, no border
+- Press ring: single translucent halo (`accent@40%`) replaces opaque double ring
+- Hover shadows: `color-mix(accent, transparent)` replaces opaque `accent-subtle`
+
+**color-mix(transparent) architecture for neutral fills:**
+- SegmentedControl, Toggle off track, Slider unfilled, Progress bar track, CodeBlock, Card filled/combo, Table/DataTable headers & stripes, disabled inputs — all use `color-mix(in srgb, var(--lucent-text-primary) N%, transparent)` instead of opaque `surfaceSecondary`. Adapts to any parent background, eliminates accent bleed from palette derivation.
+
+**PageLayout: `surfaceSecondary` chrome option**
+- New `chromeBackground="surfaceSecondary"` option for visible stage/chrome separation.
+- Playground switched from `bgSubtle` to `surfaceSecondary` for sidebars.
+
+**Collapsible padding increase:**
+- Trigger vertical padding bumped from `space-3` to `space-4`
+- Content padding bumped from `space-2/space-3` to `space-3/space-4`
+
+## 0.26.0
+
+### Composition recipes: manifest type + MCP tool + preview sections
+
+- **`CompositionRecipe` type** — new manifest type in `src/manifest/types.ts` describing how multiple components compose into real UIs. Fields: `id`, `name`, `description`, `category`, `components`, `structure` (ASCII tree), `code` (working JSX), `variants`, and `designNotes`.
+- **7 initial recipes** in `src/manifest/recipes/`:
+  - **Profile Card** — avatar, name (display font), bio, borderless clickable chips, stat row (2xl display), action buttons. Compact collapsible variant on filled Card.
+  - **Settings Panel** — toggle rows with descriptions, select dropdown, action footer. Drill-down variant with NavMenu sidebar.
+  - **Stats Row** — individual stat cards with trend chips and comparison text. Revenue variant with avatar headers.
+  - **Action Bar** — page header (breadcrumb + 3xl display title + divider) and card header (uppercase label + md title, tight letter-spacing).
+  - **Form Layout** — stacked form with section grouping, side-by-side fields, dividers, and submit/cancel footer.
+  - **Empty State Card** — icon illustration + heading + description + CTA in three variants (no results, getting started, error).
+  - **Collapsible Card** — all card variants (ghost/outline/filled/elevated) with auto-bleed Collapsible, plus combo two-tone layout.
+- **New MCP tool: `get_composition_recipe`** — query by name/id, by category, or list all. Returns full recipe with structure tree, working code, variants, and design notes.
+- **`search_components` extended** — now returns both `components` and `recipes` in results.
+- **Recipes nav group in ComponentPreview** — new "Recipes" section in the sidebar with Cards and Layouts sub-groups, each recipe rendered as a live interactive demo.
+
+### Divider: zero default spacing
+
+- **`spacing` default changed from `var(--lucent-space-4)` to `0`** — Dividers inside gap-based layouts (Stack, Row) no longer double up spacing. Pass `spacing` explicitly for standalone use outside flex containers.
+
+## 0.25.1
+
+### Collapsible + Card composition fix
+
+- **Collapsible auto-bleed inside Card** — Collapsible now consumes `CardPaddingContext` and applies negative margins to cancel the Card body's padding. `<Card hoverable><Collapsible>` just works — no `padding="none"` on Card required.
+- **Card overflow:visible by default** — cards without a `media` prop now default to `overflow: visible` so nested child shadows (e.g. an elevated Card inside a combo recipe) are never clipped. Cards with `media` keep `overflow: hidden` to clip images at rounded corners; the media slot also self-clips with matching top border-radius.
+- **Collapsible dynamic overflow** — the animated content wrapper uses `overflow: hidden` only during the height transition and switches to `overflow: visible` once fully expanded, preventing shadow clipping in the resting state.
+- **Combo recipe tighter spacing** — reduced top margin between trigger and inner elevated Card from `space-3` to `space-1`.
+- Updated Card and Collapsible manifests with simplified CollapsibleCard recipe examples (no `padding="none"` needed).
+
 ## 0.25.0
 
 ### Collapsible: smooth collapse animation, hover feedback, and polish

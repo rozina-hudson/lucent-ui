@@ -414,7 +414,7 @@ export function ColorPicker({
           height: swatchPx,
           borderRadius: size === 'sm' ? 'var(--lucent-radius-md)' : 'var(--lucent-radius-lg)',
           boxShadow: isOpen
-            ? `inset 0 0 0 2px var(--lucent-focus-ring), 0 0 0 3px var(--lucent-accent-subtle)`
+            ? `inset 0 0 0 2px var(--lucent-accent-border), 0 0 0 3px var(--lucent-accent-subtle)`
             : 'inset 0 0 0 1px rgba(0,0,0,0.2)',
         }}
       />
@@ -444,7 +444,7 @@ export function ColorPicker({
             position: 'fixed',
             top: popoverPos.top,
             left: popoverPos.left,
-            zIndex: 1000,
+            zIndex: 999999,
             background: 'color-mix(in srgb, var(--lucent-surface-overlay) 85%, transparent)',
             backdropFilter: 'blur(6px)',
             WebkitBackdropFilter: 'blur(6px)',

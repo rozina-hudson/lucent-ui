@@ -206,7 +206,7 @@ export function DataTable<T extends object>({
                       textAlign: col.align ?? 'left',
                       fontWeight: 'var(--lucent-font-weight-medium)',
                       color: 'var(--lucent-text-secondary)',
-                      background: 'var(--lucent-surface-secondary)',
+                      background: 'color-mix(in srgb, var(--lucent-text-primary) 5%, transparent)',
                       borderBottom: '1px solid var(--lucent-border-default)',
                       cursor: col.sortable ? 'pointer' : 'default',
                       userSelect: 'none',
@@ -246,8 +246,8 @@ export function DataTable<T extends object>({
                       ? '1px solid var(--lucent-border-subtle)'
                       : 'none',
                     background: hoveredRow === i
-                      ? 'var(--lucent-surface-secondary)'
-                      : 'var(--lucent-surface)',
+                      ? 'color-mix(in srgb, var(--lucent-text-primary) 4%, transparent)'
+                      : 'transparent',
                     transition: 'background var(--lucent-duration-fast) var(--lucent-easing-default)',
                   }}
                 >
@@ -503,7 +503,7 @@ function FilterDropdown({
                 padding: '0 var(--lucent-space-2)',
                 borderRadius: 'var(--lucent-radius-md)',
                 border: '1px solid var(--lucent-border-default)',
-                background: 'var(--lucent-surface-secondary)',
+                background: 'color-mix(in srgb, var(--lucent-text-primary) 5%, transparent)',
                 color: 'var(--lucent-text-primary)',
                 fontFamily: 'var(--lucent-font-family-base)',
                 fontSize: 'var(--lucent-font-size-xs)',
@@ -580,7 +580,7 @@ function DropdownOption({ label, isSelected, onClick }: { label: string; isSelec
         padding: 'var(--lucent-space-2) var(--lucent-space-3)',
         borderRadius: 'var(--lucent-radius-md)',
         border: 'none',
-        background: hovered ? 'var(--lucent-surface-secondary)' : 'transparent',
+        background: hovered ? 'color-mix(in srgb, var(--lucent-text-primary) 5%, transparent)' : 'transparent',
         color: 'var(--lucent-text-primary)',
         fontFamily: 'var(--lucent-font-family-base)',
         fontSize: 'var(--lucent-font-size-xs)',
@@ -604,7 +604,7 @@ function DropdownOption({ label, isSelected, onClick }: { label: string; isSelec
       }}>
         {isSelected && (
           <svg width="8" height="8" viewBox="0 0 8 8" fill="none" aria-hidden>
-            <path d="M1 4L3 6L7 2" stroke="var(--lucent-text-on-accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M1 4L3 6L7 2" stroke="var(--lucent-accent-fg)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         )}
       </span>
@@ -650,10 +650,10 @@ function PaginationButton({
         background: active
           ? 'var(--lucent-accent-default)'
           : hovered && !disabled
-          ? 'var(--lucent-surface-secondary)'
+          ? 'color-mix(in srgb, var(--lucent-text-primary) 5%, transparent)'
           : 'transparent',
         color: active
-          ? 'var(--lucent-text-on-accent)'
+          ? 'var(--lucent-accent-fg)'
           : disabled
           ? 'var(--lucent-text-disabled)'
           : 'var(--lucent-text-primary)',

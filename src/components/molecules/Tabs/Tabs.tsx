@@ -3,7 +3,7 @@ import { useState, useRef, useLayoutEffect, useEffect, type CSSProperties, type 
 export interface TabItem {
   value: string;
   label: ReactNode;
-  content: ReactNode;
+  content?: ReactNode;
   disabled?: boolean;
 }
 
@@ -226,7 +226,7 @@ export function Tabs({ tabs, defaultValue, value, onChange, variant = 'underline
                 color: isDisabled
                   ? 'var(--lucent-text-disabled)'
                   : isPills && isActive
-                  ? 'var(--lucent-text-on-accent)'
+                  ? 'var(--lucent-accent-fg)'
                   : isActive
                   ? 'var(--lucent-text-primary)'
                   : 'var(--lucent-text-secondary)',
@@ -405,8 +405,8 @@ export function Tabs({ tabs, defaultValue, value, onChange, variant = 'underline
         </div>
       )}
 
-      {/* Tab panels */}
-      {tabs.map((tab) => (
+      {/* Tab panels — skip entirely when no tab has content (header-only mode) */}
+      {tabs.some(t => t.content != null) && tabs.map((tab) => (
         <div
           key={tab.value}
           role="tabpanel"

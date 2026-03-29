@@ -101,7 +101,6 @@ export function Radio({ value, label, size = 'md', contained = false, helperText
   const ctx = useContext(RadioContext);
   const inputId = id ?? `lucent-radio-${Math.random().toString(36).slice(2, 7)}`;
   const px = sizePx[size];
-  const [hovered, setHovered] = useState(false);
 
   const isDisabled = disabled ?? ctx?.disabled ?? false;
   const isChecked = ctx ? ctx.value === value : Boolean(checked);
@@ -125,7 +124,7 @@ export function Radio({ value, label, size = 'md', contained = false, helperText
     width: px / 2,
     height: px / 2,
     borderRadius: '50%',
-    background: isDisabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-on-accent)',
+    background: isDisabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-accent-fg)',
     animation: isChecked ? 'lucent-radio-dot 200ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards' : undefined,
     opacity: isChecked ? 1 : 0,
   };
@@ -197,19 +196,11 @@ export function Radio({ value, label, size = 'md', contained = false, helperText
       <style>{STYLES}</style>
       {contained ? (
         <div
-          onMouseEnter={() => { if (!isDisabled) setHovered(true); }}
-          onMouseLeave={() => setHovered(false)}
           style={{
-            border: `1px solid ${
-              isChecked && !isDisabled
-                ? 'var(--lucent-accent-default)'
-                : hovered && !isDisabled
-                ? 'var(--lucent-border-strong)'
-                : 'var(--lucent-border-default)'
-            }`,
+            border: `1px solid var(--lucent-border-strong)`,
             borderRadius: 'var(--lucent-radius-lg)',
             ...(helperText ? { padding: 'var(--lucent-space-3)' } : { minHeight: containedHeight[size], padding: '0 var(--lucent-space-3)', display: 'flex', alignItems: 'center' }),
-            background: isChecked && !isDisabled ? 'var(--lucent-accent-subtle)' : 'var(--lucent-surface)',
+            background: isChecked && !isDisabled ? 'color-mix(in srgb, var(--lucent-text-primary) 6%, transparent)' : 'transparent',
             transition: 'border-color var(--lucent-duration-fast) var(--lucent-easing-default), background var(--lucent-duration-fast) var(--lucent-easing-default)',
             cursor: isDisabled ? 'not-allowed' : 'pointer',
             ...(style as React.CSSProperties),

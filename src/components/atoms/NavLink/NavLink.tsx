@@ -47,7 +47,7 @@ export function NavLink({
         color: disabled
           ? 'var(--lucent-text-disabled)'
           : isActive
-          ? (inverse ? 'var(--lucent-text-primary)' : 'var(--lucent-text-on-accent)')
+          ? (inverse ? 'var(--lucent-text-primary)' : 'var(--lucent-accent-fg)')
           : 'var(--lucent-text-secondary)',
         border: isActive && inverse ? '1px solid var(--lucent-border-default)' : '1px solid transparent',
         borderRight: isActive && inverse ? '3px solid var(--lucent-accent-default)' : '3px solid transparent',

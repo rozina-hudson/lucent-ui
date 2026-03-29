@@ -79,7 +79,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             fontSize: sizeFontSizes[size],
             fontFamily: 'var(--lucent-font-family-base)',
             color: isDisabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-primary)',
-            background: isDisabled ? 'var(--lucent-surface-secondary)' : 'var(--lucent-surface)',
+            background: isDisabled ? 'color-mix(in srgb, var(--lucent-text-primary) 6%, transparent)' : 'var(--lucent-surface)',
             border: `1px solid ${borderColor}`,
             borderRadius: 'var(--lucent-radius-lg)',
             outline: 'none',
@@ -111,7 +111,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           }}
           onFocus={(e) => {
             if (isDisabled) return;
-            e.currentTarget.style.borderColor = hasError ? 'var(--lucent-danger-default)' : 'var(--lucent-focus-ring)';
+            e.currentTarget.style.borderColor = hasError ? 'var(--lucent-danger-default)' : 'var(--lucent-accent-border)';
             e.currentTarget.style.boxShadow = `0 0 0 3px ${hasError ? 'var(--lucent-danger-subtle)' : 'var(--lucent-accent-subtle)'}`;
             rest.onFocus?.(e);
           }}

@@ -121,13 +121,11 @@ export function deriveTokens(
   }
 
   // --- Accent variants ---
-  // anchor: accentDefault  variants: accentHover, accentActive, accentSubtle
-  // Note: accentBorder and textOnAccent are handled separately in LucentProvider.
+  // anchor: accentDefault  variants: accentHover, accentSubtle
+  // Note: accentBorder and accentFg are handled separately in LucentProvider.
   if ('accentDefault' in overrides) {
     if (!('accentHover' in overrides))
       derived.accentHover = adjustLightness(merged.accentDefault, isLight ? +0.05 : -0.07);
-    if (!('accentActive' in overrides))
-      derived.accentActive = adjustLightness(merged.accentDefault, isLight ? +0.13 : -0.14);
     if (!('accentSubtle' in overrides))
       derived.accentSubtle = adjustLightness(merged.accentDefault, isLight ? +0.85 : -0.60);
   }

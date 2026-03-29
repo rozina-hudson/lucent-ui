@@ -50,9 +50,9 @@ export const ThemeAnchorsSpec: Record<keyof ThemeAnchors, {
   },
   accentDefault: {
     description: 'Primary brand/action color. Drives the visual identity — used on primary buttons, active nav links, focus rings, badges, and progress indicators.',
-    lightGuidance: 'Pick a color with enough contrast against both bgBase (white) and textOnAccent (computed automatically). Saturated mid-tones work well. E.g. indigo #6366f1, violet #8b5cf6, emerald #10b981. Monochrome default is #111827 (near-black).',
+    lightGuidance: 'Pick a color with enough contrast against both bgBase (white) and accentFg (computed automatically). Saturated mid-tones work well. E.g. indigo #6366f1, violet #8b5cf6, emerald #10b981. Monochrome default is #111827 (near-black).',
     darkGuidance: 'In dark mode the accent typically lightens so it stays visible. This is handled automatically via deriveDarkFromLight() — you can supply the same light-mode accent and the dark variant is computed.',
-    derives: ['accentHover', 'accentActive', 'accentSubtle', 'accentBorder', 'textOnAccent'],
+    derives: ['accentHover', 'accentSubtle', 'accentBorder', 'accentFg'],
   },
   successDefault: {
     description: 'Positive/success state color. Used on success alerts, completed step indicators, "online" status badges, and confirmation toasts.',
@@ -110,14 +110,14 @@ export const LucentProviderManifest: ComponentManifest = {
 
     'TOKEN MODE (for granular control): Pass `tokens` as a partial override object. Any token not ' +
     'supplied falls back to the base light or dark theme. Derivation still runs — e.g. if you ' +
-    'supply only `accentDefault`, the provider auto-derives `accentHover`, `accentActive`, ' +
-    '`accentSubtle`, `accentBorder`, and `textOnAccent`.\n\n' +
+    'supply only `accentDefault`, the provider auto-derives `accentHover`, ' +
+    '`accentSubtle`, `accentBorder`, and `accentFg`.\n\n' +
 
     'PRECEDENCE (later wins): base theme → preset → anchors → tokens. ' +
     'You can combine preset with tokens to start from a preset and tweak individual values.\n\n' +
 
-    'WCAG auto-computation: `textOnAccent` is always computed from the resolved accent color via ' +
-    'relative luminance — it will be #000000 or #ffffff, whichever passes AA contrast. ' +
+    'APCA auto-computation: `accentFg` is always computed from the resolved accent color via ' +
+    'APCA contrast — it will be #000000 or #ffffff, whichever has higher perceived contrast. ' +
     'Consumers can override it if they have brand-specific requirements.\n\n' +
 
     'DARK MODE: Pass `theme="dark"` alongside any prop. Presets include both light and dark palettes. ' +

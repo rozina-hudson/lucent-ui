@@ -175,7 +175,7 @@ export function SearchInput({
                 padding: 'var(--lucent-space-2)',
                 borderRadius: 'var(--lucent-radius-md)',
                 cursor: 'pointer',
-                background: hoveredIndex === idx ? 'color-mix(in srgb, var(--lucent-accent-default) 20%, var(--lucent-surface-secondary))' : 'transparent',
+                background: hoveredIndex === idx ? 'color-mix(in srgb, var(--lucent-accent-default) 14%, transparent)' : 'transparent',
                 transition: `background var(--lucent-duration-fast) var(--lucent-easing-default)`,
               }}
             >

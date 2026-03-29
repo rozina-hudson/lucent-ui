@@ -1,5 +1,6 @@
 import { describe, test, expect } from 'vitest';
-import { getContrastText } from './contrast.js';
+import { getContrastText, getAccentFg, apcaContrast } from './contrast.js';
+import { hexToHsl } from './color.js';
 import { createTheme } from './createTheme.js';
 import { lightTokens } from './light.js';
 import { darkTokens } from './dark.js';
@@ -38,12 +39,22 @@ describe('createTheme', () => {
     expect(tokens.textPrimary).toBe('#111827');
   });
 
-  test('derives textOnAccent from accentDefault', () => {
-    const lightAccent = createTheme({ ...anchors, accentDefault: '#ffffff' });
-    expect(lightAccent.textOnAccent).toBe('#000000');
+  test('derives hue-tinted accentFg from accentDefault', () => {
+    // Bright accent (gold) → dark hue-tinted fg (not pure black)
+    const bright = createTheme({ ...anchors, accentDefault: '#e9c96b' });
+    expect(bright.accentFg).not.toBe('#000000');
+    const [, , darkL] = hexToHsl(bright.accentFg);
+    expect(darkL).toBeLessThan(0.15);
 
-    const darkAccent = createTheme({ ...anchors, accentDefault: '#000000' });
-    expect(darkAccent.textOnAccent).toBe('#ffffff');
+    // Dark accent → light hue-tinted fg (not pure white)
+    const dark = createTheme({ ...anchors, accentDefault: '#111827' });
+    expect(dark.accentFg).not.toBe('#ffffff');
+    const [, , lightL] = hexToHsl(dark.accentFg);
+    expect(lightL).toBeGreaterThan(0.90);
+
+    // Both must have adequate APCA contrast
+    expect(Math.abs(apcaContrast('#e9c96b', bright.accentFg))).toBeGreaterThan(45);
+    expect(Math.abs(apcaContrast('#111827', dark.accentFg))).toBeGreaterThan(45);
   });
 
   test('light theme has lighter bgBase than dark theme defaults', () => {

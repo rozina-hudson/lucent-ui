@@ -1,7 +1,7 @@
 import { lightTokens } from './light.js';
 import { darkTokens } from './dark.js';
 import { deriveTokens } from './derive.js';
-import { getContrastText } from './contrast.js';
+import { getAccentFg } from './contrast.js';
 import { adjustLightness } from './color.js';
 import type { LucentTokens, Theme, ThemeAnchors } from './types.js';
 
@@ -43,7 +43,7 @@ export function createTheme(anchors: ThemeAnchors, theme: Theme = 'light'): Luce
   return {
     ...merged,
     ...derived,
-    textOnAccent: getContrastText(merged.accentDefault),
+    accentFg: getAccentFg(merged.accentDefault),
     accentBorder,
   };
 }

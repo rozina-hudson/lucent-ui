@@ -68,12 +68,24 @@ export const lightShadowTokens: ShadowTokens = {
     '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
 };
 
+/**
+ * Dark mode default shadows — "lit edge" approach.
+ * Depth is communicated through brightness, not darkness. A subtle
+ * white highlight on the top edge simulates overhead light, while
+ * a very faint dark layer provides just enough grounding.
+ */
 export const darkShadowTokens: ShadowTokens = {
   shadowNone: 'none',
-  shadowSm: '0 1px 2px 0 rgb(0 0 0 / 0.3)',
-  shadowMd: '0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4)',
+  shadowSm:
+    'inset 0 1px 0 0 rgba(255, 255, 255, 0.04), ' +
+    '0 1px 2px 0 rgba(0, 0, 0, 0.2)',
+  shadowMd:
+    'inset 0 1px 0 0 rgba(255, 255, 255, 0.06), ' +
+    '0 2px 4px -1px rgba(0, 0, 0, 0.25)',
   shadowLg:
-    '0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4)',
+    'inset 0 1px 0 0 rgba(255, 255, 255, 0.08), ' +
+    '0 4px 8px -2px rgba(0, 0, 0, 0.3)',
   shadowXl:
-    '0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.5)',
+    'inset 0 1px 0 0 rgba(255, 255, 255, 0.1), ' +
+    '0 8px 16px -4px rgba(0, 0, 0, 0.35)',
 };

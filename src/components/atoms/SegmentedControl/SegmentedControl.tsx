@@ -97,7 +97,9 @@ export function SegmentedControl({
         alignItems: 'center',
         width: fullWidth ? '100%' : 'fit-content',
         height: sizeH[size],
-        background: 'var(--lucent-surface-secondary)',
+        // color-mix with transparent produces a relative tint that adapts to any
+        // parent background (white, tinted chrome, dark mode). Baseline 2023.
+        background: 'color-mix(in srgb, var(--lucent-text-primary) 6%, transparent)',
         borderRadius: 'var(--lucent-radius-lg)',
         padding: 0,
         gap: 0,

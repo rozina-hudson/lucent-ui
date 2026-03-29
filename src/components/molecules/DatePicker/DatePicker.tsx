@@ -107,7 +107,7 @@ function NavButton({ dir, onClick, disabled, size = 'md' }: { dir: 'prev' | 'nex
         width: s, height: s,
         border: 'none',
         borderRadius: 'var(--lucent-radius-md)',
-        background: hovered && !disabled ? 'var(--lucent-surface-secondary)' : 'transparent',
+        background: hovered && !disabled ? 'color-mix(in srgb, var(--lucent-text-primary) 5%, transparent)' : 'transparent',
         color: disabled ? 'var(--lucent-text-disabled)' : 'var(--lucent-text-secondary)',
         cursor: disabled ? 'not-allowed' : 'pointer',
         transition: 'background var(--lucent-duration-fast)',
@@ -206,10 +206,10 @@ function Calendar({
                   : inRange
                   ? 'var(--lucent-accent-subtle)'
                   : hoveredDay === day && !isDisabled
-                  ? 'color-mix(in srgb, var(--lucent-accent-default) 20%, var(--lucent-surface-secondary))'
+                  ? 'color-mix(in srgb, var(--lucent-accent-default) 14%, transparent)'
                   : 'transparent',
                 color: isSelected
-                  ? 'var(--lucent-text-on-accent)'
+                  ? 'var(--lucent-accent-fg)'
                   : isDisabled
                   ? 'var(--lucent-text-disabled)'
                   : 'var(--lucent-text-primary)',
@@ -297,7 +297,7 @@ export function DatePicker({
     : hasError
       ? 'var(--lucent-danger-default)'
       : focused
-        ? 'var(--lucent-focus-ring)'
+        ? 'var(--lucent-accent-border)'
         : 'var(--lucent-border-default)';
 
   const boxShadow = focused
@@ -339,7 +339,7 @@ export function DatePicker({
           borderRadius: 'var(--lucent-radius-lg)',
           border: `1px solid ${borderColor}`,
           boxShadow,
-          background: isDisabled ? 'var(--lucent-surface-secondary)' : 'var(--lucent-surface)',
+          background: isDisabled ? 'color-mix(in srgb, var(--lucent-text-primary) 6%, transparent)' : 'var(--lucent-surface)',
           color: selected ? 'var(--lucent-text-primary)' : 'var(--lucent-text-secondary)',
           fontFamily: 'var(--lucent-font-family-base)',
           fontSize: sizeFontSizes[size],

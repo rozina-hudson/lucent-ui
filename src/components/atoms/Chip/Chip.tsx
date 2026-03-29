@@ -40,7 +40,7 @@ const variantStyles: Record<ChipVariant, {
   },
   accent: {
     bg: 'var(--lucent-accent-default)',
-    color: 'var(--lucent-text-on-accent)',
+    color: 'var(--lucent-accent-fg)',
     border: 'var(--lucent-accent-default)',
     hoverBg: 'var(--lucent-accent-hover)',
     hoverBorder: 'var(--lucent-accent-hover)',

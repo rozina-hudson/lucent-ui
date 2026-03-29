@@ -55,7 +55,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       : hasError
         ? 'var(--lucent-danger-default)'
         : isFocused
-          ? 'var(--lucent-focus-ring)'
+          ? 'var(--lucent-accent-border)'
           : isHovered
             ? 'var(--lucent-border-strong)'
             : 'var(--lucent-border-default)';
@@ -90,7 +90,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             border: `1px solid ${borderColor}`,
             borderRadius: 'var(--lucent-radius-lg)',
             boxShadow,
-            background: isDisabled ? 'var(--lucent-surface-secondary)' : 'var(--lucent-surface)',
+            background: isDisabled ? 'color-mix(in srgb, var(--lucent-text-primary) 6%, transparent)' : 'var(--lucent-surface)',
             cursor: isDisabled ? 'not-allowed' : 'pointer',
             transition: [
               `border-color var(--lucent-duration-fast) var(--lucent-easing-default)`,

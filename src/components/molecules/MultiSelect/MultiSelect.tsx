@@ -169,7 +169,7 @@ export function MultiSelect({
     : hasError
     ? 'var(--lucent-danger-default)'
     : focused
-    ? 'var(--lucent-focus-ring)'
+    ? 'var(--lucent-accent-border)'
     : 'var(--lucent-border-default)';
 
   const boxShadow = focused
@@ -208,7 +208,7 @@ export function MultiSelect({
           padding: sizePaddings[size],
           borderRadius: 'var(--lucent-radius-lg)',
           border: `1px solid ${borderColor}`,
-          background: disabled ? 'var(--lucent-surface-secondary)' : 'var(--lucent-surface)',
+          background: disabled ? 'color-mix(in srgb, var(--lucent-text-primary) 6%, transparent)' : 'var(--lucent-surface)',
           cursor: disabled ? 'not-allowed' : 'text',
           transition: 'border-color var(--lucent-duration-fast) var(--lucent-easing-default), box-shadow var(--lucent-duration-fast) var(--lucent-easing-default)',
           boxShadow,
@@ -300,7 +300,7 @@ export function MultiSelect({
                     padding: dropdownPadding[size],
                     borderRadius: 'var(--lucent-radius-md)',
                     cursor: isDisabled || wouldExceedMax ? 'not-allowed' : 'pointer',
-                    background: isActive ? 'var(--lucent-surface-secondary)' : 'transparent',
+                    background: isActive ? 'color-mix(in srgb, var(--lucent-text-primary) 5%, transparent)' : 'transparent',
                     opacity: isDisabled || wouldExceedMax ? 0.5 : 1,
                   }}
                 >

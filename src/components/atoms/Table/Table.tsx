@@ -12,11 +12,11 @@ export type TableCellProps =
 const STYLES = `
 .lucent-table-row:hover > td,
 .lucent-table-row:hover > th {
-  background: var(--lucent-surface-secondary) !important;
+  background: color-mix(in srgb, var(--lucent-text-primary) 5%, transparent) !important;
 }
 .lucent-table-striped tbody .lucent-table-row:nth-child(even) > td,
 .lucent-table-striped tbody .lucent-table-row:nth-child(even) > th {
-  background: var(--lucent-surface-secondary);
+  background: color-mix(in srgb, var(--lucent-text-primary) 4%, transparent);
 }
 `;
 
@@ -24,7 +24,7 @@ function Head({ children, style, ...rest }: HTMLAttributes<HTMLTableSectionEleme
   return (
     <thead
       style={{
-        background: 'var(--lucent-surface-secondary)',
+        background: 'color-mix(in srgb, var(--lucent-text-primary) 5%, transparent)',
         ...style,
       }}
       {...rest}
@@ -42,7 +42,7 @@ function Foot({ children, style, ...rest }: HTMLAttributes<HTMLTableSectionEleme
   return (
     <tfoot
       style={{
-        background: 'var(--lucent-surface-secondary)',
+        background: 'color-mix(in srgb, var(--lucent-text-primary) 5%, transparent)',
         ...style,
       }}
       {...rest}

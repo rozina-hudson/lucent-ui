@@ -1,7 +1,7 @@
 /**
  * Contrast utilities for lucent-ui.
  *
- * Primary: APCA (Accessible Perceptual Contrast Algorithm) for text-on-accent
+ * Primary: APCA (Accessible Perceptual Contrast Algorithm) for accentFg
  * decisions. Handles saturated blues/purples correctly where WCAG 2.1 fails.
  *
  * Secondary: WCAG 2.1 contrast ratio for compliance reporting.
@@ -111,6 +111,45 @@ export function getContrastText(hex: string): '#000000' | '#ffffff' {
   const lcWhite = Math.abs(apcaContrast(hex, '#ffffff'));
   const lcBlack = Math.abs(apcaContrast(hex, '#000000'));
   return lcWhite >= lcBlack ? '#ffffff' : '#000000';
+}
+
+/**
+ * Returns a hue-tinted foreground color for text/icons on an accent surface.
+ *
+ * Unlike `getContrastText` which returns pure black or white, this preserves
+ * the accent's hue at a very low (or very high) lightness, producing
+ * text that feels "of the same family" as the accent.
+ *
+ * - Bright accent → very dark hue-tinted fg:  `hsl(H, min(S, 60%), 12%)`
+ * - Dark accent   → very light hue-tinted fg: `hsl(H, min(S, 20%), 95%)`
+ *
+ * Polarity (dark vs light fg) is determined by APCA.
+ */
+export function getAccentFg(accentHex: string): string {
+  // Parse to HSL for hue/saturation extraction
+  const r = parseInt(accentHex.slice(1, 3), 16) / 255;
+  const g = parseInt(accentHex.slice(3, 5), 16) / 255;
+  const b = parseInt(accentHex.slice(5, 7), 16) / 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h = 0;
+  let s = 0;
+  if (max !== min) {
+    const d = max - min;
+    const l = (max + min) / 2;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+    else if (max === g) h = ((b - r) / d + 2) / 6;
+    else h = ((r - g) / d + 4) / 6;
+  }
+
+  const needsDark = getContrastText(accentHex) === '#000000';
+
+  if (needsDark) {
+    // Bright/medium accent → very dark hue-tinted fg
+    return hslToHex(h, Math.min(s, 0.60), 0.12);
+  }
+  // Dark accent → very light hue-tinted fg
+  return hslToHex(h, Math.min(s, 0.20), 0.95);
 }
 
 /**

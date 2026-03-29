@@ -44,18 +44,18 @@ export interface SplitButtonProps {
 const variantStyles: Record<SplitButtonVariant, CSSProperties> = {
   primary: {
     background: 'var(--lucent-accent-default)',
-    color: 'var(--lucent-text-on-accent)',
+    color: 'var(--lucent-accent-fg)',
     border: '1px solid transparent',
   },
   secondary: {
-    background: 'color-mix(in srgb, var(--lucent-accent-default) 14%, var(--lucent-surface-secondary))',
+    background: 'color-mix(in srgb, var(--lucent-accent-default) 16%, transparent)',
     color: 'var(--lucent-text-primary)',
     border: '1px solid transparent',
   },
   outline: {
     background: 'transparent',
     color: 'var(--lucent-text-primary)',
-    border: '1px solid var(--lucent-border-default)',
+    border: '1px solid color-mix(in srgb, var(--lucent-accent-default) 35%, var(--lucent-border-default))',
   },
   ghost: {
     background: 'transparent',
@@ -119,22 +119,22 @@ const menuSizeMap: Record<SplitButtonSize, MenuSize> = {
 
 const hoverBg: Record<SplitButtonVariant, string> = {
   primary: 'var(--lucent-accent-hover)',
-  secondary: 'color-mix(in srgb, var(--lucent-accent-default) 10%, var(--lucent-surface-secondary))',
-  outline: 'color-mix(in srgb, var(--lucent-accent-default) 10%, var(--lucent-surface))',
-  ghost: 'color-mix(in srgb, var(--lucent-accent-default) 8%, var(--lucent-surface))',
+  secondary: 'color-mix(in srgb, var(--lucent-accent-default) 22%, transparent)',
+  outline: 'color-mix(in srgb, var(--lucent-accent-default) 10%, transparent)',
+  ghost: 'color-mix(in srgb, var(--lucent-accent-default) 8%, transparent)',
   danger: 'var(--lucent-danger-hover)',
-  'danger-outline': 'color-mix(in srgb, var(--lucent-danger-default) 10%, var(--lucent-surface))',
-  'danger-ghost': 'color-mix(in srgb, var(--lucent-danger-default) 8%, var(--lucent-surface))',
+  'danger-outline': 'color-mix(in srgb, var(--lucent-danger-default) 10%, transparent)',
+  'danger-ghost': 'color-mix(in srgb, var(--lucent-danger-default) 8%, transparent)',
 };
 
 const hoverShadow: Record<SplitButtonVariant, string> = {
-  primary: '0 4px 14px -2px var(--lucent-accent-subtle)',
-  secondary: '0 4px 14px -2px var(--lucent-accent-subtle)',
-  outline: '0 4px 14px -2px var(--lucent-accent-subtle)',
-  ghost: '0 4px 14px -2px var(--lucent-accent-subtle)',
-  danger: '0 4px 14px -2px var(--lucent-danger-subtle)',
-  'danger-outline': '0 4px 14px -2px var(--lucent-danger-subtle)',
-  'danger-ghost': '0 4px 14px -2px var(--lucent-danger-subtle)',
+  primary: '0 4px 14px -2px color-mix(in srgb, var(--lucent-accent-default) 25%, transparent)',
+  secondary: '0 4px 14px -2px color-mix(in srgb, var(--lucent-accent-default) 20%, transparent)',
+  outline: '0 4px 14px -2px color-mix(in srgb, var(--lucent-accent-default) 20%, transparent)',
+  ghost: '0 4px 14px -2px color-mix(in srgb, var(--lucent-accent-default) 15%, transparent)',
+  danger: '0 4px 14px -2px color-mix(in srgb, var(--lucent-danger-default) 25%, transparent)',
+  'danger-outline': '0 4px 14px -2px color-mix(in srgb, var(--lucent-danger-default) 20%, transparent)',
+  'danger-ghost': '0 4px 14px -2px color-mix(in srgb, var(--lucent-danger-default) 15%, transparent)',
 };
 
 // ─── Hover/press appliers (per-half, like Button) ────────────────────────────
@@ -165,9 +165,11 @@ function removeHover(el: HTMLButtonElement, variant: SplitButtonVariant, bordere
 
 function applyPress(el: HTMLButtonElement, variant: SplitButtonVariant) {
   const isDanger = variant === 'danger' || variant === 'danger-outline' || variant === 'danger-ghost';
-  const ring = isDanger ? 'var(--lucent-danger-default)' : 'var(--lucent-accent-default)';
+  const ring = isDanger
+    ? 'color-mix(in srgb, var(--lucent-danger-default) 40%, transparent)'
+    : 'color-mix(in srgb, var(--lucent-accent-default) 40%, transparent)';
   el.style.transform = 'translateY(1px)';
-  el.style.boxShadow = `0 0 0 2px var(--lucent-surface), 0 0 0 4px ${ring}`;
+  el.style.boxShadow = `0 0 0 4px ${ring}`;
   el.dataset.pressed = '1';
 }
 
@@ -200,8 +202,8 @@ export function SplitButton({
   const px = chevronSizePx[size];
 
   const disabledOverrides: CSSProperties = isDisabled ? {
-    background: 'color-mix(in srgb, var(--lucent-surface-secondary) 70%, var(--lucent-border-default))',
-    color: 'color-mix(in srgb, var(--lucent-text-disabled) 50%, var(--lucent-border-default))',
+    background: 'color-mix(in srgb, var(--lucent-text-primary) 6%, transparent)',
+    color: 'var(--lucent-text-disabled)',
     borderColor: 'transparent',
   } : {};
 

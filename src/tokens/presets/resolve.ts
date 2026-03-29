@@ -37,10 +37,22 @@ import { spaciousDensity } from './densities/spacious.js';
 import { flatShadow } from './shadows/flat.js';
 import { subtleShadow } from './shadows/subtle.js';
 import { elevatedShadow } from './shadows/elevated.js';
+import { liquidGlassShadow } from './shadows/liquidGlass.js';
+import { brutalistShadow } from './shadows/brutalist.js';
+import { neumorphicShadow } from './shadows/neumorphic.js';
+import { naturalShadow } from './shadows/natural.js';
+import { glowShadow } from './shadows/glow.js';
 
 import { modernPreset } from './combined/modern.js';
 import { enterprisePreset } from './combined/enterprise.js';
 import { playfulPreset } from './combined/playful.js';
+import { liquidGlassPreset } from './combined/liquidGlass.js';
+import { bentoPreset } from './combined/bento.js';
+import { brutalistPreset } from './combined/brutalist.js';
+import { terminalPreset } from './combined/terminal.js';
+import { softUIPreset } from './combined/softUI.js';
+import { bloomPreset } from './combined/bloom.js';
+import { minimalPreset } from './combined/minimal.js';
 
 // ─── Lookup maps ─────────────────────────────────────────────────────────────
 
@@ -75,12 +87,24 @@ const shadowMap: Record<ShadowName, ShadowPreset> = {
   flat: flatShadow,
   subtle: subtleShadow,
   elevated: elevatedShadow,
+  liquidGlass: liquidGlassShadow,
+  brutalist: brutalistShadow,
+  neumorphic: neumorphicShadow,
+  natural: naturalShadow,
+  glow: glowShadow,
 };
 
 const combinedMap: Record<string, DesignPreset> = {
   modern: modernPreset,
   enterprise: enterprisePreset,
   playful: playfulPreset,
+  liquidGlass: liquidGlassPreset,
+  bento: bentoPreset,
+  brutalist: brutalistPreset,
+  terminal: terminalPreset,
+  softUI: softUIPreset,
+  bloom: bloomPreset,
+  minimal: minimalPreset,
 };
 
 // ─── Resolver ────────────────────────────────────────────────────────────────

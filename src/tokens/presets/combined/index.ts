@@ -1,3 +1,10 @@
 export { modernPreset } from './modern.js';
 export { enterprisePreset } from './enterprise.js';
 export { playfulPreset } from './playful.js';
+export { liquidGlassPreset } from './liquidGlass.js';
+export { bentoPreset } from './bento.js';
+export { brutalistPreset } from './brutalist.js';
+export { terminalPreset } from './terminal.js';
+export { softUIPreset } from './softUI.js';
+export { bloomPreset } from './bloom.js';
+export { minimalPreset } from './minimal.js';

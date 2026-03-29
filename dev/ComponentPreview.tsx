@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { LucentProvider, useLucent, createTheme } from '../src/index.js';
+import { LucentDevTools } from '../src/devtools/index.js';
 import { hexToHsl, hslToHex } from '../src/tokens/color.js';
 import type { PaletteName, ShapeName, ShadowName } from '../src/tokens/presets/types.js';
 import type { ColorPalette } from '../src/tokens/presets/types.js';
@@ -27,7 +28,7 @@ import { Icon } from '../src/components/atoms/Icon/index.js';
 import { Text } from '../src/components/atoms/Text/index.js';
 import { FormField } from '../src/components/molecules/FormField/index.js';
 import { SearchInput } from '../src/components/molecules/SearchInput/index.js';
-import { Card, CardBleed } from '../src/components/molecules/Card/index.js';
+import { Card, CardBleed, CardPaddingContext } from '../src/components/molecules/Card/index.js';
 import { Alert } from '../src/components/molecules/Alert/index.js';
 import { EmptyState } from '../src/components/molecules/EmptyState/index.js';
 import { Skeleton } from '../src/components/molecules/Skeleton/index.js';
@@ -197,9 +198,9 @@ const ANCHOR_DERIVATIONS: { anchor: keyof ThemeAnchors; label: string; derived: 
     { key: 'textSecondary', label: 'secondary' }, { key: 'textDisabled', label: 'disabled' },
   ]},
   { anchor: 'accentDefault', label: 'Accent', derived: [
-    { key: 'accentHover', label: 'hover' }, { key: 'accentActive', label: 'active' },
+    { key: 'accentHover', label: 'hover' },
     { key: 'accentSubtle', label: 'subtle' }, { key: 'accentBorder', label: 'border' },
-    { key: 'textOnAccent', label: 'text' },
+    { key: 'accentFg', label: 'fg' },
   ]},
 ];
 
@@ -365,6 +366,7 @@ export function ComponentPreview({ tab, setTab }: { tab: DevTab; setTab: (t: Dev
           onChangeToastPosition={setToastPosition}
         />
       </ToastProvider>
+      <LucentDevTools onThemeChange={setTheme} />
     </LucentProvider>
   );
 }
@@ -399,7 +401,7 @@ function Inner({
   const { tokens } = useLucent();
   const [componentFilter, setComponentFilter] = useState('');
 
-  const sectionGroups: Record<string, { label: string; tier: 'atom' | 'molecule'; items: string[] }> = {
+  const sectionGroups: Record<string, { label: string; tier: 'atom' | 'molecule' | 'recipe'; items: string[] }> = {
     buttons:     { label: 'Buttons & Actions', tier: 'atom', items: ['Button', 'SplitButton', 'ButtonGroup', 'Toggle', 'SegmentedControl'] },
     inputs:      { label: 'Input Fields',      tier: 'atom', items: ['Input', 'Textarea', 'Select', 'Checkbox', 'Radio', 'Slider', 'ColorPicker', 'ColorSwatch'] },
     text:        { label: 'Text & Labels',      tier: 'atom', items: ['Text', 'Badge', 'Chip', 'Tag', 'Icon', 'Tooltip', 'CodeBlock'] },
@@ -410,6 +412,8 @@ function Inner({
     navigation:  { label: 'Navigation',         tier: 'molecule', items: ['Breadcrumb', 'Tabs', 'NavLink', 'NavMenu', 'PageLayout'] },
     data:        { label: 'Data & Tables',      tier: 'molecule', items: ['DataTable', 'Timeline'] },
     overlays:    { label: 'Overlays & Menus',   tier: 'molecule', items: ['Menu', 'CommandPalette', 'Toast'] },
+    'r-cards':   { label: 'Cards',              tier: 'recipe', items: ['ProfileCard', 'CollapsibleCard', 'EmptyStateCard'] },
+    'r-layouts': { label: 'Layouts',            tier: 'recipe', items: ['SettingsPanel', 'FormLayout', 'StatsRow', 'ActionBar'] },
   };
 
   const allSections = Object.values(sectionGroups).flatMap(g => g.items);
@@ -445,6 +449,7 @@ function Inner({
   const [navInverse, setNavInverse] = useState(false);
   const [navIcons, setNavIcons] = useState(false);
   const [navSize, setNavSize] = useState<'sm' | 'md' | 'lg'>('sm');
+  const [settingsTab, setSettingsTab] = useState<'profile' | 'notifications' | 'security'>('profile');
 
   // Scale preset state
   const [density, setDensity] = useState<DensityPreset>('default');
@@ -550,6 +555,7 @@ function Inner({
 
   const atomGroups = Object.entries(sectionGroups).filter(([, g]) => g.tier === 'atom');
   const moleculeGroups = Object.entries(sectionGroups).filter(([, g]) => g.tier === 'molecule');
+  const recipeGroups = Object.entries(sectionGroups).filter(([, g]) => g.tier === 'recipe');
 
   const navSidebar = (
     <div style={{ padding: tokens.space3, display: 'flex', flexDirection: 'column', gap: tokens.space2 }}>
@@ -639,6 +645,31 @@ function Inner({
             </NavMenu.Item>
           ))}
           <NavMenu.Item as="button" isActive={componentFilter === 'mol-patterns'} onClick={() => setComponentFilter('mol-patterns')} icon={navIcons ? <NavIcon /> : undefined}>Patterns</NavMenu.Item>
+        </NavMenu.Group>
+        <NavMenu.Group label="Recipes">
+          {recipeGroups.map(([key, group]) => (
+            <NavMenu.Item
+              key={key}
+              as="button"
+              isActive={group.items.includes(componentFilter)}
+              onClick={() => setComponentFilter(group.items[0])}
+              icon={navIcons ? <NavIcon /> : undefined}
+            >
+              {group.label}
+              <NavMenu.Sub>
+                {group.items.map(name => (
+                  <NavMenu.Item
+                    key={name}
+                    as="button"
+                    isActive={componentFilter === name}
+                    onClick={() => setComponentFilter(name)}
+                  >
+                    {name.replace(/([A-Z])/g, ' $1').trim()}
+                  </NavMenu.Item>
+                ))}
+              </NavMenu.Sub>
+            </NavMenu.Item>
+          ))}
         </NavMenu.Group>
         <NavMenu.Separator />
         <NavMenu.Item as="button" isActive={componentFilter === 'changelog'} onClick={() => setComponentFilter('changelog')} icon={navIcons ? <NavIcon /> : undefined}>Changelog</NavMenu.Item>
@@ -819,8 +850,8 @@ function Inner({
         </div>
       }
       headerHeight={48}
-      chromeBackground="bgSubtle"
-      mainStyle={{ background: tokens.bgBase }}
+      chromeBackground="bgBase"
+      mainStyle={{ background: 'var(--lucent-surface)' }}
       {...(tab === 'components' && { sidebar: navSidebar, sidebarWidth: navSize === 'lg' ? 280 : navSize === 'md' ? 250 : 220 })}
       {...(tab === 'components' && { rightSidebar: customizerSidebar, rightSidebarWidth: 260 })}
     >
@@ -1971,7 +2002,7 @@ function Inner({
         <Row label="Horizontal" tokens={tokens}>
           <div style={{ width: '100%' }}>
             <p style={{ margin: `0 0 ${tokens.space2}`, color: tokens.textSecondary, fontSize: tokens.fontSizeSm }}>Content above</p>
-            <Divider />
+            <Divider spacing="var(--lucent-space-4)" />
             <p style={{ margin: `${tokens.space2} 0 0`, color: tokens.textSecondary, fontSize: tokens.fontSizeSm }}>Content below</p>
           </div>
         </Row>
@@ -2057,18 +2088,51 @@ function Inner({
 
       <Section title="Collapsible" tokens={tokens} hidden={!showSection('Collapsible')}>
         <Row label="Default" tokens={tokens}>
-          <div style={{ width: '100%', maxWidth: 400, borderBottom: `1px solid ${tokens.borderDefault}` }}>
-            <Collapsible trigger={<Text weight="medium">Advanced options</Text>}>
-              <Text color="secondary">Hidden content that expands when you click the trigger above. Can contain any ReactNode.</Text>
-            </Collapsible>
-          </div>
+          <CardPaddingContext.Provider value={{ px: '0', py: '0' }}>
+            <div style={{ width: '100%', maxWidth: 400 }}>
+              <Collapsible trigger={<Text weight="medium">Advanced options</Text>}>
+                <Text color="secondary">Hidden content that expands when you click the trigger above. Can contain any ReactNode.</Text>
+              </Collapsible>
+            </div>
+          </CardPaddingContext.Provider>
         </Row>
         <Row label="Default open" tokens={tokens}>
-          <div style={{ width: '100%', maxWidth: 400, borderBottom: `1px solid ${tokens.borderDefault}` }}>
-            <Collapsible defaultOpen trigger={<Text weight="medium">Expanded by default</Text>}>
-              <Text color="secondary">This section starts expanded.</Text>
+          <CardPaddingContext.Provider value={{ px: '0', py: '0' }}>
+            <div style={{ width: '100%', maxWidth: 400 }}>
+              <Collapsible defaultOpen trigger={<Text weight="medium">Expanded by default</Text>}>
+                <Text color="secondary">This section starts expanded.</Text>
+              </Collapsible>
+            </div>
+          </CardPaddingContext.Provider>
+        </Row>
+        <Row label="CollapsibleCard recipe" tokens={tokens}>
+          <Card variant="ghost" padding="none" hoverable style={{ width: '100%', maxWidth: 360 }}>
+            <Collapsible trigger={<Text as="span" weight="semibold" size="sm">ghost</Text>} defaultOpen>
+              <Text size="sm" color="secondary">Transparent container, content floats on page.</Text>
             </Collapsible>
-          </div>
+          </Card>
+          <Card variant="outline" padding="none" hoverable style={{ width: '100%', maxWidth: 360 }}>
+            <Collapsible trigger={<Text as="span" weight="semibold" size="sm">outline</Text>} defaultOpen>
+              <Text size="sm" color="secondary">Bordered card — the default variant.</Text>
+            </Collapsible>
+          </Card>
+          <Card variant="filled" padding="none" hoverable style={{ width: '100%', maxWidth: 360 }}>
+            <Collapsible trigger={<Text as="span" weight="semibold" size="sm">filled</Text>} defaultOpen>
+              <Text size="sm" color="secondary">Tinted background, no border.</Text>
+            </Collapsible>
+          </Card>
+          <Card variant="elevated" padding="none" hoverable style={{ width: '100%', maxWidth: 360 }}>
+            <Collapsible trigger={<Text as="span" weight="semibold" size="sm">elevated</Text>} defaultOpen>
+              <Text size="sm" color="secondary">Surface with shadow depth.</Text>
+            </Collapsible>
+          </Card>
+          <Card variant="filled" padding="none" hoverable style={{ width: '100%', maxWidth: 360 }}>
+            <Collapsible open={comboOpen} onOpenChange={setComboOpen} padded={false} trigger={<Text as="span" weight="semibold" size="sm">combo</Text>}>
+              <Card variant="elevated" padding="sm" style={{ margin: 'var(--lucent-space-1) var(--lucent-space-2) var(--lucent-space-2)' }}>
+                <Text size="sm" color="secondary">Two-tone — flat trigger, elevated body.</Text>
+              </Card>
+            </Collapsible>
+          </Card>
         </Row>
         <Row label="CollapsibleCard recipe" tokens={tokens}>
           <Card variant="ghost" padding="none" hoverable style={{ width: '100%', maxWidth: 360 }}>
@@ -2620,6 +2684,489 @@ function Inner({
           </div>
         </Row>
       </Section>
+
+      {/* ─── Recipes ────────────────────────────────────────────────────────── */}
+
+      <Section title="ProfileCard" tokens={tokens} hidden={!showSection('ProfileCard')}>
+        <Row label="Full profile card" tokens={tokens}>
+          <Card variant="elevated" padding="none" style={{ width: 340, padding: 'var(--lucent-space-6)' }}>
+            <StackAtom gap="5">
+              <RowAtom gap="3" align="center">
+                <Avatar alt="Jane Doe" size="lg" />
+                <StackAtom gap="1">
+                  <RowAtom gap="2" align="center">
+                    <Text size="lg" weight="semibold" family="display">Jane Doe</Text>
+                    <Chip variant="success" size="sm" dot>Pro</Chip>
+                  </RowAtom>
+                  <Text size="sm" color="secondary">Software Engineer</Text>
+                </StackAtom>
+              </RowAtom>
+              <Text size="sm">Building design systems and component libraries. Passionate about accessible, token-driven UI.</Text>
+              <RowAtom gap="2" wrap>
+                <Chip variant="neutral" borderless onClick={() => {}}>React</Chip>
+                <Chip variant="neutral" borderless onClick={() => {}}>TypeScript</Chip>
+                <Chip variant="neutral" borderless onClick={() => {}}>Design Systems</Chip>
+              </RowAtom>
+              <Divider />
+              <RowAtom gap="6" justify="around">
+                <StackAtom gap="0" align="center">
+                  <Text size="2xl" weight="bold" family="display">128</Text>
+                  <Text size="xs" color="secondary">Posts</Text>
+                </StackAtom>
+                <StackAtom gap="0" align="center">
+                  <Text size="2xl" weight="bold" family="display">4.2k</Text>
+                  <Text size="xs" color="secondary">Followers</Text>
+                </StackAtom>
+                <StackAtom gap="0" align="center">
+                  <Text size="2xl" weight="bold" family="display">312</Text>
+                  <Text size="xs" color="secondary">Following</Text>
+                </StackAtom>
+              </RowAtom>
+              <RowAtom gap="3">
+                <Button variant="primary" style={{ flex: 1 }}>Follow</Button>
+                <Button variant="outline" style={{ flex: 1 }}>Message</Button>
+              </RowAtom>
+            </StackAtom>
+          </Card>
+        </Row>
+        <Row label="Compact variant (collapsible)" tokens={tokens}>
+          <Card variant="filled" padding="none" hoverable style={{ width: 280 }}>
+            <Collapsible
+              trigger={
+                <RowAtom gap="3" align="center">
+                  <Avatar alt="Jane Doe" size="md" />
+                  <StackAtom gap="1">
+                    <Text as="span" size="sm" weight="semibold">Jane Doe</Text>
+                    <Text as="span" size="xs" color="secondary">Software Engineer</Text>
+                  </StackAtom>
+                </RowAtom>
+              }
+              defaultOpen
+            >
+              <RowAtom gap="2" justify="end">
+                <Button variant="outline" size="sm">Message</Button>
+                <Button variant="primary" size="sm">Follow</Button>
+              </RowAtom>
+            </Collapsible>
+          </Card>
+        </Row>
+      </Section>
+
+      <Section title="SettingsPanel" tokens={tokens} hidden={!showSection('SettingsPanel')}>
+        <Row label="Notification settings" tokens={tokens}>
+          <Card variant="elevated" padding="lg" style={{ width: 400 }}>
+            <StackAtom gap="5">
+              <RowAtom gap="2" align="center">
+                <Text size="lg" weight="semibold">Notifications</Text>
+                <Badge variant="accent">Pro</Badge>
+              </RowAtom>
+              <Divider />
+              <StackAtom gap="4">
+                <RowAtom justify="between">
+                  <StackAtom gap="1">
+                    <Text size="sm" weight="medium">Email alerts</Text>
+                    <Text size="xs" color="secondary">Get notified when someone mentions you.</Text>
+                  </StackAtom>
+                  <Toggle defaultChecked />
+                </RowAtom>
+                <RowAtom justify="between">
+                  <StackAtom gap="1">
+                    <Text size="sm" weight="medium">Push notifications</Text>
+                    <Text size="xs" color="secondary">Receive push notifications on your device.</Text>
+                  </StackAtom>
+                  <Toggle />
+                </RowAtom>
+                <RowAtom justify="between">
+                  <StackAtom gap="1">
+                    <Text size="sm" weight="medium">Digest frequency</Text>
+                    <Text size="xs" color="secondary">How often to send summary emails.</Text>
+                  </StackAtom>
+                  <Select
+                    defaultValue="weekly"
+                    options={[
+                      { value: 'daily', label: 'Daily' },
+                      { value: 'weekly', label: 'Weekly' },
+                      { value: 'monthly', label: 'Monthly' },
+                    ]}
+                    size="sm"
+                    style={{ width: 120 }}
+                  />
+                </RowAtom>
+              </StackAtom>
+              <Divider />
+              <RowAtom gap="2" justify="end">
+                <Button variant="ghost" size="sm">Reset</Button>
+                <Button variant="primary" size="sm">Save changes</Button>
+              </RowAtom>
+            </StackAtom>
+          </Card>
+        </Row>
+        <Row label="Drill-down with NavMenu" tokens={tokens}>
+          <Card variant="elevated" padding="none" style={{ width: 560 }}>
+            <RowAtom gap="0" align="stretch">
+              <div style={{ width: 160, borderRight: `1px solid ${tokens.borderDefault}`, padding: tokens.space3, flexShrink: 0 }}>
+                <NavMenu orientation="vertical" size="sm">
+                  <NavMenu.Item as="button" isActive={settingsTab === 'profile'} onClick={() => setSettingsTab('profile')}>Profile</NavMenu.Item>
+                  <NavMenu.Item as="button" isActive={settingsTab === 'notifications'} onClick={() => setSettingsTab('notifications')}>Notifications</NavMenu.Item>
+                  <NavMenu.Item as="button" isActive={settingsTab === 'security'} onClick={() => setSettingsTab('security')}>Security</NavMenu.Item>
+                </NavMenu>
+              </div>
+              <div style={{ flex: 1, padding: tokens.space5 }}>
+                {settingsTab === 'profile' && (
+                  <StackAtom gap="4">
+                    <Text size="sm" weight="semibold">Profile</Text>
+                    <FormField label="Display name" htmlFor="s-name">
+                      <Input id="s-name" placeholder="Jane Doe" size="sm" />
+                    </FormField>
+                    <FormField label="Bio" htmlFor="s-bio">
+                      <Textarea id="s-bio" placeholder="Tell us about yourself..." rows={2} />
+                    </FormField>
+                    <RowAtom gap="2" justify="end">
+                      <Button variant="primary" size="sm">Save</Button>
+                    </RowAtom>
+                  </StackAtom>
+                )}
+                {settingsTab === 'notifications' && (
+                  <StackAtom gap="4">
+                    <Text size="sm" weight="semibold">Notifications</Text>
+                    <RowAtom justify="between">
+                      <StackAtom gap="1">
+                        <Text size="sm" weight="medium">Email alerts</Text>
+                        <Text size="xs" color="secondary">Get notified on mentions.</Text>
+                      </StackAtom>
+                      <Toggle defaultChecked />
+                    </RowAtom>
+                    <RowAtom justify="between">
+                      <StackAtom gap="1">
+                        <Text size="sm" weight="medium">Push notifications</Text>
+                        <Text size="xs" color="secondary">Receive push on your device.</Text>
+                      </StackAtom>
+                      <Toggle />
+                    </RowAtom>
+                  </StackAtom>
+                )}
+                {settingsTab === 'security' && (
+                  <StackAtom gap="4">
+                    <Text size="sm" weight="semibold">Security</Text>
+                    <RowAtom justify="between">
+                      <StackAtom gap="1">
+                        <Text size="sm" weight="medium">Two-factor auth</Text>
+                        <Text size="xs" color="secondary">Add an extra layer of security.</Text>
+                      </StackAtom>
+                      <Toggle />
+                    </RowAtom>
+                    <FormField label="Current password" htmlFor="s-pass">
+                      <Input id="s-pass" type="password" size="sm" />
+                    </FormField>
+                    <RowAtom gap="2" justify="end">
+                      <Button variant="primary" size="sm">Update password</Button>
+                    </RowAtom>
+                  </StackAtom>
+                )}
+              </div>
+            </RowAtom>
+          </Card>
+        </Row>
+      </Section>
+
+      <Section title="StatsRow" tokens={tokens} hidden={!showSection('StatsRow')}>
+        <Row label="Stat cards with trends" tokens={tokens}>
+          <RowAtom gap="3" wrap>
+            <Card variant="outline" padding="md" style={{ flex: 1, minWidth: 180 }}>
+              <StackAtom gap="3">
+                <Text size="xs" color="secondary" weight="medium">Total Events</Text>
+                <Text size="2xl" weight="bold" family="display">32</Text>
+                <RowAtom gap="2" align="center">
+                  <Chip variant="success" size="sm" borderless>+20%</Chip>
+                  <Text size="xs" color="secondary">25 last week</Text>
+                </RowAtom>
+              </StackAtom>
+            </Card>
+            <Card variant="outline" padding="md" style={{ flex: 1, minWidth: 180 }}>
+              <StackAtom gap="3">
+                <Text size="xs" color="secondary" weight="medium">Total Hours</Text>
+                <Text size="2xl" weight="bold" family="display">38.2 hr</Text>
+                <RowAtom gap="2" align="center">
+                  <Chip variant="danger" size="sm" borderless>-8%</Chip>
+                  <Text size="xs" color="secondary">42.0 hr last week</Text>
+                </RowAtom>
+              </StackAtom>
+            </Card>
+            <Card variant="outline" padding="md" style={{ flex: 1, minWidth: 180 }}>
+              <StackAtom gap="3">
+                <Text size="xs" color="secondary" weight="medium">Focus Time</Text>
+                <Text size="2xl" weight="bold" family="display">16.8 hr</Text>
+                <RowAtom gap="2" align="center">
+                  <Chip variant="success" size="sm" borderless>+12%</Chip>
+                  <Text size="xs" color="secondary">14.4 hr last week</Text>
+                </RowAtom>
+              </StackAtom>
+            </Card>
+          </RowAtom>
+        </Row>
+        <Row label="Revenue stat cards" tokens={tokens}>
+          <RowAtom gap="3" wrap>
+            <Card variant="filled" padding="md" style={{ flex: 1, minWidth: 180 }}>
+              <StackAtom gap="3">
+                <RowAtom gap="2" align="center">
+                  <Avatar alt="Airbnb" size="sm" />
+                  <StackAtom gap="0">
+                    <Text size="sm" weight="semibold">Airbnb</Text>
+                    <Text size="xs" color="secondary">Travel and tourism</Text>
+                  </StackAtom>
+                </RowAtom>
+                <RowAtom justify="between" align="end">
+                  <StackAtom gap="1">
+                    <RowAtom gap="2" align="baseline">
+                      <Text size="lg" weight="bold" family="display">$33.2k</Text>
+                      <Chip variant="success" size="sm" borderless>+37%</Chip>
+                    </RowAtom>
+                    <Text size="xs" color="secondary">Recurring Revenue</Text>
+                  </StackAtom>
+                </RowAtom>
+              </StackAtom>
+            </Card>
+            <Card variant="filled" padding="md" style={{ flex: 1, minWidth: 180 }}>
+              <StackAtom gap="3">
+                <RowAtom gap="2" align="center">
+                  <Avatar alt="MailChimp" size="sm" />
+                  <StackAtom gap="0">
+                    <Text size="sm" weight="semibold">MailChimp</Text>
+                    <Text size="xs" color="secondary">Email Marketing</Text>
+                  </StackAtom>
+                </RowAtom>
+                <RowAtom justify="between" align="end">
+                  <StackAtom gap="1">
+                    <RowAtom gap="2" align="baseline">
+                      <Text size="lg" weight="bold" family="display">$3.2k</Text>
+                      <Chip variant="danger" size="sm" borderless>-23%</Chip>
+                    </RowAtom>
+                    <Text size="xs" color="secondary">Recurring Revenue</Text>
+                  </StackAtom>
+                </RowAtom>
+              </StackAtom>
+            </Card>
+            <Card variant="filled" padding="md" style={{ flex: 1, minWidth: 180 }}>
+              <StackAtom gap="3">
+                <RowAtom gap="2" align="center">
+                  <Avatar alt="Hubspot" size="sm" />
+                  <StackAtom gap="0">
+                    <Text size="sm" weight="semibold">Hubspot</Text>
+                    <Text size="xs" color="secondary">CRM Software</Text>
+                  </StackAtom>
+                </RowAtom>
+                <RowAtom justify="between" align="end">
+                  <StackAtom gap="1">
+                    <RowAtom gap="2" align="baseline">
+                      <Text size="lg" weight="bold" family="display">$50.2k</Text>
+                      <Chip variant="success" size="sm" borderless>+45%</Chip>
+                    </RowAtom>
+                    <Text size="xs" color="secondary">Recurring Revenue</Text>
+                  </StackAtom>
+                </RowAtom>
+              </StackAtom>
+            </Card>
+          </RowAtom>
+        </Row>
+      </Section>
+
+      <Section title="ActionBar" tokens={tokens} hidden={!showSection('ActionBar')}>
+        <Row label="Page header with breadcrumb" tokens={tokens}>
+          <StackAtom gap="4" style={{ width: '100%', maxWidth: 600 }}>
+            <Breadcrumb items={[{ label: 'Home', href: '#' }, { label: 'Projects', href: '#' }, { label: 'Acme Corp' }]} />
+            <RowAtom justify="between" align="end">
+              <StackAtom gap="1">
+                <Text as="h1" size="3xl" weight="bold" family="display">Acme Corp</Text>
+                <Text size="sm" color="secondary">Last updated 5 minutes ago</Text>
+              </StackAtom>
+              <RowAtom gap="2">
+                <Button variant="outline" size="sm">Export</Button>
+                <Button variant="primary" size="sm">New report</Button>
+              </RowAtom>
+            </RowAtom>
+            <Divider />
+          </StackAtom>
+        </Row>
+        <Row label="Page header — danger zone" tokens={tokens}>
+          <StackAtom gap="4" style={{ width: '100%', maxWidth: 600 }}>
+            <Breadcrumb items={[{ label: 'Home', href: '#' }, { label: 'Settings', href: '#' }, { label: 'Danger zone' }]} />
+            <RowAtom justify="between" align="end">
+              <StackAtom gap="1">
+                <Text as="h1" size="3xl" weight="bold" family="display">Danger zone</Text>
+                <Text size="sm" color="secondary">These actions are irreversible.</Text>
+              </StackAtom>
+              <Button variant="danger" size="sm">Delete project</Button>
+            </RowAtom>
+            <Divider />
+          </StackAtom>
+        </Row>
+        <Row label="Card header (compact)" tokens={tokens}>
+          <Card variant="outline" padding="md" style={{ width: 400 }}>
+            <StackAtom gap="4">
+              <RowAtom justify="between" align="start">
+                <StackAtom gap="1">
+                  <Text size="xs" color="secondary" weight="medium" style={{ letterSpacing: 'var(--lucent-letter-spacing-wide)', textTransform: 'uppercase' }}>Activity</Text>
+                  <Text size="md" weight="semibold" style={{ letterSpacing: 'var(--lucent-letter-spacing-tight)' }}>Recent activity</Text>
+                </StackAtom>
+                <RowAtom gap="1">
+                  <Button variant="ghost" size="xs">Filter</Button>
+                  <Button variant="ghost" size="xs">Export</Button>
+                </RowAtom>
+              </RowAtom>
+              <StackAtom gap="2">
+                <Text size="xs" color="secondary">No activity to show yet.</Text>
+              </StackAtom>
+            </StackAtom>
+          </Card>
+        </Row>
+      </Section>
+
+      <Section title="FormLayout" tokens={tokens} hidden={!showSection('FormLayout')}>
+        <Row label="Full form" tokens={tokens}>
+          <Card variant="elevated" padding="lg" style={{ width: 480 }}>
+            <StackAtom as="form" gap="6">
+              <StackAtom gap="1">
+                <Text as="h2" size="lg" weight="semibold">Create project</Text>
+                <Text size="sm" color="secondary">Fill in the details to set up your new project.</Text>
+              </StackAtom>
+              <StackAtom gap="4">
+                <RowAtom gap="4">
+                  <FormField label="First name" htmlFor="r-fname" required style={{ flex: 1 }}>
+                    <Input id="r-fname" placeholder="Jane" />
+                  </FormField>
+                  <FormField label="Last name" htmlFor="r-lname" required style={{ flex: 1 }}>
+                    <Input id="r-lname" placeholder="Doe" />
+                  </FormField>
+                </RowAtom>
+                <FormField label="Email" htmlFor="r-email" helperText="We'll never share your email.">
+                  <Input id="r-email" type="email" placeholder="jane@example.com" />
+                </FormField>
+                <FormField label="Role" htmlFor="r-role">
+                  <Select
+                    id="r-role"
+                    placeholder="Select a role..."
+                    options={[
+                      { value: 'admin', label: 'Admin' },
+                      { value: 'editor', label: 'Editor' },
+                      { value: 'viewer', label: 'Viewer' },
+                    ]}
+                  />
+                </FormField>
+              </StackAtom>
+              <Divider />
+              <StackAtom gap="4">
+                <FormField label="Bio" htmlFor="r-bio">
+                  <Textarea id="r-bio" placeholder="Tell us about yourself..." rows={3} />
+                </FormField>
+                <Checkbox label="I agree to the terms" contained />
+              </StackAtom>
+              <RowAtom gap="2" justify="end">
+                <Button variant="ghost">Cancel</Button>
+                <Button variant="primary">Create</Button>
+              </RowAtom>
+            </StackAtom>
+          </Card>
+        </Row>
+        <Row label="Inline login form" tokens={tokens}>
+          <StackAtom as="form" gap="4" style={{ maxWidth: 320 }}>
+            <FormField label="Username" htmlFor="r-user" required helperText="Letters and numbers only, 3–20 chars.">
+              <Input id="r-user" placeholder="yourname" />
+            </FormField>
+            <FormField label="Password" htmlFor="r-pass" required>
+              <Input id="r-pass" type="password" />
+            </FormField>
+            <Button variant="primary">Sign in</Button>
+          </StackAtom>
+        </Row>
+      </Section>
+
+      <Section title="EmptyStateCard" tokens={tokens} hidden={!showSection('EmptyStateCard')}>
+        <Row label="No results" tokens={tokens}>
+          <Card variant="outline" padding="lg" style={{ width: 400 }}>
+            <EmptyState
+              illustration={
+                <Icon size="xl">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx={11} cy={11} r={8} />
+                    <path d="M21 21l-4.35-4.35" />
+                  </svg>
+                </Icon>
+              }
+              title="No results found"
+              description="Try adjusting your search or filters to find what you're looking for."
+              action={<Button variant="secondary" size="sm">Clear filters</Button>}
+            />
+          </Card>
+        </Row>
+        <Row label="Getting started" tokens={tokens}>
+          <Card variant="elevated" padding="lg" style={{ width: 400 }}>
+            <EmptyState
+              illustration={
+                <Icon size="xl">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 5v14M5 12h14" />
+                  </svg>
+                </Icon>
+              }
+              title="No projects yet"
+              description="Create your first project to get started."
+              action={<Button variant="primary" size="sm">Create project</Button>}
+            />
+          </Card>
+        </Row>
+        <Row label="Error with retry" tokens={tokens}>
+          <Card variant="outline" padding="lg" style={{ width: 400 }}>
+            <EmptyState
+              illustration={
+                <Icon size="xl">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx={12} cy={12} r={10} />
+                    <path d="M12 8v4M12 16h.01" />
+                  </svg>
+                </Icon>
+              }
+              title="Something went wrong"
+              description="We couldn't load your data. Please try again."
+              action={<Button variant="outline" size="sm">Retry</Button>}
+            />
+          </Card>
+        </Row>
+      </Section>
+
+      <Section title="CollapsibleCard" tokens={tokens} hidden={!showSection('CollapsibleCard')}>
+        <Row label="Variants" tokens={tokens}>
+          <Card variant="ghost" padding="none" hoverable style={{ width: 320 }}>
+            <Collapsible trigger={<Text as="span" weight="semibold" size="sm">Ghost</Text>} defaultOpen>
+              <Text size="sm" color="secondary">Transparent container — content floats on the page surface.</Text>
+            </Collapsible>
+          </Card>
+          <Card variant="outline" padding="none" hoverable style={{ width: 320 }}>
+            <Collapsible trigger={<Text as="span" weight="semibold" size="sm">Outline</Text>} defaultOpen>
+              <Text size="sm" color="secondary">Subtle border, no fill — the most common CollapsibleCard variant.</Text>
+            </Collapsible>
+          </Card>
+          <Card variant="filled" padding="none" hoverable style={{ width: 320 }}>
+            <Collapsible trigger={<Text as="span" weight="semibold" size="sm">Filled</Text>} defaultOpen>
+              <Text size="sm" color="secondary">Tinted surface for visual grouping within a page section.</Text>
+            </Collapsible>
+          </Card>
+          <Card variant="elevated" padding="none" hoverable style={{ width: 320 }}>
+            <Collapsible trigger={<Text as="span" weight="semibold" size="sm">Elevated</Text>} defaultOpen>
+              <Text size="sm" color="secondary">Shadow for prominent collapsible sections.</Text>
+            </Collapsible>
+          </Card>
+        </Row>
+        <Row label="Combo (two-tone)" tokens={tokens}>
+          <Card variant="filled" padding="none" hoverable style={{ width: 360 }}>
+            <Collapsible open={comboOpen} onOpenChange={setComboOpen} padded={false} trigger={<Text as="span" weight="semibold" size="sm">Combo layout</Text>}>
+              <Card variant="elevated" padding="sm" style={{ margin: 'var(--lucent-space-1) var(--lucent-space-2) var(--lucent-space-2)' }}>
+                <Text size="sm" color="secondary">Two-tone layout — flat trigger surface, elevated body.</Text>
+              </Card>
+            </Collapsible>
+          </Card>
+        </Row>
+      </Section>
+
       </div>
       ) : tab === 'tokens' ? (
         <TokenPreview />
