@@ -1,5 +1,25 @@
 # lucent-ui
 
+## 0.30.0
+
+### Timeline redesign
+
+Redesigned from outlined-ring event list to a modern activity-feed pattern.
+
+- **Filled dots** — compact 20px circles filled with the status color, white iconography (was 28px outlined rings with colored icons)
+- **Inline title + date** — date follows title on the same line instead of being pushed to the far right
+- **`content` prop** — new slot on `TimelineItem` for embedding rich nested blocks (e.g. `<Card>`) below the title/description
+- **`info` status icon** — added (was missing)
+- **Default dot** — small white inner dot on muted fill
+- **Thinner connector** — 1.5px (was 2px)
+- Updated manifest with activity feed usage example and Card in compositionGraph
+
+### FilterMultiSelect enhancements
+
+- Added `xs` size for compact toolbar usage
+- Added `ghost` variant
+- Label-less triggers no longer render a chevron
+
 ## 0.29.0
 
 ### Recipe: Search / Filter Bar
