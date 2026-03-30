@@ -1,0 +1,122 @@
+---
+import ThemeDemo from './ThemeDemo.tsx';
+---
+
+<section class="section devtools-section" id="theme">
+  <div class="section-inner">
+
+    <div class="devtools-header">
+      <span class="section-label">Theming</span>
+      <h2 class="section-title">
+        One line,<br>any <em>design.</em>
+      </h2>
+      <p class="section-body">
+        Pick a curated preset or derive your own system from 9 brand colors.
+        Your AI reads the manifest, writes one prop, and your entire app transforms.
+      </p>
+    </div>
+
+    <ThemeDemo client:only="react" />
+
+    <!-- Feature strip below the demo -->
+    <div class="devtools-strip">
+      <div class="strip-item">
+        <span class="strip-dot"></span>
+        <div>
+          <span class="strip-title">10 design presets</span>
+          <span class="strip-body">
+            Curated bundles of palette, shadow, shape, and density — from Brutalist to Liquid Glass.
+          </span>
+        </div>
+      </div>
+      <div class="strip-item">
+        <span class="strip-dot"></span>
+        <div>
+          <span class="strip-title">LucentDevTools</span>
+          <span class="strip-body">
+            Live token editor — tweak every design decision in real time.
+            Toggle with <kbd class="kbd">Cmd+Shift+D</kbd>.
+          </span>
+        </div>
+      </div>
+      <div class="strip-item">
+        <span class="strip-dot"></span>
+        <div>
+          <span class="strip-title">createTheme()</span>
+          <span class="strip-body">
+            Pass 9 brand colors as anchors — Lucent derives all 40+ tokens using perceptual contrast.
+          </span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .devtools-section {
+    border-top: 1px solid var(--border);
+    background: var(--card);
+  }
+
+  .devtools-header {
+    margin-bottom: 48px;
+    max-width: 600px;
+  }
+
+  .devtools-strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 48px;
+  }
+
+  @media (max-width: 800px) {
+    .devtools-strip { grid-template-columns: 1fr; gap: 16px; }
+  }
+
+  .strip-item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 16px;
+  }
+
+  .strip-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--gold);
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
+
+  .strip-title {
+    display: block;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--paper);
+    margin-bottom: 4px;
+  }
+
+  .strip-body {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .kbd {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--paper);
+    background: var(--card2);
+    border: 1px solid var(--border2);
+    border-radius: 3px;
+    padding: 2px 6px;
+  }
+</style>

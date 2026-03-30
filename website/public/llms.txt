@@ -1,0 +1,59 @@
+# Lucent UI
+
+> An AI-first React component library where every component ships with a machine-readable COMPONENT_MANIFEST — so AI coding assistants generate correct, on-brand UI the first time.
+
+Lucent UI is an open-source React component library built for AI-assisted development. Each of the 52+ components includes a structured manifest (COMPONENT_MANIFEST) describing props, design intent, usage examples, and accessibility requirements. AI assistants read these manifests to generate correct code without hallucinated prop names or incorrect variants.
+
+## Key Features
+
+- 28 atom components (Button, Input, Toggle, Badge, Chip, SegmentedControl, ColorPicker, etc.)
+- 24 molecule components (Card, Tabs, DataTable, CommandPalette, DatePicker, Timeline, Menu, etc.)
+- 8 composition recipes (Profile Card, Settings Panel, Search/Filter Bar, etc.)
+- 10 curated design presets (Modern, Liquid Glass, Brutalist, Terminal, Soft UI, Minimal, etc.)
+- createTheme() — derive 40+ tokens from 9 brand colors using perceptual contrast
+- MCP Server — connect AI assistants via Model Context Protocol for full manifest access
+- LucentDevTools — live token editor toggled with Cmd+Shift+D
+- Zero CSS-in-JS — inline styles + CSS custom properties only
+- React 18 and 19 compatible
+
+## Installation
+
+```
+npm install lucent-ui
+```
+
+## Quick Start
+
+```jsx
+import { LucentProvider, Button } from 'lucent-ui';
+
+<LucentProvider preset="modern">
+  <Button variant="primary">Hello, world</Button>
+</LucentProvider>
+```
+
+## MCP Server
+
+Add to your AI assistant's MCP config:
+
+```json
+{
+  "mcpServers": {
+    "lucent-ui": {
+      "command": "npx",
+      "args": ["lucent-ui-mcp"]
+    }
+  }
+}
+```
+
+## Links
+
+- [Documentation](https://lucentui.dev/)
+- [GitHub](https://github.com/rozina-hudson/lucent-ui)
+- [npm](https://npmjs.com/package/lucent-ui)
+
+## Optional
+
+- [Landing Page](https://lucentui.ai/)
+- [Changelog](https://github.com/rozina-hudson/lucent-ui/blob/main/CHANGELOG.md)

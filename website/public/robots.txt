@@ -1,0 +1,30 @@
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Explicitly allow AI crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://lucentui.ai/sitemap.xml
+
+# IndexNow key
+# https://lucentui.ai/1127f77ef4784cb7b607d34e3d56fd7c.txt
