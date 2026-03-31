@@ -1,67 +1,9 @@
 import { useState } from 'react';
 import {
-  Card, Text, Button, Stack, Row, FormField, Input, Select, Checkbox, Progress, Avatar, Chip, Divider,
+  Card, Text, Button, Stack, Row, FormField, Input, Select, Checkbox, Avatar, Chip, Divider, Stepper,
 } from '../../src/index.js';
 
 const STEPS = ['Profile', 'Preferences', 'Confirm'] as const;
-
-function StepIndicator({ current, steps }: { current: number; steps: readonly string[] }) {
-  return (
-    <Stack gap="3">
-      <Row gap="0" align="center" justify="between">
-        {steps.map((label, i) => (
-          <Row key={label} gap="2" align="center" style={{ flex: i < steps.length - 1 ? 1 : undefined }}>
-            <div style={{
-              width: 28,
-              height: 28,
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 'var(--lucent-font-size-xs)',
-              fontWeight: 'var(--lucent-font-weight-semibold)',
-              fontFamily: 'var(--lucent-font-family-base)',
-              background: i <= current ? 'var(--lucent-accent-default)' : 'color-mix(in srgb, var(--lucent-text-secondary) 12%, var(--lucent-surface))',
-              color: i <= current ? 'var(--lucent-accent-fg)' : 'var(--lucent-text-secondary)',
-              transition: 'background 0.2s, color 0.2s',
-              flexShrink: 0,
-            }}>
-              {i < current ? (
-                <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-              ) : (
-                i + 1
-              )}
-            </div>
-            {i < steps.length - 1 && (
-              <div style={{
-                flex: 1,
-                height: 2,
-                background: i < current ? 'var(--lucent-accent-default)' : 'var(--lucent-border-default)',
-                borderRadius: 1,
-                transition: 'background 0.2s',
-              }} />
-            )}
-          </Row>
-        ))}
-      </Row>
-      <Row justify="between">
-        {steps.map((label, i) => (
-          <Text
-            key={label}
-            size="xs"
-            color={i <= current ? 'primary' : 'secondary'}
-            weight={i === current ? 'semibold' : 'regular'}
-            style={{ textAlign: i === 0 ? 'left' : i === steps.length - 1 ? 'right' : 'center', flex: 1 }}
-          >
-            {label}
-          </Text>
-        ))}
-      </Row>
-    </Stack>
-  );
-}
 
 export function OnboardingFlow() {
   const [step, setStep] = useState(0);
@@ -78,9 +20,7 @@ export function OnboardingFlow() {
           <Text size="sm" color="secondary">Step {step + 1} of {STEPS.length}</Text>
         </Stack>
 
-        <Progress value={((step + 1) / STEPS.length) * 100} size="sm" />
-
-        <StepIndicator current={step} steps={STEPS} />
+        <Stepper steps={STEPS} current={step} />
 
         <Divider />
 
