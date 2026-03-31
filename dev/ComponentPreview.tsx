@@ -60,6 +60,7 @@ import { SegmentedControl } from '../src/components/atoms/SegmentedControl/index
 import { Stack as StackAtom } from '../src/components/atoms/Stack/index.js';
 import { Row as RowAtom } from '../src/components/atoms/Row/index.js';
 import { Progress } from '../src/components/atoms/Progress/index.js';
+import { Stepper } from '../src/components/molecules/Stepper/index.js';
 import { SplitButton } from '../src/components/atoms/SplitButton/index.js';
 import { ButtonGroup } from '../src/components/atoms/ButtonGroup/index.js';
 import { NavMenu } from '../src/components/molecules/NavMenu/index.js';
@@ -213,7 +214,7 @@ function Inner({
     forms:       { label: 'Forms',              tier: 'molecule', items: ['FormField', 'SearchInput', 'MultiSelect', 'DatePicker', 'DateRangePicker', 'FileUpload'] },
     filters:     { label: 'Filters',            tier: 'molecule', items: ['FilterSearch', 'FilterSelect', 'FilterMultiSelect', 'FilterDateRange'] },
     containers:  { label: 'Containers',         tier: 'molecule', items: ['Card', 'Alert', 'EmptyState', 'Skeleton', 'Collapsible'] },
-    navigation:  { label: 'Navigation',         tier: 'molecule', items: ['Breadcrumb', 'Tabs', 'NavLink', 'NavMenu', 'PageLayout'] },
+    navigation:  { label: 'Navigation',         tier: 'molecule', items: ['Breadcrumb', 'Tabs', 'NavLink', 'NavMenu', 'PageLayout', 'Stepper'] },
     data:        { label: 'Data & Tables',      tier: 'molecule', items: ['DataTable', 'Timeline'] },
     overlays:    { label: 'Overlays & Menus',   tier: 'molecule', items: ['Menu', 'CommandPalette', 'Toast'] },
     'r-cards':   { label: 'Cards',              tier: 'pattern', items: ['ProfileCard', 'CollapsibleCard', 'EmptyStateCard'] },
@@ -1078,6 +1079,54 @@ function Inner({
           <div style={{ width: 320 }}>
             <Progress value={3} max={5} label={<span>3 of 5 tasks</span>} />
           </div>
+        </Row>
+      </Section>
+
+      {/* Stepper */}
+      <Section title="Stepper" tokens={tokens} hidden={!showSection('Stepper')}>
+        <Row label="Horizontal — basic" tokens={tokens}>
+          <div style={{ width: 400 }}>
+            <Stepper steps={['Profile', 'Preferences', 'Confirm']} current={1} />
+          </div>
+        </Row>
+        <Row label="Horizontal — numbered + status" tokens={tokens}>
+          <div style={{ width: 480 }}>
+            <Stepper steps={['Basic Details', 'Company Details', 'Subscription', 'Payment']} current={2} numbered showStatus />
+          </div>
+        </Row>
+        <Row label="Horizontal — completed" tokens={tokens}>
+          <div style={{ width: 400 }}>
+            <Stepper steps={['Cart', 'Shipping', 'Payment']} current={2} showStatus />
+          </div>
+        </Row>
+        <Row label="Sizes" tokens={tokens}>
+          <div style={{ width: 360, display: 'flex', flexDirection: 'column', gap: 'var(--lucent-space-6)' }}>
+            <Stepper steps={['Step 1', 'Step 2', 'Step 3']} current={1} size="sm" />
+            <Stepper steps={['Step 1', 'Step 2', 'Step 3']} current={1} size="md" />
+            <Stepper steps={['Step 1', 'Step 2', 'Step 3']} current={1} size="lg" />
+          </div>
+        </Row>
+        <Row label="Vertical — numbered + status" tokens={tokens}>
+          <Stepper
+            orientation="vertical"
+            numbered
+            showStatus
+            size="lg"
+            current={1}
+            steps={[
+              { label: 'Basic Details', description: 'Name, email, and contact info' },
+              { label: 'Company Details', description: 'Organization and team size' },
+              { label: 'Subscription Plan', description: 'Choose your plan and billing' },
+              { label: 'Payment Details', description: 'Card information and billing address' },
+            ]}
+          />
+        </Row>
+        <Row label="Vertical — simple" tokens={tokens}>
+          <Stepper
+            orientation="vertical"
+            current={2}
+            steps={['Cart', 'Shipping', 'Payment', 'Done']}
+          />
         </Row>
       </Section>
 
