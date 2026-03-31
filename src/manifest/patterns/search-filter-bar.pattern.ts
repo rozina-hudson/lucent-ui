@@ -1,6 +1,6 @@
-import type { CompositionRecipe } from '../types.js';
+import type { CompositionPattern } from '../types.js';
 
-export const RECIPE: CompositionRecipe = {
+export const PATTERN: CompositionPattern = {
   id: 'search-filter-bar',
   name: 'Search / Filter Bar',
   description: 'Compact toolbar of filter molecules — FilterSearch, FilterSelect, FilterMultiSelect, FilterDateRange — with sort control and view toggle. Designed to sit above a DataTable or list.',

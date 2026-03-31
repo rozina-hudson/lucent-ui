@@ -1,8 +1,8 @@
-# Recipe: CollapsibleCard
+# Pattern: CollapsibleCard
 
 A composition pattern that combines `Card` and `Collapsible` into a collapsible panel with optional localStorage persistence.
 
-This is a **recipe**, not a built-in component — copy and adapt it to your needs.
+This is a **pattern**, not a built-in component — copy and adapt it to your needs.
 
 ## Basic CollapsibleCard
 
@@ -138,6 +138,6 @@ function CollapsibleCardWithLoading({
 }
 ```
 
-## Why a recipe, not a component?
+## Why a pattern, not a component?
 
-Collapsible panels vary widely in practice — some need status indicators, resize handles, action buttons in the header, or context-specific state management. Shipping a one-size-fits-all component would either be too limited or too complex. The recipe gives you the composition pattern; you add only the pieces you need.
+Collapsible panels vary widely in practice — some need status indicators, resize handles, action buttons in the header, or context-specific state management. Shipping a one-size-fits-all component would either be too limited or too complex. The pattern gives you the composition approach; you add only the pieces you need.

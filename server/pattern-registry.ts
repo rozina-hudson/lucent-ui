@@ -1,0 +1,21 @@
+import type { CompositionPattern } from '../src/manifest/types.js';
+
+import { PATTERN as ProfileCard } from '../src/manifest/patterns/profile-card.pattern.js';
+import { PATTERN as SettingsPanel } from '../src/manifest/patterns/settings-panel.pattern.js';
+import { PATTERN as StatsRow } from '../src/manifest/patterns/stats-row.pattern.js';
+import { PATTERN as ActionBar } from '../src/manifest/patterns/action-bar.pattern.js';
+import { PATTERN as FormLayout } from '../src/manifest/patterns/form-layout.pattern.js';
+import { PATTERN as EmptyStateCard } from '../src/manifest/patterns/empty-state-card.pattern.js';
+import { PATTERN as CollapsibleCard } from '../src/manifest/patterns/collapsible-card.pattern.js';
+import { PATTERN as SearchFilterBar } from '../src/manifest/patterns/search-filter-bar.pattern.js';
+
+export const ALL_PATTERNS: CompositionPattern[] = [
+  ProfileCard,
+  SettingsPanel,
+  StatsRow,
+  ActionBar,
+  FormLayout,
+  EmptyStateCard,
+  CollapsibleCard,
+  SearchFilterBar,
+];

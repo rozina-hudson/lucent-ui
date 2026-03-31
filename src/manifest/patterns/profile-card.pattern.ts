@@ -1,6 +1,6 @@
-import type { CompositionRecipe } from '../types.js';
+import type { CompositionPattern } from '../types.js';
 
-export const RECIPE: CompositionRecipe = {
+export const PATTERN: CompositionPattern = {
   id: 'profile-card',
   name: 'Profile Card',
   description: 'User profile card with avatar, name/role, bio, tag chips, stats row, and action buttons.',

@@ -1,6 +1,6 @@
-import type { CompositionRecipe } from '../types.js';
+import type { CompositionPattern } from '../types.js';
 
-export const RECIPE: CompositionRecipe = {
+export const PATTERN: CompositionPattern = {
   id: 'stats-row',
   name: 'Stats Row',
   description: 'Row of individual stat cards with label, large display-font value, and trend chip with comparison.',

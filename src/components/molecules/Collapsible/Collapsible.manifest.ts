@@ -19,7 +19,7 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
     'Content fades in/out with opacity + translateY(-4px) at 80ms, while height transitions at 180ms ' +
     'using the easing-default token. The animated content wrapper uses overflow:hidden only during the ' +
     'height transition and switches to overflow:visible once open, so nested child shadows (e.g. an ' +
-    'elevated Card in the combo recipe) are never clipped in the resting state.\n\n' +
+    'elevated Card in the combo pattern) are never clipped in the resting state.\n\n' +
     'A built-in chevron rotates 180° on open, giving clear directional affordance. ' +
     'Hover feedback uses a CSS rule via data-lucent-collapsible-trigger (same pattern as NavMenu): ' +
     '5% text-primary tint on the trigger background, chevron darkens to text-primary. ' +
@@ -78,7 +78,7 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
       description:
         'When true (default), applies built-in content padding (space-2 top, space-4 sides, space-3 bottom). ' +
         'Set to false when children provide their own padding — e.g. when nesting a Card inside the Collapsible ' +
-        'for the CollapsibleCard combo recipe.',
+        'for the CollapsibleCard combo pattern.',
     },
     {
       name: 'style',
@@ -110,7 +110,7 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
 </Collapsible>`,
     },
     {
-      title: 'CollapsibleCard recipe (auto-bleed)',
+      title: 'CollapsibleCard pattern (auto-bleed)',
       code: `<Card variant="outline" hoverable>
   <Collapsible trigger={<Text as="span" weight="semibold" size="sm">Filters</Text>} defaultOpen>
     <Text size="sm" color="secondary">Card + Collapsible composed together. No padding="none" needed.</Text>
@@ -118,7 +118,7 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
 </Card>`,
     },
     {
-      title: 'CollapsibleCard combo recipe (padded={false})',
+      title: 'CollapsibleCard combo pattern (padded={false})',
       code: `<Card variant="filled" hoverable>
   <Collapsible trigger={<Text as="span" weight="semibold" size="sm">Details</Text>} padded={false}>
     <Card variant="elevated" padding="sm" style={{ margin: 'var(--lucent-space-1) var(--lucent-space-2) var(--lucent-space-2)' }}>

@@ -64,6 +64,12 @@ import { SplitButton } from '../src/components/atoms/SplitButton/index.js';
 import { ButtonGroup } from '../src/components/atoms/ButtonGroup/index.js';
 import { NavMenu } from '../src/components/molecules/NavMenu/index.js';
 import type { Theme, ThemeAnchors, UploadFile } from '../src/index.js';
+import { ProfileCard } from './compositions/ProfileCard.js';
+import { PreferencesCard } from './compositions/PreferencesCard.js';
+import { PricingTable } from './compositions/PricingTable.js';
+import { NotificationFeed } from './compositions/NotificationFeed.js';
+import { OnboardingFlow } from './compositions/OnboardingFlow.js';
+import { DashboardHeader } from './compositions/DashboardHeader.js';
 
 // ─── Palette map ────────────────────────────────────────────────────────────
 
@@ -198,7 +204,7 @@ function Inner({
   const { tokens } = useLucent();
   const [componentFilter, setComponentFilter] = useState('');
 
-  const sectionGroups: Record<string, { label: string; tier: 'atom' | 'molecule' | 'recipe'; items: string[] }> = {
+  const sectionGroups: Record<string, { label: string; tier: 'atom' | 'molecule' | 'pattern' | 'composition'; items: string[] }> = {
     buttons:     { label: 'Buttons & Actions', tier: 'atom', items: ['Button', 'SplitButton', 'ButtonGroup', 'Toggle', 'SegmentedControl'] },
     inputs:      { label: 'Input Fields',      tier: 'atom', items: ['Input', 'Textarea', 'Select', 'Checkbox', 'Radio', 'Slider', 'ColorPicker', 'ColorSwatch'] },
     text:        { label: 'Text & Labels',      tier: 'atom', items: ['Text', 'Badge', 'Chip', 'Tag', 'Icon', 'Tooltip', 'CodeBlock'] },
@@ -210,9 +216,10 @@ function Inner({
     navigation:  { label: 'Navigation',         tier: 'molecule', items: ['Breadcrumb', 'Tabs', 'NavLink', 'NavMenu', 'PageLayout'] },
     data:        { label: 'Data & Tables',      tier: 'molecule', items: ['DataTable', 'Timeline'] },
     overlays:    { label: 'Overlays & Menus',   tier: 'molecule', items: ['Menu', 'CommandPalette', 'Toast'] },
-    'r-cards':   { label: 'Cards',              tier: 'recipe', items: ['ProfileCard', 'CollapsibleCard', 'EmptyStateCard'] },
-    'r-layouts': { label: 'Layouts',            tier: 'recipe', items: ['SettingsPanel', 'FormLayout', 'StatsRow', 'ActionBar'] },
-    'r-filters': { label: 'Filters',           tier: 'recipe', items: ['SearchFilterBar'] },
+    'r-cards':   { label: 'Cards',              tier: 'pattern', items: ['ProfileCard', 'CollapsibleCard', 'EmptyStateCard'] },
+    'r-layouts': { label: 'Layouts',            tier: 'pattern', items: ['SettingsPanel', 'FormLayout', 'StatsRow', 'ActionBar'] },
+    'r-filters': { label: 'Filters',           tier: 'pattern', items: ['SearchFilterBar'] },
+    'c-all':     { label: 'All Compositions',   tier: 'composition', items: ['GoldenProfileCard', 'GoldenPreferencesCard', 'GoldenPricingTable', 'GoldenNotificationFeed', 'GoldenOnboardingFlow', 'GoldenDashboardHeader'] },
   };
 
   const allSections = Object.values(sectionGroups).flatMap(g => g.items);
@@ -296,7 +303,8 @@ function Inner({
 
   const atomGroups = Object.entries(sectionGroups).filter(([, g]) => g.tier === 'atom');
   const moleculeGroups = Object.entries(sectionGroups).filter(([, g]) => g.tier === 'molecule');
-  const recipeGroups = Object.entries(sectionGroups).filter(([, g]) => g.tier === 'recipe');
+  const patternGroups = Object.entries(sectionGroups).filter(([, g]) => g.tier === 'pattern');
+  const compositionGroups = Object.entries(sectionGroups).filter(([, g]) => g.tier === 'composition');
 
   const navSidebar = (
     <div style={{ padding: tokens.space3, display: 'flex', flexDirection: 'column', gap: tokens.space2 }}>
@@ -387,8 +395,8 @@ function Inner({
           ))}
           <NavMenu.Item as="button" isActive={componentFilter === 'mol-patterns'} onClick={() => setComponentFilter('mol-patterns')} icon={navIcons ? <NavIcon /> : undefined}>Patterns</NavMenu.Item>
         </NavMenu.Group>
-        <NavMenu.Group label="Recipes">
-          {recipeGroups.map(([key, group]) => (
+        <NavMenu.Group label="Patterns">
+          {patternGroups.map(([key, group]) => (
             <NavMenu.Item
               key={key}
               as="button"
@@ -412,6 +420,21 @@ function Inner({
             </NavMenu.Item>
           ))}
         </NavMenu.Group>
+        <NavMenu.Group label="Compositions">
+          {compositionGroups.map(([key, group]) => (
+            group.items.map(name => (
+              <NavMenu.Item
+                key={name}
+                as="button"
+                isActive={componentFilter === name}
+                onClick={() => setComponentFilter(name)}
+                icon={navIcons ? <NavIcon /> : undefined}
+              >
+                {name.replace(/^Golden/, '').replace(/([A-Z])/g, ' $1').trim()}
+              </NavMenu.Item>
+            ))
+          ))}
+        </NavMenu.Group>
         <NavMenu.Separator />
         <NavMenu.Item as="button" isActive={componentFilter === 'changelog'} onClick={() => setComponentFilter('changelog')} icon={navIcons ? <NavIcon /> : undefined}>Changelog</NavMenu.Item>
         <NavMenu.Item as="button" isActive={componentFilter === 'about'} onClick={() => setComponentFilter('about')} icon={navIcons ? <NavIcon /> : undefined}>About</NavMenu.Item>
@@ -431,7 +454,7 @@ function Inner({
 
     // All component sections grouped by tier
     for (const [, group] of Object.entries(sectionGroups)) {
-      const tierLabel = group.tier === 'atom' ? 'Atoms' : group.tier === 'molecule' ? 'Molecules' : 'Recipes';
+      const tierLabel = group.tier === 'atom' ? 'Atoms' : group.tier === 'molecule' ? 'Molecules' : group.tier === 'pattern' ? 'Patterns' : 'Compositions';
       for (const name of group.items) {
         items.push({
           id: name,
@@ -1742,7 +1765,7 @@ function Inner({
             </div>
           </CardPaddingContext.Provider>
         </Row>
-        <Row label="CollapsibleCard recipe" tokens={tokens}>
+        <Row label="CollapsibleCard pattern" tokens={tokens}>
           <Card variant="ghost" padding="none" hoverable style={{ width: '100%', maxWidth: 360 }}>
             <Collapsible trigger={<Text as="span" weight="semibold" size="sm">ghost</Text>} defaultOpen>
               <Text size="sm" color="secondary">Transparent container, content floats on page.</Text>
@@ -1771,7 +1794,7 @@ function Inner({
             </Collapsible>
           </Card>
         </Row>
-        <Row label="CollapsibleCard recipe" tokens={tokens}>
+        <Row label="CollapsibleCard pattern" tokens={tokens}>
           <Card variant="ghost" padding="none" hoverable style={{ width: '100%', maxWidth: 360 }}>
             <Collapsible trigger={<Text as="span" weight="semibold" size="sm">ghost</Text>} defaultOpen>
               <Text size="sm" color="secondary">Transparent container, content floats on page.</Text>
@@ -2474,7 +2497,7 @@ function Inner({
         </Row>
       </Section>
 
-      {/* ─── Recipes ────────────────────────────────────────────────────────── */}
+      {/* ─── Patterns ───────────────────────────────────────────────────────── */}
 
       <Section title="ProfileCard" tokens={tokens} hidden={!showSection('ProfileCard')}>
         <Row label="Full profile card" tokens={tokens}>
@@ -3038,6 +3061,44 @@ function Inner({
               emptyState={<Text size="sm" color="secondary">No candidates match your filters.</Text>}
             />
           </StackAtom>
+        </Row>
+      </Section>
+
+      {/* ─── Golden Compositions ─────────────────────────────────────────── */}
+
+      <Section title="Profile Card" tokens={tokens} hidden={!showSection('GoldenProfileCard')}>
+        <Row label="Full composition" tokens={tokens}>
+          <ProfileCard />
+        </Row>
+      </Section>
+
+      <Section title="Preferences Card" tokens={tokens} hidden={!showSection('GoldenPreferencesCard')}>
+        <Row label="Full composition" tokens={tokens}>
+          <PreferencesCard />
+        </Row>
+      </Section>
+
+      <Section title="Pricing Table" tokens={tokens} hidden={!showSection('GoldenPricingTable')}>
+        <Row label="Full composition" tokens={tokens}>
+          <PricingTable />
+        </Row>
+      </Section>
+
+      <Section title="Notification Feed" tokens={tokens} hidden={!showSection('GoldenNotificationFeed')}>
+        <Row label="Full composition" tokens={tokens}>
+          <NotificationFeed />
+        </Row>
+      </Section>
+
+      <Section title="Onboarding Flow" tokens={tokens} hidden={!showSection('GoldenOnboardingFlow')}>
+        <Row label="Full composition" tokens={tokens}>
+          <OnboardingFlow />
+        </Row>
+      </Section>
+
+      <Section title="Dashboard Header" tokens={tokens} hidden={!showSection('GoldenDashboardHeader')}>
+        <Row label="Full composition" tokens={tokens}>
+          <DashboardHeader />
         </Row>
       </Section>
 
