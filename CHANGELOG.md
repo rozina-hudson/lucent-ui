@@ -1,6 +1,6 @@
 # lucent-ui
 
-## 0.31.1
+## 0.32.1
 
 ### Devtools preset colors
 
