@@ -1,5 +1,57 @@
 # lucent-ui
 
+## 0.31.0
+
+### Golden Compositions
+
+Six interactive compositions in `dev/compositions/` that serve as visual proof the component system produces polished, real-world UI:
+
+- **ProfileCard** — Avatar, name/status chip, bio, skill tags, stats row, follow/message buttons
+- **PreferencesCard** — Header with version badge, overflow menu, toggle setting rows with icons, slider, select dropdown, save/reset actions
+- **PricingTable** — Three-tier pricing cards (Free/Pro/Enterprise) with feature lists, middle card highlighted with accent border
+- **NotificationFeed** — Notification list with read/unread states (accent-tinted background), type chips, icon action buttons with tooltips
+- **OnboardingFlow** — Multi-step form with Stepper, form fields, and back/next navigation
+- **DashboardHeader** — Breadcrumb navigation, page title with icon action buttons, four stat cards with trend chips
+
+Added as a **Compositions** nav group in the dev playground alongside Atoms, Molecules, and Patterns.
+
+### Stepper molecule
+
+**New molecule** — `Stepper` — a step indicator for multi-step flows (onboarding, wizards, checkout).
+
+- **Horizontal orientation** — continuous connector track behind circles with animated fill between steps; first/last labels align left/right, middle labels center under their circles
+- **Vertical orientation** — connector column on the left with labels, descriptions, and status beside circles
+- **Props:** `steps` (strings or `{ label, description, icon }` objects), `current`, `size` (sm/md/lg), `orientation`, `numbered` (STEP N prefix), `showStatus` (Chip badges)
+- **Animated checkmark** — spring scale (0→1.2→1) on step completion
+- **Status badges** — Chip atoms (success/accent/neutral borderless) for Completed/In Progress/Pending
+- **Custom icons** — per-step icon prop overrides the default number/checkmark
+- Full manifest with 6 usage examples, composition graph, and accessibility notes
+
+### Recipes renamed to Patterns
+
+Renamed the "recipes" tier to **"patterns"** across the entire codebase to clarify the design system hierarchy:
+
+```
+Atoms → Molecules → Patterns → Compositions
+```
+
+- **Directory:** `src/manifest/recipes/` → `src/manifest/patterns/`
+- **Files:** `.recipe.ts` → `.pattern.ts`
+- **Types:** `CompositionRecipe` → `CompositionPattern`, `RecipeCategory` → `PatternCategory`
+- **MCP tools:** `get_composition_recipe` → `get_composition_pattern`
+- **Server:** `recipe-registry.ts` → `pattern-registry.ts`, `ALL_RECIPES` → `ALL_PATTERNS`
+- **Nav:** "Recipes" → "Patterns" in the dev playground sidebar
+- Deprecated type aliases kept for backward compatibility
+
+### New patterns
+
+Four new pattern manifests for AI retrieval:
+
+- **pricing-table** — three-tier pricing card layout
+- **notification-feed** — notification list with read/unread states and action buttons
+- **onboarding-flow** — multi-step form with progress indicator
+- **dashboard-header** — page header with breadcrumbs, title, actions, and stat cards
+
 ## 0.30.0
 
 ### Timeline redesign
