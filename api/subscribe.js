@@ -36,6 +36,7 @@ export default async function handler(req, res) {
   const turnstileData = await turnstileRes.json();
 
   if (!turnstileData.success) {
+    console.error('Turnstile verification failed:', JSON.stringify(turnstileData));
     return res.status(400).json({ error: 'Bot check failed. Please try again.' });
   }
 
