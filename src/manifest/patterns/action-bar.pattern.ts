@@ -1,6 +1,6 @@
-import type { CompositionRecipe } from '../types.js';
+import type { CompositionPattern } from '../types.js';
 
-export const RECIPE: CompositionRecipe = {
+export const PATTERN: CompositionPattern = {
   id: 'action-bar',
   name: 'Action Bar',
   description: 'Page-level or card-level header pairing a title with action buttons. Page headers use breadcrumb, large display title, and a divider below; card headers are compact with small text.',

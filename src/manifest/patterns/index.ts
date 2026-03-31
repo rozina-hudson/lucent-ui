@@ -1,0 +1,12 @@
+export { PATTERN as ProfileCard } from './profile-card.pattern.js';
+export { PATTERN as SettingsPanel } from './settings-panel.pattern.js';
+export { PATTERN as StatsRow } from './stats-row.pattern.js';
+export { PATTERN as ActionBar } from './action-bar.pattern.js';
+export { PATTERN as FormLayout } from './form-layout.pattern.js';
+export { PATTERN as EmptyStateCard } from './empty-state-card.pattern.js';
+export { PATTERN as CollapsibleCard } from './collapsible-card.pattern.js';
+export { PATTERN as SearchFilterBar } from './search-filter-bar.pattern.js';
+export { PATTERN as PricingTable } from './pricing-table.pattern.js';
+export { PATTERN as NotificationFeed } from './notification-feed.pattern.js';
+export { PATTERN as OnboardingFlow } from './onboarding-flow.pattern.js';
+export { PATTERN as DashboardHeader } from './dashboard-header.pattern.js';

@@ -83,27 +83,27 @@ export interface AccessibilityDescriptor {
   notes?: string;
 }
 
-// ─── Composition recipe ─────────────────────────────────────────────────────
+// ─── Composition pattern ────────────────────────────────────────────────────
 
-export type RecipeCategory = 'card' | 'form' | 'nav' | 'dashboard' | 'settings' | 'action';
+export type PatternCategory = 'card' | 'form' | 'nav' | 'dashboard' | 'settings' | 'action';
 
 /**
- * A composition recipe describes how multiple components compose into a
- * real UI pattern.  Recipes bridge the gap between individual component
+ * A composition pattern describes how multiple components compose into a
+ * real UI pattern.  Patterns bridge the gap between individual component
  * manifests and production-quality layouts — an AI agent can use the
  * structure tree, working code, and design notes to produce correct
  * multi-component compositions on the first try.
  */
-export interface CompositionRecipe {
+export interface CompositionPattern {
   /** Unique kebab-case identifier, e.g. "profile-card" */
   id: string;
   /** Human-readable name, e.g. "Profile Card" */
   name: string;
-  /** One-line AI-optimised summary of what this recipe builds */
+  /** One-line AI-optimised summary of what this pattern builds */
   description: string;
   /** Broad UI category for filtering */
-  category: RecipeCategory;
-  /** Component IDs used in the recipe (from ComponentManifest.id) */
+  category: PatternCategory;
+  /** Component IDs used in the pattern (from ComponentManifest.id) */
   components: readonly string[];
   /** ASCII / indented tree showing layout hierarchy */
   structure: string;
@@ -117,6 +117,11 @@ export interface CompositionRecipe {
   /** Why this arrangement works — spacing rationale, hierarchy reasoning */
   designNotes: string;
 }
+
+/** @deprecated Use CompositionPattern instead */
+export type CompositionRecipe = CompositionPattern;
+/** @deprecated Use PatternCategory instead */
+export type RecipeCategory = PatternCategory;
 
 // ─── Main manifest interface ─────────────────────────────────────────────────
 

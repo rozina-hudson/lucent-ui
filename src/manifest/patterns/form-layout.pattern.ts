@@ -1,6 +1,6 @@
-import type { CompositionRecipe } from '../types.js';
+import type { CompositionPattern } from '../types.js';
 
-export const RECIPE: CompositionRecipe = {
+export const PATTERN: CompositionPattern = {
   id: 'form-layout',
   name: 'Form Layout',
   description: 'Stacked form with grouped sections, FormField labels, validation hints, and a submit/cancel footer.',

@@ -1,6 +1,6 @@
-import type { CompositionRecipe } from '../types.js';
+import type { CompositionPattern } from '../types.js';
 
-export const RECIPE: CompositionRecipe = {
+export const PATTERN: CompositionPattern = {
   id: 'collapsible-card',
   name: 'Collapsible Card',
   description: 'Card with an expandable/collapsible section using smooth height animation, available in all card variants.',
