@@ -1,5 +1,15 @@
 # lucent-ui
 
+## 0.31.1
+
+### Devtools preset colors
+
+- Presets now apply full color palettes (background, surface, border, accent) instead of accent only
+- All colors are theme-aware — each preset has distinct light and dark variants
+- Dark mode accents use lighter palette variants for proper visibility
+- Preset colors automatically re-apply when toggling between light/dark mode
+- Dark mode surfaces use stronger hue tints for visible distinction between presets
+
 ## 0.32.0
 
 ### Golden Compositions

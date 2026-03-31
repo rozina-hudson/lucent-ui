@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import type { Theme } from '../tokens/types.js';
 import type { TokenOverrideState } from './useTokenOverrides.js';
 import {
@@ -21,15 +21,22 @@ import { loadFont } from './loadFont.js';
 
 // ── Design Presets ──────────────────────────────────────────────────────────
 
+interface PresetColors {
+  accent: string;
+  bg: string;
+  surface: string;
+  border: string;
+}
+
 interface DesignPresetDef {
   name: string;
-  accent: string;
   roundness: number;     // 0 = sharp, 0.5 = rounded, 1 = pill
   density: number;       // multiplier (0.8 = compact, 1 = default, 1.25 = spacious)
   shadow: ShadowStyle;
   typeBase: number;      // rem
   typeRatio: number;
   fontFamily: string;
+  colors: { light: PresetColors; dark: PresetColors };
 }
 
 const DM_SANS = '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
@@ -45,17 +52,27 @@ const PLUS_JAKARTA = '"Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sa
 
 const DESIGN_PRESETS: DesignPresetDef[] = [
   // ── Foundations ──
-  { name: 'Default',      accent: '#111827', roundness: 0.5,    density: 1,    shadow: 'default',     typeBase: 1,        typeRatio: 1.125, fontFamily: DM_SANS },
-  { name: 'Modern',       accent: '#6366f1', roundness: 0.5,    density: 1,    shadow: 'subtle',      typeBase: 1,        typeRatio: 1.2,   fontFamily: INTER },
+  { name: 'Default',      roundness: 0.5,    density: 1,    shadow: 'default',     typeBase: 1,        typeRatio: 1.125, fontFamily: DM_SANS,
+    colors: { light: { accent: '#111827', bg: '#f7f8f9', surface: '#ffffff', border: '#e5e7eb' }, dark: { accent: '#f9fafb', bg: '#0c0d12', surface: '#1c1e28', border: '#2e3039' } } },
+  { name: 'Modern',       roundness: 0.5,    density: 1,    shadow: 'subtle',      typeBase: 1,        typeRatio: 1.2,   fontFamily: INTER,
+    colors: { light: { accent: '#6366f1', bg: '#f8f7fc', surface: '#ffffff', border: '#e0dde9' }, dark: { accent: '#818cf8', bg: '#0d0c18', surface: '#1e1c30', border: '#302e42' } } },
   // ── Design Personalities ──
-  { name: 'Liquid Glass', accent: '#0ea5e9', roundness: 1,      density: 0.9,  shadow: 'liquidGlass', typeBase: 1.0625,   typeRatio: 1.2,   fontFamily: SYSTEM_UI },
-  { name: 'Bento',        accent: '#0d9488', roundness: 0.75,   density: 1,    shadow: 'natural',     typeBase: 0.9375,   typeRatio: 1.2,   fontFamily: GEIST },
-  { name: 'Brutalist',    accent: '#ef4444', roundness: 0,      density: 0.8,  shadow: 'brutalist',   typeBase: 1.125,    typeRatio: 1.25,  fontFamily: SPACE_GROTESK },
-  { name: 'Terminal',     accent: '#10b981', roundness: 0,      density: 0.8,  shadow: 'glow',        typeBase: 0.9375,   typeRatio: 1.125, fontFamily: JETBRAINS },
-  { name: 'Soft UI',      accent: '#8b5cf6', roundness: 1,      density: 1.25, shadow: 'neumorphic',  typeBase: 1,        typeRatio: 1.2,   fontFamily: OUTFIT },
-  { name: 'Bloom',        accent: '#e879f9', roundness: 0.875,  density: 1.25, shadow: 'glow',        typeBase: 1.0625,   typeRatio: 1.25,  fontFamily: SORA },
-  { name: 'Minimal',      accent: '#475569', roundness: 0.25,   density: 1,    shadow: 'flat',        typeBase: 1,        typeRatio: 1.125, fontFamily: PLUS_JAKARTA },
-  { name: 'Enterprise',   accent: '#475569', roundness: 0,      density: 0.75, shadow: 'flat',        typeBase: 0.9375,   typeRatio: 1.125, fontFamily: SYSTEM_UI },
+  { name: 'Liquid Glass', roundness: 1,      density: 0.9,  shadow: 'liquidGlass', typeBase: 1.0625,   typeRatio: 1.2,   fontFamily: SYSTEM_UI,
+    colors: { light: { accent: '#0ea5e9', bg: '#f5f9fc', surface: '#ffffff', border: '#d9e4ec' }, dark: { accent: '#38bdf8', bg: '#0a0e16', surface: '#16202e', border: '#243240' } } },
+  { name: 'Bento',        roundness: 0.75,   density: 1,    shadow: 'natural',     typeBase: 0.9375,   typeRatio: 1.2,   fontFamily: GEIST,
+    colors: { light: { accent: '#0d9488', bg: '#f5faf8', surface: '#ffffff', border: '#d4e5e0' }, dark: { accent: '#2dd4bf', bg: '#0a110f', surface: '#162824', border: '#263e38' } } },
+  { name: 'Brutalist',    roundness: 0,      density: 0.8,  shadow: 'brutalist',   typeBase: 1.125,    typeRatio: 1.25,  fontFamily: SPACE_GROTESK,
+    colors: { light: { accent: '#ef4444', bg: '#faf6f5', surface: '#ffffff', border: '#e9ddd8' }, dark: { accent: '#f87171', bg: '#140c0a', surface: '#2c1e1a', border: '#42322c' } } },
+  { name: 'Terminal',     roundness: 0,      density: 0.8,  shadow: 'glow',        typeBase: 0.9375,   typeRatio: 1.125, fontFamily: JETBRAINS,
+    colors: { light: { accent: '#10b981', bg: '#f5faf7', surface: '#ffffff', border: '#dbe8df' }, dark: { accent: '#34d399', bg: '#0a120c', surface: '#16281e', border: '#263e30' } } },
+  { name: 'Soft UI',      roundness: 1,      density: 1.25, shadow: 'neumorphic',  typeBase: 1,        typeRatio: 1.2,   fontFamily: OUTFIT,
+    colors: { light: { accent: '#8b5cf6', bg: '#f8f6fc', surface: '#ffffff', border: '#e2dce9' }, dark: { accent: '#a78bfa', bg: '#100c1a', surface: '#221e34', border: '#362e48' } } },
+  { name: 'Bloom',        roundness: 0.875,  density: 1.25, shadow: 'glow',        typeBase: 1.0625,   typeRatio: 1.25,  fontFamily: SORA,
+    colors: { light: { accent: '#e879f9', bg: '#faf6f8', surface: '#ffffff', border: '#ecdde1' }, dark: { accent: '#f0abfc', bg: '#140a10', surface: '#2c1a24', border: '#422a36' } } },
+  { name: 'Minimal',      roundness: 0.25,   density: 1,    shadow: 'flat',        typeBase: 1,        typeRatio: 1.125, fontFamily: PLUS_JAKARTA,
+    colors: { light: { accent: '#475569', bg: '#f4f5f7', surface: '#ffffff', border: '#dde1e6' }, dark: { accent: '#94a3b8', bg: '#0c0e12', surface: '#1c2028', border: '#2e3440' } } },
+  { name: 'Enterprise',   roundness: 0,      density: 0.75, shadow: 'flat',        typeBase: 0.9375,   typeRatio: 1.125, fontFamily: SYSTEM_UI,
+    colors: { light: { accent: '#475569', bg: '#f4f5f7', surface: '#ffffff', border: '#dde1e6' }, dark: { accent: '#94a3b8', bg: '#0c0e12', surface: '#1c2028', border: '#2e3440' } } },
 ];
 // ── Color Presets ───────────────────────────────────────────────────────────
 
@@ -144,8 +161,12 @@ export function DesignView({ state, theme }: DesignViewProps) {
     setShadowStyle(preset.shadow);
 
     // Batch-apply all token overrides in a single pass
+    const themeColors = preset.colors[theme];
     const allOverrides: Record<string, string> = {
-      ...deriveAccentTokens(preset.accent, theme) as Record<string, string>,
+      ...deriveAccentTokens(themeColors.accent, theme) as Record<string, string>,
+      ...deriveBgTokens(themeColors.bg, theme) as Record<string, string>,
+      ...deriveSurfaceTokens(themeColors.surface, theme) as Record<string, string>,
+      ...deriveBorderTokens(themeColors.border, theme) as Record<string, string>,
       ...computeTypeScale(preset.typeBase, preset.typeRatio) as Record<string, string>,
       ...computeDensity(preset.density) as Record<string, string>,
       ...computeRoundness(preset.roundness) as Record<string, string>,
@@ -162,6 +183,30 @@ export function DesignView({ state, theme }: DesignViewProps) {
       }
     });
   }, [state, theme]);
+
+  // ── Re-apply theme-sensitive tokens when theme toggles ──
+  const prevThemeRef = useRef(theme);
+  useEffect(() => {
+    if (prevThemeRef.current === theme) return;
+    prevThemeRef.current = theme;
+    if (!activePreset) return;
+
+    const preset = DESIGN_PRESETS.find(p => p.name === activePreset);
+    if (!preset) return;
+
+    const themeColors = preset.colors[theme];
+    const themeOverrides: Record<string, string> = {
+      ...deriveAccentTokens(themeColors.accent, theme) as Record<string, string>,
+      ...deriveBgTokens(themeColors.bg, theme) as Record<string, string>,
+      ...deriveSurfaceTokens(themeColors.surface, theme) as Record<string, string>,
+      ...deriveBorderTokens(themeColors.border, theme) as Record<string, string>,
+      ...computeShadows(shadowDepth, theme) as Record<string, string>,
+    };
+
+    for (const [key, value] of Object.entries(themeOverrides)) {
+      state.setOverride(key as keyof typeof state.tokens, value);
+    }
+  }, [theme, activePreset, shadowDepth, state]);
 
   // ── Handlers (clear active preset on manual tweak) ──
   const handleDensity = (value: number) => {
@@ -263,7 +308,7 @@ export function DesignView({ state, theme }: DesignViewProps) {
             >
               <div style={{
                 width: 24, height: 24, borderRadius: preset.roundness < 0.3 ? 3 : preset.roundness < 0.7 ? 6 : 12,
-                background: preset.accent,
+                background: preset.colors[theme].accent,
                 border: '1px solid rgba(255,255,255,0.1)',
               }} />
               <Text size="xs" {...(activePreset !== preset.name && { color: 'secondary' })} weight={activePreset === preset.name ? 'semibold' : 'regular'} style={{ fontSize: 9, whiteSpace: 'nowrap' }}>
