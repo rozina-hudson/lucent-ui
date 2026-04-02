@@ -217,7 +217,7 @@ function Inner({
     navigation:  { label: 'Navigation',         tier: 'molecule', items: ['Breadcrumb', 'Tabs', 'NavLink', 'NavMenu', 'PageLayout', 'Stepper'] },
     data:        { label: 'Data & Tables',      tier: 'molecule', items: ['DataTable', 'Timeline'] },
     overlays:    { label: 'Overlays & Menus',   tier: 'molecule', items: ['Menu', 'CommandPalette', 'Toast'] },
-    'r-cards':   { label: 'Cards',              tier: 'pattern', items: ['ProfileCard', 'CollapsibleCard', 'EmptyStateCard'] },
+    'r-cards':   { label: 'Cards',              tier: 'pattern', items: ['ProfileCard', 'ProductItemCard', 'CollapsibleCard', 'EmptyStateCard'] },
     'r-layouts': { label: 'Layouts',            tier: 'pattern', items: ['SettingsPanel', 'FormLayout', 'StatsRow', 'ActionBar'] },
     'r-filters': { label: 'Filters',           tier: 'pattern', items: ['SearchFilterBar'] },
     'c-all':     { label: 'All Compositions',   tier: 'composition', items: ['GoldenProfileCard', 'GoldenPreferencesCard', 'GoldenPricingTable', 'GoldenNotificationFeed', 'GoldenOnboardingFlow', 'GoldenDashboardHeader'] },
@@ -2990,6 +2990,97 @@ function Inner({
               description="We couldn't load your data. Please try again."
               action={<Button variant="outline" size="sm">Retry</Button>}
             />
+          </Card>
+        </Row>
+      </Section>
+
+      <Section title="ProductItemCard" tokens={tokens} hidden={!showSection('ProductItemCard')}>
+        <Row label="Product card (default)" tokens={tokens}>
+          <Card
+            variant="elevated"
+            padding="lg"
+            style={{ width: 320 }}
+            media={
+              <div style={{ height: 180, background: `linear-gradient(135deg, ${tokens.surfaceRaised} 0%, color-mix(in srgb, ${tokens.accentDefault} 12%, ${tokens.surfaceRaised}) 100%)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Icon size="xl" color={tokens.textSecondary}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 18v-6a9 9 0 0118 0v6" />
+                    <path d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3zM3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3z" />
+                  </svg>
+                </Icon>
+              </div>
+            }
+          >
+            <StackAtom gap="4">
+              <StackAtom gap="1">
+                <Text size="md" weight="semibold">Wireless Headphones</Text>
+                <Text size="sm" color="secondary">Active noise cancelling, 40hr battery</Text>
+              </StackAtom>
+              <RowAtom gap="2" wrap>
+                <Chip variant="neutral" size="sm">Audio</Chip>
+                <Chip variant="neutral" size="sm">Bluetooth</Chip>
+                <Chip variant="neutral" size="sm">ANC</Chip>
+              </RowAtom>
+              <RowAtom gap="4" justify="between" align="baseline">
+                <Text size="lg" weight="bold" family="display">$249.00</Text>
+                <Text size="xs" color="secondary">Free shipping</Text>
+              </RowAtom>
+              <Button variant="primary" style={{ width: '100%' }}>Add to Cart</Button>
+            </StackAtom>
+          </Card>
+        </Row>
+        <Row label="Article card variant" tokens={tokens}>
+          <Card variant="outline" padding="lg" hoverable style={{ width: 340 }}>
+            <StackAtom gap="4">
+              <RowAtom gap="3" align="start">
+                <Icon size="lg" color="var(--lucent-text-secondary)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1={16} y1={13} x2={8} y2={13} />
+                    <line x1={16} y1={17} x2={8} y2={17} />
+                    <polyline points="10 9 9 9 8 9" />
+                  </svg>
+                </Icon>
+                <StackAtom gap="1" style={{ flex: 1 }}>
+                  <Text size="md" weight="semibold">Design Tokens at Scale</Text>
+                  <Text size="xs" color="secondary">Published Mar 15, 2026</Text>
+                </StackAtom>
+              </RowAtom>
+              <Text size="sm" color="secondary">
+                How we unified spacing, color, and typography across 12 product surfaces using a single token system.
+              </Text>
+              <RowAtom gap="2" wrap>
+                <Chip variant="neutral" size="sm">Design Systems</Chip>
+                <Chip variant="neutral" size="sm">Tokens</Chip>
+              </RowAtom>
+              <RowAtom gap="4" justify="between" align="center">
+                <Text size="xs" color="secondary">8 min read</Text>
+                <Button variant="ghost" size="sm">Read more</Button>
+              </RowAtom>
+            </StackAtom>
+          </Card>
+        </Row>
+        <Row label="Team member card variant" tokens={tokens}>
+          <Card variant="filled" padding="lg" style={{ width: 280 }}>
+            <StackAtom gap="4">
+              <StackAtom gap="3" align="center">
+                <Avatar alt="Alex Chen" size="lg" />
+                <StackAtom gap="0" align="center">
+                  <Text size="md" weight="semibold">Alex Chen</Text>
+                  <Text size="sm" color="secondary">Engineering Lead</Text>
+                </StackAtom>
+              </StackAtom>
+              <RowAtom gap="2" wrap justify="center">
+                <Chip variant="neutral" size="sm">React</Chip>
+                <Chip variant="neutral" size="sm">Go</Chip>
+                <Chip variant="neutral" size="sm">Platform</Chip>
+              </RowAtom>
+              <RowAtom gap="3">
+                <Button variant="outline" style={{ flex: 1 }} size="sm">Profile</Button>
+                <Button variant="primary" style={{ flex: 1 }} size="sm">Message</Button>
+              </RowAtom>
+            </StackAtom>
           </Card>
         </Row>
       </Section>
