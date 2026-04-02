@@ -218,7 +218,7 @@ function Inner({
     data:        { label: 'Data & Tables',      tier: 'molecule', items: ['DataTable', 'Timeline'] },
     overlays:    { label: 'Overlays & Menus',   tier: 'molecule', items: ['Menu', 'CommandPalette', 'Toast'] },
     'r-cards':   { label: 'Cards',              tier: 'pattern', items: ['ProfileCard', 'ProductItemCard', 'AnnouncementCard', 'CollapsibleCard', 'EmptyStateCard'] },
-    'r-layouts': { label: 'Layouts',            tier: 'pattern', items: ['SettingsPanel', 'FormLayout', 'StatsRow', 'ActionBar'] },
+    'r-layouts': { label: 'Layouts',            tier: 'pattern', items: ['SettingsPanel', 'FormLayout', 'StatsRow', 'ActionBar', 'ConfirmationDialog'] },
     'r-filters': { label: 'Filters',           tier: 'pattern', items: ['SearchFilterBar'] },
     'c-all':     { label: 'All Compositions',   tier: 'composition', items: ['GoldenProfileCard', 'GoldenPreferencesCard', 'GoldenPricingTable', 'GoldenNotificationFeed', 'GoldenOnboardingFlow', 'GoldenDashboardHeader'] },
   };
@@ -2877,6 +2877,73 @@ function Inner({
               <StackAtom gap="2">
                 <Text size="xs" color="secondary">No activity to show yet.</Text>
               </StackAtom>
+            </StackAtom>
+          </Card>
+        </Row>
+      </Section>
+
+      <Section title="ConfirmationDialog" tokens={tokens} hidden={!showSection('ConfirmationDialog')}>
+        <Row label="Destructive confirmation" tokens={tokens}>
+          <Card variant="elevated" padding="lg" style={{ maxWidth: 400 }}>
+            <StackAtom gap="8" align="center">
+              <Icon size="xl" color="var(--lucent-danger-text)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                  <line x1={12} y1={9} x2={12} y2={13} />
+                  <line x1={12} y1={17} x2={12.01} y2={17} />
+                </svg>
+              </Icon>
+              <StackAtom gap="1" align="center">
+                <Text size="lg" weight="semibold">Delete project?</Text>
+                <Text size="sm" color="secondary" align="center">This will permanently delete &quot;Acme Corp&quot; and all of its data. This action cannot be undone.</Text>
+              </StackAtom>
+              <RowAtom gap="3" style={{ width: '100%' }}>
+                <Button variant="outline" style={{ flex: 1 }}>Cancel</Button>
+                <Button variant="danger" style={{ flex: 1 }}>Delete</Button>
+              </RowAtom>
+            </StackAtom>
+          </Card>
+        </Row>
+        <Row label="With typed confirmation" tokens={tokens}>
+          <Card variant="elevated" padding="lg" style={{ maxWidth: 400 }}>
+            <StackAtom gap="8" align="center">
+              <Icon size="xl" color="var(--lucent-danger-text)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                  <line x1={12} y1={9} x2={12} y2={13} />
+                  <line x1={12} y1={17} x2={12.01} y2={17} />
+                </svg>
+              </Icon>
+              <StackAtom gap="1" align="center">
+                <Text size="lg" weight="semibold">Delete your account?</Text>
+                <Text size="sm" color="secondary" align="center">All projects, data, and billing history will be permanently removed. Type DELETE to confirm.</Text>
+              </StackAtom>
+              <Input placeholder="Type DELETE to confirm" size="md" style={{ width: '100%' }} />
+              <RowAtom gap="3" style={{ width: '100%' }}>
+                <Button variant="outline" style={{ flex: 1 }}>Cancel</Button>
+                <Button variant="danger" style={{ flex: 1 }} disabled>Delete account</Button>
+              </RowAtom>
+            </StackAtom>
+          </Card>
+        </Row>
+        <Row label="Non-destructive confirmation" tokens={tokens}>
+          <Card variant="elevated" padding="lg" style={{ maxWidth: 400 }}>
+            <StackAtom gap="8" align="center">
+              <Icon size="xl" color="var(--lucent-info-text)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx={12} cy={12} r={10} />
+                  <line x1={12} y1={16} x2={12} y2={12} />
+                  <line x1={12} y1={8} x2={12.01} y2={8} />
+                </svg>
+              </Icon>
+              <StackAtom gap="1" align="center">
+                <Text size="lg" weight="semibold">Publish changes?</Text>
+                <Text size="sm" color="secondary" align="center">This will make your draft visible to all team members. You can unpublish later from settings.</Text>
+              </StackAtom>
+              <RowAtom gap="3" style={{ width: '100%' }}>
+                <Button variant="outline" style={{ flex: 1 }}>Keep as draft</Button>
+                <Button variant="primary" style={{ flex: 1 }}>Publish</Button>
+              </RowAtom>
             </StackAtom>
           </Card>
         </Row>
