@@ -7,6 +7,8 @@ export type {
   UsageExample,
   CompositionNode,
   AccessibilityDescriptor,
+  CompositionPattern,
+  PatternCategory,
   CompositionRecipe,
   RecipeCategory,
 } from './types.js';

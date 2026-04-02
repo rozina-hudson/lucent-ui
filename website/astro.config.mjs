@@ -1,13 +1,15 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
+import sitemap from '@astrojs/sitemap';
 import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
+  site: 'https://lucentui.ai',
   output: 'static',
-  integrations: [react()],
+  integrations: [react(), sitemap()],
   vite: {
     resolve: {
       alias: {

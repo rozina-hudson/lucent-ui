@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useLayoutEffect, type CSSProperties } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect, type CSSProperties, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { Text } from '../../atoms/Text/index.js';
 import {
@@ -26,6 +26,8 @@ export interface DateRangePickerProps {
   label?: string;
   helperText?: string;
   errorText?: string;
+  /** Custom trigger element. When provided, replaces the default input-style button. */
+  trigger?: ReactNode;
   style?: CSSProperties;
 }
 
@@ -69,6 +71,7 @@ export function DateRangePicker({
   label,
   helperText,
   errorText,
+  trigger,
   style,
 }: DateRangePickerProps) {
   const isControlled = controlledValue !== undefined;
@@ -181,46 +184,57 @@ export function DateRangePicker({
         </label>
       )}
 
-      <button
-        type="button"
-        id={inputId}
-        disabled={disabled}
-        onClick={() => !disabled && setOpen(o => !o)}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        aria-haspopup="dialog"
-        aria-expanded={open}
-        aria-invalid={hasError}
-        style={{
-          display: 'flex', alignItems: 'center', gap: sizeGap[size],
-          width: '100%',
-          height: sizeHeights[size],
-          boxSizing: 'border-box',
-          padding: `0 ${sizePx[size]}`,
-          borderRadius: 'var(--lucent-radius-lg)',
-          border: `1px solid ${borderColor}`,
-          boxShadow,
-          background: isDisabled ? 'color-mix(in srgb, var(--lucent-text-primary) 6%, transparent)' : 'var(--lucent-surface)',
-          color: selected ? 'var(--lucent-text-primary)' : 'var(--lucent-text-secondary)',
-          fontFamily: 'var(--lucent-font-family-base)',
-          fontSize: sizeFontSizes[size],
-          cursor: isDisabled ? 'not-allowed' : 'pointer',
-          outline: 'none',
-          transition: [
-            'border-color var(--lucent-duration-fast) var(--lucent-easing-default)',
-            'box-shadow var(--lucent-duration-fast) var(--lucent-easing-default)',
-          ].join(', '),
-        }}
-      >
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden style={{ flexShrink: 0 }}>
-          <rect x="1" y="2" width="12" height="11" rx="2" stroke="currentColor" strokeWidth="1.3" />
-          <path d="M1 6h12" stroke="currentColor" strokeWidth="1.3" />
-          <path d="M4 1v2M10 1v2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-        </svg>
-        <span style={{ flex: 1, textAlign: 'left' }}>
-          {formatRange(selected, placeholder)}
+      {trigger ? (
+        <span
+          onClick={() => !disabled && setOpen(o => !o)}
+          aria-haspopup="dialog"
+          aria-expanded={open}
+          style={{ display: 'inline-flex', cursor: disabled ? 'not-allowed' : 'pointer' }}
+        >
+          {trigger}
         </span>
-      </button>
+      ) : (
+        <button
+          type="button"
+          id={inputId}
+          disabled={disabled}
+          onClick={() => !disabled && setOpen(o => !o)}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          aria-haspopup="dialog"
+          aria-expanded={open}
+          aria-invalid={hasError}
+          style={{
+            display: 'flex', alignItems: 'center', gap: sizeGap[size],
+            width: '100%',
+            height: sizeHeights[size],
+            boxSizing: 'border-box',
+            padding: `0 ${sizePx[size]}`,
+            borderRadius: 'var(--lucent-radius-lg)',
+            border: `1px solid ${borderColor}`,
+            boxShadow,
+            background: isDisabled ? 'color-mix(in srgb, var(--lucent-text-primary) 6%, transparent)' : 'var(--lucent-surface)',
+            color: selected ? 'var(--lucent-text-primary)' : 'var(--lucent-text-secondary)',
+            fontFamily: 'var(--lucent-font-family-base)',
+            fontSize: sizeFontSizes[size],
+            cursor: isDisabled ? 'not-allowed' : 'pointer',
+            outline: 'none',
+            transition: [
+              'border-color var(--lucent-duration-fast) var(--lucent-easing-default)',
+              'box-shadow var(--lucent-duration-fast) var(--lucent-easing-default)',
+            ].join(', '),
+          }}
+        >
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden style={{ flexShrink: 0 }}>
+            <rect x="1" y="2" width="12" height="11" rx="2" stroke="currentColor" strokeWidth="1.3" />
+            <path d="M1 6h12" stroke="currentColor" strokeWidth="1.3" />
+            <path d="M4 1v2M10 1v2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+          </svg>
+          <span style={{ flex: 1, textAlign: 'left' }}>
+            {formatRange(selected, placeholder)}
+          </span>
+        </button>
+      )}
 
       {hasError && (
         <span

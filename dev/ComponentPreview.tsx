@@ -1,7 +1,6 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { LucentProvider, useLucent, createTheme } from '../src/index.js';
 import { LucentDevTools } from '../src/devtools/index.js';
-import { hexToHsl, hslToHex } from '../src/tokens/color.js';
 import type { PaletteName, ShapeName, ShadowName } from '../src/tokens/presets/types.js';
 import type { ColorPalette } from '../src/tokens/presets/types.js';
 import {
@@ -50,6 +49,10 @@ import { DateRangePicker } from '../src/components/molecules/DateRangePicker/ind
 import { FileUpload } from '../src/components/molecules/FileUpload/index.js';
 import { Timeline } from '../src/components/molecules/Timeline/index.js';
 import { Menu, MenuItem, MenuSeparator, MenuGroup } from '../src/components/molecules/Menu/index.js';
+import { FilterMultiSelect } from '../src/components/molecules/FilterMultiSelect/index.js';
+import { FilterSelect } from '../src/components/molecules/FilterSelect/index.js';
+import { FilterSearch } from '../src/components/molecules/FilterSearch/index.js';
+import { FilterDateRange } from '../src/components/molecules/FilterDateRange/index.js';
 import { ToastProvider, useToast, type ToastPosition } from '../src/components/molecules/Toast/index.js';
 import { ColorPicker, type ColorPresetGroup } from '../src/components/atoms/ColorPicker/index.js';
 import { ColorSwatch } from '../src/components/atoms/ColorSwatch/index.js';
@@ -57,10 +60,17 @@ import { SegmentedControl } from '../src/components/atoms/SegmentedControl/index
 import { Stack as StackAtom } from '../src/components/atoms/Stack/index.js';
 import { Row as RowAtom } from '../src/components/atoms/Row/index.js';
 import { Progress } from '../src/components/atoms/Progress/index.js';
+import { Stepper } from '../src/components/molecules/Stepper/index.js';
 import { SplitButton } from '../src/components/atoms/SplitButton/index.js';
 import { ButtonGroup } from '../src/components/atoms/ButtonGroup/index.js';
 import { NavMenu } from '../src/components/molecules/NavMenu/index.js';
-import type { LucentTokens, Theme, ThemeAnchors, UploadFile } from '../src/index.js';
+import type { Theme, ThemeAnchors, UploadFile } from '../src/index.js';
+import { ProfileCard } from './compositions/ProfileCard.js';
+import { PreferencesCard } from './compositions/PreferencesCard.js';
+import { PricingTable } from './compositions/PricingTable.js';
+import { NotificationFeed } from './compositions/NotificationFeed.js';
+import { OnboardingFlow } from './compositions/OnboardingFlow.js';
+import { DashboardHeader } from './compositions/DashboardHeader.js';
 
 // ─── Palette map ────────────────────────────────────────────────────────────
 
@@ -147,198 +157,21 @@ function StarIcon() {
   );
 }
 
-const PALETTE_OPTIONS: { value: PaletteName; label: string; swatch: string }[] = [
-  { value: 'default', label: 'Default', swatch: '#111827' },
-  { value: 'brand', label: 'Brand', swatch: '#e9c96b' },
-  { value: 'indigo', label: 'Indigo', swatch: '#6366f1' },
-  { value: 'violet', label: 'Violet', swatch: '#8b5cf6' },
-  { value: 'emerald', label: 'Emerald', swatch: '#10b981' },
-  { value: 'teal', label: 'Teal', swatch: '#0d9488' },
-  { value: 'rose', label: 'Rose', swatch: '#f43f5e' },
-  { value: 'coral', label: 'Coral', swatch: '#e8624a' },
-  { value: 'amber', label: 'Amber', swatch: '#d97706' },
-  { value: 'ocean', label: 'Ocean', swatch: '#0ea5e9' },
-  { value: 'slate', label: 'Slate', swatch: '#475569' },
-  { value: 'sage', label: 'Sage', swatch: '#5f8c6e' },
-];
-
-const SHAPE_OPTIONS: ShapeName[] = ['sharp', 'rounded', 'pill'];
-const SHADOW_OPTIONS: ShadowName[] = ['flat', 'subtle', 'elevated'];
-
-type DensityPreset = 'compact' | 'default' | 'comfortable';
-type FontScalePreset = 'small' | 'default' | 'large';
-const DENSITY_PERCENT: Record<DensityPreset, number> = { compact: 65, default: 100, comfortable: 140 };
-const FONT_SCALE_PERCENT: Record<FontScalePreset, number> = { small: 90, default: 100, large: 110 };
-const DENSITY_OPTIONS: { value: DensityPreset; label: string }[] = [
-  { value: 'compact', label: 'Compact' },
-  { value: 'default', label: 'Default' },
-  { value: 'comfortable', label: 'Comfortable' },
-];
-const FONT_SCALE_OPTIONS: { value: FontScalePreset; label: string }[] = [
-  { value: 'small', label: 'Small' },
-  { value: 'default', label: 'Default' },
-  { value: 'large', label: 'Large' },
-];
-
-const QUICK_PRESETS: { name: string; palette: PaletteName; shape: ShapeName; shadow: ShadowName; density: DensityPreset; fontScale: FontScalePreset }[] = [
-  { name: 'Modern', palette: 'indigo', shape: 'rounded', shadow: 'subtle', density: 'default', fontScale: 'default' },
-  { name: 'Enterprise', palette: 'default', shape: 'sharp', shadow: 'flat', density: 'compact', fontScale: 'small' },
-  { name: 'Playful', palette: 'rose', shape: 'pill', shadow: 'elevated', density: 'comfortable', fontScale: 'large' },
-];
-
-// Anchor derivation chain — which live tokens derive from each anchor
-const ANCHOR_DERIVATIONS: { anchor: keyof ThemeAnchors; label: string; derived: { key: keyof LucentTokens; label: string }[] }[] = [
-  { anchor: 'bgBase', label: 'Background', derived: [
-    { key: 'bgSubtle', label: 'subtle' }, { key: 'surface', label: 'surface' }, { key: 'surfaceTint', label: 'tint' },
-  ]},
-  { anchor: 'borderDefault', label: 'Border', derived: [
-    { key: 'borderSubtle', label: 'subtle' }, { key: 'borderStrong', label: 'strong' },
-  ]},
-  { anchor: 'textPrimary', label: 'Text', derived: [
-    { key: 'textSecondary', label: 'secondary' }, { key: 'textDisabled', label: 'disabled' },
-  ]},
-  { anchor: 'accentDefault', label: 'Accent', derived: [
-    { key: 'accentHover', label: 'hover' },
-    { key: 'accentSubtle', label: 'subtle' }, { key: 'accentBorder', label: 'border' },
-    { key: 'accentFg', label: 'fg' },
-  ]},
-];
-
-const STATUS_ANCHORS: { anchor: keyof ThemeAnchors; label: string; derived: { key: keyof LucentTokens; label: string }[] }[] = [
-  { anchor: 'successDefault', label: 'Success', derived: [{ key: 'successSubtle', label: 'subtle' }, { key: 'successText', label: 'text' }] },
-  { anchor: 'warningDefault', label: 'Warning', derived: [{ key: 'warningSubtle', label: 'subtle' }, { key: 'warningText', label: 'text' }] },
-  { anchor: 'dangerDefault', label: 'Danger', derived: [{ key: 'dangerSubtle', label: 'subtle' }, { key: 'dangerText', label: 'text' }] },
-  { anchor: 'infoDefault', label: 'Info', derived: [{ key: 'infoSubtle', label: 'subtle' }, { key: 'infoText', label: 'text' }] },
-];
-
 export type DevTab = 'components' | 'tokens' | 'playground';
 
 export function ComponentPreview({ tab, setTab }: { tab: DevTab; setTab: (t: DevTab) => void }) {
   const [theme, setTheme] = useState<Theme>('light');
-  const [palette, setPalette] = useState<PaletteName | null>('default');
-  const [anchors, setAnchors] = useState<ThemeAnchors>(() => ({ ...PALETTE_MAP.default.light, textPrimary: '#111111' }));
-  const [shape, setShape] = useState<ShapeName>('rounded');
-  const [shadow, setShadow] = useState<ShadowName>('subtle');
-  const [scaleOverrides, setScaleOverrides] = useState<Partial<LucentTokens>>({});
   const [toastPosition, setToastPosition] = useState<ToastPosition>('bottom-right');
 
-  // Derive tinted bgBase and borderDefault from an accent color
-  const deriveFromAccent = (accent: string, t: Theme): { bgBase: string; borderDefault: string } => {
-    const [h, s] = hexToHsl(accent);
-    if (t === 'light') {
-      return {
-        bgBase: hslToHex(h, Math.min(s, 0.3), 0.99),
-        borderDefault: hslToHex(h, Math.min(s, 0.15), 0.88),
-      };
-    }
-    return {
-      bgBase: hslToHex(h, Math.min(s, 0.2), 0.07),
-      borderDefault: hslToHex(h, Math.min(s, 0.12), 0.18),
-    };
-  };
-
-  const handleAnchorChange = (key: keyof ThemeAnchors, value: string) => {
-    setPalette(null); // clear palette — colors are now custom
-    if (key === 'accentDefault') {
-      // Cascade: accent drives bgBase + borderDefault; keep text neutral; drop surface to re-derive
-      const derived = deriveFromAccent(value, theme);
-      setAnchors(prev => {
-        const next = {
-          ...prev,
-          accentDefault: value,
-          bgBase: derived.bgBase,
-          borderDefault: derived.borderDefault,
-          textPrimary: theme === 'light' ? '#111111' : '#eeeeee',
-        };
-        delete next.surface;
-        return next;
-      });
-    } else if (key === 'bgBase') {
-      // When bgBase changes manually, drop explicit surface so it re-derives
-      setAnchors(prev => {
-        const next = { ...prev, bgBase: value };
-        delete next.surface;
-        return next;
-      });
-    } else {
-      setAnchors(prev => ({ ...prev, [key]: value }));
-    }
-  };
-
-  const applyPalette = (p: PaletteName) => {
-    setPalette(p);
-    const paletteAnchors = PALETTE_MAP[p][theme];
-    setAnchors({
-      ...paletteAnchors,
-      // textPrimary is optional in ThemeAnchors; ensure it's always set
-      textPrimary: paletteAnchors.textPrimary ?? (theme === 'light' ? '#111111' : '#eeeeee'),
-    });
-  };
-
-  const applyShape = (s: ShapeName) => {
-    setShape(s);
-    // Clear any radius scale overrides so the preset takes effect
-    setScaleOverrides(prev => {
-      const next = { ...prev };
-      delete next.radiusSm; delete next.radiusMd; delete next.radiusLg;
-      delete next.radiusXl; delete next.radiusFull;
-      return next;
-    });
-  };
-
-  // Target scale presets — set by quick presets, applied by Inner
-  const [targetDensity, setTargetDensity] = useState<DensityPreset>('default');
-  const [targetFontScale, setTargetFontScale] = useState<FontScalePreset>('default');
-
-  const applyQuickPreset = (qp: typeof QUICK_PRESETS[number]) => {
-    applyPalette(qp.palette);
-    applyShape(qp.shape);
-    setShadow(qp.shadow);
-    setTargetDensity(qp.density);
-    setTargetFontScale(qp.fontScale);
-    setScaleOverrides({});
-  };
-
-  const handleScaleOverride = (key: keyof LucentTokens, value: string) => {
-    setScaleOverrides(prev => ({ ...prev, [key]: value }));
-  };
-
-  const resetAll = () => {
-    setPalette('default');
-    const pa = PALETTE_MAP.default[theme];
-    setAnchors({ ...pa, textPrimary: pa.textPrimary ?? (theme === 'light' ? '#111111' : '#eeeeee') });
-    setShape('rounded');
-    setShadow('subtle');
-    setTargetDensity('default');
-    setTargetFontScale('default');
-    setScaleOverrides({});
-  };
-
-  // Compute final tokens: anchor-derived colors + shape/shadow presets + scale overrides
+  // Compute final tokens synchronously from theme
   const finalTokens = useMemo(() => {
+    const pa = PALETTE_MAP.default[theme];
+    const anchors: ThemeAnchors = { ...pa, textPrimary: pa.textPrimary ?? (theme === 'light' ? '#111111' : '#eeeeee') };
     const colorTokens = createTheme(anchors, theme);
-    const shapeTokens = SHAPE_MAP[shape].tokens;
-    const shadowTokens = SHADOW_MAP[shadow][theme];
-    return { ...colorTokens, ...shapeTokens, ...shadowTokens, ...scaleOverrides };
-  }, [anchors, theme, shape, shadow, scaleOverrides]);
-
-  // Sync anchors when theme toggles (use the palette's light/dark anchors, or re-derive custom)
-  const prevThemeRef = useRef(theme);
-  useEffect(() => {
-    if (prevThemeRef.current !== theme) {
-      prevThemeRef.current = theme;
-      if (palette) {
-        const pa = PALETTE_MAP[palette][theme];
-        setAnchors({ ...pa, textPrimary: pa.textPrimary ?? (theme === 'light' ? '#111111' : '#eeeeee') });
-      } else {
-        // Custom colors — re-derive bg/border from current accent for new theme
-        setAnchors(prev => {
-          const derived = deriveFromAccent(prev.accentDefault, theme);
-          return { ...prev, ...derived, textPrimary: theme === 'light' ? '#111111' : '#eeeeee' };
-        });
-      }
-    }
-  }, [theme, palette]);
+    const shapeTokens = SHAPE_MAP.rounded.tokens;
+    const shadowTokens = SHADOW_MAP.subtle[theme];
+    return { ...colorTokens, ...shapeTokens, ...shadowTokens };
+  }, [theme]);
 
   return (
     <LucentProvider theme={theme} tokens={finalTokens}>
@@ -347,21 +180,7 @@ export function ComponentPreview({ tab, setTab }: { tab: DevTab; setTab: (t: Dev
           tab={tab}
           setTab={setTab}
           theme={theme}
-          palette={palette}
-          anchors={anchors}
-          shape={shape}
-          shadow={shadow}
-          scaleOverrides={scaleOverrides}
           onToggleTheme={() => setTheme(t => t === 'light' ? 'dark' : 'light')}
-          onChangePalette={applyPalette}
-          onChangeAnchor={handleAnchorChange}
-          onChangeShape={applyShape}
-          onChangeShadow={setShadow}
-          onScaleOverride={handleScaleOverride}
-          onQuickPreset={applyQuickPreset}
-          onReset={resetAll}
-          targetDensity={targetDensity}
-          targetFontScale={targetFontScale}
           toastPosition={toastPosition}
           onChangeToastPosition={setToastPosition}
         />
@@ -372,48 +191,36 @@ export function ComponentPreview({ tab, setTab }: { tab: DevTab; setTab: (t: Dev
 }
 
 function Inner({
-  tab, setTab, theme, palette, anchors, shape, shadow, scaleOverrides,
-  onToggleTheme, onChangePalette, onChangeAnchor, onChangeShape, onChangeShadow,
-  onScaleOverride, onQuickPreset, onReset, targetDensity, targetFontScale,
+  tab, setTab, theme,
+  onToggleTheme,
   toastPosition, onChangeToastPosition,
 }: {
   tab: DevTab;
   setTab: (t: DevTab) => void;
   theme: Theme;
-  palette: PaletteName | null;
-  anchors: ThemeAnchors;
-  shape: ShapeName;
-  shadow: ShadowName;
-  scaleOverrides: Partial<LucentTokens>;
   onToggleTheme: () => void;
-  onChangePalette: (p: PaletteName) => void;
-  onChangeAnchor: (key: keyof ThemeAnchors, value: string) => void;
-  onChangeShape: (s: ShapeName) => void;
-  onChangeShadow: (s: ShadowName) => void;
-  onScaleOverride: (key: keyof LucentTokens, value: string) => void;
-  onQuickPreset: (qp: typeof QUICK_PRESETS[number]) => void;
-  onReset: () => void;
-  targetDensity: DensityPreset;
-  targetFontScale: FontScalePreset;
   toastPosition: ToastPosition;
   onChangeToastPosition: (p: ToastPosition) => void;
 }) {
   const { tokens } = useLucent();
   const [componentFilter, setComponentFilter] = useState('');
 
-  const sectionGroups: Record<string, { label: string; tier: 'atom' | 'molecule' | 'recipe'; items: string[] }> = {
+  const sectionGroups: Record<string, { label: string; tier: 'atom' | 'molecule' | 'pattern' | 'composition'; items: string[] }> = {
     buttons:     { label: 'Buttons & Actions', tier: 'atom', items: ['Button', 'SplitButton', 'ButtonGroup', 'Toggle', 'SegmentedControl'] },
     inputs:      { label: 'Input Fields',      tier: 'atom', items: ['Input', 'Textarea', 'Select', 'Checkbox', 'Radio', 'Slider', 'ColorPicker', 'ColorSwatch'] },
     text:        { label: 'Text & Labels',      tier: 'atom', items: ['Text', 'Badge', 'Chip', 'Tag', 'Icon', 'Tooltip', 'CodeBlock'] },
     media:       { label: 'Media & Status',     tier: 'atom', items: ['Avatar', 'Spinner', 'Progress', 'Divider'] },
     layout:      { label: 'Layout',             tier: 'atom', items: ['Stack', 'Row', 'Table'] },
     forms:       { label: 'Forms',              tier: 'molecule', items: ['FormField', 'SearchInput', 'MultiSelect', 'DatePicker', 'DateRangePicker', 'FileUpload'] },
+    filters:     { label: 'Filters',            tier: 'molecule', items: ['FilterSearch', 'FilterSelect', 'FilterMultiSelect', 'FilterDateRange'] },
     containers:  { label: 'Containers',         tier: 'molecule', items: ['Card', 'Alert', 'EmptyState', 'Skeleton', 'Collapsible'] },
-    navigation:  { label: 'Navigation',         tier: 'molecule', items: ['Breadcrumb', 'Tabs', 'NavLink', 'NavMenu', 'PageLayout'] },
+    navigation:  { label: 'Navigation',         tier: 'molecule', items: ['Breadcrumb', 'Tabs', 'NavLink', 'NavMenu', 'PageLayout', 'Stepper'] },
     data:        { label: 'Data & Tables',      tier: 'molecule', items: ['DataTable', 'Timeline'] },
     overlays:    { label: 'Overlays & Menus',   tier: 'molecule', items: ['Menu', 'CommandPalette', 'Toast'] },
-    'r-cards':   { label: 'Cards',              tier: 'recipe', items: ['ProfileCard', 'CollapsibleCard', 'EmptyStateCard'] },
-    'r-layouts': { label: 'Layouts',            tier: 'recipe', items: ['SettingsPanel', 'FormLayout', 'StatsRow', 'ActionBar'] },
+    'r-cards':   { label: 'Cards',              tier: 'pattern', items: ['ProfileCard', 'ProductItemCard', 'AnnouncementCard', 'CollapsibleCard', 'EmptyStateCard'] },
+    'r-layouts': { label: 'Layouts',            tier: 'pattern', items: ['SettingsPanel', 'FormLayout', 'StatsRow', 'ActionBar', 'ConfirmationDialog', 'BulkActionBar'] },
+    'r-filters': { label: 'Filters',           tier: 'pattern', items: ['SearchFilterBar'] },
+    'c-all':     { label: 'All Compositions',   tier: 'composition', items: ['GoldenProfileCard', 'GoldenPreferencesCard', 'GoldenPricingTable', 'GoldenNotificationFeed', 'GoldenOnboardingFlow', 'GoldenDashboardHeader'] },
   };
 
   const allSections = Object.values(sectionGroups).flatMap(g => g.items);
@@ -450,101 +257,43 @@ function Inner({
   const [navIcons, setNavIcons] = useState(false);
   const [navSize, setNavSize] = useState<'sm' | 'md' | 'lg'>('sm');
   const [settingsTab, setSettingsTab] = useState<'profile' | 'notifications' | 'security'>('profile');
+  const [sfbSearchOpen, setSfbSearchOpen] = useState(false);
+  const [sfbTags, setSfbTags] = useState<Set<string>>(new Set(['data-science']));
+  const toggleSfbTag = (tag: string) => setSfbTags(prev => { const next = new Set(prev); if (next.has(tag)) next.delete(tag); else next.add(tag); return next; });
+  const [sfbStatuses, setSfbStatuses] = useState<Set<string>>(new Set());
+  const toggleSfbStatus = (s: string) => setSfbStatuses(prev => { if (s === 'all') return new Set(); const next = new Set(prev); if (next.has(s)) next.delete(s); else next.add(s); return next; });
+  const [sfbOpenMenu, setSfbOpenMenu] = useState<string | null>(null);
+  const sfbMenuProps = (id: string) => ({ open: sfbOpenMenu === id, onOpenChange: (open: boolean) => setSfbOpenMenu(open ? id : null) });
+  const sfbKeepOpen = (id: string) => setSfbOpenMenu(id);
+  const [sfbDateRange, setSfbDateRange] = useState<{ start: Date; end: Date } | undefined>();
+  const sfbHasFilters = sfbStatuses.size > 0 || sfbTags.size > 0 || sfbDateRange !== undefined;
+  const sfbClearAll = () => { setSfbStatuses(new Set()); setSfbTags(new Set()); setSfbDateRange(undefined); setSfbSearch(''); setSfbSearchOpen(false); };
 
-  // Scale preset state
-  const [density, setDensity] = useState<DensityPreset>('default');
-  const [fontScale, setFontScale] = useState<FontScalePreset>('default');
-  // Derive radius slider value from live token
-  const radiusPx = (() => {
-    const raw = tokens.radiusLg;
-    if (raw.endsWith('px')) return parseInt(raw);
-    if (raw.endsWith('rem')) return Math.round(parseFloat(raw) * 14); // 14px base
-    return 8;
-  })();
-  const baseFontSizesRef = useRef<Record<string, string>>({});
-  const baseSpaceRef = useRef<Record<string, string>>({});
-
-  // Capture base font/space values once for scaling
-  useEffect(() => {
-    if (Object.keys(baseFontSizesRef.current).length === 0) {
-      ['fontSizeXs','fontSizeSm','fontSizeMd','fontSizeLg','fontSizeXl','fontSize2xl','fontSize3xl'].forEach(k => {
-        baseFontSizesRef.current[k] = tokens[k as keyof typeof tokens] as string;
-      });
-    }
-    if (Object.keys(baseSpaceRef.current).length === 0) {
-      Object.keys(tokens).filter(k => k.startsWith('space')).forEach(k => {
-        baseSpaceRef.current[k] = tokens[k as keyof typeof tokens] as string;
-      });
-    }
-  }, [tokens]);
-
-  // Sync controls when quick preset sets target values
-  useEffect(() => {
-    if (targetFontScale !== fontScale) {
-      setFontScale(targetFontScale);
-      const scale = FONT_SCALE_PERCENT[targetFontScale] / 100;
-      Object.entries(baseFontSizesRef.current).forEach(([k, v]) => {
-        const num = parseFloat(v); const unit = v.replace(/[\d.]/g, '');
-        onScaleOverride(k as keyof LucentTokens, `${num * scale}${unit}`);
-      });
-    }
-    if (targetDensity !== density) {
-      setDensity(targetDensity);
-      const scale = DENSITY_PERCENT[targetDensity] / 100;
-      Object.entries(baseSpaceRef.current).forEach(([k, v]) => {
-        const num = parseFloat(v); const unit = v.replace(/[\d.]/g, '');
-        onScaleOverride(k as keyof LucentTokens, `${num * scale}${unit}`);
-      });
-    }
-  }, [targetFontScale, targetDensity]);
-
-  // Handlers for density and font scale controls
-  const handleDensityChange = (v: string) => {
-    const d = v as DensityPreset;
-    setDensity(d);
-    const scale = DENSITY_PERCENT[d] / 100;
-    Object.entries(baseSpaceRef.current).forEach(([k, val]) => {
-      const num = parseFloat(val); const unit = val.replace(/[\d.]/g, '');
-      onScaleOverride(k as keyof LucentTokens, `${num * scale}${unit}`);
-    });
-  };
-  const handleFontScaleChange = (v: string) => {
-    const f = v as FontScalePreset;
-    setFontScale(f);
-    const scale = FONT_SCALE_PERCENT[f] / 100;
-    Object.entries(baseFontSizesRef.current).forEach(([k, val]) => {
-      const num = parseFloat(val); const unit = val.replace(/[\d.]/g, '');
-      onScaleOverride(k as keyof LucentTokens, `${num * scale}${unit}`);
-    });
-  };
-
-  // CSS variable overrides for self-demonstrating controls
-  const tokenToCssVar = (key: string) =>
-    '--lucent-' + key.replace(/([A-Z])/g, m => `-${m.toLowerCase()}`).replace(/([a-z])(\d)/g, (_, a, b) => `${a}-${b}`);
-
-  const densityWrapperStyle = useMemo((): React.CSSProperties => {
-    const pct = DENSITY_PERCENT[density];
-    if (pct === 100 || Object.keys(baseSpaceRef.current).length === 0) return {};
-    const scale = pct / 100;
-    const vars: Record<string, string> = {};
-    Object.entries(baseSpaceRef.current).forEach(([k, v]) => {
-      const num = parseFloat(v); const unit = v.replace(/[\d.]/g, '');
-      vars[tokenToCssVar(k)] = `${num * scale}${unit}`;
-    });
-    return vars as React.CSSProperties;
-  }, [density, tokens]);
-
-  const fontScaleWrapperStyle = useMemo((): React.CSSProperties => {
-    const pct = FONT_SCALE_PERCENT[fontScale];
-    if (pct === 100 || Object.keys(baseFontSizesRef.current).length === 0) return {};
-    const scale = pct / 100;
-    const vars: Record<string, string> = {};
-    Object.entries(baseFontSizesRef.current).forEach(([k, v]) => {
-      const num = parseFloat(v); const unit = v.replace(/[\d.]/g, '');
-      vars[tokenToCssVar(k)] = `${num * scale}${unit}`;
-    });
-    return vars as React.CSSProperties;
-  }, [fontScale, tokens]);
+  // Filter bar + DataTable composition
+  const [sfbSearch, setSfbSearch] = useState('');
+  const sfbTagOptions = [
+    { value: 'data-science', label: 'Data Science', swatch: '#6366f1' },
+    { value: 'devops', label: 'DevOps', swatch: '#10b981' },
+    { value: 'hot', label: 'Hot Candidate', swatch: '#f59e0b' },
+    { value: 'react', label: 'React', swatch: '#3b82f6' },
+  ] as const;
+  const sfbCandidates = [
+    { name: 'Alice Chen', role: 'Engineer', status: 'Active', tags: ['react', 'data-science'], added: new Date(2026, 2, 5) },
+    { name: 'Bob Martinez', role: 'Designer', status: 'Active', tags: ['devops'], added: new Date(2026, 2, 10) },
+    { name: 'Carol Park', role: 'Product', status: 'Archived', tags: ['data-science'], added: new Date(2026, 1, 20) },
+    { name: 'Dan Okafor', role: 'Engineer', status: 'On hold', tags: ['react', 'devops'], added: new Date(2026, 2, 15) },
+    { name: 'Eve Johansson', role: 'Marketing', status: 'Active', tags: ['hot'], added: new Date(2026, 2, 22) },
+    { name: 'Frank Liu', role: 'Engineer', status: 'Active', tags: ['react'], added: new Date(2026, 2, 1) },
+    { name: 'Grace Kim', role: 'Designer', status: 'Archived', tags: ['data-science', 'hot'], added: new Date(2026, 1, 14) },
+    { name: 'Hiro Tanaka', role: 'Engineer', status: 'Active', tags: ['devops', 'react'], added: new Date(2026, 2, 28) },
+  ];
+  const sfbFilteredCandidates = sfbCandidates.filter(c => {
+    if (sfbSearch && !c.name.toLowerCase().includes(sfbSearch.toLowerCase()) && !c.role.toLowerCase().includes(sfbSearch.toLowerCase())) return false;
+    if (sfbStatuses.size > 0 && !sfbStatuses.has(c.status.toLowerCase().replace(' ', '-'))) return false;
+    if (sfbTags.size > 0 && !c.tags.some(t => sfbTags.has(t))) return false;
+    if (sfbDateRange && (c.added < sfbDateRange.start || c.added > sfbDateRange.end)) return false;
+    return true;
+  });
 
   const allFruits = ['Apple', 'Apricot', 'Banana', 'Blueberry', 'Cherry', 'Grape', 'Mango', 'Orange', 'Peach', 'Pear', 'Pineapple', 'Strawberry'];
   const searchResults = searchQuery.length > 0
@@ -555,7 +304,8 @@ function Inner({
 
   const atomGroups = Object.entries(sectionGroups).filter(([, g]) => g.tier === 'atom');
   const moleculeGroups = Object.entries(sectionGroups).filter(([, g]) => g.tier === 'molecule');
-  const recipeGroups = Object.entries(sectionGroups).filter(([, g]) => g.tier === 'recipe');
+  const patternGroups = Object.entries(sectionGroups).filter(([, g]) => g.tier === 'pattern');
+  const compositionGroups = Object.entries(sectionGroups).filter(([, g]) => g.tier === 'composition');
 
   const navSidebar = (
     <div style={{ padding: tokens.space3, display: 'flex', flexDirection: 'column', gap: tokens.space2 }}>
@@ -646,8 +396,8 @@ function Inner({
           ))}
           <NavMenu.Item as="button" isActive={componentFilter === 'mol-patterns'} onClick={() => setComponentFilter('mol-patterns')} icon={navIcons ? <NavIcon /> : undefined}>Patterns</NavMenu.Item>
         </NavMenu.Group>
-        <NavMenu.Group label="Recipes">
-          {recipeGroups.map(([key, group]) => (
+        <NavMenu.Group label="Patterns">
+          {patternGroups.map(([key, group]) => (
             <NavMenu.Item
               key={key}
               as="button"
@@ -671,140 +421,25 @@ function Inner({
             </NavMenu.Item>
           ))}
         </NavMenu.Group>
+        <NavMenu.Group label="Compositions">
+          {compositionGroups.map(([key, group]) => (
+            group.items.map(name => (
+              <NavMenu.Item
+                key={name}
+                as="button"
+                isActive={componentFilter === name}
+                onClick={() => setComponentFilter(name)}
+                icon={navIcons ? <NavIcon /> : undefined}
+              >
+                {name.replace(/^Golden/, '').replace(/([A-Z])/g, ' $1').trim()}
+              </NavMenu.Item>
+            ))
+          ))}
+        </NavMenu.Group>
         <NavMenu.Separator />
         <NavMenu.Item as="button" isActive={componentFilter === 'changelog'} onClick={() => setComponentFilter('changelog')} icon={navIcons ? <NavIcon /> : undefined}>Changelog</NavMenu.Item>
         <NavMenu.Item as="button" isActive={componentFilter === 'about'} onClick={() => setComponentFilter('about')} icon={navIcons ? <NavIcon /> : undefined}>About</NavMenu.Item>
       </NavMenu>
-    </div>
-  );
-
-  // ─── Derived-variant dot ────────────────────────────────────────────────────
-  const dot = (color: string, label: string) => (
-    <Tooltip content={label}>
-      <ColorSwatch color={color} size="xs" shape="circle" />
-    </Tooltip>
-  );
-
-  // Match current state to a quick preset (or null if custom)
-  const activeQuickPreset = QUICK_PRESETS.find(
-    qp => palette === qp.palette && shape === qp.shape && shadow === qp.shadow
-  )?.name ?? undefined;
-
-  const customizerSidebar = (
-    <div style={{ padding: tokens.space3, display: 'flex', flexDirection: 'column', gap: tokens.space1 }}>
-      {/* ── Quick Presets ── */}
-      <Collapsible trigger="Quick start" defaultOpen>
-        <div style={{ paddingTop: tokens.space2 }}>
-          <SegmentedControl
-            size="sm"
-            options={QUICK_PRESETS.map(qp => ({ value: qp.name, label: qp.name }))}
-            value={activeQuickPreset}
-            onChange={v => {
-              const qp = QUICK_PRESETS.find(p => p.name === v);
-              if (qp) onQuickPreset(qp);
-            }}
-          />
-        </div>
-      </Collapsible>
-
-      {/* ── Palette ── */}
-      <Collapsible trigger="Palette" defaultOpen>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: tokens.space1, paddingTop: tokens.space2 }}>
-          {PALETTE_OPTIONS.map(p => (
-            <Button key={p.value} size="xs" variant={palette === p.value ? 'primary' : 'outline'}
-              onClick={() => onChangePalette(p.value)}
-              leftIcon={<ColorSwatch color={p.swatch} size="xs" />}>
-              {p.label}
-            </Button>
-          ))}
-        </div>
-      </Collapsible>
-
-      {/* ── Anchor Colors + Derivations ── */}
-      <Collapsible trigger="Colors" defaultOpen>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.space2, paddingTop: tokens.space2 }}>
-          {ANCHOR_DERIVATIONS.map(({ anchor, label, derived }) => (
-            <div key={anchor} style={{ display: 'flex', alignItems: 'center', gap: tokens.space2 }}>
-              <ColorPicker value={anchors[anchor]} onChange={v => onChangeAnchor(anchor, v)} label={label} size="sm" inline presetGroups={[]} />
-              <div style={{ display: 'flex', gap: 3, marginLeft: 'auto' }}>
-                {derived.map(d => dot(tokens[d.key] as string, d.label))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </Collapsible>
-
-      {/* ── Status Colors ── */}
-      <Collapsible trigger="Status" defaultOpen>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.space2, paddingTop: tokens.space2 }}>
-          {STATUS_ANCHORS.map(({ anchor, label, derived }) => (
-            <div key={anchor} style={{ display: 'flex', alignItems: 'center', gap: tokens.space2 }}>
-              <ColorPicker value={anchors[anchor]} onChange={v => onChangeAnchor(anchor, v)} label={label} size="sm" inline presetGroups={[]} />
-              <div style={{ display: 'flex', gap: 3, marginLeft: 'auto' }}>
-                {derived.map(d => dot(tokens[d.key] as string, d.label))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </Collapsible>
-
-      {/* ── Layout ── */}
-      <Collapsible trigger="Layout" defaultOpen>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.space3, paddingTop: tokens.space2 }}>
-          <div>
-            <Slider label={`Radius (${radiusPx}px)`} size="sm" min={0} max={32} value={radiusPx} onChange={e => {
-              const v = parseInt(e.target.value);
-              ['radiusSm','radiusMd','radiusLg','radiusXl','radiusFull'].forEach(k =>
-                onScaleOverride(k as keyof LucentTokens, `${v}px`)
-              );
-            }} />
-            <SegmentedControl
-              size="sm"
-              options={SHAPE_OPTIONS.map(s => ({ value: s, label: s[0].toUpperCase() + s.slice(1) }))}
-              value={shape}
-              onChange={v => onChangeShape(v as ShapeName)}
-              style={{ marginTop: tokens.space2 }}
-            />
-          </div>
-          <div>
-            <Slider label="Elevation" size="sm" min={0} max={2} step={1} value={SHADOW_OPTIONS.indexOf(shadow)} onChange={e => {
-              onChangeShadow(SHADOW_OPTIONS[parseInt(e.target.value)]);
-            }} />
-            <SegmentedControl
-              size="sm"
-              options={SHADOW_OPTIONS.map(s => ({ value: s, label: s[0].toUpperCase() + s.slice(1) }))}
-              value={shadow}
-              onChange={v => onChangeShadow(v as ShadowName)}
-              style={{ marginTop: tokens.space2 }}
-            />
-          </div>
-          <div>
-            <Text as="span" size="xs" color="secondary" style={{ display: 'block', marginBottom: tokens.space1 }}>Density</Text>
-            <div style={densityWrapperStyle}>
-              <SegmentedControl
-                size="sm"
-                options={DENSITY_OPTIONS}
-                value={density}
-                onChange={handleDensityChange}
-              />
-            </div>
-          </div>
-          <div>
-            <Text as="span" size="xs" color="secondary" style={{ display: 'block', marginBottom: tokens.space1 }}>Font scale</Text>
-            <div style={fontScaleWrapperStyle}>
-              <SegmentedControl
-                size="sm"
-                options={FONT_SCALE_OPTIONS}
-                value={fontScale}
-                onChange={handleFontScaleChange}
-              />
-            </div>
-          </div>
-        </div>
-      </Collapsible>
-
-      <Divider spacing={tokens.space2} />
-      <Button size="sm" variant="outline" onClick={onReset}>Reset</Button>
     </div>
   );
 
@@ -814,7 +449,37 @@ function Inner({
     { key: 'playground', label: 'Playground' },
   ];
 
+  // ─── Cmd+K command palette items ──────────────────────────────────────────
+  const paletteCommands = useMemo(() => {
+    const items: import('../src/components/molecules/CommandPalette/CommandPalette.js').CommandItem[] = [];
+
+    // All component sections grouped by tier
+    for (const [, group] of Object.entries(sectionGroups)) {
+      const tierLabel = group.tier === 'atom' ? 'Atoms' : group.tier === 'molecule' ? 'Molecules' : group.tier === 'pattern' ? 'Patterns' : 'Compositions';
+      for (const name of group.items) {
+        items.push({
+          id: name,
+          label: name,
+          description: group.label,
+          group: tierLabel,
+          onSelect: () => { setTab('components'); setComponentFilter(name); },
+        });
+      }
+    }
+
+    // Special pages
+    items.push(
+      { id: 'tokens-page', label: 'Tokens', description: 'Token reference', group: 'Pages', onSelect: () => setTab('tokens') },
+      { id: 'playground-page', label: 'Playground', description: 'Select playground', group: 'Pages', onSelect: () => setTab('playground') },
+      { id: 'all-components', label: 'All Components', description: 'Show everything', group: 'Pages', onSelect: () => { setTab('components'); setComponentFilter(''); } },
+    );
+
+    return items;
+  }, [sectionGroups]);
+
   return (
+    <>
+    <CommandPalette commands={paletteCommands} placeholder="Jump to component…" />
     <PageLayout
       header={
         <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: `0 ${tokens.space5}` }}>
@@ -842,9 +507,6 @@ function Inner({
                 </button>
               ))}
             </nav>
-            <Text as="span" size="xs" color="secondary">
-              {theme} · {palette ?? 'custom'} / {shape} / {shadow}
-            </Text>
           </div>
           <Toggle label="Dark" checked={theme === 'dark'} onChange={onToggleTheme} />
         </div>
@@ -853,7 +515,6 @@ function Inner({
       chromeBackground="bgBase"
       mainStyle={{ background: 'var(--lucent-surface)' }}
       {...(tab === 'components' && { sidebar: navSidebar, sidebarWidth: navSize === 'lg' ? 280 : navSize === 'md' ? 250 : 220 })}
-      {...(tab === 'components' && { rightSidebar: customizerSidebar, rightSidebarWidth: 260 })}
     >
       {tab === 'components' ? (
       <div style={{ padding: tokens.space6 }}>
@@ -1418,6 +1079,54 @@ function Inner({
           <div style={{ width: 320 }}>
             <Progress value={3} max={5} label={<span>3 of 5 tasks</span>} />
           </div>
+        </Row>
+      </Section>
+
+      {/* Stepper */}
+      <Section title="Stepper" tokens={tokens} hidden={!showSection('Stepper')}>
+        <Row label="Horizontal — basic" tokens={tokens}>
+          <div style={{ width: 400 }}>
+            <Stepper steps={['Profile', 'Preferences', 'Confirm']} current={1} />
+          </div>
+        </Row>
+        <Row label="Horizontal — numbered + status" tokens={tokens}>
+          <div style={{ width: 480 }}>
+            <Stepper steps={['Basic Details', 'Company Details', 'Subscription', 'Payment']} current={2} numbered showStatus />
+          </div>
+        </Row>
+        <Row label="Horizontal — completed" tokens={tokens}>
+          <div style={{ width: 400 }}>
+            <Stepper steps={['Cart', 'Shipping', 'Payment']} current={2} showStatus />
+          </div>
+        </Row>
+        <Row label="Sizes" tokens={tokens}>
+          <div style={{ width: 360, display: 'flex', flexDirection: 'column', gap: 'var(--lucent-space-6)' }}>
+            <Stepper steps={['Step 1', 'Step 2', 'Step 3']} current={1} size="sm" />
+            <Stepper steps={['Step 1', 'Step 2', 'Step 3']} current={1} size="md" />
+            <Stepper steps={['Step 1', 'Step 2', 'Step 3']} current={1} size="lg" />
+          </div>
+        </Row>
+        <Row label="Vertical — numbered + status" tokens={tokens}>
+          <Stepper
+            orientation="vertical"
+            numbered
+            showStatus
+            size="lg"
+            current={1}
+            steps={[
+              { label: 'Basic Details', description: 'Name, email, and contact info' },
+              { label: 'Company Details', description: 'Organization and team size' },
+              { label: 'Subscription Plan', description: 'Choose your plan and billing' },
+              { label: 'Payment Details', description: 'Card information and billing address' },
+            ]}
+          />
+        </Row>
+        <Row label="Vertical — simple" tokens={tokens}>
+          <Stepper
+            orientation="vertical"
+            current={2}
+            steps={['Cart', 'Shipping', 'Payment', 'Done']}
+          />
         </Row>
       </Section>
 
@@ -2105,7 +1814,7 @@ function Inner({
             </div>
           </CardPaddingContext.Provider>
         </Row>
-        <Row label="CollapsibleCard recipe" tokens={tokens}>
+        <Row label="CollapsibleCard pattern" tokens={tokens}>
           <Card variant="ghost" padding="none" hoverable style={{ width: '100%', maxWidth: 360 }}>
             <Collapsible trigger={<Text as="span" weight="semibold" size="sm">ghost</Text>} defaultOpen>
               <Text size="sm" color="secondary">Transparent container, content floats on page.</Text>
@@ -2129,6 +1838,35 @@ function Inner({
           <Card variant="filled" padding="none" hoverable style={{ width: '100%', maxWidth: 360 }}>
             <Collapsible open={comboOpen} onOpenChange={setComboOpen} padded={false} trigger={<Text as="span" weight="semibold" size="sm">combo</Text>}>
               <Card variant="elevated" padding="sm" style={{ margin: 'var(--lucent-space-1) var(--lucent-space-2) var(--lucent-space-2)' }}>
+                <Text size="sm" color="secondary">Two-tone — flat trigger, elevated body.</Text>
+              </Card>
+            </Collapsible>
+          </Card>
+        </Row>
+        <Row label="CollapsibleCard pattern" tokens={tokens}>
+          <Card variant="ghost" padding="none" hoverable style={{ width: '100%', maxWidth: 360 }}>
+            <Collapsible trigger={<Text as="span" weight="semibold" size="sm">ghost</Text>} defaultOpen>
+              <Text size="sm" color="secondary">Transparent container, content floats on page.</Text>
+            </Collapsible>
+          </Card>
+          <Card variant="outline" padding="none" hoverable style={{ width: '100%', maxWidth: 360 }}>
+            <Collapsible trigger={<Text as="span" weight="semibold" size="sm">outline</Text>} defaultOpen>
+              <Text size="sm" color="secondary">Bordered card — the default variant.</Text>
+            </Collapsible>
+          </Card>
+          <Card variant="filled" padding="none" hoverable style={{ width: '100%', maxWidth: 360 }}>
+            <Collapsible trigger={<Text as="span" weight="semibold" size="sm">filled</Text>} defaultOpen>
+              <Text size="sm" color="secondary">Tinted background, no border.</Text>
+            </Collapsible>
+          </Card>
+          <Card variant="elevated" padding="none" hoverable style={{ width: '100%', maxWidth: 360 }}>
+            <Collapsible trigger={<Text as="span" weight="semibold" size="sm">elevated</Text>} defaultOpen>
+              <Text size="sm" color="secondary">Surface with shadow depth.</Text>
+            </Collapsible>
+          </Card>
+          <Card variant="filled" padding="none" hoverable style={{ width: '100%', maxWidth: 360 }}>
+            <Collapsible open={comboOpen} onOpenChange={setComboOpen} padded={false} trigger={<Text as="span" weight="semibold" size="sm">combo</Text>}>
+              <Card variant="elevated" padding="sm" style={{ margin: 'var(--lucent-space-3) var(--lucent-space-2) var(--lucent-space-2)' }}>
                 <Text size="sm" color="secondary">Two-tone — flat trigger, elevated body.</Text>
               </Card>
             </Collapsible>
@@ -2283,24 +2021,51 @@ function Inner({
           />
         </Row>
         <Row label="Sortable + filterable + paginated" tokens={tokens}>
-          <DataTable
-            style={{ width: '100%' }}
-            pageSize={5}
-            columns={[
-              { key: 'name', header: 'Name', sortable: true, filterable: true },
-              { key: 'role', header: 'Role', sortable: true, filterable: true },
-              { key: 'status', header: 'Status', render: (row: { name: string; role: string; status: string }) => <Badge variant={row.status === 'Active' ? 'success' : 'neutral'}>{row.status}</Badge> },
-            ]}
-            rows={[
-              { name: 'Alice', role: 'Engineer', status: 'Active' },
-              { name: 'Bob', role: 'Designer', status: 'Active' },
-              { name: 'Carol', role: 'Product', status: 'Away' },
-              { name: 'Dan', role: 'Engineer', status: 'Active' },
-              { name: 'Eve', role: 'Marketing', status: 'Away' },
-              { name: 'Frank', role: 'Engineer', status: 'Active' },
-              { name: 'Grace', role: 'Designer', status: 'Away' },
-            ]}
-          />
+          <StackAtom gap="3" style={{ width: '100%' }}>
+            <RowAtom gap="2" align="center" wrap>
+              <FilterMultiSelect
+                label="Name"
+                size="sm"
+                options={[
+                  { value: 'Alice', label: 'Alice' },
+                  { value: 'Bob', label: 'Bob' },
+                  { value: 'Carol', label: 'Carol' },
+                  { value: 'Dan', label: 'Dan' },
+                  { value: 'Eve', label: 'Eve' },
+                  { value: 'Frank', label: 'Frank' },
+                  { value: 'Grace', label: 'Grace' },
+                ]}
+              />
+              <FilterMultiSelect
+                label="Role"
+                size="sm"
+                options={[
+                  { value: 'Engineer', label: 'Engineer' },
+                  { value: 'Designer', label: 'Designer' },
+                  { value: 'Product', label: 'Product' },
+                  { value: 'Marketing', label: 'Marketing' },
+                ]}
+              />
+            </RowAtom>
+            <DataTable
+              style={{ width: '100%' }}
+              pageSize={5}
+              columns={[
+                { key: 'name', header: 'Name', sortable: true },
+                { key: 'role', header: 'Role', sortable: true },
+                { key: 'status', header: 'Status', render: (row: { name: string; role: string; status: string }) => <Badge variant={row.status === 'Active' ? 'success' : 'neutral'}>{row.status}</Badge> },
+              ]}
+              rows={[
+                { name: 'Alice', role: 'Engineer', status: 'Active' },
+                { name: 'Bob', role: 'Designer', status: 'Active' },
+                { name: 'Carol', role: 'Product', status: 'Away' },
+                { name: 'Dan', role: 'Engineer', status: 'Active' },
+                { name: 'Eve', role: 'Marketing', status: 'Away' },
+                { name: 'Frank', role: 'Engineer', status: 'Active' },
+                { name: 'Grace', role: 'Designer', status: 'Away' },
+              ]}
+            />
+          </StackAtom>
         </Row>
         <Row label="Empty state" tokens={tokens}>
           <DataTable columns={[{ key: 'name', header: 'Name' }]} rows={[]} style={{ width: 320 }} />
@@ -2310,6 +2075,7 @@ function Inner({
       <Section title="CommandPalette" tokens={tokens} hidden={!showSection('CommandPalette')}>
         <Row label="⌘K to open" tokens={tokens}>
           <CommandPalette
+            shortcutKey=""
             commands={[
               { id: 'new', label: 'New document', description: 'Create a blank document', group: 'Create', onSelect: () => {}, icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg> },
               { id: 'open', label: 'Open file…', description: 'Browse and open a file', group: 'Create', onSelect: () => {}, icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5v3a1 1 0 001 1h9a1 1 0 001-1v-3M8 3v7M5 6l3-3 3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> },
@@ -2429,6 +2195,33 @@ function Inner({
                 { id: '3', title: 'Shipped', date: 'Mar 2, 2026', description: 'FedEx tracking: 7489201837' },
                 { id: '4', title: 'Delivery failed', date: 'Mar 4, 2026', status: 'danger', description: 'No one home — will retry tomorrow.' },
                 { id: '5', title: 'Awaiting re-delivery', date: 'Mar 5, 2026', status: 'warning' },
+              ]}
+            />
+          </div>
+        </Row>
+        <Row label="Activity feed" tokens={tokens}>
+          <div style={{ width: '100%', maxWidth: 480 }}>
+            <Timeline
+              items={[
+                { id: '1', title: 'Submitted for review', date: 'week ago', status: 'success' },
+                {
+                  id: '2',
+                  title: 'Changes requested',
+                  date: '4 days ago',
+                  status: 'warning',
+                  content: (
+                    <Card variant="elevated" padding="md" radius="md">
+                      <Text size="sm" weight="semibold">Oliver Brown</Text>
+                      <div style={{ marginTop: 'var(--lucent-space-2)' }}>
+                        <Text size="sm" color="secondary">
+                          Please update the error handling in the auth module before merging.
+                        </Text>
+                      </div>
+                    </Card>
+                  ),
+                },
+                { id: '3', title: 'Resubmitted for review', date: '4h ago', status: 'info' },
+                { id: '4', title: 'Approved', date: 'just now', status: 'success' },
               ]}
             />
           </div>
@@ -2656,7 +2449,104 @@ function Inner({
         </Row>
       </Section>
 
-      {/* ─── Recipes ────────────────────────────────────────────────────────── */}
+      {/* ─── Filter Molecules ────────────────────────────────────────────── */}
+
+      <Section title="FilterSearch" tokens={tokens} hidden={!showSection('FilterSearch')}>
+        <Row label="Collapsed (default)" tokens={tokens}>
+          <FilterSearch placeholder="Search…" size="sm" />
+          <FilterSearch placeholder="Search…" size="md" />
+          <FilterSearch placeholder="Search…" size="lg" />
+        </Row>
+        <Row label="Expanded (has value)" tokens={tokens}>
+          <FilterSearch placeholder="Search candidates…" size="sm" defaultValue="Alice" />
+        </Row>
+        <Row label="Disabled" tokens={tokens}>
+          <FilterSearch placeholder="Search…" size="sm" disabled />
+        </Row>
+        <Row label="Outline variant" tokens={tokens}>
+          <FilterSearch placeholder="Search…" size="sm" variant="outline" />
+        </Row>
+      </Section>
+
+      <Section title="FilterSelect" tokens={tokens} hidden={!showSection('FilterSelect')}>
+        <Row label="Sizes" tokens={tokens}>
+          <FilterSelect label="Sort" size="sm" options={[
+            { value: 'newest', label: 'Newest first' },
+            { value: 'oldest', label: 'Oldest first' },
+            { value: 'name', label: 'Name A–Z' },
+          ]} />
+          <FilterSelect label="Sort" size="md" options={[
+            { value: 'newest', label: 'Newest first' },
+            { value: 'oldest', label: 'Oldest first' },
+            { value: 'name', label: 'Name A–Z' },
+          ]} />
+          <FilterSelect label="Sort" size="lg" options={[
+            { value: 'newest', label: 'Newest first' },
+            { value: 'oldest', label: 'Oldest first' },
+            { value: 'name', label: 'Name A–Z' },
+          ]} />
+        </Row>
+        <Row label="With icon" tokens={tokens}>
+          <FilterSelect label="Newest first" size="sm" icon={<svg width={14} height={14} viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 2v12M4 14l-3-3M4 14l3-3M12 14V2M12 2l-3 3M12 2l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>} options={[
+            { value: 'newest', label: 'Newest first' },
+            { value: 'oldest', label: 'Oldest first' },
+            { value: 'name', label: 'Name A–Z' },
+          ]} />
+        </Row>
+        <Row label="Disabled" tokens={tokens}>
+          <FilterSelect label="Status" size="sm" disabled options={[
+            { value: 'active', label: 'Active' },
+          ]} />
+        </Row>
+        <Row label="Outline variant (active → secondary)" tokens={tokens}>
+          <FilterSelect label="Sort" size="sm" variant="outline" options={[
+            { value: 'newest', label: 'Newest first' },
+            { value: 'oldest', label: 'Oldest first' },
+            { value: 'name', label: 'Name A–Z' },
+          ]} />
+        </Row>
+      </Section>
+
+      <Section title="FilterMultiSelect" tokens={tokens} hidden={!showSection('FilterMultiSelect')}>
+        <Row label="With swatches" tokens={tokens}>
+          <FilterMultiSelect label="Tags" size="sm" options={sfbTagOptions} />
+        </Row>
+        <Row label="Plain labels" tokens={tokens}>
+          <FilterMultiSelect label="Role" size="sm" options={[
+            { value: 'engineer', label: 'Engineer' },
+            { value: 'designer', label: 'Designer' },
+            { value: 'product', label: 'Product' },
+            { value: 'marketing', label: 'Marketing' },
+          ]} />
+        </Row>
+        <Row label="Sizes" tokens={tokens}>
+          <FilterMultiSelect label="Tags" size="sm" options={sfbTagOptions} defaultValue={['react']} />
+          <FilterMultiSelect label="Tags" size="md" options={sfbTagOptions} defaultValue={['react']} />
+          <FilterMultiSelect label="Tags" size="lg" options={sfbTagOptions} defaultValue={['react']} />
+        </Row>
+        <Row label="Disabled" tokens={tokens}>
+          <FilterMultiSelect label="Tags" size="sm" disabled options={sfbTagOptions} />
+        </Row>
+        <Row label="Outline variant (active → secondary)" tokens={tokens}>
+          <FilterMultiSelect label="Tags" size="sm" variant="outline" options={sfbTagOptions} />
+        </Row>
+      </Section>
+
+      <Section title="FilterDateRange" tokens={tokens} hidden={!showSection('FilterDateRange')}>
+        <Row label="Sizes" tokens={tokens}>
+          <FilterDateRange label="Date range" size="sm" />
+          <FilterDateRange label="Date range" size="md" />
+          <FilterDateRange label="Date range" size="lg" />
+        </Row>
+        <Row label="Disabled" tokens={tokens}>
+          <FilterDateRange label="Date range" size="sm" disabled />
+        </Row>
+        <Row label="Outline variant (active → secondary)" tokens={tokens}>
+          <FilterDateRange label="Date range" size="sm" variant="outline" />
+        </Row>
+      </Section>
+
+      {/* ─── Patterns ───────────────────────────────────────────────────────── */}
 
       <Section title="ProfileCard" tokens={tokens} hidden={!showSection('ProfileCard')}>
         <Row label="Full profile card" tokens={tokens}>
@@ -2992,6 +2882,116 @@ function Inner({
         </Row>
       </Section>
 
+      <Section title="ConfirmationDialog" tokens={tokens} hidden={!showSection('ConfirmationDialog')}>
+        <Row label="Destructive confirmation" tokens={tokens}>
+          <Card variant="elevated" padding="lg" style={{ maxWidth: 400 }}>
+            <StackAtom gap="8" align="center">
+              <Icon size="xl" color="var(--lucent-danger-text)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                  <line x1={12} y1={9} x2={12} y2={13} />
+                  <line x1={12} y1={17} x2={12.01} y2={17} />
+                </svg>
+              </Icon>
+              <StackAtom gap="1" align="center">
+                <Text size="lg" weight="semibold">Delete project?</Text>
+                <Text size="sm" color="secondary" align="center">This will permanently delete &quot;Acme Corp&quot; and all of its data. This action cannot be undone.</Text>
+              </StackAtom>
+              <RowAtom gap="3" style={{ width: '100%' }}>
+                <Button variant="outline" style={{ flex: 1 }}>Cancel</Button>
+                <Button variant="danger" style={{ flex: 1 }}>Delete</Button>
+              </RowAtom>
+            </StackAtom>
+          </Card>
+        </Row>
+        <Row label="With typed confirmation" tokens={tokens}>
+          <Card variant="elevated" padding="lg" style={{ maxWidth: 400 }}>
+            <StackAtom gap="8" align="center">
+              <Icon size="xl" color="var(--lucent-danger-text)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                  <line x1={12} y1={9} x2={12} y2={13} />
+                  <line x1={12} y1={17} x2={12.01} y2={17} />
+                </svg>
+              </Icon>
+              <StackAtom gap="1" align="center">
+                <Text size="lg" weight="semibold">Delete your account?</Text>
+                <Text size="sm" color="secondary" align="center">All projects, data, and billing history will be permanently removed. Type DELETE to confirm.</Text>
+              </StackAtom>
+              <Input placeholder="Type DELETE to confirm" size="md" style={{ width: '100%' }} />
+              <RowAtom gap="3" style={{ width: '100%' }}>
+                <Button variant="outline" style={{ flex: 1 }}>Cancel</Button>
+                <Button variant="danger" style={{ flex: 1 }} disabled>Delete account</Button>
+              </RowAtom>
+            </StackAtom>
+          </Card>
+        </Row>
+        <Row label="Non-destructive confirmation" tokens={tokens}>
+          <Card variant="elevated" padding="lg" style={{ maxWidth: 400 }}>
+            <StackAtom gap="8" align="center">
+              <Icon size="xl" color="var(--lucent-info-text)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx={12} cy={12} r={10} />
+                  <line x1={12} y1={16} x2={12} y2={12} />
+                  <line x1={12} y1={8} x2={12.01} y2={8} />
+                </svg>
+              </Icon>
+              <StackAtom gap="1" align="center">
+                <Text size="lg" weight="semibold">Publish changes?</Text>
+                <Text size="sm" color="secondary" align="center">This will make your draft visible to all team members. You can unpublish later from settings.</Text>
+              </StackAtom>
+              <RowAtom gap="3" style={{ width: '100%' }}>
+                <Button variant="outline" style={{ flex: 1 }}>Keep as draft</Button>
+                <Button variant="primary" style={{ flex: 1 }}>Publish</Button>
+              </RowAtom>
+            </StackAtom>
+          </Card>
+        </Row>
+      </Section>
+
+      <Section title="BulkActionBar" tokens={tokens} hidden={!showSection('BulkActionBar')}>
+        <Row label="Default (ButtonGroup actions)" tokens={tokens}>
+          <RowAtom gap="3" align="center" style={{ width: '100%', maxWidth: 600, padding: 'var(--lucent-space-3) var(--lucent-space-4)', background: tokens.surface, borderRadius: 'var(--lucent-radius-lg)', border: `1px solid ${tokens.borderDefault}` }}>
+            <Checkbox indeterminate checked onChange={() => {}} />
+            <Text size="sm" weight="semibold">3 selected</Text>
+            <Divider orientation="vertical" />
+            <ButtonGroup>
+              <Button variant="outline" size="sm">Export</Button>
+              <Button variant="outline" size="sm">Archive</Button>
+              <Button variant="danger-outline" size="sm">Delete</Button>
+            </ButtonGroup>
+            <RowAtom style={{ flex: 1, justifyContent: 'flex-end' }}>
+              <Button variant="ghost" size="sm">Clear selection</Button>
+            </RowAtom>
+          </RowAtom>
+        </Row>
+        <Row label="Minimal (single action)" tokens={tokens}>
+          <RowAtom gap="3" align="center" style={{ width: '100%', maxWidth: 600, padding: 'var(--lucent-space-3) var(--lucent-space-4)', background: tokens.surface, borderRadius: 'var(--lucent-radius-lg)', border: `1px solid ${tokens.borderDefault}` }}>
+            <Checkbox checked onChange={() => {}} />
+            <Text size="sm" weight="semibold">12 selected</Text>
+            <RowAtom style={{ flex: 1, justifyContent: 'flex-end' }}>
+              <Button variant="danger" size="sm">Delete selected</Button>
+            </RowAtom>
+          </RowAtom>
+        </Row>
+        <Row label="With count and secondary actions" tokens={tokens}>
+          <RowAtom gap="3" align="center" style={{ width: '100%', maxWidth: 600, padding: 'var(--lucent-space-3) var(--lucent-space-4)', background: tokens.surface, borderRadius: 'var(--lucent-radius-lg)', border: `1px solid ${tokens.borderDefault}` }}>
+            <Checkbox indeterminate checked onChange={() => {}} />
+            <RowAtom gap="2" align="center">
+              <Text size="sm" weight="semibold">5 of 24 selected</Text>
+              <Button variant="ghost" size="xs">Select all</Button>
+            </RowAtom>
+            <Divider orientation="vertical" />
+            <Button variant="outline" size="sm">Assign label</Button>
+            <Button variant="outline" size="sm">Move to</Button>
+            <Button variant="danger-outline" size="sm">Delete</Button>
+            <RowAtom style={{ flex: 1, justifyContent: 'flex-end' }}>
+              <Button variant="ghost" size="sm">Clear</Button>
+            </RowAtom>
+          </RowAtom>
+        </Row>
+      </Section>
+
       <Section title="FormLayout" tokens={tokens} hidden={!showSection('FormLayout')}>
         <Row label="Full form" tokens={tokens}>
           <Card variant="elevated" padding="lg" style={{ width: 480 }}>
@@ -3104,6 +3104,191 @@ function Inner({
         </Row>
       </Section>
 
+      <Section title="ProductItemCard" tokens={tokens} hidden={!showSection('ProductItemCard')}>
+        <Row label="Product card (default)" tokens={tokens}>
+          <Card
+            variant="elevated"
+            padding="lg"
+            style={{ width: 320 }}
+            media={
+              <div style={{ height: 180, background: `linear-gradient(135deg, ${tokens.surfaceRaised} 0%, color-mix(in srgb, ${tokens.accentDefault} 12%, ${tokens.surfaceRaised}) 100%)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Icon size="xl" color={tokens.textSecondary}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 18v-6a9 9 0 0118 0v6" />
+                    <path d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3zM3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3z" />
+                  </svg>
+                </Icon>
+              </div>
+            }
+          >
+            <StackAtom gap="4">
+              <StackAtom gap="1">
+                <Text size="md" weight="semibold">Wireless Headphones</Text>
+                <Text size="sm" color="secondary">Active noise cancelling, 40hr battery</Text>
+              </StackAtom>
+              <RowAtom gap="2" wrap>
+                <Chip variant="neutral" size="sm">Audio</Chip>
+                <Chip variant="neutral" size="sm">Bluetooth</Chip>
+                <Chip variant="neutral" size="sm">ANC</Chip>
+              </RowAtom>
+              <RowAtom gap="4" justify="between" align="baseline">
+                <Text size="lg" weight="bold" family="display">$249.00</Text>
+                <Text size="xs" color="secondary">Free shipping</Text>
+              </RowAtom>
+              <Button variant="primary" style={{ width: '100%' }}>Add to Cart</Button>
+            </StackAtom>
+          </Card>
+        </Row>
+        <Row label="Article card variant" tokens={tokens}>
+          <Card variant="outline" padding="lg" hoverable style={{ width: 340 }}>
+            <StackAtom gap="4">
+              <RowAtom gap="3" align="start">
+                <Icon size="lg" color="var(--lucent-text-secondary)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1={16} y1={13} x2={8} y2={13} />
+                    <line x1={16} y1={17} x2={8} y2={17} />
+                    <polyline points="10 9 9 9 8 9" />
+                  </svg>
+                </Icon>
+                <StackAtom gap="1" style={{ flex: 1 }}>
+                  <Text size="md" weight="semibold">Design Tokens at Scale</Text>
+                  <Text size="xs" color="secondary">Published Mar 15, 2026</Text>
+                </StackAtom>
+              </RowAtom>
+              <Text size="sm" color="secondary">
+                How we unified spacing, color, and typography across 12 product surfaces using a single token system.
+              </Text>
+              <RowAtom gap="2" wrap>
+                <Chip variant="neutral" size="sm">Design Systems</Chip>
+                <Chip variant="neutral" size="sm">Tokens</Chip>
+              </RowAtom>
+              <RowAtom gap="4" justify="between" align="center">
+                <Text size="xs" color="secondary">8 min read</Text>
+                <Button variant="ghost" size="sm">Read more</Button>
+              </RowAtom>
+            </StackAtom>
+          </Card>
+        </Row>
+        <Row label="Team member card variant" tokens={tokens}>
+          <Card variant="filled" padding="lg" style={{ width: 280 }}>
+            <StackAtom gap="4">
+              <StackAtom gap="3" align="center">
+                <Avatar alt="Alex Chen" size="lg" />
+                <StackAtom gap="0" align="center">
+                  <Text size="md" weight="semibold">Alex Chen</Text>
+                  <Text size="sm" color="secondary">Engineering Lead</Text>
+                </StackAtom>
+              </StackAtom>
+              <RowAtom gap="2" wrap justify="center">
+                <Chip variant="neutral" size="sm">React</Chip>
+                <Chip variant="neutral" size="sm">Go</Chip>
+                <Chip variant="neutral" size="sm">Platform</Chip>
+              </RowAtom>
+              <RowAtom gap="3">
+                <Button variant="outline" style={{ flex: 1 }} size="sm">Profile</Button>
+                <Button variant="primary" style={{ flex: 1 }} size="sm">Message</Button>
+              </RowAtom>
+            </StackAtom>
+          </Card>
+        </Row>
+      </Section>
+
+      <Section title="AnnouncementCard" tokens={tokens} hidden={!showSection('AnnouncementCard')}>
+        <Row label="Feature announcement with media" tokens={tokens}>
+          <Card
+            variant="elevated"
+            padding="lg"
+            style={{ width: 380 }}
+            media={
+              <div style={{ height: 160, background: `linear-gradient(135deg, color-mix(in srgb, ${tokens.accentDefault} 15%, ${tokens.surfaceRaised}) 0%, color-mix(in srgb, ${tokens.accentDefault} 5%, ${tokens.surfaceRaised}) 100%)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Icon size="xl" color={tokens.accentDefault}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 3v18h18" />
+                    <path d="M7 16l4-8 4 4 4-6" />
+                  </svg>
+                </Icon>
+              </div>
+            }
+          >
+            <StackAtom gap="4">
+              <RowAtom gap="2">
+                <Chip variant="accent" size="sm">New Feature</Chip>
+              </RowAtom>
+              <StackAtom gap="1">
+                <Text size="md" weight="semibold">Redesigned Analytics Dashboard</Text>
+                <Text size="sm" color="secondary">Track key metrics at a glance with our new real-time dashboard. Includes custom date ranges, export to CSV, and team sharing.</Text>
+              </StackAtom>
+              <RowAtom gap="2">
+                <Button variant="primary" size="sm">Try it now</Button>
+                <Button variant="ghost" size="sm">Learn more</Button>
+              </RowAtom>
+            </StackAtom>
+          </Card>
+        </Row>
+        <Row label="System notice (no media)" tokens={tokens}>
+          <Card variant="outline" padding="md" style={{ width: 400, borderColor: 'var(--lucent-warning-default)' }}>
+            <RowAtom gap="3" align="start">
+              <Icon size="lg" color="var(--lucent-warning-text)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                  <line x1={12} y1={9} x2={12} y2={13} />
+                  <line x1={12} y1={17} x2={12.01} y2={17} />
+                </svg>
+              </Icon>
+              <StackAtom gap="2" style={{ flex: 1 }}>
+                <Text size="sm" weight="semibold">Storage almost full</Text>
+                <Text size="sm" color="secondary">You've used 92% of your storage. Upgrade your plan or delete unused files to free up space.</Text>
+                <RowAtom gap="2">
+                  <Button variant="primary" size="sm">Upgrade plan</Button>
+                  <Button variant="ghost" size="sm">Manage storage</Button>
+                </RowAtom>
+              </StackAtom>
+            </RowAtom>
+          </Card>
+        </Row>
+        <Row label="Promotional banner with thumbnail" tokens={tokens}>
+          <Card variant="filled" padding="md" hoverable style={{ width: 380 }}>
+            <RowAtom gap="5" align="center">
+              <div style={{ width: 80, height: 80, borderRadius: 'var(--lucent-radius-lg)', overflow: 'hidden', flexShrink: 0, background: `linear-gradient(135deg, color-mix(in srgb, var(--lucent-success-default) 20%, ${tokens.surfaceRaised}) 0%, ${tokens.surfaceRaised} 100%)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Icon size="lg" color="var(--lucent-success-text)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" />
+                    <line x1={7} y1={7} x2={7.01} y2={7} />
+                  </svg>
+                </Icon>
+              </div>
+              <StackAtom gap="2" style={{ flex: 1 }}>
+                <RowAtom gap="2" align="center">
+                  <Text size="md" weight="semibold">Spring Sale</Text>
+                  <Chip variant="success" size="sm">-30%</Chip>
+                </RowAtom>
+                <Text size="sm" color="secondary">All Pro plans are 30% off through April. Upgrade now and lock in the price for a year.</Text>
+                <Button variant="primary" size="sm" style={{ alignSelf: 'flex-start' }}>Claim offer</Button>
+              </StackAtom>
+            </RowAtom>
+          </Card>
+        </Row>
+        <Row label="Success confirmation" tokens={tokens}>
+          <Card variant="outline" padding="md" style={{ width: 400, borderColor: 'var(--lucent-success-default)' }}>
+            <RowAtom gap="3" align="start">
+              <Icon size="lg" color="var(--lucent-success-text)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
+                  <polyline points="22 4 12 14.01 9 11.01" />
+                </svg>
+              </Icon>
+              <StackAtom gap="1" style={{ flex: 1 }}>
+                <Text size="sm" weight="semibold">Payment received</Text>
+                <Text size="sm" color="secondary">Your invoice #1042 for $2,400.00 has been paid successfully.</Text>
+              </StackAtom>
+              <Button variant="ghost" size="sm">Dismiss</Button>
+            </RowAtom>
+          </Card>
+        </Row>
+      </Section>
+
       <Section title="CollapsibleCard" tokens={tokens} hidden={!showSection('CollapsibleCard')}>
         <Row label="Variants" tokens={tokens}>
           <Card variant="ghost" padding="none" hoverable style={{ width: 320 }}>
@@ -3138,6 +3323,129 @@ function Inner({
         </Row>
       </Section>
 
+      <Section title="SearchFilterBar" tokens={tokens} hidden={!showSection('SearchFilterBar')}>
+        <Row label="Candidates — compact filter bar" tokens={tokens}>
+          <RowAtom gap="2" align="center" wrap>
+            <FilterSearch placeholder="Search by name, email, or skill…" size="sm" />
+            <FilterSelect label="Availability" size="sm" options={[
+              { value: 'all', label: 'All' },
+              { value: 'available', label: 'Available' },
+              { value: 'notice', label: 'On notice' },
+              { value: 'unavailable', label: 'Unavailable' },
+            ]} />
+            <FilterMultiSelect label="Status" size="sm" options={[
+              { value: 'active', label: 'Active' },
+              { value: 'archived', label: 'Archived' },
+              { value: 'on-hold', label: 'On hold' },
+            ]} value={[...sfbStatuses]} onChange={(vals) => setSfbStatuses(new Set(vals))} />
+            <FilterMultiSelect label="Tags" size="sm" options={sfbTagOptions} value={[...sfbTags]} onChange={(vals) => setSfbTags(new Set(vals))} />
+            <FilterDateRange label="Date range" size="sm" value={sfbDateRange} onChange={setSfbDateRange} />
+            {sfbHasFilters && <Button variant="ghost" size="sm" onClick={sfbClearAll}>Clear all</Button>}
+            <div style={{ flex: 1 }} />
+            <RowAtom gap="2" align="center">
+              <Menu trigger={<Button variant="secondary" size="sm" chevron leftIcon={<svg width={14} height={14} viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 2v12M4 14l-3-3M4 14l3-3M12 14V2M12 2l-3 3M12 2l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}>Newest first</Button>} size="sm">
+                <MenuItem selected onSelect={() => {}}>Newest first</MenuItem>
+                <MenuItem onSelect={() => {}}>Oldest first</MenuItem>
+                <MenuItem onSelect={() => {}}>Name A–Z</MenuItem>
+              </Menu>
+              <SegmentedControl
+                size="sm"
+                defaultValue="grid"
+                options={[
+                  { value: 'grid', label: <svg width={14} height={14} viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="1" y="1" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5"/><rect x="9" y="1" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5"/><rect x="1" y="9" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5"/><rect x="9" y="9" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5"/></svg> },
+                  { value: 'list', label: <svg width={14} height={14} viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 3h12M2 8h12M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg> },
+                ]}
+              />
+            </RowAtom>
+          </RowAtom>
+        </Row>
+        <Row label="Filter bar + DataTable" tokens={tokens}>
+          <StackAtom gap="3" style={{ width: '100%' }}>
+            <RowAtom gap="2" align="center" wrap>
+              <FilterSearch placeholder="Search by name or role…" size="sm" value={sfbSearch} onChange={setSfbSearch} />
+              <FilterMultiSelect label="Status" size="sm" options={[
+                { value: 'active', label: 'Active' },
+                { value: 'archived', label: 'Archived' },
+                { value: 'on-hold', label: 'On hold' },
+              ]} value={[...sfbStatuses]} onChange={(vals) => setSfbStatuses(new Set(vals))} />
+              <FilterMultiSelect label="Tags" size="sm" options={sfbTagOptions} value={[...sfbTags]} onChange={(vals) => setSfbTags(new Set(vals))} />
+              <FilterDateRange label="Date added" size="sm" value={sfbDateRange} onChange={setSfbDateRange} />
+            </RowAtom>
+            {sfbHasFilters && (
+              <RowAtom gap="2" align="center">
+                <Text size="sm" color="secondary">
+                  Showing {sfbFilteredCandidates.length} of {sfbCandidates.length} candidates
+                </Text>
+                <Button variant="ghost" size="xs" onClick={sfbClearAll}>Clear all</Button>
+              </RowAtom>
+            )}
+            <DataTable
+              style={{ width: '100%' }}
+              pageSize={5}
+              columns={[
+                { key: 'name', header: 'Name', sortable: true },
+                { key: 'role', header: 'Role', sortable: true },
+                { key: 'status', header: 'Status',
+                  headerFilter: (
+                    <FilterMultiSelect label="" variant="ghost" size="xs" options={[
+                      { value: 'active', label: 'Active' },
+                      { value: 'archived', label: 'Archived' },
+                      { value: 'on-hold', label: 'On hold' },
+                    ]} value={[...sfbStatuses]} onChange={(vals) => setSfbStatuses(new Set(vals))} icon={<svg width={12} height={12} viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 3h12M4 8h8M6 13h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>} />
+                  ),
+                  render: (row: typeof sfbCandidates[0]) => <Chip size="sm" variant={row.status === 'Active' ? 'success' : row.status === 'Archived' ? 'neutral' : 'warning'} dot>{row.status}</Chip> },
+                { key: 'tags', header: 'Tags',
+                  headerFilter: (
+                    <FilterMultiSelect label="" variant="ghost" size="xs" options={sfbTagOptions} value={[...sfbTags]} onChange={(vals) => setSfbTags(new Set(vals))} icon={<svg width={12} height={12} viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 3h12M4 8h8M6 13h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>} />
+                  ),
+                  render: (row: typeof sfbCandidates[0]) => <RowAtom gap="1" wrap>{row.tags.map(t => <Chip key={t} size="sm" swatch={{ 'data-science': '#6366f1', devops: '#10b981', hot: '#f59e0b', react: '#3b82f6' }[t]}>{t}</Chip>)}</RowAtom> },
+                { key: 'added', header: 'Added', sortable: true, render: (row: typeof sfbCandidates[0]) => <Text size="sm" color="secondary">{row.added.toLocaleDateString()}</Text> },
+              ]}
+              rows={sfbFilteredCandidates}
+              emptyState={<Text size="sm" color="secondary">No candidates match your filters.</Text>}
+            />
+          </StackAtom>
+        </Row>
+      </Section>
+
+      {/* ─── Golden Compositions ─────────────────────────────────────────── */}
+
+      <Section title="Profile Card" tokens={tokens} hidden={!showSection('GoldenProfileCard')}>
+        <Row label="Full composition" tokens={tokens}>
+          <ProfileCard />
+        </Row>
+      </Section>
+
+      <Section title="Preferences Card" tokens={tokens} hidden={!showSection('GoldenPreferencesCard')}>
+        <Row label="Full composition" tokens={tokens}>
+          <PreferencesCard />
+        </Row>
+      </Section>
+
+      <Section title="Pricing Table" tokens={tokens} hidden={!showSection('GoldenPricingTable')}>
+        <Row label="Full composition" tokens={tokens}>
+          <PricingTable />
+        </Row>
+      </Section>
+
+      <Section title="Notification Feed" tokens={tokens} hidden={!showSection('GoldenNotificationFeed')}>
+        <Row label="Full composition" tokens={tokens}>
+          <NotificationFeed />
+        </Row>
+      </Section>
+
+      <Section title="Onboarding Flow" tokens={tokens} hidden={!showSection('GoldenOnboardingFlow')}>
+        <Row label="Full composition" tokens={tokens}>
+          <OnboardingFlow />
+        </Row>
+      </Section>
+
+      <Section title="Dashboard Header" tokens={tokens} hidden={!showSection('GoldenDashboardHeader')}>
+        <Row label="Full composition" tokens={tokens}>
+          <DashboardHeader />
+        </Row>
+      </Section>
+
       </div>
       ) : tab === 'tokens' ? (
         <TokenPreview />
@@ -3145,6 +3453,7 @@ function Inner({
         <SelectPlayground />
       )}
     </PageLayout>
+    </>
   );
 }
 

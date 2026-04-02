@@ -1,6 +1,6 @@
-import type { CompositionRecipe } from '../types.js';
+import type { CompositionPattern } from '../types.js';
 
-export const RECIPE: CompositionRecipe = {
+export const PATTERN: CompositionPattern = {
   id: 'empty-state-card',
   name: 'Empty State Card',
   description: 'Centered empty state with illustration icon, heading, description, and call-to-action button inside a card.',

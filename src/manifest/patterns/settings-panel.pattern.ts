@@ -1,6 +1,6 @@
-import type { CompositionRecipe } from '../types.js';
+import type { CompositionPattern } from '../types.js';
 
-export const RECIPE: CompositionRecipe = {
+export const PATTERN: CompositionPattern = {
   id: 'settings-panel',
   name: 'Settings Panel',
   description: 'Settings card with section header, toggle rows with descriptions, select dropdown, and action buttons.',

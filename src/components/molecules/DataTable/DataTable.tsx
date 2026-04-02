@@ -11,6 +11,8 @@ export interface DataTableColumn<T> {
   sortable?: boolean;
   /** Adds a searchable, multi-select dropdown filter above the table for this column */
   filterable?: boolean;
+  /** Render a custom filter trigger in the column header (e.g. an icon that opens an external filter). */
+  headerFilter?: ReactNode;
   width?: string;
   align?: 'left' | 'center' | 'right';
 }
@@ -217,6 +219,14 @@ export function DataTable<T extends object>({
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--lucent-space-1)' }}>
                       {col.header}
                       {col.sortable && <SortIcon state={sortState} />}
+                      {col.headerFilter && (
+                        <span
+                          onClick={(e) => e.stopPropagation()}
+                          style={{ display: 'inline-flex', marginLeft: 'var(--lucent-space-1)' }}
+                        >
+                          {col.headerFilter}
+                        </span>
+                      )}
                     </span>
                   </th>
                 );

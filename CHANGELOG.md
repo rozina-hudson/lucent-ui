@@ -1,5 +1,115 @@
 # lucent-ui
 
+## 0.33.0
+
+### Minor Changes
+
+- feat(mcp): inject layout design rules into system prompt and add get_design_rules tool
+
+## 0.32.1
+
+### Devtools preset colors
+
+- Presets now apply full color palettes (background, surface, border, accent) instead of accent only
+- All colors are theme-aware — each preset has distinct light and dark variants
+- Dark mode accents use lighter palette variants for proper visibility
+- Preset colors automatically re-apply when toggling between light/dark mode
+- Dark mode surfaces use stronger hue tints for visible distinction between presets
+
+## 0.32.0
+
+### Golden Compositions
+
+Six interactive compositions in `dev/compositions/` that serve as visual proof the component system produces polished, real-world UI:
+
+- **ProfileCard** — Avatar, name/status chip, bio, skill tags, stats row, follow/message buttons
+- **PreferencesCard** — Header with version badge, overflow menu, toggle setting rows with icons, slider, select dropdown, save/reset actions
+- **PricingTable** — Three-tier pricing cards (Free/Pro/Enterprise) with feature lists, middle card highlighted with accent border
+- **NotificationFeed** — Notification list with read/unread states (accent-tinted background), type chips, icon action buttons with tooltips
+- **OnboardingFlow** — Multi-step form with Stepper, form fields, and back/next navigation
+- **DashboardHeader** — Breadcrumb navigation, page title with icon action buttons, four stat cards with trend chips
+
+Added as a **Compositions** nav group in the dev playground alongside Atoms, Molecules, and Patterns.
+
+### Stepper molecule
+
+**New molecule** — `Stepper` — a step indicator for multi-step flows (onboarding, wizards, checkout).
+
+- **Horizontal orientation** — continuous connector track behind circles with animated fill between steps; first/last labels align left/right, middle labels center under their circles
+- **Vertical orientation** — connector column on the left with labels, descriptions, and status beside circles
+- **Props:** `steps` (strings or `{ label, description, icon }` objects), `current`, `size` (sm/md/lg), `orientation`, `numbered` (STEP N prefix), `showStatus` (Chip badges)
+- **Animated checkmark** — spring scale (0→1.2→1) on step completion
+- **Status badges** — Chip atoms (success/accent/neutral borderless) for Completed/In Progress/Pending
+- **Custom icons** — per-step icon prop overrides the default number/checkmark
+- Full manifest with 6 usage examples, composition graph, and accessibility notes
+
+### Recipes renamed to Patterns
+
+Renamed the "recipes" tier to **"patterns"** across the entire codebase to clarify the design system hierarchy:
+
+```
+Atoms → Molecules → Patterns → Compositions
+```
+
+- **Directory:** `src/manifest/recipes/` → `src/manifest/patterns/`
+- **Files:** `.recipe.ts` → `.pattern.ts`
+- **Types:** `CompositionRecipe` → `CompositionPattern`, `RecipeCategory` → `PatternCategory`
+- **MCP tools:** `get_composition_recipe` → `get_composition_pattern`
+- **Server:** `recipe-registry.ts` → `pattern-registry.ts`, `ALL_RECIPES` → `ALL_PATTERNS`
+- **Nav:** "Recipes" → "Patterns" in the dev playground sidebar
+- Deprecated type aliases kept for backward compatibility
+
+### New patterns
+
+Four new pattern manifests for AI retrieval:
+
+- **pricing-table** — three-tier pricing card layout
+- **notification-feed** — notification list with read/unread states and action buttons
+- **onboarding-flow** — multi-step form with progress indicator
+- **dashboard-header** — page header with breadcrumbs, title, actions, and stat cards
+
+## 0.30.0
+
+### Timeline redesign
+
+Redesigned from outlined-ring event list to a modern activity-feed pattern.
+
+- **Filled dots** — compact 20px circles filled with the status color, white iconography (was 28px outlined rings with colored icons)
+- **Inline title + date** — date follows title on the same line instead of being pushed to the far right
+- **`content` prop** — new slot on `TimelineItem` for embedding rich nested blocks (e.g. `<Card>`) below the title/description
+- **`info` status icon** — added (was missing)
+- **Default dot** — small white inner dot on muted fill
+- **Thinner connector** — 1.5px (was 2px)
+- Updated manifest with activity feed usage example and Card in compositionGraph
+
+### FilterMultiSelect enhancements
+
+- Added `xs` size for compact toolbar usage
+- Added `ghost` variant
+- Label-less triggers no longer render a chevron
+
+## 0.29.0
+
+### Recipe: Search / Filter Bar
+
+**New composition recipe** — `search-filter-bar` — a compact toolbar pattern for filtering and sorting lists and data tables.
+
+**Compact button-based design:** All filters are secondary buttons that open popovers — no visible input fields or select dropdowns cluttering the bar.
+
+- **Collapsible search** — square icon-only button that expands to an Input on click, collapses back when blurred empty
+- **Single-select filters** — secondary button + chevron opens a Menu with selectable items (e.g. Availability)
+- **Multi-select filters** — controlled Menu that stays open on toggle, with accent Chip count badge in the button label (e.g. Status, Tags)
+- **Tags with visual identity** — Menu items combine Checkbox + Chip with colored swatches for rich multi-select visuals
+- **Date range filter** — DateRangePicker with new `trigger` prop renders a Button instead of default input-style trigger
+- **Conditional "Clear all"** — ghost button appears when any filter is active, resets all on click
+- **Sort + view toggle** — pushed to right edge via flex spacer; sort button with icon + chevron, SegmentedControl with grid/list icons
+
+**DateRangePicker enhancement:** New optional `trigger` prop accepts a custom ReactNode, replacing the default input-style button. Same pattern as Menu's trigger prop.
+
+**Recipe variants:** Default (full toolbar), Minimal (search + sort only), Pipeline (multi-select filters only).
+
+Registered in MCP tools (`get_composition_recipe`, `search_components`) and added to ComponentPreview.
+
 ## 0.28.0
 
 ### LucentDevTools — Live Token Editor & Design System Explorer
@@ -7,6 +117,7 @@
 **New: `lucent-ui/devtools` entry point** — a floating panel for real-time design system manipulation. Drop `<LucentDevTools />` inside your `<LucentProvider>` and toggle with Cmd+Shift+D.
 
 **Three-tab panel:**
+
 - **Design** — preset gallery (10 design personalities), accent/background/surface/border color pickers with auto-derivation, density slider, roundness slider, shadow style selector (9 styles), font family per preset
 - **Typography** — font family picker with 14 Google Fonts (auto-loaded on demand), category filter (sans/serif/mono/display), type scale controls (base size + ratio + named presets), text color pickers, live paragraph preview
 - **Tokens** — raw token editor for all ~80 tokens with per-token color pickers, sliders, and text inputs
@@ -14,6 +125,7 @@
 **10 curated design presets:** Default, Modern, Liquid Glass, Bento, Brutalist, Terminal, Soft UI, Bloom, Minimal, Enterprise — each a harmonious combination of accent color, font family, type scale, density, roundness, and shadow style.
 
 **Panel features:**
+
 - Overlay or push mode (push shifts page content left)
 - Theme toggle (light/dark)
 - Copy Config — exports current overrides as a `<LucentProvider tokens={...}>` snippet
@@ -29,16 +141,16 @@
 
 **Dark mode paradigm shift:** Every dark-mode shadow variant rewritten from scratch. Instead of darkening (invisible on dark backgrounds), shadows now simulate light sources:
 
-| Preset | Dark mode technique |
-|--------|-------------------|
-| Default | Lit edge — `inset 0 1px` white highlight simulating overhead light |
-| Subtle | Ambient — large soft accent-tinted glow via `color-mix()` |
-| Elevated | Inset glow — internal luminosity via `inset 0 0 Npx rgba(255,255,255)` |
-| Natural | Layered lit edges — stacked `inset` highlights at increasing intensity |
-| Liquid Glass | Frosted backlight — inner white glow + outer white diffusion |
-| Neumorphic | Chromatic — accent-colored glow on one side, white highlight on the other |
-| Brutalist | Accent outline — bright accent ring + accent offset block (not dark) |
-| Glow | Pure accent glow (already dark-mode-native) |
+| Preset       | Dark mode technique                                                       |
+| ------------ | ------------------------------------------------------------------------- |
+| Default      | Lit edge — `inset 0 1px` white highlight simulating overhead light        |
+| Subtle       | Ambient — large soft accent-tinted glow via `color-mix()`                 |
+| Elevated     | Inset glow — internal luminosity via `inset 0 0 Npx rgba(255,255,255)`    |
+| Natural      | Layered lit edges — stacked `inset` highlights at increasing intensity    |
+| Liquid Glass | Frosted backlight — inner white glow + outer white diffusion              |
+| Neumorphic   | Chromatic — accent-colored glow on one side, white highlight on the other |
+| Brutalist    | Accent outline — bright accent ring + accent offset block (not dark)      |
+| Glow         | Pure accent glow (already dark-mode-native)                               |
 
 **Brutalist shadows** use `color-mix()` with `var(--lucent-accent-default)` for the thick outline ring and offset block — automatically follows palette changes.
 
@@ -46,15 +158,15 @@
 
 Full design personalities that bundle palette + shape + density + shadow:
 
-| Preset | Shadow | Shape | Density | Palette |
-|--------|--------|-------|---------|---------|
-| `liquidGlass` | Liquid Glass | Pill | Spacious | Ocean |
-| `bento` | Natural | Rounded | Default | Indigo |
-| `brutalist` | Brutalist | Sharp | Compact | Coral |
-| `terminal` | Glow | Sharp | Compact | Emerald |
-| `softUI` | Neumorphic | Pill | Default | Violet |
-| `bloom` | Glow | Rounded | Spacious | Indigo |
-| `minimal` | Flat | Rounded | Default | Slate |
+| Preset        | Shadow       | Shape   | Density  | Palette |
+| ------------- | ------------ | ------- | -------- | ------- |
+| `liquidGlass` | Liquid Glass | Pill    | Spacious | Ocean   |
+| `bento`       | Natural      | Rounded | Default  | Indigo  |
+| `brutalist`   | Brutalist    | Sharp   | Compact  | Coral   |
+| `terminal`    | Glow         | Sharp   | Compact  | Emerald |
+| `softUI`      | Neumorphic   | Pill    | Default  | Violet  |
+| `bloom`       | Glow         | Rounded | Spacious | Indigo  |
+| `minimal`     | Flat         | Rounded | Default  | Slate   |
 
 Usage: `<LucentProvider preset="brutalist">` or `<LucentProvider preset={{ shadow: 'glow', shape: 'pill' }}>`.
 
@@ -78,11 +190,13 @@ Usage: `<LucentProvider preset="brutalist">` or `<LucentProvider preset={{ shado
 ### BREAKING: Accent token revamp & color-mix architecture
 
 **Token renames (CSS vars changed):**
+
 - `--lucent-text-on-accent` renamed to `--lucent-accent-fg` (moved into accent group)
 - `--lucent-focus-ring` removed (merged into `--lucent-accent-border`)
 - `--lucent-accent-active` removed (not in the 5-token accent model)
 
 **Accent layer: 5 tokens derived from a single color**
+
 - `accentDefault` — primary button bg, active toggle, checkbox fill
 - `accentHover` — hover state of the above
 - `accentSubtle` — low-opacity tint for selected rows, active nav items
@@ -94,6 +208,7 @@ Usage: `<LucentProvider preset="brutalist">` or `<LucentProvider preset={{ shado
 **New: `getAccentFg(color)` function** — returns a hue-tinted foreground color instead of pure `#000000`/`#ffffff`. Bright accents get `hsl(H, min(S,60%), 12%)`, dark accents get `hsl(H, min(S,20%), 95%)`.
 
 **Button variant updates:**
+
 - Secondary: `color-mix(accent 16%, transparent)` fill, `textPrimary` text
 - Outline: `textPrimary` text, softened accent-tinted border
 - Ghost: `textPrimary` text, transparent bg
@@ -102,13 +217,16 @@ Usage: `<LucentProvider preset="brutalist">` or `<LucentProvider preset={{ shado
 - Hover shadows: `color-mix(accent, transparent)` replaces opaque `accent-subtle`
 
 **color-mix(transparent) architecture for neutral fills:**
+
 - SegmentedControl, Toggle off track, Slider unfilled, Progress bar track, CodeBlock, Card filled/combo, Table/DataTable headers & stripes, disabled inputs — all use `color-mix(in srgb, var(--lucent-text-primary) N%, transparent)` instead of opaque `surfaceSecondary`. Adapts to any parent background, eliminates accent bleed from palette derivation.
 
 **PageLayout: `surfaceSecondary` chrome option**
+
 - New `chromeBackground="surfaceSecondary"` option for visible stage/chrome separation.
 - Playground switched from `bgSubtle` to `surfaceSecondary` for sidebars.
 
 **Collapsible padding increase:**
+
 - Trigger vertical padding bumped from `space-3` to `space-4`
 - Content padding bumped from `space-2/space-3` to `space-3/space-4`
 

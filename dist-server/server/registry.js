@@ -22,6 +22,10 @@ import { COMPONENT_MANIFEST as EmptyState } from '../src/components/molecules/Em
 import { COMPONENT_MANIFEST as FormField } from '../src/components/molecules/FormField/FormField.manifest.js';
 import { COMPONENT_MANIFEST as SearchInput } from '../src/components/molecules/SearchInput/SearchInput.manifest.js';
 import { COMPONENT_MANIFEST as Skeleton } from '../src/components/molecules/Skeleton/Skeleton.manifest.js';
+import { COMPONENT_MANIFEST as FilterSearch } from '../src/components/molecules/FilterSearch/FilterSearch.manifest.js';
+import { COMPONENT_MANIFEST as FilterSelect } from '../src/components/molecules/FilterSelect/FilterSelect.manifest.js';
+import { COMPONENT_MANIFEST as FilterMultiSelect } from '../src/components/molecules/FilterMultiSelect/FilterMultiSelect.manifest.js';
+import { COMPONENT_MANIFEST as FilterDateRange } from '../src/components/molecules/FilterDateRange/FilterDateRange.manifest.js';
 export const ALL_MANIFESTS = [
     // Atoms
     Avatar,
@@ -47,4 +51,8 @@ export const ALL_MANIFESTS = [
     FormField,
     SearchInput,
     Skeleton,
+    FilterSearch,
+    FilterSelect,
+    FilterMultiSelect,
+    FilterDateRange,
 ];

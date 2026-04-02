@@ -1,0 +1,31 @@
+name: IndexNow Ping
+
+# Runs after pushes to main that touch the website
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'website/**'
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    # Give Vercel time to build and deploy
+    steps:
+      - name: Wait for Vercel deploy
+        run: sleep 60
+
+      - name: Ping IndexNow
+        run: |
+          curl -s -X POST "https://api.indexnow.org/indexnow" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "host": "lucentui.ai",
+              "key": "1127f77ef4784cb7b607d34e3d56fd7c",
+              "keyLocation": "https://lucentui.ai/1127f77ef4784cb7b607d34e3d56fd7c.txt",
+              "urlList": [
+                "https://lucentui.ai/"
+              ]
+            }'
+          echo ""
+          echo "IndexNow pinged"

@@ -1,4 +1,6 @@
 ---
+import pkg from '../../../package.json';
+const version = pkg.version;
 ---
 
 <footer class="footer" id="footer">
@@ -22,7 +24,18 @@
         </p>
         <div class="footer-links">
           <a
-            href="https://github.com/rozinaszogyenyi/lucent-ui"
+            href="https://lucentui.dev"
+            target="_blank"
+            rel="noopener"
+            class="footer-link"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM6 20V4h5v7h7v9H6z"/>
+            </svg>
+            Docs
+          </a>
+          <a
+            href="https://github.com/rozina-hudson/lucent-ui"
             target="_blank"
             rel="noopener"
             class="footer-link"
@@ -119,8 +132,8 @@
     </div>
 
     <div class="footer-bottom">
-      <span class="footer-copy">© 2025 Lucent UI. MIT License.</span>
-      <span class="footer-version">v0.7.0</span>
+      <span class="footer-copy">© 2026 Lucent UI. MIT License.</span>
+      <span class="footer-version">v{version}</span>
     </div>
 
   </div>

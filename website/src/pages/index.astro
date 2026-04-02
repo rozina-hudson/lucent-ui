@@ -3,49 +3,18 @@ import Base from '../layouts/Base.astro';
 import Nav from '../components/Nav.astro';
 import Hero from '../components/Hero.astro';
 import ManifestShowcase from '../components/ManifestShowcase.astro';
+import DevToolsSection from '../components/DevToolsSection.astro';
 import ComponentGrid from '../components/ComponentGrid.astro';
 import McpSection from '../components/McpSection.astro';
 import Footer from '../components/Footer.astro';
-import ThemeDemo from '../components/ThemeDemo.tsx';
 ---
 
 <Base>
   <Nav />
   <Hero />
   <ManifestShowcase />
-
-  <!-- Theme Derivation Section -->
-  <section class="section theme-section" id="theme">
-    <div class="section-inner">
-      <div class="theme-header">
-        <span class="section-label">createTheme()</span>
-        <h2 class="section-title">
-          9 colors →<br><em>complete design system.</em>
-        </h2>
-        <p class="section-body">
-          Pass your brand colors as anchors. Lucent UI derives all 40+ tokens automatically —
-          hover states, subtle backgrounds, text colors, borders — using perceptual lightness
-          and contrast ratios.
-        </p>
-      </div>
-
-      <ThemeDemo client:only="react" />
-    </div>
-  </section>
-
+  <DevToolsSection />
   <ComponentGrid />
   <McpSection />
   <Footer />
 </Base>
-
-<style>
-  .theme-section {
-    border-top: 1px solid var(--border);
-    background: var(--card);
-  }
-
-  .theme-header {
-    margin-bottom: 48px;
-    max-width: 600px;
-  }
-</style>

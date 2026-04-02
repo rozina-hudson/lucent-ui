@@ -3,9 +3,10 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
 import { ALL_MANIFESTS } from './registry.js';
-import { ALL_RECIPES } from './recipe-registry.js';
-import type { ComponentManifest, CompositionRecipe } from '../src/manifest/types.js';
+import { ALL_PATTERNS } from './pattern-registry.js';
+import type { ComponentManifest, CompositionPattern } from '../src/manifest/types.js';
 import { PALETTES, SHAPES, DENSITIES, SHADOWS, COMBINED, generatePresetConfig } from './presets.js';
+import { DESIGN_RULES, DESIGN_RULES_SUMMARY } from './design-rules.js';
 
 // ─── Auth stub ───────────────────────────────────────────────────────────────
 // LUCENT_API_KEY is reserved for the future paid tier.
@@ -39,14 +40,14 @@ function scoreManifest(m: ComponentManifest, query: string): number {
   return score;
 }
 
-function findRecipe(nameOrId: string): CompositionRecipe | undefined {
+function findPattern(nameOrId: string): CompositionPattern | undefined {
   const q = nameOrId.trim().toLowerCase();
-  return ALL_RECIPES.find(
+  return ALL_PATTERNS.find(
     (r) => r.id.toLowerCase() === q || r.name.toLowerCase() === q,
   );
 }
 
-function scoreRecipe(r: CompositionRecipe, query: string): number {
+function scorePattern(r: CompositionPattern, query: string): number {
   const q = query.toLowerCase();
   let score = 0;
   if (r.name.toLowerCase().includes(q)) score += 10;
@@ -62,10 +63,15 @@ function scoreRecipe(r: CompositionRecipe, query: string): number {
 
 // ─── MCP Server ───────────────────────────────────────────────────────────────
 
-const server = new McpServer({
-  name: 'lucent-mcp',
-  version: '0.1.0',
-});
+const server = new McpServer(
+  {
+    name: 'lucent-mcp',
+    version: '0.1.0',
+  },
+  {
+    instructions: DESIGN_RULES_SUMMARY,
+  },
+);
 
 // Tool: list_components
 server.tool(
@@ -125,7 +131,7 @@ server.tool(
 // Tool: search_components
 server.tool(
   'search_components',
-  'Searches Lucent UI components and composition recipes by description or concept. Returns matching components and recipes ranked by relevance.',
+  'Searches Lucent UI components and composition patterns by description or concept. Returns matching components and patterns ranked by relevance.',
   { query: z.string().describe('Natural language or keyword query, e.g. "loading indicator", "form validation", or "profile card"') },
   async ({ query }) => {
     const componentResults = ALL_MANIFESTS
@@ -140,15 +146,15 @@ server.tool(
         score,
       }));
 
-    const recipeResults = ALL_RECIPES
-      .map((r) => ({ recipe: r, score: scoreRecipe(r, query) }))
+    const patternResults = ALL_PATTERNS
+      .map((r) => ({ pattern: r, score: scorePattern(r, query) }))
       .filter(({ score }) => score > 0)
       .sort((a, b) => b.score - a.score)
-      .map(({ recipe, score }) => ({
-        id: recipe.id,
-        name: recipe.name,
-        category: recipe.category,
-        description: recipe.description,
+      .map(({ pattern, score }) => ({
+        id: pattern.id,
+        name: pattern.name,
+        category: pattern.category,
+        description: pattern.description,
         score,
       }));
 
@@ -156,32 +162,32 @@ server.tool(
       content: [
         {
           type: 'text' as const,
-          text: JSON.stringify({ query, components: componentResults, recipes: recipeResults }, null, 2),
+          text: JSON.stringify({ query, components: componentResults, patterns: patternResults }, null, 2),
         },
       ],
     };
   },
 );
 
-// Tool: get_composition_recipe
+// Tool: get_composition_pattern
 server.tool(
-  'get_composition_recipe',
-  'Returns a full composition recipe with structure tree, working JSX code, variants, and design notes. Query by recipe name/id or by category to get all recipes in that category.',
+  'get_composition_pattern',
+  'Returns a full composition pattern with structure tree, working JSX code, variants, and design notes. Query by pattern name/id or by category to get all patterns in that category.',
   {
-    name: z.string().optional().describe('Recipe name or id, e.g. "Profile Card" or "settings-panel"'),
-    category: z.string().optional().describe('Recipe category: "card", "form", "nav", "dashboard", "settings", or "action"'),
+    name: z.string().optional().describe('Pattern name or id, e.g. "Profile Card" or "settings-panel"'),
+    category: z.string().optional().describe('Pattern category: "card", "form", "nav", "dashboard", "settings", or "action"'),
   },
   async ({ name, category }) => {
     if (name) {
-      const recipe = findRecipe(name);
-      if (!recipe) {
+      const pattern = findPattern(name);
+      if (!pattern) {
         return {
           content: [
             {
               type: 'text' as const,
               text: JSON.stringify({
-                error: `Recipe "${name}" not found.`,
-                available: ALL_RECIPES.map((r) => ({ id: r.id, name: r.name, category: r.category })),
+                error: `Pattern "${name}" not found.`,
+                available: ALL_PATTERNS.map((r) => ({ id: r.id, name: r.name, category: r.category })),
               }),
             },
           ],
@@ -192,7 +198,7 @@ server.tool(
         content: [
           {
             type: 'text' as const,
-            text: JSON.stringify(recipe, null, 2),
+            text: JSON.stringify(pattern, null, 2),
           },
         ],
       };
@@ -200,15 +206,15 @@ server.tool(
 
     if (category) {
       const cat = category.trim().toLowerCase();
-      const recipes = ALL_RECIPES.filter((r) => r.category === cat);
-      if (recipes.length === 0) {
+      const patterns = ALL_PATTERNS.filter((r) => r.category === cat);
+      if (patterns.length === 0) {
         return {
           content: [
             {
               type: 'text' as const,
               text: JSON.stringify({
-                error: `No recipes found in category "${category}".`,
-                availableCategories: [...new Set(ALL_RECIPES.map((r) => r.category))],
+                error: `No patterns found in category "${category}".`,
+                availableCategories: [...new Set(ALL_PATTERNS.map((r) => r.category))],
               }),
             },
           ],
@@ -219,19 +225,19 @@ server.tool(
         content: [
           {
             type: 'text' as const,
-            text: JSON.stringify({ category: cat, recipes }, null, 2),
+            text: JSON.stringify({ category: cat, patterns }, null, 2),
           },
         ],
       };
     }
 
-    // No filter — return all recipes
+    // No filter — return all patterns
     return {
       content: [
         {
           type: 'text' as const,
           text: JSON.stringify({
-            recipes: ALL_RECIPES.map((r) => ({
+            patterns: ALL_PATTERNS.map((r) => ({
               id: r.id,
               name: r.name,
               category: r.category,
@@ -297,6 +303,60 @@ server.tool(
             configFile: result.configFile,
             providerSnippet: result.providerSnippet,
           }, null, 2),
+        },
+      ],
+    };
+  },
+);
+
+// Tool: get_design_rules
+server.tool(
+  'get_design_rules',
+  'Returns Lucent UI design rules for spacing, typography, button pairing, layout patterns, color usage, and density. These rules ensure AI-generated layouts are aesthetically consistent. Query a specific section or get all rules.',
+  {
+    section: z
+      .string()
+      .optional()
+      .describe(
+        'Optional section id: "spacing", "typography", "buttons", "layout", "color", or "density". Omit to get all rules.',
+      ),
+  },
+  async ({ section }) => {
+    if (section) {
+      const s = section.trim().toLowerCase();
+      const rule = DESIGN_RULES.find((r) => r.id === s);
+      if (!rule) {
+        return {
+          content: [
+            {
+              type: 'text' as const,
+              text: JSON.stringify({
+                error: `Section "${section}" not found.`,
+                availableSections: DESIGN_RULES.map((r) => ({
+                  id: r.id,
+                  title: r.title,
+                })),
+              }),
+            },
+          ],
+          isError: true,
+        };
+      }
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: `## ${rule.title}\n\n${rule.body}`,
+          },
+        ],
+      };
+    }
+
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: DESIGN_RULES_SUMMARY,
         },
       ],
     };
