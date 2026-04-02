@@ -11,6 +11,7 @@ import { PATTERN as SearchFilterBar } from '../src/manifest/patterns/search-filt
 import { PATTERN as ProductItemCard } from '../src/manifest/patterns/product-item-card.pattern.js';
 import { PATTERN as NotificationCard } from '../src/manifest/patterns/notification-card.pattern.js';
 import { PATTERN as ConfirmationDialog } from '../src/manifest/patterns/confirmation-dialog.pattern.js';
+import { PATTERN as BulkActionBar } from '../src/manifest/patterns/bulk-action-bar.pattern.js';
 
 export const ALL_PATTERNS: CompositionPattern[] = [
   ProfileCard,
@@ -24,4 +25,5 @@ export const ALL_PATTERNS: CompositionPattern[] = [
   ProductItemCard,
   NotificationCard,
   ConfirmationDialog,
+  BulkActionBar,
 ];
