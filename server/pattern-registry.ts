@@ -9,6 +9,7 @@ import { PATTERN as EmptyStateCard } from '../src/manifest/patterns/empty-state-
 import { PATTERN as CollapsibleCard } from '../src/manifest/patterns/collapsible-card.pattern.js';
 import { PATTERN as SearchFilterBar } from '../src/manifest/patterns/search-filter-bar.pattern.js';
 import { PATTERN as ProductItemCard } from '../src/manifest/patterns/product-item-card.pattern.js';
+import { PATTERN as NotificationCard } from '../src/manifest/patterns/notification-card.pattern.js';
 
 export const ALL_PATTERNS: CompositionPattern[] = [
   ProfileCard,
@@ -20,4 +21,5 @@ export const ALL_PATTERNS: CompositionPattern[] = [
   CollapsibleCard,
   SearchFilterBar,
   ProductItemCard,
+  NotificationCard,
 ];

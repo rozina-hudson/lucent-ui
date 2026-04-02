@@ -217,7 +217,7 @@ function Inner({
     navigation:  { label: 'Navigation',         tier: 'molecule', items: ['Breadcrumb', 'Tabs', 'NavLink', 'NavMenu', 'PageLayout', 'Stepper'] },
     data:        { label: 'Data & Tables',      tier: 'molecule', items: ['DataTable', 'Timeline'] },
     overlays:    { label: 'Overlays & Menus',   tier: 'molecule', items: ['Menu', 'CommandPalette', 'Toast'] },
-    'r-cards':   { label: 'Cards',              tier: 'pattern', items: ['ProfileCard', 'ProductItemCard', 'CollapsibleCard', 'EmptyStateCard'] },
+    'r-cards':   { label: 'Cards',              tier: 'pattern', items: ['ProfileCard', 'ProductItemCard', 'AnnouncementCard', 'CollapsibleCard', 'EmptyStateCard'] },
     'r-layouts': { label: 'Layouts',            tier: 'pattern', items: ['SettingsPanel', 'FormLayout', 'StatsRow', 'ActionBar'] },
     'r-filters': { label: 'Filters',           tier: 'pattern', items: ['SearchFilterBar'] },
     'c-all':     { label: 'All Compositions',   tier: 'composition', items: ['GoldenProfileCard', 'GoldenPreferencesCard', 'GoldenPricingTable', 'GoldenNotificationFeed', 'GoldenOnboardingFlow', 'GoldenDashboardHeader'] },
@@ -3081,6 +3081,100 @@ function Inner({
                 <Button variant="primary" style={{ flex: 1 }} size="sm">Message</Button>
               </RowAtom>
             </StackAtom>
+          </Card>
+        </Row>
+      </Section>
+
+      <Section title="AnnouncementCard" tokens={tokens} hidden={!showSection('AnnouncementCard')}>
+        <Row label="Feature announcement with media" tokens={tokens}>
+          <Card
+            variant="elevated"
+            padding="lg"
+            style={{ width: 380 }}
+            media={
+              <div style={{ height: 160, background: `linear-gradient(135deg, color-mix(in srgb, ${tokens.accentDefault} 15%, ${tokens.surfaceRaised}) 0%, color-mix(in srgb, ${tokens.accentDefault} 5%, ${tokens.surfaceRaised}) 100%)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Icon size="xl" color={tokens.accentDefault}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 3v18h18" />
+                    <path d="M7 16l4-8 4 4 4-6" />
+                  </svg>
+                </Icon>
+              </div>
+            }
+          >
+            <StackAtom gap="4">
+              <RowAtom gap="2">
+                <Chip variant="accent" size="sm">New Feature</Chip>
+              </RowAtom>
+              <StackAtom gap="1">
+                <Text size="md" weight="semibold">Redesigned Analytics Dashboard</Text>
+                <Text size="sm" color="secondary">Track key metrics at a glance with our new real-time dashboard. Includes custom date ranges, export to CSV, and team sharing.</Text>
+              </StackAtom>
+              <RowAtom gap="2">
+                <Button variant="primary" size="sm">Try it now</Button>
+                <Button variant="ghost" size="sm">Learn more</Button>
+              </RowAtom>
+            </StackAtom>
+          </Card>
+        </Row>
+        <Row label="System notice (no media)" tokens={tokens}>
+          <Card variant="outline" padding="md" style={{ width: 400, borderColor: 'var(--lucent-warning-default)' }}>
+            <RowAtom gap="3" align="start">
+              <Icon size="lg" color="var(--lucent-warning-text)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                  <line x1={12} y1={9} x2={12} y2={13} />
+                  <line x1={12} y1={17} x2={12.01} y2={17} />
+                </svg>
+              </Icon>
+              <StackAtom gap="2" style={{ flex: 1 }}>
+                <Text size="sm" weight="semibold">Storage almost full</Text>
+                <Text size="sm" color="secondary">You've used 92% of your storage. Upgrade your plan or delete unused files to free up space.</Text>
+                <RowAtom gap="2">
+                  <Button variant="primary" size="sm">Upgrade plan</Button>
+                  <Button variant="ghost" size="sm">Manage storage</Button>
+                </RowAtom>
+              </StackAtom>
+            </RowAtom>
+          </Card>
+        </Row>
+        <Row label="Promotional banner with thumbnail" tokens={tokens}>
+          <Card variant="filled" padding="md" hoverable style={{ width: 380 }}>
+            <RowAtom gap="5" align="center">
+              <div style={{ width: 80, height: 80, borderRadius: 'var(--lucent-radius-lg)', overflow: 'hidden', flexShrink: 0, background: `linear-gradient(135deg, color-mix(in srgb, var(--lucent-success-default) 20%, ${tokens.surfaceRaised}) 0%, ${tokens.surfaceRaised} 100%)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Icon size="lg" color="var(--lucent-success-text)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" />
+                    <line x1={7} y1={7} x2={7.01} y2={7} />
+                  </svg>
+                </Icon>
+              </div>
+              <StackAtom gap="2" style={{ flex: 1 }}>
+                <RowAtom gap="2" align="center">
+                  <Text size="md" weight="semibold">Spring Sale</Text>
+                  <Chip variant="success" size="sm">-30%</Chip>
+                </RowAtom>
+                <Text size="sm" color="secondary">All Pro plans are 30% off through April. Upgrade now and lock in the price for a year.</Text>
+                <Button variant="primary" size="sm" style={{ alignSelf: 'flex-start' }}>Claim offer</Button>
+              </StackAtom>
+            </RowAtom>
+          </Card>
+        </Row>
+        <Row label="Success confirmation" tokens={tokens}>
+          <Card variant="outline" padding="md" style={{ width: 400, borderColor: 'var(--lucent-success-default)' }}>
+            <RowAtom gap="3" align="start">
+              <Icon size="lg" color="var(--lucent-success-text)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
+                  <polyline points="22 4 12 14.01 9 11.01" />
+                </svg>
+              </Icon>
+              <StackAtom gap="1" style={{ flex: 1 }}>
+                <Text size="sm" weight="semibold">Payment received</Text>
+                <Text size="sm" color="secondary">Your invoice #1042 for $2,400.00 has been paid successfully.</Text>
+              </StackAtom>
+              <Button variant="ghost" size="sm">Dismiss</Button>
+            </RowAtom>
           </Card>
         </Row>
       </Section>
