@@ -1,5 +1,11 @@
 # lucent-ui
 
+## 0.33.0
+
+### Minor Changes
+
+- feat(mcp): inject layout design rules into system prompt and add get_design_rules tool
+
 ## 0.32.1
 
 ### Devtools preset colors
@@ -111,6 +117,7 @@ Registered in MCP tools (`get_composition_recipe`, `search_components`) and adde
 **New: `lucent-ui/devtools` entry point** — a floating panel for real-time design system manipulation. Drop `<LucentDevTools />` inside your `<LucentProvider>` and toggle with Cmd+Shift+D.
 
 **Three-tab panel:**
+
 - **Design** — preset gallery (10 design personalities), accent/background/surface/border color pickers with auto-derivation, density slider, roundness slider, shadow style selector (9 styles), font family per preset
 - **Typography** — font family picker with 14 Google Fonts (auto-loaded on demand), category filter (sans/serif/mono/display), type scale controls (base size + ratio + named presets), text color pickers, live paragraph preview
 - **Tokens** — raw token editor for all ~80 tokens with per-token color pickers, sliders, and text inputs
@@ -118,6 +125,7 @@ Registered in MCP tools (`get_composition_recipe`, `search_components`) and adde
 **10 curated design presets:** Default, Modern, Liquid Glass, Bento, Brutalist, Terminal, Soft UI, Bloom, Minimal, Enterprise — each a harmonious combination of accent color, font family, type scale, density, roundness, and shadow style.
 
 **Panel features:**
+
 - Overlay or push mode (push shifts page content left)
 - Theme toggle (light/dark)
 - Copy Config — exports current overrides as a `<LucentProvider tokens={...}>` snippet
@@ -133,16 +141,16 @@ Registered in MCP tools (`get_composition_recipe`, `search_components`) and adde
 
 **Dark mode paradigm shift:** Every dark-mode shadow variant rewritten from scratch. Instead of darkening (invisible on dark backgrounds), shadows now simulate light sources:
 
-| Preset | Dark mode technique |
-|--------|-------------------|
-| Default | Lit edge — `inset 0 1px` white highlight simulating overhead light |
-| Subtle | Ambient — large soft accent-tinted glow via `color-mix()` |
-| Elevated | Inset glow — internal luminosity via `inset 0 0 Npx rgba(255,255,255)` |
-| Natural | Layered lit edges — stacked `inset` highlights at increasing intensity |
-| Liquid Glass | Frosted backlight — inner white glow + outer white diffusion |
-| Neumorphic | Chromatic — accent-colored glow on one side, white highlight on the other |
-| Brutalist | Accent outline — bright accent ring + accent offset block (not dark) |
-| Glow | Pure accent glow (already dark-mode-native) |
+| Preset       | Dark mode technique                                                       |
+| ------------ | ------------------------------------------------------------------------- |
+| Default      | Lit edge — `inset 0 1px` white highlight simulating overhead light        |
+| Subtle       | Ambient — large soft accent-tinted glow via `color-mix()`                 |
+| Elevated     | Inset glow — internal luminosity via `inset 0 0 Npx rgba(255,255,255)`    |
+| Natural      | Layered lit edges — stacked `inset` highlights at increasing intensity    |
+| Liquid Glass | Frosted backlight — inner white glow + outer white diffusion              |
+| Neumorphic   | Chromatic — accent-colored glow on one side, white highlight on the other |
+| Brutalist    | Accent outline — bright accent ring + accent offset block (not dark)      |
+| Glow         | Pure accent glow (already dark-mode-native)                               |
 
 **Brutalist shadows** use `color-mix()` with `var(--lucent-accent-default)` for the thick outline ring and offset block — automatically follows palette changes.
 
@@ -150,15 +158,15 @@ Registered in MCP tools (`get_composition_recipe`, `search_components`) and adde
 
 Full design personalities that bundle palette + shape + density + shadow:
 
-| Preset | Shadow | Shape | Density | Palette |
-|--------|--------|-------|---------|---------|
-| `liquidGlass` | Liquid Glass | Pill | Spacious | Ocean |
-| `bento` | Natural | Rounded | Default | Indigo |
-| `brutalist` | Brutalist | Sharp | Compact | Coral |
-| `terminal` | Glow | Sharp | Compact | Emerald |
-| `softUI` | Neumorphic | Pill | Default | Violet |
-| `bloom` | Glow | Rounded | Spacious | Indigo |
-| `minimal` | Flat | Rounded | Default | Slate |
+| Preset        | Shadow       | Shape   | Density  | Palette |
+| ------------- | ------------ | ------- | -------- | ------- |
+| `liquidGlass` | Liquid Glass | Pill    | Spacious | Ocean   |
+| `bento`       | Natural      | Rounded | Default  | Indigo  |
+| `brutalist`   | Brutalist    | Sharp   | Compact  | Coral   |
+| `terminal`    | Glow         | Sharp   | Compact  | Emerald |
+| `softUI`      | Neumorphic   | Pill    | Default  | Violet  |
+| `bloom`       | Glow         | Rounded | Spacious | Indigo  |
+| `minimal`     | Flat         | Rounded | Default  | Slate   |
 
 Usage: `<LucentProvider preset="brutalist">` or `<LucentProvider preset={{ shadow: 'glow', shape: 'pill' }}>`.
 
@@ -182,11 +190,13 @@ Usage: `<LucentProvider preset="brutalist">` or `<LucentProvider preset={{ shado
 ### BREAKING: Accent token revamp & color-mix architecture
 
 **Token renames (CSS vars changed):**
+
 - `--lucent-text-on-accent` renamed to `--lucent-accent-fg` (moved into accent group)
 - `--lucent-focus-ring` removed (merged into `--lucent-accent-border`)
 - `--lucent-accent-active` removed (not in the 5-token accent model)
 
 **Accent layer: 5 tokens derived from a single color**
+
 - `accentDefault` — primary button bg, active toggle, checkbox fill
 - `accentHover` — hover state of the above
 - `accentSubtle` — low-opacity tint for selected rows, active nav items
@@ -198,6 +208,7 @@ Usage: `<LucentProvider preset="brutalist">` or `<LucentProvider preset={{ shado
 **New: `getAccentFg(color)` function** — returns a hue-tinted foreground color instead of pure `#000000`/`#ffffff`. Bright accents get `hsl(H, min(S,60%), 12%)`, dark accents get `hsl(H, min(S,20%), 95%)`.
 
 **Button variant updates:**
+
 - Secondary: `color-mix(accent 16%, transparent)` fill, `textPrimary` text
 - Outline: `textPrimary` text, softened accent-tinted border
 - Ghost: `textPrimary` text, transparent bg
@@ -206,13 +217,16 @@ Usage: `<LucentProvider preset="brutalist">` or `<LucentProvider preset={{ shado
 - Hover shadows: `color-mix(accent, transparent)` replaces opaque `accent-subtle`
 
 **color-mix(transparent) architecture for neutral fills:**
+
 - SegmentedControl, Toggle off track, Slider unfilled, Progress bar track, CodeBlock, Card filled/combo, Table/DataTable headers & stripes, disabled inputs — all use `color-mix(in srgb, var(--lucent-text-primary) N%, transparent)` instead of opaque `surfaceSecondary`. Adapts to any parent background, eliminates accent bleed from palette derivation.
 
 **PageLayout: `surfaceSecondary` chrome option**
+
 - New `chromeBackground="surfaceSecondary"` option for visible stage/chrome separation.
 - Playground switched from `bgSubtle` to `surfaceSecondary` for sidebars.
 
 **Collapsible padding increase:**
+
 - Trigger vertical padding bumped from `space-3` to `space-4`
 - Content padding bumped from `space-2/space-3` to `space-3/space-4`
 
