@@ -6,6 +6,7 @@ import { ALL_MANIFESTS } from './registry.js';
 import { ALL_PATTERNS } from './pattern-registry.js';
 import type { ComponentManifest, CompositionPattern } from '../src/manifest/types.js';
 import { PALETTES, SHAPES, DENSITIES, SHADOWS, COMBINED, generatePresetConfig } from './presets.js';
+import { DESIGN_RULES, DESIGN_RULES_SUMMARY } from './design-rules.js';
 
 // ─── Auth stub ───────────────────────────────────────────────────────────────
 // LUCENT_API_KEY is reserved for the future paid tier.
@@ -62,10 +63,15 @@ function scorePattern(r: CompositionPattern, query: string): number {
 
 // ─── MCP Server ───────────────────────────────────────────────────────────────
 
-const server = new McpServer({
-  name: 'lucent-mcp',
-  version: '0.1.0',
-});
+const server = new McpServer(
+  {
+    name: 'lucent-mcp',
+    version: '0.1.0',
+  },
+  {
+    instructions: DESIGN_RULES_SUMMARY,
+  },
+);
 
 // Tool: list_components
 server.tool(
@@ -297,6 +303,60 @@ server.tool(
             configFile: result.configFile,
             providerSnippet: result.providerSnippet,
           }, null, 2),
+        },
+      ],
+    };
+  },
+);
+
+// Tool: get_design_rules
+server.tool(
+  'get_design_rules',
+  'Returns Lucent UI design rules for spacing, typography, button pairing, layout patterns, color usage, and density. These rules ensure AI-generated layouts are aesthetically consistent. Query a specific section or get all rules.',
+  {
+    section: z
+      .string()
+      .optional()
+      .describe(
+        'Optional section id: "spacing", "typography", "buttons", "layout", "color", or "density". Omit to get all rules.',
+      ),
+  },
+  async ({ section }) => {
+    if (section) {
+      const s = section.trim().toLowerCase();
+      const rule = DESIGN_RULES.find((r) => r.id === s);
+      if (!rule) {
+        return {
+          content: [
+            {
+              type: 'text' as const,
+              text: JSON.stringify({
+                error: `Section "${section}" not found.`,
+                availableSections: DESIGN_RULES.map((r) => ({
+                  id: r.id,
+                  title: r.title,
+                })),
+              }),
+            },
+          ],
+          isError: true,
+        };
+      }
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: `## ${rule.title}\n\n${rule.body}`,
+          },
+        ],
+      };
+    }
+
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: DESIGN_RULES_SUMMARY,
         },
       ],
     };
