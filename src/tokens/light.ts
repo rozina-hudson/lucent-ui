@@ -35,7 +35,7 @@ export const lightTokens: LucentTokens = {
   // Text
   textPrimary: '#111827',
   textSecondary: '#6b7280',
-  textDisabled: '#9ca3af',
+  textDisabled: '#d1d5db',
   textInverse: '#ffffff',
   // Accent (monochrome default — near-black for universal, high-contrast out of the box)
   // Use `brandTokens` to opt in to the gold palette.

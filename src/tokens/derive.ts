@@ -117,7 +117,7 @@ export function deriveTokens(
     if (!('textSecondary' in overrides))
       derived.textSecondary = adjustLightness(merged.textPrimary, isLight ? +0.20 : -0.15);
     if (!('textDisabled' in overrides))
-      derived.textDisabled = adjustLightness(merged.textPrimary, isLight ? +0.35 : -0.40);
+      derived.textDisabled = adjustLightness(merged.textPrimary, isLight ? +0.58 : -0.62);
   }
 
   // --- Accent variants ---
