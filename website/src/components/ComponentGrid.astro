@@ -10,13 +10,14 @@ const molecules = [
   'FormField', 'SearchInput', 'Card', 'Alert', 'EmptyState', 'Skeleton',
   'Breadcrumb', 'Tabs', 'Collapsible', 'PageLayout', 'DataTable', 'Menu',
   'NavMenu', 'CommandPalette', 'MultiSelect', 'DatePicker', 'DateRangePicker',
-  'FileUpload', 'Timeline', 'Toast', 'FilterSearch', 'FilterSelect',
+  'FileUpload', 'Timeline', 'Toast', 'Stepper', 'FilterSearch', 'FilterSelect',
   'FilterMultiSelect', 'FilterDateRange',
 ];
 
-const recipes = [
+const patterns = [
   'Profile Card', 'Settings Panel', 'Stats Row', 'Action Bar',
   'Form Layout', 'Empty State Card', 'Collapsible Card', 'Search / Filter Bar',
+  'Product / Item Card', 'Announcement Card', 'Confirmation Dialog', 'Bulk Action Bar',
 ];
 ---
 
@@ -30,8 +31,8 @@ const recipes = [
           Everything you need.<br>Nothing you <em>don't.</em>
         </h2>
         <p class="section-body">
-          {atoms.length + molecules.length} components across two tiers, plus {recipes.length} composition
-          recipes for real-world UI patterns. Every single one ships with a
+          {atoms.length + molecules.length} components across two tiers, plus {patterns.length} composition
+          patterns for real-world UI layouts. Every component ships with a
           <code class="inline-code">COMPONENT_MANIFEST</code>.
         </p>
       </div>
@@ -45,8 +46,8 @@ const recipes = [
           <span class="count-label">Molecules</span>
         </div>
         <div class="count-pill">
-          <span class="count-num">{recipes.length}</span>
-          <span class="count-label">Recipes</span>
+          <span class="count-num">{patterns.length}</span>
+          <span class="count-label">Patterns</span>
         </div>
       </div>
     </div>
@@ -83,14 +84,14 @@ const recipes = [
 
     <div class="tier-block">
       <div class="tier-label">
-        <span class="tier-tag">Recipes</span>
-        <span class="tier-desc">Real-world compositions with working code and variants</span>
+        <span class="tier-tag">Patterns</span>
+        <span class="tier-desc">Real-world composition templates with working code, variants, and design notes</span>
       </div>
       <div class="component-grid">
-        {recipes.map(name => (
+        {patterns.map(name => (
           <div class="component-card">
             <span class="component-name">{name}</span>
-            <span class="component-tag">recipe</span>
+            <span class="component-tag">pattern</span>
           </div>
         ))}
       </div>
