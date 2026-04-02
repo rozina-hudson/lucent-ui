@@ -218,7 +218,7 @@ function Inner({
     data:        { label: 'Data & Tables',      tier: 'molecule', items: ['DataTable', 'Timeline'] },
     overlays:    { label: 'Overlays & Menus',   tier: 'molecule', items: ['Menu', 'CommandPalette', 'Toast'] },
     'r-cards':   { label: 'Cards',              tier: 'pattern', items: ['ProfileCard', 'ProductItemCard', 'AnnouncementCard', 'CollapsibleCard', 'EmptyStateCard'] },
-    'r-layouts': { label: 'Layouts',            tier: 'pattern', items: ['SettingsPanel', 'FormLayout', 'StatsRow', 'ActionBar', 'ConfirmationDialog'] },
+    'r-layouts': { label: 'Layouts',            tier: 'pattern', items: ['SettingsPanel', 'FormLayout', 'StatsRow', 'ActionBar', 'ConfirmationDialog', 'BulkActionBar'] },
     'r-filters': { label: 'Filters',           tier: 'pattern', items: ['SearchFilterBar'] },
     'c-all':     { label: 'All Compositions',   tier: 'composition', items: ['GoldenProfileCard', 'GoldenPreferencesCard', 'GoldenPricingTable', 'GoldenNotificationFeed', 'GoldenOnboardingFlow', 'GoldenDashboardHeader'] },
   };
@@ -2946,6 +2946,49 @@ function Inner({
               </RowAtom>
             </StackAtom>
           </Card>
+        </Row>
+      </Section>
+
+      <Section title="BulkActionBar" tokens={tokens} hidden={!showSection('BulkActionBar')}>
+        <Row label="Default (ButtonGroup actions)" tokens={tokens}>
+          <RowAtom gap="3" align="center" style={{ width: '100%', maxWidth: 600, padding: 'var(--lucent-space-3) var(--lucent-space-4)', background: tokens.surface, borderRadius: 'var(--lucent-radius-lg)', border: `1px solid ${tokens.borderDefault}` }}>
+            <Checkbox indeterminate checked onChange={() => {}} />
+            <Text size="sm" weight="semibold">3 selected</Text>
+            <Divider orientation="vertical" />
+            <ButtonGroup>
+              <Button variant="outline" size="sm">Export</Button>
+              <Button variant="outline" size="sm">Archive</Button>
+              <Button variant="danger-outline" size="sm">Delete</Button>
+            </ButtonGroup>
+            <RowAtom style={{ flex: 1, justifyContent: 'flex-end' }}>
+              <Button variant="ghost" size="sm">Clear selection</Button>
+            </RowAtom>
+          </RowAtom>
+        </Row>
+        <Row label="Minimal (single action)" tokens={tokens}>
+          <RowAtom gap="3" align="center" style={{ width: '100%', maxWidth: 600, padding: 'var(--lucent-space-3) var(--lucent-space-4)', background: tokens.surface, borderRadius: 'var(--lucent-radius-lg)', border: `1px solid ${tokens.borderDefault}` }}>
+            <Checkbox checked onChange={() => {}} />
+            <Text size="sm" weight="semibold">12 selected</Text>
+            <RowAtom style={{ flex: 1, justifyContent: 'flex-end' }}>
+              <Button variant="danger" size="sm">Delete selected</Button>
+            </RowAtom>
+          </RowAtom>
+        </Row>
+        <Row label="With count and secondary actions" tokens={tokens}>
+          <RowAtom gap="3" align="center" style={{ width: '100%', maxWidth: 600, padding: 'var(--lucent-space-3) var(--lucent-space-4)', background: tokens.surface, borderRadius: 'var(--lucent-radius-lg)', border: `1px solid ${tokens.borderDefault}` }}>
+            <Checkbox indeterminate checked onChange={() => {}} />
+            <RowAtom gap="2" align="center">
+              <Text size="sm" weight="semibold">5 of 24 selected</Text>
+              <Button variant="ghost" size="xs">Select all</Button>
+            </RowAtom>
+            <Divider orientation="vertical" />
+            <Button variant="outline" size="sm">Assign label</Button>
+            <Button variant="outline" size="sm">Move to</Button>
+            <Button variant="danger-outline" size="sm">Delete</Button>
+            <RowAtom style={{ flex: 1, justifyContent: 'flex-end' }}>
+              <Button variant="ghost" size="sm">Clear</Button>
+            </RowAtom>
+          </RowAtom>
         </Row>
       </Section>
 
