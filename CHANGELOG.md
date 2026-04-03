@@ -1,5 +1,11 @@
 # lucent-ui
 
+## 0.35.0
+
+### Improvements
+
+- **CodeBlock** — `wrap` prop for line wrapping instead of horizontal scroll/truncation, `minimal` prop for headerless display with corner copy button
+
 ## 0.34.0
 
 ### New patterns
@@ -13,7 +19,6 @@ Four new pattern manifests for AI retrieval:
 
 ### Improvements
 
-- **CodeBlock** — `wrap` prop for line wrapping instead of horizontal scroll/truncation, `minimal` prop for headerless display with corner copy button
 - **Collapsible Card** — style escape hatch and card recipe enhancements
 - **Disabled text** — lightened disabled text color for better visual distinction
 
