@@ -22,6 +22,10 @@ export interface CodeBlockProps {
    * always copied even when visually truncated.
    */
   variant?: CodeBlockVariant;
+  /** When true, wraps long lines instead of scrolling horizontally. Defaults to false. */
+  wrap?: boolean;
+  /** When true, hides the header bar and shows only a corner copy button. */
+  minimal?: boolean;
   /** Optional descriptive text rendered between the tab bar and the code area */
   helperText?: string;
   showCopyButton?: boolean;
@@ -52,6 +56,8 @@ export function CodeBlock({
   language,
   tabs,
   variant = 'code',
+  wrap,
+  minimal,
   helperText,
   showCopyButton = true,
   style,
@@ -180,7 +186,7 @@ export function CodeBlock({
       )}
 
       {/* ── Header bar (non-tabbed mode) ── */}
-      {!hasTabs && (Boolean(currentLanguage) || showCopyButton) && (
+      {!minimal && !hasTabs && (Boolean(currentLanguage) || showCopyButton) && (
         <div
           style={{
             display: 'flex',
@@ -188,7 +194,7 @@ export function CodeBlock({
             justifyContent: currentLanguage ? 'space-between' : 'flex-end',
             padding: '0 var(--lucent-space-3)',
             height: 36,
-            background: 'color-mix(in srgb, var(--lucent-text-primary) 5%, transparent)',
+            background: 'var(--lucent-surface)',
             borderBottom: '1px solid var(--lucent-border-default)',
           }}
         >
@@ -231,10 +237,11 @@ export function CodeBlock({
             style={{
               margin: 0,
               padding: 'var(--lucent-space-4)',
-              paddingRight: hasTabs && showCopyButton ? 'var(--lucent-space-16)' : 'var(--lucent-space-4)',
+              paddingRight: (hasTabs || minimal) && showCopyButton ? 'var(--lucent-space-16)' : 'var(--lucent-space-4)',
               background: 'color-mix(in srgb, var(--lucent-text-primary) 5%, transparent)',
-              overflowX: 'auto',
+              overflowX: wrap ? 'hidden' : 'auto',
               lineHeight: 1.65,
+              ...(wrap && { whiteSpace: 'pre-wrap' as const, wordBreak: 'break-word' as const }),
             }}
           >
             <code
@@ -247,8 +254,8 @@ export function CodeBlock({
               {currentCode}
             </code>
           </pre>
-          {hasTabs && showCopyButton && (
-            <div style={{ position: 'absolute', top: 'var(--lucent-space-2)', right: 'var(--lucent-space-3)' }}>
+          {(hasTabs || minimal) && showCopyButton && (
+            <div style={{ position: 'absolute', top: minimal ? 0 : 'var(--lucent-space-2)', bottom: minimal ? 0 : undefined, right: 'var(--lucent-space-3)', display: 'flex', alignItems: 'center' }}>
               <CopyButton />
             </div>
           )}
@@ -268,8 +275,9 @@ export function CodeBlock({
             style={{
               flex: 1,
               overflow: 'hidden',
-              whiteSpace: 'nowrap',
-              textOverflow: 'ellipsis',
+              ...(wrap
+                ? { whiteSpace: 'pre-wrap' as const, wordBreak: 'break-word' as const }
+                : { whiteSpace: 'nowrap' as const, textOverflow: 'ellipsis' }),
               fontFamily: 'var(--lucent-font-family-mono)',
               fontSize: 'var(--lucent-font-size-sm)',
               color: 'var(--lucent-text-primary)',

@@ -1,5 +1,26 @@
 # lucent-ui
 
+## 0.34.0
+
+### New patterns
+
+Four new pattern manifests for AI retrieval:
+
+- **Product/Item Card** — product card layout with article and team member variants
+- **Announcement Card** — announcement card with media, system notice, and promo variants
+- **Confirmation Dialog** — confirmation dialog with typed confirmation and non-destructive variants
+- **Bulk Action Bar** — bulk action bar with minimal and extended variants
+
+### Improvements
+
+- **CodeBlock** — `wrap` prop for line wrapping instead of horizontal scroll/truncation, `minimal` prop for headerless display with corner copy button
+- **Collapsible Card** — style escape hatch and card recipe enhancements
+- **Disabled text** — lightened disabled text color for better visual distinction
+
+### Website
+
+- Updated content for patterns, design rules, and current component counts
+
 ## 0.33.0
 
 ### Minor Changes

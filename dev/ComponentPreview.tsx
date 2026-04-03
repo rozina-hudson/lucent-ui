@@ -1182,6 +1182,30 @@ function Inner({
             <CodeBlock showCopyButton={false} language="bash" code="npm install lucent-ui" />
           </div>
         </Row>
+        <Row label="Minimal" tokens={tokens}>
+          <div style={{ width: '100%' }}>
+            <CodeBlock minimal code="import { Button } from 'lucent-ui'" />
+          </div>
+        </Row>
+        <Row label="Wrap (code)" tokens={tokens}>
+          <div style={{ width: '100%' }}>
+            <CodeBlock
+              wrap
+              language="tsx"
+              code={`export const VERY_LONG_DESCRIPTION = "This is a deliberately long string that would normally cause horizontal scrolling in a code block, but with the wrap prop enabled it will instead break onto multiple lines so the full content is visible without scrolling.";`}
+            />
+          </div>
+        </Row>
+        <Row label="Wrap (prompt)" tokens={tokens}>
+          <div style={{ width: '100%' }}>
+            <CodeBlock
+              variant="prompt"
+              wrap
+              helperText="Paste into Claude:"
+              code="Add a Button from lucent-ui with variant=&quot;primary&quot;. It should trigger form submission and show a loading state while the request is in flight."
+            />
+          </div>
+        </Row>
       </Section>
 
       {/* Table */}

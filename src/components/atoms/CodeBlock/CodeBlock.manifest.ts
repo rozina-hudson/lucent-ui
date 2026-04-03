@@ -49,6 +49,22 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
         '"prompt" renders a single-line truncated span suited to AI prompts.',
     },
     {
+      name: 'minimal',
+      type: 'boolean',
+      required: false,
+      default: 'false',
+      description:
+        'Hides the header bar and shows only a corner copy button overlay.',
+    },
+    {
+      name: 'wrap',
+      type: 'boolean',
+      required: false,
+      default: 'false',
+      description:
+        'When true, wraps long lines instead of scrolling horizontally.',
+    },
+    {
       name: 'helperText',
       type: 'string',
       required: false,
