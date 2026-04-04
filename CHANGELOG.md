@@ -1,6 +1,6 @@
 # lucent-ui
 
-## 0.36.0
+## 0.37.0
 
 ### Breaking Changes
 
