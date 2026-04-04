@@ -23,8 +23,8 @@ export interface PageLayoutProps {
   footer?: ReactNode;
   /** Footer height in px or any CSS value. Default: 48 */
   footerHeight?: number | string;
-  /** Background token for chrome regions (header, sidebar, footer). Default: "bgBase" */
-  chromeBackground?: 'bgBase' | 'bgSubtle' | 'surface' | 'surfaceSecondary';
+  /** Background token for chrome regions (header, sidebar, footer). Default: "navigation" */
+  chromeBackground?: 'navigation' | 'bgBase' | 'bgSubtle' | 'surface' | 'surfaceSecondary';
   /** Style overrides for the main content card (border, borderRadius, boxShadow, etc.) */
   mainStyle?: CSSProperties;
   style?: CSSProperties;
@@ -46,7 +46,7 @@ export function PageLayout({
   rightSidebarCollapsed = false,
   footer,
   footerHeight = 28,
-  chromeBackground = 'bgBase',
+  chromeBackground = 'navigation',
   mainStyle,
   style,
 }: PageLayoutProps) {
@@ -55,12 +55,13 @@ export function PageLayout({
   const rightSidebarW = toCss(rightSidebarWidth);
   const footerH = toCss(footerHeight);
   const chromeBgMap: Record<string, string> = {
+    navigation: 'var(--lucent-navigation)',
     bgBase: 'var(--lucent-bg-base)',
     bgSubtle: 'var(--lucent-bg-subtle)',
     surface: 'var(--lucent-surface)',
     surfaceSecondary: 'var(--lucent-surface-secondary)',
   };
-  const chromeBg = chromeBgMap[chromeBackground] ?? 'var(--lucent-bg-base)';
+  const chromeBg = chromeBgMap[chromeBackground] ?? 'var(--lucent-navigation)';
 
   return (
     <div
@@ -121,7 +122,7 @@ export function PageLayout({
             border: '1px solid var(--lucent-border-default)',
             borderRadius: 'var(--lucent-radius-lg)',
             boxShadow: 'var(--lucent-shadow-sm)',
-            background: 'var(--lucent-surface)',
+            background: 'var(--lucent-bg-base)',
             ...mainStyle,
           }}
         >

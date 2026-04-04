@@ -3,7 +3,8 @@ import type { ColorPalette } from '../types.js';
 export const amberPalette: ColorPalette = {
   name: 'amber',
   light: {
-    bgBase: '#fffefb',
+    navigation: '#fffdf6',
+    bgBase: '#f2f0e6',
     surface: '#fefcf6',
     borderDefault: '#e8e1d0',
     accentDefault: '#d97706',
@@ -13,7 +14,8 @@ export const amberPalette: ColorPalette = {
     infoDefault: '#2563eb',
   },
   dark: {
-    bgBase: '#171310',
+    navigation: '#0c0a06',
+    bgBase: '#151310',
     surface: '#1e1a15',
     borderDefault: '#3a3329',
     accentDefault: '#f59e0b',

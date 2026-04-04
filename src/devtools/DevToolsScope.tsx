@@ -33,6 +33,7 @@ export function DevToolsScope({ children }: { children: ReactNode }) {
       vars[tokenToCssVar(key)] = value;
     }
     // Override a few tokens for the devtools-specific dark palette
+    vars[tokenToCssVar('navigation')] = PANEL.bg;
     vars[tokenToCssVar('bgBase')] = PANEL.bg;
     vars[tokenToCssVar('surface')] = PANEL.surface;
     vars[tokenToCssVar('surfaceSecondary')] = PANEL.inputBg;

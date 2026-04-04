@@ -1,10 +1,34 @@
 # lucent-ui
 
-## 0.35.0
+## 0.36.0
+
+### Breaking Changes
+
+- **New `navigation` token** — a dedicated color token for chrome/shell regions (sidebar, header, footer). Previously `bgBase` served double duty as both page background and chrome background. Now the hierarchy is: `navigation` (chrome) → `bgBase` (content area) → `surface` (cards/panels).
+- **`bgBase` default changed** — light default moved from `#ffffff` to `#ffffff` (content area canvas). Navigation default is `#f4f6f8` (cool light gray chrome).
+- **PageLayout `chromeBackground` default** — changed from `"bgBase"` to `"navigation"`. Existing code passing `chromeBackground="bgBase"` continues to work.
+- **Default shadow tokens tightened** — shadows are now single-layer (`0 2px 4px rgb(0 0 0 / 0.18)` at `shadowMd`) instead of multi-layer Tailwind-style values.
+- **Default type scale updated** — xs `0.79rem`, sm `0.889rem`, lg `1.125rem`, xl `1.266rem`, 2xl `1.424rem`, 3xl `1.602rem`.
+- **Default accent tokens tuned** — `accentHover` `#192339`, `accentBorder` `#000000`, `accentFg` `#f0f1f5`, `accentSubtle` `#f1f3f9`.
+
+### New Features
+
+- **`navigation` token** — added to `SemanticColorTokens`, `ThemeAnchors` (optional), all 12 palette presets, dark mode derivation, and devtools. CSS variable: `--lucent-navigation`.
+- **Navigation color picker in devtools** — separate picker for the chrome background, independent of the Background and Surface pickers.
+- **Background picker decoupled** — no longer auto-derives surface tokens; Background and Surface pickers are fully independent.
+- **Theme toggle fix** — switching light/dark now clears stale devtools overrides so base theme colors take effect.
 
 ### Improvements
 
-- **CodeBlock** — `wrap` prop for line wrapping instead of horizontal scroll/truncation, `minimal` prop for headerless display with corner copy button
+- **Design presets reworked** — all 10 devtools presets (Default, Modern, Liquid Glass, Bento, Brutalist, Terminal, Soft UI, Bloom, Minimal, Enterprise) updated with tuned navigation/bg/surface/accent/shadow values for both light and dark modes.
+- **Shadow presets updated** — Natural uses soft two-layer diffuse shadows; Elevated uses tighter high-contrast drops; Neumorphic replaced with bold single-layer shadows (compatible with bordered elements).
+- **Palette presets updated** — all 12 palette presets include `navigation` values with proper visual separation from `bgBase`.
+- **ColorPicker hex input fix** — typing partial hex values no longer auto-completes to `#000000`; color only applies at 6 or 8 valid hex chars. Non-hex characters are filtered.
+- **Manifest documentation updated** — LucentProvider, PageLayout, and Card manifests reflect the new token hierarchy and defaults.
+
+## 0.35.0
+
+_CodeBlock wrap and minimal props._
 
 ## 0.34.0
 

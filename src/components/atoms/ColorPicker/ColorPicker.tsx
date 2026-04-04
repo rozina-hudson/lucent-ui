@@ -560,13 +560,16 @@ export function ColorPicker({
                   prefix="#"
                   value={hexText}
                   onChange={e => {
-                    const raw = e.target.value.replace('#', '');
+                    const raw = e.target.value.replace(/[^0-9a-fA-F]/g, '');
                     setHexText(raw.toUpperCase());
-                    const parsed = parseColor(`#${raw}`);
-                    if (parsed) {
-                      const next = rgbaToHsva(parsed);
-                      setHsva(next);
-                      onChange?.(rgbaToHex(parsed));
+                    // Only parse when input is a complete valid hex (6 or 8 chars)
+                    if (/^[0-9a-f]{6}$/i.test(raw) || /^[0-9a-f]{8}$/i.test(raw)) {
+                      const parsed = parseColor(`#${raw}`);
+                      if (parsed) {
+                        const next = rgbaToHsva(parsed);
+                        setHsva(next);
+                        onChange?.(rgbaToHex(parsed));
+                      }
                     }
                   }}
                   spellCheck={false}

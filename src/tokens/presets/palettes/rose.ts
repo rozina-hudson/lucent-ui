@@ -3,7 +3,8 @@ import type { ColorPalette } from '../types.js';
 export const rosePalette: ColorPalette = {
   name: 'rose',
   light: {
-    bgBase: '#fffcfd',
+    navigation: '#fff4f6',
+    bgBase: '#f5e8ec',
     surface: '#fef9fa',
     borderDefault: '#ecdde1',
     accentDefault: '#f43f5e',
@@ -13,7 +14,8 @@ export const rosePalette: ColorPalette = {
     infoDefault: '#2563eb',
   },
   dark: {
-    bgBase: '#161012',
+    navigation: '#10060a',
+    bgBase: '#1a1016',
     surface: '#1d1518',
     borderDefault: '#3a282e',
     accentDefault: '#fb7185',

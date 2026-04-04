@@ -1,37 +1,25 @@
 import type { ShadowPreset } from '../types.js';
 
 /**
- * Neumorphic — light mode uses classic dual light/dark shadows
- * for the extruded soft-UI look.
+ * Neumorphic — bold, dramatic drop shadows that create strong
+ * visual lift. Single-layer for clean interaction with borders.
  *
- * Dark mode shifts to "chromatic" — offset split-color accent
- * glow (warm-shifted on one side, cool-shifted on the other).
- * Creates a CRT/screen-like depth that reads as physical without
- * relying on darkening. Uses `color-mix()` so it follows the
- * active accent automatically.
+ * Dark mode uses the same approach with higher opacity.
  */
 export const neumorphicShadow: ShadowPreset = {
   name: 'neumorphic',
   light: {
     shadowNone: 'none',
-    shadowSm: '3px 3px 8px #d1d5db, -3px -3px 8px #ffffff',
-    shadowMd: '5px 5px 14px #d1d5db, -5px -5px 14px #ffffff',
-    shadowLg: '8px 8px 20px #d1d5db, -8px -8px 20px #ffffff',
-    shadowXl: '12px 12px 28px #d1d5db, -12px -12px 28px #ffffff',
+    shadowSm: '0 8px 16px rgba(0, 0, 0, 0.12)',
+    shadowMd: '0 12px 24px rgba(0, 0, 0, 0.16)',
+    shadowLg: '0 20px 30px rgba(0, 0, 0, 0.2)',
+    shadowXl: '0 28px 40px rgba(0, 0, 0, 0.24)',
   },
   dark: {
     shadowNone: 'none',
-    shadowSm:
-      '3px 3px 10px color-mix(in srgb, var(--lucent-accent-default) 12%, transparent), ' +
-      '-3px -3px 10px rgba(255, 255, 255, 0.03)',
-    shadowMd:
-      '5px 5px 16px color-mix(in srgb, var(--lucent-accent-default) 15%, transparent), ' +
-      '-5px -5px 16px rgba(255, 255, 255, 0.04)',
-    shadowLg:
-      '8px 8px 24px color-mix(in srgb, var(--lucent-accent-default) 18%, transparent), ' +
-      '-8px -8px 24px rgba(255, 255, 255, 0.05)',
-    shadowXl:
-      '12px 12px 32px color-mix(in srgb, var(--lucent-accent-default) 22%, transparent), ' +
-      '-12px -12px 32px rgba(255, 255, 255, 0.06)',
+    shadowSm: '0 8px 16px rgba(0, 0, 0, 0.4)',
+    shadowMd: '0 12px 24px rgba(0, 0, 0, 0.45)',
+    shadowLg: '0 20px 30px rgba(0, 0, 0, 0.5)',
+    shadowXl: '0 28px 40px rgba(0, 0, 0, 0.55)',
   },
 };

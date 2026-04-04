@@ -5,13 +5,13 @@ export const typographyTokens: TypographyTokens = {
     '"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
   fontFamilyMono: '"DM Mono", "Fira Code", "Cascadia Code", monospace',
   fontFamilyDisplay: '"Georama", "DM Sans", sans-serif',
-  fontSizeXs: '0.75rem',
-  fontSizeSm: '0.875rem',
+  fontSizeXs: '0.79rem',
+  fontSizeSm: '0.889rem',
   fontSizeMd: '1rem',
   fontSizeLg: '1.125rem',
-  fontSizeXl: '1.25rem',
-  fontSize2xl: '1.5rem',
-  fontSize3xl: '1.875rem',
+  fontSizeXl: '1.266rem',
+  fontSize2xl: '1.424rem',
+  fontSize3xl: '1.602rem',
   fontWeightRegular: '400',
   fontWeightMedium: '500',
   fontWeightSemibold: '600',
@@ -60,12 +60,10 @@ export const motionTokens: MotionTokens = {
 
 export const lightShadowTokens: ShadowTokens = {
   shadowNone: 'none',
-  shadowSm: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
-  shadowMd: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-  shadowLg:
-    '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
-  shadowXl:
-    '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
+  shadowSm: '0 1px 2px rgb(0 0 0 / 0.12)',
+  shadowMd: '0 2px 4px rgb(0 0 0 / 0.18)',
+  shadowLg: '0 3px 8px rgb(0 0 0 / 0.18)',
+  shadowXl: '0 5px 14px rgb(0 0 0 / 0.2)',
 };
 
 /**
@@ -77,15 +75,11 @@ export const lightShadowTokens: ShadowTokens = {
 export const darkShadowTokens: ShadowTokens = {
   shadowNone: 'none',
   shadowSm:
-    'inset 0 1px 0 0 rgba(255, 255, 255, 0.04), ' +
-    '0 1px 2px 0 rgba(0, 0, 0, 0.2)',
+    'inset 0 1px 0 0 rgba(255, 255, 255, 0.04), 0 1px 2px rgba(0, 0, 0, 0.4)',
   shadowMd:
-    'inset 0 1px 0 0 rgba(255, 255, 255, 0.06), ' +
-    '0 2px 4px -1px rgba(0, 0, 0, 0.25)',
+    'inset 0 1px 0 0 rgba(255, 255, 255, 0.06), 0 1px 4px rgba(0, 0, 0, 0.45)',
   shadowLg:
-    'inset 0 1px 0 0 rgba(255, 255, 255, 0.08), ' +
-    '0 4px 8px -2px rgba(0, 0, 0, 0.3)',
+    'inset 0 1px 0 0 rgba(255, 255, 255, 0.08), 0 2px 8px rgba(0, 0, 0, 0.45)',
   shadowXl:
-    'inset 0 1px 0 0 rgba(255, 255, 255, 0.1), ' +
-    '0 8px 16px -4px rgba(0, 0, 0, 0.35)',
+    'inset 0 1px 0 0 rgba(255, 255, 255, 0.1), 0 4px 14px rgba(0, 0, 0, 0.5)',
 };

@@ -6,8 +6,8 @@ import { lightTokens } from './light.js';
 import { darkTokens } from './dark.js';
 
 const anchors = {
+  navigation: '#f4f6f8',
   bgBase: '#ffffff',
-  surface: '#f9fafb',
   borderDefault: '#e5e7eb',
   textPrimary: '#111827',
   accentDefault: '#6366f1',
@@ -60,6 +60,12 @@ describe('createTheme', () => {
   test('light theme has lighter bgBase than dark theme defaults', () => {
     expect(lightTokens.bgBase).toBe('#ffffff');
     expect(darkTokens.bgBase).not.toBe('#ffffff');
+  });
+
+  test('navigation token exists and is distinct from bgBase in dark mode', () => {
+    expect(lightTokens.navigation).toBe('#f4f6f8');
+    expect(darkTokens.navigation).toBeDefined();
+    expect(darkTokens.navigation).not.toBe(darkTokens.bgBase);
   });
 
   test('dark theme variant produces different derived elevation colors', () => {

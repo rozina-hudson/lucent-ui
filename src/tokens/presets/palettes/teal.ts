@@ -3,7 +3,8 @@ import type { ColorPalette } from '../types.js';
 export const tealPalette: ColorPalette = {
   name: 'teal',
   light: {
-    bgBase: '#fbfefd',
+    navigation: '#f9fbfc',
+    bgBase: '#eef2f5',
     surface: '#f6fcfa',
     borderDefault: '#d4e5e0',
     accentDefault: '#0d9488',
@@ -13,7 +14,8 @@ export const tealPalette: ColorPalette = {
     infoDefault: '#2563eb',
   },
   dark: {
-    bgBase: '#0f1514',
+    navigation: '#060e0c',
+    bgBase: '#0c1816',
     surface: '#161d1c',
     borderDefault: '#283836',
     accentDefault: '#2dd4bf',

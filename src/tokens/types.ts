@@ -78,7 +78,9 @@ export interface MotionTokens {
 }
 
 export interface SemanticColorTokens {
-  // Backgrounds — page/layout layer only
+  // Navigation — chrome/shell layer (sidebar, header, footer)
+  navigation: string;
+  // Backgrounds — main content area
   bgBase: string;
   bgSubtle: string;
   bgOverlay: string;
@@ -141,13 +143,14 @@ export type Theme = 'light' | 'dark';
  *
  * @example
  * const myTheme = createTheme({
- *   bgBase:          '#ffffff',
+ *   bgBase:          '#f9fafb',
  *   borderDefault:   '#e5e7eb',
  *   accentDefault:   '#6366f1',
  *   successDefault:  '#22c55e',
  *   warningDefault:  '#f59e0b',
  *   dangerDefault:   '#ef4444',
  *   infoDefault:     '#3b82f6',
+ *   navigation:      '#ffffff', // optional — chrome background
  * });
  */
 export type ThemeAnchors = Pick<
@@ -160,4 +163,4 @@ export type ThemeAnchors = Pick<
   | 'dangerDefault'
   | 'infoDefault'
 > &
-  Partial<Pick<LucentTokens, 'textPrimary' | 'surface'>>;
+  Partial<Pick<LucentTokens, 'textPrimary' | 'surface' | 'navigation'>>;

@@ -3,7 +3,8 @@ import type { ColorPalette } from '../types.js';
 export const indigoPalette: ColorPalette = {
   name: 'indigo',
   light: {
-    bgBase: '#fdfcff',
+    navigation: '#ffffff',
+    bgBase: '#faf9fb',
     surface: '#faf9fe',
     borderDefault: '#e0dde9',
     accentDefault: '#6366f1',
@@ -13,7 +14,8 @@ export const indigoPalette: ColorPalette = {
     infoDefault: '#2563eb',
   },
   dark: {
-    bgBase: '#12111a',
+    navigation: '#09081a',
+    bgBase: '#100e24',
     surface: '#191820',
     borderDefault: '#2e2d3a',
     accentDefault: '#818cf8',

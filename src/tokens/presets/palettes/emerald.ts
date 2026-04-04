@@ -3,7 +3,8 @@ import type { ColorPalette } from '../types.js';
 export const emeraldPalette: ColorPalette = {
   name: 'emerald',
   light: {
-    bgBase: '#fbfefc',
+    navigation: '#f4fcf9',
+    bgBase: '#e9f6f1',
     surface: '#f7fcf9',
     borderDefault: '#dbe8df',
     accentDefault: '#10b981',
@@ -13,7 +14,8 @@ export const emeraldPalette: ColorPalette = {
     infoDefault: '#2563eb',
   },
   dark: {
-    bgBase: '#0f1512',
+    navigation: '#061008',
+    bgBase: '#0c1a16',
     surface: '#151c18',
     borderDefault: '#263330',
     accentDefault: '#34d399',

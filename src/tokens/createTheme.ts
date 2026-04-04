@@ -19,13 +19,14 @@ import type { LucentTokens, Theme, ThemeAnchors } from './types.js';
  *
  * @example
  * const tokens = createTheme({
- *   bgBase:         '#ffffff',
+ *   bgBase:         '#f9fafb',
  *   borderDefault:  '#e5e7eb',
  *   accentDefault:  '#6366f1',
  *   successDefault: '#22c55e',
  *   warningDefault: '#f59e0b',
  *   dangerDefault:  '#ef4444',
  *   infoDefault:    '#3b82f6',
+ *   navigation:     '#ffffff', // optional
  * });
  *
  * // <LucentProvider tokens={tokens}>...</LucentProvider>

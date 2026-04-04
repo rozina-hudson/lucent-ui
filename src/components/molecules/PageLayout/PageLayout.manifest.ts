@@ -12,8 +12,8 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
 
   designIntent:
     'PageLayout owns the outermost chrome of an application page. Chrome regions (header, sidebar, footer) ' +
-    'default to bgBase so the main content card feels elevated against the page canvas — especially ' +
-    'noticeable with tinted bgBase values. The body row is a flex row containing ' +
+    'default to the navigation token so the main content card feels elevated against the chrome — especially ' +
+    'noticeable with tinted navigation values. The body row is a flex row containing ' +
     'an optional left sidebar, a bordered main content card, and an optional right panel — all as structural ' +
     'siblings so they share the same vertical space. The header and footer sit outside the body row as ' +
     'flex children of the outer column, ensuring they span the full width. Sidebars collapse to zero width ' +
@@ -100,12 +100,13 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
       name: 'chromeBackground',
       type: 'string',
       required: false,
-      default: '"bgBase"',
+      default: '"navigation"',
       description:
         'Background token for chrome regions (header, sidebar, footer). ' +
-        '"bgBase" uses the page canvas color so the main content card feels elevated; ' +
+        '"navigation" uses the dedicated chrome token (default); ' +
+        '"bgBase" uses the content area background; ' +
         '"bgSubtle" uses a subtle shade of bgBase for chrome distinction; ' +
-        '"surface" matches the old behavior where chrome and content share the same background; ' +
+        '"surface" matches the component surface color; ' +
         '"surfaceSecondary" uses the tinted fill token for a more visible chrome/stage separation.',
     },
     {

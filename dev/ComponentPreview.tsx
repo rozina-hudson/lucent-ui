@@ -512,8 +512,8 @@ function Inner({
         </div>
       }
       headerHeight={48}
-      chromeBackground="bgBase"
-      mainStyle={{ background: 'var(--lucent-surface)' }}
+      chromeBackground="navigation"
+      mainStyle={{ background: 'var(--lucent-bg-base)' }}
       {...(tab === 'components' && { sidebar: navSidebar, sidebarWidth: navSize === 'lg' ? 280 : navSize === 'md' ? 250 : 220 })}
     >
       {tab === 'components' ? (
@@ -1930,7 +1930,7 @@ function Inner({
             <PageLayout
               headerHeight={44}
               sidebarWidth={180}
-              chromeBackground="bgSubtle"
+              chromeBackground="navigation"
               header={
                 <div style={{ height: '100%', display: 'flex', alignItems: 'center', padding: `0 ${tokens.space6}` }}>
                   <Text weight="semibold">My App</Text>
@@ -1955,7 +1955,7 @@ function Inner({
             <PageLayout
               headerHeight={44}
               sidebarWidth={180}
-              chromeBackground="bgSubtle"
+              chromeBackground="navigation"
               header={
                 <div style={{ height: '100%', display: 'flex', alignItems: 'center', padding: `0 ${tokens.space6}` }}>
                   <Text weight="semibold">My App</Text>
@@ -1991,7 +1991,7 @@ function Inner({
               headerHeight={44}
               sidebarWidth={160}
               rightSidebarWidth={160}
-              chromeBackground="bgSubtle"
+              chromeBackground="navigation"
               header={
                 <div style={{ height: '100%', display: 'flex', alignItems: 'center', padding: `0 ${tokens.space6}` }}>
                   <Text weight="semibold">My App</Text>

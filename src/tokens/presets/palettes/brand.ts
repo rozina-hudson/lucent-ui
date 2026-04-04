@@ -3,7 +3,8 @@ import type { ColorPalette } from '../types.js';
 export const brandPalette: ColorPalette = {
   name: 'brand',
   light: {
-    bgBase: '#fffefb',
+    navigation: '#fffefb',
+    bgBase: '#f2f0e8',
     surface: '#fffdf7',
     borderDefault: '#e8e3d6',
     accentDefault: '#e9c96b',
@@ -13,6 +14,7 @@ export const brandPalette: ColorPalette = {
     infoDefault: '#2563eb',
   },
   dark: {
+    navigation: '#0c0b08',
     bgBase: '#151310',
     surface: '#1c1a15',
     borderDefault: '#33302a',

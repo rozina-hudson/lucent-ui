@@ -13,23 +13,13 @@ export const naturalShadow: ShadowPreset = {
   light: {
     shadowNone: 'none',
     shadowSm:
-      '0 1px 1px rgba(0, 0, 0, 0.06), ' +
-      '0 2px 4px rgba(0, 0, 0, 0.06)',
+      'rgba(17, 17, 26, 0.05) 0px 2px 8px, rgba(17, 17, 26, 0.03) 0px 4px 16px',
     shadowMd:
-      '0 1px 2px rgba(0, 0, 0, 0.06), ' +
-      '0 2px 4px rgba(0, 0, 0, 0.06), ' +
-      '0 4px 8px rgba(0, 0, 0, 0.06)',
+      'rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.05) 0px 8px 32px',
     shadowLg:
-      '0 1px 2px rgba(0, 0, 0, 0.05), ' +
-      '0 2px 4px rgba(0, 0, 0, 0.05), ' +
-      '0 4px 8px rgba(0, 0, 0, 0.05), ' +
-      '0 8px 16px rgba(0, 0, 0, 0.05)',
+      'rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.08) 0px 16px 48px',
     shadowXl:
-      '0 1px 2px rgba(0, 0, 0, 0.04), ' +
-      '0 2px 4px rgba(0, 0, 0, 0.04), ' +
-      '0 4px 8px rgba(0, 0, 0, 0.04), ' +
-      '0 8px 16px rgba(0, 0, 0, 0.04), ' +
-      '0 16px 32px rgba(0, 0, 0, 0.04)',
+      'rgba(17, 17, 26, 0.12) 0px 12px 32px, rgba(17, 17, 26, 0.1) 0px 24px 64px',
   },
   dark: {
     shadowNone: 'none',

@@ -3,7 +3,8 @@ import type { ColorPalette } from '../types.js';
 export const coralPalette: ColorPalette = {
   name: 'coral',
   light: {
-    bgBase: '#fffcfb',
+    navigation: '#fff9f7',
+    bgBase: '#f2ece8',
     surface: '#fef9f7',
     borderDefault: '#e9ddd8',
     accentDefault: '#e8624a',
@@ -13,7 +14,8 @@ export const coralPalette: ColorPalette = {
     infoDefault: '#2563eb',
   },
   dark: {
-    bgBase: '#171210',
+    navigation: '#0e0806',
+    bgBase: '#1a1210',
     surface: '#1e1816',
     borderDefault: '#3b312c',
     accentDefault: '#f38b76',

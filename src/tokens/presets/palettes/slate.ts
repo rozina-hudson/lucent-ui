@@ -3,7 +3,8 @@ import type { ColorPalette } from '../types.js';
 export const slatePalette: ColorPalette = {
   name: 'slate',
   light: {
-    bgBase: '#fafbfc',
+    navigation: '#f7f8fa',
+    bgBase: '#eceef2',
     surface: '#f7f8fa',
     borderDefault: '#dde1e6',
     accentDefault: '#475569',
@@ -13,7 +14,8 @@ export const slatePalette: ColorPalette = {
     infoDefault: '#2563eb',
   },
   dark: {
-    bgBase: '#0f1116',
+    navigation: '#080a10',
+    bgBase: '#0e1118',
     surface: '#161920',
     borderDefault: '#2b3040',
     accentDefault: '#94a3b8',

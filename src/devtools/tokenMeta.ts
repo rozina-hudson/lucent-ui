@@ -39,6 +39,10 @@ export const TOKEN_GROUPS: TokenGroup[] = [
     defaultExpanded: true,
     subgroups: [
       {
+        label: 'Navigation',
+        tokens: [color('navigation')],
+      },
+      {
         label: 'Background',
         tokens: [color('bgBase'), color('bgSubtle'), color('bgOverlay')],
       },

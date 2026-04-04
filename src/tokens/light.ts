@@ -14,22 +14,24 @@ export const lightTokens: LucentTokens = {
   ...motionTokens,
   ...lightShadowTokens,
 
-  // Backgrounds — page/layout layer only
+  // Navigation — chrome/shell (sidebar, header, footer)
+  navigation: '#f4f6f8',
+  // Backgrounds — main content area
   bgBase: '#ffffff',
-  bgSubtle: '#f9fafb',
+  bgSubtle: '#fafafa',
   bgOverlay: 'rgb(0 0 0 / 0.4)',
 
   // Surfaces — component elevation layer
   surface: '#ffffff',
-  surfaceSecondary: '#f3f4f6',
+  surfaceSecondary: '#f5f5f5',
   surfaceRaised: '#ffffff',
   surfaceOverlay: '#ffffff',
-  surfaceTint: '#f2f2f2', // adjustLightness(bgBase, -0.05) — derived when bgBase is customized
+  surfaceTint: '#f5f5f5',
 
   // Borders
   borderDefault: '#e5e7eb',
   borderSubtle: '#f3f4f6',
-  borderStrong: '#9ca3af',
+  borderStrong: '#979faf',
   controlTrack: '#d1d5db',
 
   // Text
@@ -38,13 +40,11 @@ export const lightTokens: LucentTokens = {
   textDisabled: '#d1d5db',
   textInverse: '#ffffff',
   // Accent (monochrome default — near-black for universal, high-contrast out of the box)
-  // Use `brandTokens` to opt in to the gold palette.
   accentDefault: '#111827',
-  accentHover: '#1f2937',
-  accentSubtle: '#f3f4f6',
-  // placeholder — actual value is recomputed in LucentProvider
-  accentBorder: '#111827',
-  accentFg: '#ffffff', // auto-recomputed by LucentProvider via getContrastText
+  accentHover: '#192339',
+  accentSubtle: '#f1f3f9',
+  accentBorder: '#000000',
+  accentFg: '#f0f1f5',
 
   // Status
   successDefault: '#16a34a',

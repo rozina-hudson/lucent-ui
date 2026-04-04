@@ -9,10 +9,10 @@ export const elevatedShadow: ShadowPreset = {
   name: 'elevated',
   light: {
     shadowNone: 'none',
-    shadowSm: 'rgba(17, 17, 26, 0.05) 0px 2px 8px, rgba(17, 17, 26, 0.03) 0px 4px 16px',
-    shadowMd: 'rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.05) 0px 8px 32px',
-    shadowLg: 'rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.08) 0px 16px 48px',
-    shadowXl: 'rgba(17, 17, 26, 0.12) 0px 12px 32px, rgba(17, 17, 26, 0.1) 0px 24px 64px',
+    shadowSm: '0 2px 4px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08)',
+    shadowMd: '0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.08)',
+    shadowLg: '0 8px 24px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.08)',
+    shadowXl: '0 16px 40px rgba(0, 0, 0, 0.18), 0 6px 12px rgba(0, 0, 0, 0.1)',
   },
   dark: {
     shadowNone: 'none',

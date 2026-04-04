@@ -23,6 +23,7 @@ import { loadFont } from './loadFont.js';
 
 interface PresetColors {
   accent: string;
+  navigation: string;
   bg: string;
   surface: string;
   border: string;
@@ -53,26 +54,26 @@ const PLUS_JAKARTA = '"Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sa
 const DESIGN_PRESETS: DesignPresetDef[] = [
   // ── Foundations ──
   { name: 'Default',      roundness: 0.5,    density: 1,    shadow: 'default',     typeBase: 1,        typeRatio: 1.125, fontFamily: DM_SANS,
-    colors: { light: { accent: '#111827', bg: '#f7f8f9', surface: '#ffffff', border: '#e5e7eb' }, dark: { accent: '#f9fafb', bg: '#0c0d12', surface: '#1c1e28', border: '#2e3039' } } },
-  { name: 'Modern',       roundness: 0.5,    density: 1,    shadow: 'subtle',      typeBase: 1,        typeRatio: 1.2,   fontFamily: INTER,
-    colors: { light: { accent: '#6366f1', bg: '#f8f7fc', surface: '#ffffff', border: '#e0dde9' }, dark: { accent: '#818cf8', bg: '#0d0c18', surface: '#1e1c30', border: '#302e42' } } },
+    colors: { light: { accent: '#111827', navigation: '#f4f6f8', bg: '#ffffff', surface: '#ffffff', border: '#e5e7eb' }, dark: { accent: '#f9fafb', navigation: '#0e1015', bg: '#111318', surface: '#191c22', border: '#252830' } } },
+  { name: 'Modern',       roundness: 0.75,   density: 0.99, shadow: 'liquidGlass', typeBase: 1,        typeRatio: 1.25,  fontFamily: INTER,
+    colors: { light: { accent: '#978AE7', navigation: '#dbd8e9', bg: '#FFFFFF', surface: '#f7f7f7', border: '#e0e0e0' }, dark: { accent: '#b8aef0', navigation: '#110f1c', bg: '#131118', surface: '#1c1a24', border: '#2a2834' } } },
   // ── Design Personalities ──
   { name: 'Liquid Glass', roundness: 1,      density: 0.9,  shadow: 'liquidGlass', typeBase: 1.0625,   typeRatio: 1.2,   fontFamily: SYSTEM_UI,
-    colors: { light: { accent: '#0ea5e9', bg: '#f5f9fc', surface: '#ffffff', border: '#d9e4ec' }, dark: { accent: '#38bdf8', bg: '#0a0e16', surface: '#16202e', border: '#243240' } } },
+    colors: { light: { accent: '#0c8fca', navigation: '#ebf1ff', bg: '#f1f4ff', surface: '#ffffff', border: '#d9e4ec' }, dark: { accent: '#38bdf8', navigation: '#0a0e16', bg: '#0e1420', surface: '#16202c', border: '#1e2c38' } } },
   { name: 'Bento',        roundness: 0.75,   density: 1,    shadow: 'natural',     typeBase: 0.9375,   typeRatio: 1.2,   fontFamily: GEIST,
-    colors: { light: { accent: '#0d9488', bg: '#f5faf8', surface: '#ffffff', border: '#d4e5e0' }, dark: { accent: '#2dd4bf', bg: '#0a110f', surface: '#162824', border: '#263e38' } } },
+    colors: { light: { accent: '#0d9488', navigation: '#f9fbfc', bg: '#eef2f5', surface: '#ffffff', border: '#d4e5e0' }, dark: { accent: '#2dd4bf', navigation: '#0c1210', bg: '#101a16', surface: '#182822', border: '#263e36' } } },
   { name: 'Brutalist',    roundness: 0,      density: 0.8,  shadow: 'brutalist',   typeBase: 1.125,    typeRatio: 1.25,  fontFamily: SPACE_GROTESK,
-    colors: { light: { accent: '#ef4444', bg: '#faf6f5', surface: '#ffffff', border: '#e9ddd8' }, dark: { accent: '#f87171', bg: '#140c0a', surface: '#2c1e1a', border: '#42322c' } } },
-  { name: 'Terminal',     roundness: 0,      density: 0.8,  shadow: 'glow',        typeBase: 0.9375,   typeRatio: 1.125, fontFamily: JETBRAINS,
-    colors: { light: { accent: '#10b981', bg: '#f5faf7', surface: '#ffffff', border: '#dbe8df' }, dark: { accent: '#34d399', bg: '#0a120c', surface: '#16281e', border: '#263e30' } } },
+    colors: { light: { accent: '#ef4444', navigation: '#fff9f7', bg: '#f0ebe8', surface: '#ffffff', border: '#e9ddd8' }, dark: { accent: '#f87171', navigation: '#14100e', bg: '#1a1512', surface: '#26201c', border: '#3a302a' } } },
+  { name: 'Terminal',     roundness: 0,      density: 0.8,  shadow: 'flat',        typeBase: 0.875,   typeRatio: 1.125, fontFamily: JETBRAINS,
+    colors: { light: { accent: '#12d091', navigation: '#f8f8fa', bg: '#ffffff', surface: '#ffffff', border: '#dbe8df' }, dark: { accent: '#34d399', navigation: '#0e1012', bg: '#111318', surface: '#191c22', border: '#1e2e24' } } },
   { name: 'Soft UI',      roundness: 1,      density: 1.25, shadow: 'neumorphic',  typeBase: 1,        typeRatio: 1.2,   fontFamily: OUTFIT,
-    colors: { light: { accent: '#8b5cf6', bg: '#f8f6fc', surface: '#ffffff', border: '#e2dce9' }, dark: { accent: '#a78bfa', bg: '#100c1a', surface: '#221e34', border: '#362e48' } } },
+    colors: { light: { accent: '#8b5cf6', navigation: '#eee8fa', bg: '#f8f4ff', surface: '#ffffff', border: '#e2dce9' }, dark: { accent: '#a78bfa', navigation: '#120e1a', bg: '#141020', surface: '#1e1a2c', border: '#302a3e' } } },
   { name: 'Bloom',        roundness: 0.875,  density: 1.25, shadow: 'glow',        typeBase: 1.0625,   typeRatio: 1.25,  fontFamily: SORA,
-    colors: { light: { accent: '#e879f9', bg: '#faf6f8', surface: '#ffffff', border: '#ecdde1' }, dark: { accent: '#f0abfc', bg: '#140a10', surface: '#2c1a24', border: '#422a36' } } },
+    colors: { light: { accent: '#e879f9', navigation: '#f5e8f0', bg: '#fff4f9', surface: '#ffffff', border: '#ecdde1' }, dark: { accent: '#f0abfc', navigation: '#160e14', bg: '#1a1018', surface: '#261c24', border: '#3a2c34' } } },
   { name: 'Minimal',      roundness: 0.25,   density: 1,    shadow: 'flat',        typeBase: 1,        typeRatio: 1.125, fontFamily: PLUS_JAKARTA,
-    colors: { light: { accent: '#475569', bg: '#f4f5f7', surface: '#ffffff', border: '#dde1e6' }, dark: { accent: '#94a3b8', bg: '#0c0e12', surface: '#1c2028', border: '#2e3440' } } },
+    colors: { light: { accent: '#475569', navigation: '#eceef2', bg: '#f7f8fa', surface: '#ffffff', border: '#dde1e6' }, dark: { accent: '#94a3b8', navigation: '#0e1016', bg: '#11141a', surface: '#191e26', border: '#262c36' } } },
   { name: 'Enterprise',   roundness: 0,      density: 0.75, shadow: 'flat',        typeBase: 0.9375,   typeRatio: 1.125, fontFamily: SYSTEM_UI,
-    colors: { light: { accent: '#475569', bg: '#f4f5f7', surface: '#ffffff', border: '#dde1e6' }, dark: { accent: '#94a3b8', bg: '#0c0e12', surface: '#1c2028', border: '#2e3440' } } },
+    colors: { light: { accent: '#4182eb', navigation: '#ffffff', bg: '#f6f8fa', surface: '#ffffff', border: '#dde1e6' }, dark: { accent: '#6da6f0', navigation: '#0e1015', bg: '#111418', surface: '#181e26', border: '#262c36' } } },
 ];
 // ── Color Presets ───────────────────────────────────────────────────────────
 
@@ -87,14 +88,25 @@ const ACCENT_PRESETS: ColorPresetGroup[] = [
   },
 ];
 
-const BG_PRESETS: ColorPresetGroup[] = [
+const NAV_PRESETS: ColorPresetGroup[] = [
   {
     label: 'Light',
-    colors: ['#ffffff', '#fafafa', '#f9fafb', '#f5f5f4', '#fef7ee', '#faf5ff', '#f0f9ff', '#f0fdf4', '#fefce8', '#fff1f2'],
+    colors: ['#ffffff', '#fdfcff', '#fbfdff', '#fbfefc', '#fffcfb', '#fafbfd', '#fffbfd', '#fdfbff', '#fafafa', '#f9fafb'],
   },
   {
     label: 'Dark',
-    colors: ['#09090b', '#0a0a0a', '#0c0c0e', '#111827', '#18181b', '#1c1917', '#1a1a2e', '#0f172a', '#171717', '#0d1117'],
+    colors: ['#08090e', '#090814', '#060a12', '#060d0b', '#100806', '#060e08', '#0c0816', '#10060c', '#080a0e', '#0a0a0a'],
+  },
+];
+
+const BG_PRESETS: ColorPresetGroup[] = [
+  {
+    label: 'Light',
+    colors: ['#f7f8f9', '#f9fafb', '#f8f7fc', '#f5f9fc', '#f5faf8', '#faf6f5', '#f5faf7', '#f8f6fc', '#f4f5f7', '#fafafa'],
+  },
+  {
+    label: 'Dark',
+    colors: ['#0c0d12', '#0d0c18', '#0a0e16', '#0a110f', '#140c0a', '#0a120c', '#100c1a', '#140a10', '#0c0e12', '#0d1117'],
   },
 ];
 
@@ -163,6 +175,7 @@ export function DesignView({ state, theme }: DesignViewProps) {
     // Batch-apply all token overrides in a single pass
     const themeColors = preset.colors[theme];
     const allOverrides: Record<string, string> = {
+      navigation: themeColors.navigation,
       ...deriveAccentTokens(themeColors.accent, theme) as Record<string, string>,
       ...deriveBgTokens(themeColors.bg, theme) as Record<string, string>,
       ...deriveSurfaceTokens(themeColors.surface, theme) as Record<string, string>,
@@ -189,6 +202,10 @@ export function DesignView({ state, theme }: DesignViewProps) {
   useEffect(() => {
     if (prevThemeRef.current === theme) return;
     prevThemeRef.current = theme;
+
+    // Clear stale overrides so the new theme's base colors take effect
+    state.resetAll();
+
     if (!activePreset) return;
 
     const preset = DESIGN_PRESETS.find(p => p.name === activePreset);
@@ -196,6 +213,7 @@ export function DesignView({ state, theme }: DesignViewProps) {
 
     const themeColors = preset.colors[theme];
     const themeOverrides: Record<string, string> = {
+      navigation: themeColors.navigation,
       ...deriveAccentTokens(themeColors.accent, theme) as Record<string, string>,
       ...deriveBgTokens(themeColors.bg, theme) as Record<string, string>,
       ...deriveSurfaceTokens(themeColors.surface, theme) as Record<string, string>,
@@ -233,6 +251,11 @@ export function DesignView({ state, theme }: DesignViewProps) {
     }
   };
 
+  const handleNavigation = (color: string) => {
+    clearPreset();
+    state.setOverride('navigation', color);
+  };
+
   const handleBg = (color: string) => {
     clearPreset();
     if (/^#[0-9a-f]{6}$/i.test(color)) {
@@ -261,6 +284,7 @@ export function DesignView({ state, theme }: DesignViewProps) {
   };
 
   // ── Current values ──
+  const currentNavigation = (state.overrides.navigation ?? state.tokens.navigation) as string;
   const currentBg = (state.overrides.bgBase ?? state.tokens.bgBase) as string;
   const currentSurface = (state.overrides.surface ?? state.tokens.surface) as string;
   const currentBorder = (state.overrides.borderDefault ?? state.tokens.borderDefault) as string;
@@ -326,6 +350,11 @@ export function DesignView({ state, theme }: DesignViewProps) {
             <ColorPicker value={currentAccent} onChange={handleAccent} size="sm" presetGroups={ACCENT_PRESETS} />
             <Text size="xs" color="secondary" style={{ flex: 1 }}>Accent</Text>
             <Text as="code" size="xs" family="mono" style={{ color: 'var(--lucent-accent-default)' }}>{currentAccent}</Text>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <ColorPicker value={currentNavigation} onChange={handleNavigation} size="sm" presetGroups={NAV_PRESETS} />
+            <Text size="xs" color="secondary" style={{ flex: 1 }}>Navigation</Text>
+            <Text as="code" size="xs" family="mono" style={{ color: 'var(--lucent-accent-default)' }}>{currentNavigation}</Text>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <ColorPicker value={currentBg} onChange={handleBg} size="sm" presetGroups={BG_PRESETS} />

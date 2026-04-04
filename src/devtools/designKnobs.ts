@@ -1,7 +1,7 @@
 import type { LucentTokens, Theme } from '../tokens/types.js';
 import type { ShadowName, ShadowPreset } from '../tokens/presets/types.js';
 import { getAccentFg, ensureContrast } from '../tokens/contrast.js';
-import { adjustLightness, hexToHsl, hslToHex } from '../tokens/color.js';
+import { adjustLightness } from '../tokens/color.js';
 import { flatShadow, subtleShadow, elevatedShadow, liquidGlassShadow, brutalistShadow, neumorphicShadow, naturalShadow, glowShadow } from '../tokens/presets/shadows/index.js';
 import { lightShadowTokens, darkShadowTokens } from '../tokens/base.js';
 
@@ -41,23 +41,10 @@ export function deriveBgTokens(
   const bgSubtle = adjustLightness(bgHex, isLight ? -0.02 : +0.02);
   const surfaceTint = adjustLightness(bgHex, isLight ? -0.04 : +0.03);
 
-  // Derive surface from bg
-  const [h, s, l] = hexToHsl(bgHex);
-  const surface = isLight
-    ? hslToHex(h, s * 0.3, Math.min(1.0, l + (1 - l) * 0.85))
-    : hslToHex(h, s, Math.min(0.25, l + 0.04));
-  const surfaceSecondary = adjustLightness(surface, isLight ? -0.04 : +0.03);
-  const surfaceRaised = adjustLightness(surface, isLight ? 0 : +0.06);
-  const surfaceOverlay = adjustLightness(surface, isLight ? 0 : +0.06);
-
   return {
     bgBase: bgHex,
     bgSubtle,
     surfaceTint,
-    surface,
-    surfaceSecondary,
-    surfaceRaised,
-    surfaceOverlay,
   };
 }
 

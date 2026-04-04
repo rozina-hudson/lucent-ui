@@ -3,7 +3,8 @@ import type { ColorPalette } from '../types.js';
 export const oceanPalette: ColorPalette = {
   name: 'ocean',
   light: {
-    bgBase: '#fbfdff',
+    navigation: '#ebf1ff',
+    bgBase: '#f1f4ff',
     surface: '#f6fafd',
     borderDefault: '#d9e4ec',
     accentDefault: '#0ea5e9',
@@ -13,7 +14,8 @@ export const oceanPalette: ColorPalette = {
     infoDefault: '#2563eb',
   },
   dark: {
-    bgBase: '#0e1318',
+    navigation: '#060b14',
+    bgBase: '#0e1522',
     surface: '#141a20',
     borderDefault: '#243038',
     accentDefault: '#38bdf8',

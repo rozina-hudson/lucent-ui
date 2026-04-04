@@ -17,13 +17,23 @@ export const ThemeAnchorsSpec: Record<keyof ThemeAnchors, {
   darkGuidance: string;
   derives: string[];
 }> = {
+  navigation: {
+    description:
+      'Chrome/shell background for sidebars, headers, footers, and navigation rails. ' +
+      'The outermost structural layer of the UI. Independent of bgBase — set it explicitly ' +
+      'when the chrome needs a different tint than the content area.',
+    lightGuidance: 'A very faint cool or warm tint that distinguishes the chrome from the content area. Default #f4f6f8. Typically L 0.95–0.98.',
+    darkGuidance: 'The darkest layer — near-black with a subtle cool or warm tint. Typically L 0.06–0.09 (e.g. #0f0f11, #111318).',
+    derives: [],
+  },
   bgBase: {
     description:
-      'Main page/canvas background. The lowest elevation layer — everything sits on top of this. ' +
+      'Main content area background. The canvas on which surface elements (cards, tables, panels) sit. ' +
+      'Slightly distinct from `navigation` to create a visual content/chrome boundary. ' +
       'When bgBase is customized, `surface` and `surfaceTint` are auto-derived so the entire ' +
-      'card elevation hierarchy (ghost → outline → filled → elevated → combo) adapts automatically.',
-    lightGuidance: 'Near-white. Typically #ffffff or a very faint tint (L > 0.96).',
-    darkGuidance: 'Near-black with a subtle cool or warm tint. Typically L 0.07–0.10 (e.g. #0f0f11, #111318).',
+      'card elevation hierarchy adapts automatically.',
+    lightGuidance: 'White or near-white. Default #ffffff. The content canvas that surface elements (cards) sit on.',
+    darkGuidance: 'Slightly lighter than navigation. Typically L 0.08–0.11 (e.g. #14161c, #15171e).',
     derives: ['bgSubtle', 'surfaceTint', 'surface', 'surfaceSecondary', 'surfaceRaised', 'surfaceOverlay'],
   },
   surface: {
@@ -32,7 +42,7 @@ export const ThemeAnchorsSpec: Record<keyof ThemeAnchors, {
       'Optional — when omitted, auto-derived from bgBase (pushed 85% toward white in light mode, ' +
       '+0.04 lightness in dark mode, with 30% saturation retention). Only set explicitly when you ' +
       'need a surface color that doesn\'t match the bgBase hue.',
-    lightGuidance: 'Very slightly off-white — just enough to read as distinct from bgBase. Typically L 0.96–0.98 (e.g. #f9fafb, #f8f8f8).',
+    lightGuidance: 'White or near-white. Default #ffffff. Cards and panels sit on this surface above the content area background.',
     darkGuidance: 'Slightly lighter than bgBase. Typically L 0.11–0.15 (e.g. #1a1a1e, #18181b).',
     derives: ['surfaceSecondary', 'surfaceRaised', 'surfaceOverlay'],
   },
@@ -150,7 +160,8 @@ export const LucentProviderManifest: ComponentManifest = {
         'the `tokens` prop is ignored. ' +
         'Required keys: bgBase, borderDefault, accentDefault, ' +
         'successDefault, warningDefault, dangerDefault, infoDefault. ' +
-        'Optional keys: textPrimary (defaults to near-black/white), surface (auto-derived from bgBase).',
+        'Optional keys: textPrimary (defaults to near-black/white), surface (auto-derived from bgBase), ' +
+        'navigation (chrome background — defaults to base theme value).',
     },
     {
       name: 'theme',
@@ -239,6 +250,7 @@ export const LucentProviderManifest: ComponentManifest = {
 
 <LucentProvider
   anchors={{
+    navigation:     '#f4f6f8',
     bgBase:         '#ffffff',
     borderDefault:  '#e5e7eb',
     accentDefault:  '#6366f1',
@@ -286,6 +298,7 @@ export const LucentProviderManifest: ComponentManifest = {
       code: `import { LucentProvider, createTheme } from 'lucent-ui';
 
 const myTheme = createTheme({
+  navigation:     '#f4f6f8',
   bgBase:         '#ffffff',
   borderDefault:  '#e7e5e4',
   accentDefault:  '#f97316',

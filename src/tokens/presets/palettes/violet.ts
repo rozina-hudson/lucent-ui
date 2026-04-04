@@ -3,7 +3,8 @@ import type { ColorPalette } from '../types.js';
 export const violetPalette: ColorPalette = {
   name: 'violet',
   light: {
-    bgBase: '#fdfcfe',
+    navigation: '#f8f4ff',
+    bgBase: '#eee8fa',
     surface: '#faf8fd',
     borderDefault: '#e2dce9',
     accentDefault: '#8b5cf6',
@@ -13,7 +14,8 @@ export const violetPalette: ColorPalette = {
     infoDefault: '#2563eb',
   },
   dark: {
-    bgBase: '#13111a',
+    navigation: '#0a0818',
+    bgBase: '#120e22',
     surface: '#1a1822',
     borderDefault: '#302d3b',
     accentDefault: '#a78bfa',

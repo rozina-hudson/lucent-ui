@@ -58,8 +58,9 @@ function toAccentDark(hex: string): string {
  * const myDark = deriveDarkFromLight({ ...lightTokens, bgBase: '#f0f4ff' });
  */
 export function deriveDarkFromLight(light: LucentTokens): LucentTokens {
-  // Derive the dark bgBase first, then build the full bg/surface hierarchy
-  // from it so elevation steps remain consistent regardless of input.
+  // Derive the dark navigation and bgBase first, then build the full
+  // bg/surface hierarchy from bgBase so elevation steps remain consistent.
+  const darkNav = toBgDark(light.navigation);
   const darkBgBase = toBgDark(light.bgBase);
   const [bgH, bgS, bgBaseL] = hexToHsl(darkBgBase);
   const bgStep = (n: number) => hslToHex(bgH, bgS, Math.min(0.25, bgBaseL + n));
@@ -70,6 +71,9 @@ export function deriveDarkFromLight(light: LucentTokens): LucentTokens {
 
     // ── Shadows: dark variants have higher opacity for visibility ───────────
     ...darkShadowTokens,
+
+    // ── Navigation ──────────────────────────────────────────────────────────
+    navigation: darkNav,
 
     // ── Backgrounds ─────────────────────────────────────────────────────────
     bgBase: darkBgBase,

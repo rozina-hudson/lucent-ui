@@ -3,6 +3,7 @@ import type { ColorPalette } from '../types.js';
 export const defaultPalette: ColorPalette = {
   name: 'default',
   light: {
+    navigation: '#f4f6f8',
     bgBase: '#ffffff',
     surface: '#ffffff',
     borderDefault: '#e5e7eb',
@@ -13,7 +14,8 @@ export const defaultPalette: ColorPalette = {
     infoDefault: '#2563eb',
   },
   dark: {
-    bgBase: '#111318',
+    navigation: '#0b0c12',
+    bgBase: '#12131a',
     surface: '#181a20',
     borderDefault: '#2e3039',
     accentDefault: '#f9fafb',
