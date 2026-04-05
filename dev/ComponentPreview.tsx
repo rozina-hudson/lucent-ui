@@ -1775,6 +1775,30 @@ function Inner({
             ]}
           />
         </Row>
+        <Row label="Custom LinkComponent (SPA link)" tokens={tokens}>
+          <Breadcrumb
+            LinkComponent={({ href, children, style, onMouseEnter, onMouseLeave }) => (
+              <a
+                href={href}
+                data-spa-link
+                style={style}
+                onMouseEnter={onMouseEnter}
+                onMouseLeave={onMouseLeave}
+                onClick={(e) => {
+                  e.preventDefault();
+                  console.log('[SPA navigate]', href);
+                }}
+              >
+                {children}
+              </a>
+            )}
+            items={[
+              { label: 'Candidates', href: '/candidates' },
+              { label: 'Engineering', href: '/candidates/engineering' },
+              { label: 'Jane Doe' },
+            ]}
+          />
+        </Row>
       </Section>
 
       <Section title="Tabs" tokens={tokens} hidden={!showSection('Tabs')}>

@@ -39,6 +39,18 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
       required: false,
       description: 'Inline style overrides for the root <nav> element.',
     },
+    {
+      name: 'LinkComponent',
+      type: 'ComponentType',
+      required: false,
+      description:
+        'Optional custom link component used for items with an href, enabling SPA-friendly ' +
+        'routing (react-router, Next.js, etc.) without a full-page reload. ' +
+        'Receives { href, children, style, onClick, onMouseEnter, onMouseLeave }. ' +
+        'If your link primitive uses a different prop name for the URL, wrap it in a small adapter. ' +
+        'The adapter must forward `style` to the rendered DOM element so Breadcrumb typography and ' +
+        'hover styling are preserved.',
+    },
   ],
 
   usageExamples: [
@@ -69,6 +81,22 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
     { label: 'Home', onClick: () => navigate('/') },
     { label: 'Reports', onClick: () => navigate('/reports') },
     { label: 'Q1 Summary' },
+  ]}
+/>`,
+    },
+    {
+      title: 'react-router integration (LinkComponent)',
+      code: `import { Link } from 'react-router-dom';
+
+// react-router's Link uses \`to\`, so wrap it in a small adapter that
+// maps Breadcrumb's \`href\` prop to \`to\` and forwards style/handlers.
+const RouterLink = ({ href, ...rest }) => <Link to={href} {...rest} />;
+
+<Breadcrumb
+  LinkComponent={RouterLink}
+  items={[
+    { label: 'Candidates', href: '/candidates' },
+    { label: 'Jane Doe' },
   ]}
 />`,
     },
