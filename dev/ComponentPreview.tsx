@@ -1647,6 +1647,13 @@ function Inner({
           <Button loading>Loading</Button>
           <Button variant="primary" fullWidth>Full width</Button>
         </Row>
+        <Row label="As link (href)" tokens={tokens}>
+          <Button variant="ghost" size="sm" href="mailto:hello@example.com" leftIcon={<SmallIcon d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM22 6l-10 7L2 6" />} aria-label="Email" />
+          <Button variant="ghost" size="sm" href="tel:+15555551234" leftIcon={<SmallIcon d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" />} aria-label="Call" />
+          <Button variant="primary" href="https://example.com" target="_blank" rel="noopener noreferrer" rightIcon={<SmallIcon d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />}>Open docs</Button>
+          <Button variant="outline" href="/settings">Internal link</Button>
+          <Button variant="outline" href="/settings" disabled>Disabled link</Button>
+        </Row>
       </Section>
 
       {/* SplitButton */}
