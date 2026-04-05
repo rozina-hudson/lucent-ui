@@ -1,5 +1,14 @@
 # lucent-ui
 
+## 0.38.0
+
+### New Features
+
+- **`PageHeader` molecule** ([#130](https://github.com/rozina-hudson/lucent-ui/issues/130), [#134](https://github.com/rozina-hudson/lucent-ui/pull/134)) — new molecule that encapsulates the action-bar pattern: breadcrumbs, display title, subtitle, and a three-zone action slot supporting 0–3 outline secondary actions alongside a single primary CTA. Outer and inner Rows wrap, so buttons flow below the title on narrow viewports. The `action-bar` pattern manifest gains a detail-view variant and three-zone CTA guidance.
+- **`Breadcrumb` — `LinkComponent` prop for SPA routing** ([#131](https://github.com/rozina-hudson/lucent-ui/issues/131), [#135](https://github.com/rozina-hudson/lucent-ui/pull/135)) — consumers can now pass react-router's `<Link>`, Next.js's `<Link>`, or any client-side link primitive so Breadcrumb items don't trigger a full page reload. Native `<a href>` remains the default, so existing usage is unchanged.
+- **`Button` — renders as `<a>` when `href` is set** ([#132](https://github.com/rozina-hudson/lucent-ui/issues/132), [#136](https://github.com/rozina-hudson/lucent-ui/pull/136)) — new `href`, `target`, and `rel` props let Button render as a native anchor for `mailto:`/`tel:` quick actions and external links, preserving middle-click, cmd/ctrl-click, and right-click "copy link" affordances that an `onClick` handler cannot. When combined with `disabled`, the anchor is neutralised via `aria-disabled`, `tabIndex={-1}`, stripped href, `pointer-events: none`, and an `onClick` preventDefault guard. Loading state continues to work on href-based buttons.
+- **`Stack` / `Row` — expanded polymorphic `as` prop** ([#133](https://github.com/rozina-hudson/lucent-ui/issues/133), [#137](https://github.com/rozina-hudson/lucent-ui/pull/137)) — the `as` enum now includes `header`, `footer`, `main`, `aside`, and `article` alongside the existing `div`/`section`/`nav`/`form`/`fieldset`/`ul`/`ol` values, covering the full HTML5 landmark set. When rendering as `ul`/`ol`, Stack and Row automatically reset `list-style`, `margin`, and `padding` so consumers can pass `<li>` children directly without reimplementing the gap scale inline.
+
 ## 0.37.0
 
 ### Breaking Changes
