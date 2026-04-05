@@ -1,6 +1,6 @@
 {
   "name": "lucent-ui",
-  "version": "0.38.0",
+  "version": "0.39.0",
   "description": "An AI-first React component library with machine-readable manifests.",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -22,6 +22,7 @@
   "bin": {
     "lucent-ui": "./dist-cli/cli/entry.js",
     "lucent-mcp": "./dist-server/server/index.js",
+    "lucent-mcp-http": "./dist-server/server/http.js",
     "lucent-manifest": "./dist-cli/cli/index.js"
   },
   "sideEffects": false,

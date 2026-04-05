@@ -82,7 +82,7 @@ function FileRow({
             marginTop: 4,
             height: 3,
             borderRadius: 'var(--lucent-radius-full)',
-            background: 'var(--lucent-surface-secondary)',
+            background: 'color-mix(in srgb, var(--lucent-text-primary) 8%, transparent)',
             overflow: 'hidden',
           }}>
             <div style={{
@@ -109,7 +109,7 @@ function FileRow({
           width: 24, height: 24,
           border: 'none',
           borderRadius: 'var(--lucent-radius-md)',
-          background: removeHovered ? 'var(--lucent-surface-secondary)' : 'transparent',
+          background: removeHovered ? 'color-mix(in srgb, var(--lucent-text-primary) 6%, transparent)' : 'transparent',
           color: 'var(--lucent-text-secondary)',
           cursor: 'pointer',
           transition: 'background var(--lucent-duration-fast)',
@@ -202,16 +202,16 @@ export function FileUpload({
           borderRadius: 'var(--lucent-radius-lg)',
           border: `2px dashed ${
             disabled
-              ? 'var(--lucent-border-default)'
+              ? 'color-mix(in srgb, var(--lucent-text-primary) 15%, transparent)'
               : dragging
               ? 'var(--lucent-accent-default)'
               : focused
               ? 'var(--lucent-accent-default)'
-              : 'var(--lucent-border-default)'
+              : 'color-mix(in srgb, var(--lucent-text-primary) 20%, transparent)'
           }`,
           background: dragging
             ? 'var(--lucent-accent-subtle)'
-            : 'var(--lucent-surface-secondary)',
+            : 'color-mix(in srgb, var(--lucent-text-primary) 4%, transparent)',
           cursor: disabled ? 'not-allowed' : 'pointer',
           transition: 'border-color var(--lucent-duration-fast), background var(--lucent-duration-fast)',
           outline: 'none',

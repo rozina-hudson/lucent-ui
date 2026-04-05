@@ -19,7 +19,9 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
     'Filter → sort → paginate is the fixed pipeline order; any filter change resets the page to 0. ' +
     'Pagination is either controlled (page prop + onPageChange) or uncontrolled (internal state). ' +
     'A pageSize of 0 disables pagination entirely, useful when the parent manages windowing. ' +
-    'Row hover uses bg-subtle, not a border change, so the visual weight stays low for dense data views.',
+    'Row hover uses bg-subtle, not a border change, so the visual weight stays low for dense data views. ' +
+    'The table wrapper paints var(--lucent-surface) as its background so the component always sits on a solid panel, ' +
+    'regardless of parent page color; header tints and row hover are translucent color-mix overlays on top of that surface.',
 
   props: [
     {

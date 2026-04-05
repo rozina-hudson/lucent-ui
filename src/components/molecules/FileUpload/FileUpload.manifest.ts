@@ -12,6 +12,8 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
   designIntent:
     'FileUpload separates concerns between the drop zone (entry point) and the file list (status display). ' +
     'The drop zone uses a dashed border and an upload arrow icon to communicate droppability without words. ' +
+    'Its idle background and border are translucent color-mix overlays on top of var(--lucent-text-primary) (not hard-coded surface tokens), ' +
+    'so the drop zone always reads as a visible step against whatever parent background it sits on — in any theme, in any palette. ' +
     'Progress is modelled as a field on UploadFile rather than as a callback so the parent controls upload logic — this component is purely presentational for the upload state. ' +
     'The progress bar turns success-green at 100% to give clear completion feedback. ' +
     'Errors are shown inline on each file row (not as a toast) so the user knows exactly which file failed and why. ' +

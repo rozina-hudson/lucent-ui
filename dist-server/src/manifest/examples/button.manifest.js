@@ -113,8 +113,31 @@ export const ButtonManifest = {
             type: 'enum',
             required: false,
             default: 'button',
-            description: 'Native button type attribute.',
+            description: 'Native button type attribute. Ignored when `href` is set.',
             enumValues: ['button', 'submit', 'reset'],
+        },
+        {
+            name: 'href',
+            type: 'string',
+            required: false,
+            description: 'When set, renders the Button as an `<a href={href}>` instead of a native `<button>`. ' +
+                'Preserves native anchor affordances (middle-click, cmd/ctrl-click, right-click "copy link address", ' +
+                'open in new tab) that an onClick handler cannot. ' +
+                'Use for `mailto:` / `tel:` quick actions, external links styled as buttons, ' +
+                'or in-app routes where users legitimately expect anchor semantics. ' +
+                'When combined with `disabled`, the anchor renders with `aria-disabled="true"` and its `href` is stripped so navigation is neutralised.',
+        },
+        {
+            name: 'target',
+            type: 'string',
+            required: false,
+            description: 'Forwarded to the rendered `<a>` when `href` is set (e.g. `"_blank"` to open in a new tab). Ignored when rendering as a button.',
+        },
+        {
+            name: 'rel',
+            type: 'string',
+            required: false,
+            description: 'Forwarded to the rendered `<a>` when `href` is set (e.g. `"noopener noreferrer"` for external links). Ignored when rendering as a button.',
         },
     ],
     usageExamples: [
@@ -166,6 +189,21 @@ export const ButtonManifest = {
             title: 'Icon-only (square)',
             code: `<Button variant="outline" size="2xs" leftIcon={<CloseIcon />} aria-label="Close" />`,
             description: 'Omitting children auto-sizes the button as a square via aspect-ratio: 1.',
+        },
+        {
+            title: 'Mailto quick action',
+            code: `<Button variant="ghost" size="sm" href="mailto:foo@example.com" leftIcon={<MailIcon />} aria-label="Email" />`,
+            description: 'Renders as <a href="mailto:..."> so middle-click, cmd/ctrl-click, and right-click "copy link" all work.',
+        },
+        {
+            title: 'External link as button',
+            code: `<Button variant="primary" href="https://example.com" target="_blank" rel="noopener noreferrer" rightIcon={<ExternalIcon />}>View docs</Button>`,
+            description: 'Use href + target + rel for external links that should look like a primary call-to-action.',
+        },
+        {
+            title: 'Disabled link',
+            code: `<Button variant="outline" href="/settings" disabled>Settings</Button>`,
+            description: 'When disabled, the anchor is rendered with aria-disabled="true" and its href is stripped.',
         },
     ],
     compositionGraph: [],

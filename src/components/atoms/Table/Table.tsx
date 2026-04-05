@@ -107,7 +107,7 @@ function Table({ striped = false, children, className, style, ...rest }: TablePr
   return (
     <>
       <style>{STYLES}</style>
-      <div style={{ overflowX: 'auto', width: '100%' }}>
+      <div style={{ overflowX: 'auto', width: '100%', background: 'var(--lucent-surface)' }}>
         <table
           className={classes}
           style={{

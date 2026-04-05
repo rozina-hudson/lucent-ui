@@ -16,7 +16,10 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
     'are not needed — props tables, changelog entries, comparison grids, reference docs. ' +
     'The compound API (Table.Head, Table.Body, Table.Row, Table.Cell) maps directly to ' +
     'semantic HTML so screen readers get the full table structure. ' +
-    'Horizontal overflow is handled automatically by a scroll wrapper.',
+    'Horizontal overflow is handled automatically by a scroll wrapper. ' +
+    'The wrapper paints var(--lucent-surface) as its background so the table always sits on a ' +
+    'solid panel, regardless of parent page color; thead/tfoot/striped tints are translucent ' +
+    'color-mix overlays on top of that surface so they adapt to both light and dark modes.',
 
   props: [
     {

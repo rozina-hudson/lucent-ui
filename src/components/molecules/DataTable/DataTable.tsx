@@ -187,6 +187,7 @@ export function DataTable<T extends object>({
         overflowX: 'auto',
         borderRadius: 'var(--lucent-radius-lg)',
         border: '1px solid var(--lucent-border-default)',
+        background: 'var(--lucent-surface)',
       }}>
         <table style={{
           width: '100%',

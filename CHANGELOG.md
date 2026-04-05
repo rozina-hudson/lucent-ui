@@ -1,5 +1,15 @@
 # lucent-ui
 
+## 0.39.0
+
+### Minor Changes
+
+- **Table, DataTable, FileUpload — background token fixes**
+
+  - **Table** and **DataTable** wrappers now paint `var(--lucent-surface)` as their background so the component always sits on a solid panel, regardless of the parent page color. Previously the wrappers were transparent and relied on the parent background showing through, which made thead/tfoot/header tints unreadable on certain page colors.
+  - **FileUpload** drop zone — idle background, idle border, progress bar track, and remove button hover no longer use hard-coded `--lucent-surface-secondary` or `--lucent-border-default` tokens. They now use translucent `color-mix(in srgb, var(--lucent-text-primary) N%, transparent)` overlays, so the drop zone reads as a visible step against any parent background in any theme or palette. The dragging/focused accent states and the file row's `--lucent-surface` card background are unchanged.
+  - Component manifests (Table, DataTable, FileUpload) updated with design-intent notes on the new background behavior.
+
 ## 0.38.0
 
 ### New Features
