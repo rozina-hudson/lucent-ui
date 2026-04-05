@@ -1,9 +1,9 @@
-import { forwardRef, type ButtonHTMLAttributes, type CSSProperties, type ReactNode } from 'react';
+import { forwardRef, type ButtonHTMLAttributes, type CSSProperties, type MouseEvent as ReactMouseEvent, type ReactNode } from 'react';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'danger-outline' | 'danger-ghost';
 export type ButtonSize = '2xs' | 'xs' | 'sm' | 'md' | 'lg';
 
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'href'> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   loading?: boolean;
@@ -18,6 +18,20 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   disableHoverStyles?: boolean;
   /** If false, the component renders without any border. Useful when you want a solid "flat" look. */
   bordered?: boolean;
+  /**
+   * When set, renders the Button as an `<a href={href}>` instead of a native `<button>`.
+   * Preserves full anchor affordances — middle-click, cmd-click, right-click "copy link",
+   * and "open in new tab" — which an onClick handler cannot.
+   *
+   * Useful for `mailto:`/`tel:` quick actions and external links that should look like buttons.
+   * When combined with `disabled`, the anchor is rendered with `aria-disabled="true"` and its
+   * `href` is removed so it can't be navigated.
+   */
+  href?: string;
+  /** Forwarded to the `<a>` element when `href` is set. */
+  target?: string;
+  /** Forwarded to the `<a>` element when `href` is set. */
+  rel?: string;
 }
 
 const variantStyles: Record<ButtonVariant, CSSProperties> = {
@@ -66,54 +80,71 @@ const sizeStyles: Record<ButtonSize, CSSProperties> = {
   lg: { height: 'calc(var(--lucent-space-12) * 0.5 + 26px)', padding: '0 var(--lucent-space-6)', fontSize: 'var(--lucent-font-size-lg)' },
 };
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = 'primary', size = 'md', loading = false, fullWidth = false, spread = false, leftIcon, rightIcon, chevron = false, disableHoverStyles = false, bordered = true, children, disabled, style, ...rest }, ref) => {
+export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
+  ({ variant = 'primary', size = 'md', loading = false, fullWidth = false, spread = false, leftIcon, rightIcon, chevron = false, disableHoverStyles = false, bordered = true, href, target, rel, children, disabled, style, type, onClick, ...rest }, ref) => {
     const isDisabled = disabled ?? loading;
     const isIconOnly = !children && !loading && (!!leftIcon || !!rightIcon);
+    const isLink = href !== undefined;
+    const Tag = (isLink ? 'a' : 'button') as React.ElementType;
+
+    const resolvedStyle: CSSProperties = {
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: spread ? 'space-between' : 'center',
+      gap: 'var(--lucent-space-2)',
+      fontFamily: 'var(--lucent-font-family-base)',
+      fontWeight: 'var(--lucent-font-weight-medium)',
+      lineHeight: 1,
+      letterSpacing: '0.01em',
+      borderRadius: 'var(--lucent-radius-lg)',
+      cursor: isDisabled ? 'not-allowed' : 'pointer',
+      width: fullWidth ? '100%' : undefined,
+      transition: 'background var(--lucent-duration-fast) var(--lucent-easing-default), border-color var(--lucent-duration-fast) var(--lucent-easing-default), box-shadow var(--lucent-duration-fast) var(--lucent-easing-default), transform 80ms var(--lucent-easing-default)',
+      whiteSpace: 'nowrap',
+      boxSizing: 'border-box',
+      outline: 'none',
+      margin: 0,
+      ...sizeStyles[size],
+      ...(isIconOnly && { padding: 0, aspectRatio: '1' }),
+      ...variantStyles[variant],
+      // Anchor reset — browsers underline <a> by default
+      ...(isLink && { textDecoration: 'none' }),
+      ...style,
+      ...(isDisabled && {
+        background: 'color-mix(in srgb, var(--lucent-text-primary) 6%, transparent)',
+        color: 'var(--lucent-text-disabled)',
+        borderColor: 'transparent',
+        ...(isLink && { pointerEvents: 'none' as const }),
+      }),
+      // hide border entirely when bordered prop is false
+      ...(bordered === false && { border: 'none' }),
+    };
 
     return (
-      <button
+      <Tag
         ref={ref}
-        disabled={isDisabled}
         aria-busy={loading}
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: spread ? 'space-between' : 'center',
-          gap: 'var(--lucent-space-2)',
-          fontFamily: 'var(--lucent-font-family-base)',
-          fontWeight: 'var(--lucent-font-weight-medium)',
-          lineHeight: 1,
-          letterSpacing: '0.01em',
-          borderRadius: 'var(--lucent-radius-lg)',
-          cursor: isDisabled ? 'not-allowed' : 'pointer',
-          width: fullWidth ? '100%' : undefined,
-          transition: 'background var(--lucent-duration-fast) var(--lucent-easing-default), border-color var(--lucent-duration-fast) var(--lucent-easing-default), box-shadow var(--lucent-duration-fast) var(--lucent-easing-default), transform 80ms var(--lucent-easing-default)',
-          whiteSpace: 'nowrap',
-          boxSizing: 'border-box',
-          outline: 'none',
-          margin: 0,
-          ...sizeStyles[size],
-          ...(isIconOnly && { padding: 0, aspectRatio: '1' }),
-          ...variantStyles[variant],
-          ...style,
-          ...(isDisabled && {
-            background: 'color-mix(in srgb, var(--lucent-text-primary) 6%, transparent)',
-            color: 'var(--lucent-text-disabled)',
-            borderColor: 'transparent',
-          }),
-          // hide border entirely when bordered prop is false
-          ...(bordered === false && { border: 'none' }),
-        }}
-        onMouseEnter={(e) => {
+        style={resolvedStyle}
+        {...(isLink
+          ? {
+              role: 'link',
+              ...(isDisabled ? { 'aria-disabled': true, tabIndex: -1 } : { href }),
+              ...(target !== undefined && { target }),
+              ...(rel !== undefined && { rel }),
+            }
+          : {
+              disabled: isDisabled,
+              ...(type !== undefined && { type }),
+            })}
+        onMouseEnter={(e: ReactMouseEvent<HTMLElement>) => {
           if (!isDisabled && !disableHoverStyles) applyHover(e.currentTarget, variant, bordered);
-          rest.onMouseEnter?.(e);
+          rest.onMouseEnter?.(e as ReactMouseEvent<HTMLButtonElement>);
         }}
-        onMouseLeave={(e) => {
+        onMouseLeave={(e: ReactMouseEvent<HTMLElement>) => {
           if (!isDisabled && !disableHoverStyles) removeHover(e.currentTarget, variant, bordered);
-          rest.onMouseLeave?.(e);
+          rest.onMouseLeave?.(e as ReactMouseEvent<HTMLButtonElement>);
         }}
-        onMouseDown={(e) => {
+        onMouseDown={(e: ReactMouseEvent<HTMLElement>) => {
           if (!isDisabled) {
             const isDanger = variant === 'danger' || variant === 'danger-outline' || variant === 'danger-ghost';
             const ring = isDanger
@@ -123,23 +154,30 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             e.currentTarget.style.boxShadow = `0 0 0 4px ${ring}`;
             e.currentTarget.dataset.pressed = '1';
           }
-          rest.onMouseDown?.(e);
+          rest.onMouseDown?.(e as ReactMouseEvent<HTMLButtonElement>);
         }}
-        onMouseUp={(e) => {
+        onMouseUp={(e: ReactMouseEvent<HTMLElement>) => {
           e.currentTarget.style.transform = '';
           e.currentTarget.style.boxShadow = '';
           delete e.currentTarget.dataset.pressed;
-          rest.onMouseUp?.(e);
+          rest.onMouseUp?.(e as ReactMouseEvent<HTMLButtonElement>);
         }}
-        onFocus={(e) => {
+        onFocus={(e: React.FocusEvent<HTMLElement>) => {
           if (!e.currentTarget.dataset.pressed) {
             e.currentTarget.style.boxShadow = '0 0 0 3px var(--lucent-accent-subtle)';
           }
-          rest.onFocus?.(e);
+          rest.onFocus?.(e as React.FocusEvent<HTMLButtonElement>);
         }}
-        onBlur={(e) => {
+        onBlur={(e: React.FocusEvent<HTMLElement>) => {
           e.currentTarget.style.boxShadow = '';
-          rest.onBlur?.(e);
+          rest.onBlur?.(e as React.FocusEvent<HTMLButtonElement>);
+        }}
+        onClick={(e: ReactMouseEvent<HTMLElement>) => {
+          if (isLink && isDisabled) {
+            e.preventDefault();
+            return;
+          }
+          onClick?.(e as ReactMouseEvent<HTMLButtonElement>);
         }}
         {...rest}
       >
@@ -147,7 +185,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {loading ? <ButtonSpinner /> : children}
         {!loading && rightIcon}
         {!loading && chevron && <ButtonChevron size={size} />}
-      </button>
+      </Tag>
     );
   },
 );
@@ -164,7 +202,7 @@ const hoverShadow: Record<ButtonVariant, string> = {
   'danger-ghost':   '0 4px 14px -2px color-mix(in srgb, var(--lucent-danger-default) 15%, transparent)',
 };
 
-function applyHover(el: HTMLButtonElement, variant: ButtonVariant, bordered?: boolean) {
+function applyHover(el: HTMLElement, variant: ButtonVariant, bordered?: boolean) {
   el.style.transform = 'translateY(-1px)';
   el.style.boxShadow = hoverShadow[variant];
 
@@ -187,7 +225,7 @@ function applyHover(el: HTMLButtonElement, variant: ButtonVariant, bordered?: bo
   }
 }
 
-function removeHover(el: HTMLButtonElement, variant: ButtonVariant, bordered?: boolean) {
+function removeHover(el: HTMLElement, variant: ButtonVariant, bordered?: boolean) {
   el.style.transform = '';
   el.style.boxShadow = '';
 
