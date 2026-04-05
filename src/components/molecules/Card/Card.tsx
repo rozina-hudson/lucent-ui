@@ -321,6 +321,10 @@ export function Card({
                   boxShadow: shadowMap[effectiveShadow],
                   marginLeft: `calc(${px} / 3)`,
                   marginRight: `calc(${px} / 3)`,
+                  // When header/footer is absent, mirror the horizontal inset vertically
+                  // so the elevated body stays framed by the transparent chrome on all sides.
+                  ...(header == null && { marginTop: `calc(${py} / 3)` }),
+                  ...(footer == null && { marginBottom: `calc(${py} / 3)` }),
                 }
               : {}),
           }}
