@@ -732,6 +732,29 @@ function Inner({
             </Text>
           </Card>
         </Row>
+        <Row label="Combo — partial chrome (framing fallback)" tokens={tokens}>
+          <Card
+            variant="combo"
+            style={{ width: 220 }}
+            header={<Text weight="semibold" size="sm">Header only</Text>}
+          >
+            <Text size="sm" color="secondary">No footer — body keeps bottom inset.</Text>
+          </Card>
+          <Card
+            variant="combo"
+            style={{ width: 220 }}
+            footer={
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Button variant="primary" size="sm">Save</Button>
+              </div>
+            }
+          >
+            <Text size="sm" color="secondary">No header — body keeps top inset.</Text>
+          </Card>
+          <Card variant="combo" style={{ width: 220 }}>
+            <Text size="sm" color="secondary">No chrome at all — body inset on all four sides.</Text>
+          </Card>
+        </Row>
         <Row label="Outline with header + footer" tokens={tokens}>
           <Card
             style={{ width: 280 }}
