@@ -48,8 +48,8 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
       type: 'enum',
       required: false,
       default: 'div',
-      description: 'HTML element to render. Use semantic elements when appropriate (nav for navigation, form for forms).',
-      enumValues: ['div', 'section', 'nav', 'form', 'fieldset', 'ul', 'ol'],
+      description: 'HTML element to render. Use semantic elements when appropriate (nav for navigation, ul/ol for lists, section/header/footer/main/aside/article for landmarks). When rendering as ul/ol, list-style/margin/padding are auto-reset; consumers pass <li> children.',
+      enumValues: ['div', 'section', 'nav', 'header', 'footer', 'main', 'aside', 'article', 'form', 'fieldset', 'ul', 'ol'],
     },
     {
       name: 'wrap',
@@ -98,6 +98,14 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
     {
       title: 'Header with actions',
       code: `<Row justify="between">\n  <Text as="h2" size="xl" weight="semibold">Dashboard</Text>\n  <Row gap="2">\n    <Button variant="outline" size="sm">Export</Button>\n    <Button variant="primary" size="sm">New report</Button>\n  </Row>\n</Row>`,
+    },
+    {
+      title: 'Semantic nav',
+      code: `<Row as="nav" gap="4" aria-label="Primary">\n  <a href="/home">Home</a>\n  <a href="/about">About</a>\n  <a href="/contact">Contact</a>\n</Row>`,
+    },
+    {
+      title: 'Horizontal list (ul)',
+      code: `<Row as="ul" gap="2" aria-label="Tags">\n  {tags.map(tag => (\n    <li key={tag}><Tag>{tag}</Tag></li>\n  ))}\n</Row>`,
     },
   ],
 
