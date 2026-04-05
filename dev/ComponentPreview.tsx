@@ -61,6 +61,7 @@ import { Stack as StackAtom } from '../src/components/atoms/Stack/index.js';
 import { Row as RowAtom } from '../src/components/atoms/Row/index.js';
 import { Progress } from '../src/components/atoms/Progress/index.js';
 import { Stepper } from '../src/components/molecules/Stepper/index.js';
+import { PageHeader } from '../src/components/molecules/PageHeader/index.js';
 import { SplitButton } from '../src/components/atoms/SplitButton/index.js';
 import { ButtonGroup } from '../src/components/atoms/ButtonGroup/index.js';
 import { NavMenu } from '../src/components/molecules/NavMenu/index.js';
@@ -214,7 +215,7 @@ function Inner({
     forms:       { label: 'Forms',              tier: 'molecule', items: ['FormField', 'SearchInput', 'MultiSelect', 'DatePicker', 'DateRangePicker', 'FileUpload'] },
     filters:     { label: 'Filters',            tier: 'molecule', items: ['FilterSearch', 'FilterSelect', 'FilterMultiSelect', 'FilterDateRange'] },
     containers:  { label: 'Containers',         tier: 'molecule', items: ['Card', 'Alert', 'EmptyState', 'Skeleton', 'Collapsible'] },
-    navigation:  { label: 'Navigation',         tier: 'molecule', items: ['Breadcrumb', 'Tabs', 'NavLink', 'NavMenu', 'PageLayout', 'Stepper'] },
+    navigation:  { label: 'Navigation',         tier: 'molecule', items: ['Breadcrumb', 'Tabs', 'NavLink', 'NavMenu', 'PageLayout', 'PageHeader', 'Stepper'] },
     data:        { label: 'Data & Tables',      tier: 'molecule', items: ['DataTable', 'Timeline'] },
     overlays:    { label: 'Overlays & Menus',   tier: 'molecule', items: ['Menu', 'CommandPalette', 'Toast'] },
     'r-cards':   { label: 'Cards',              tier: 'pattern', items: ['ProfileCard', 'ProductItemCard', 'AnnouncementCard', 'CollapsibleCard', 'EmptyStateCard'] },
@@ -1127,6 +1128,74 @@ function Inner({
             current={2}
             steps={['Cart', 'Shipping', 'Payment', 'Done']}
           />
+        </Row>
+      </Section>
+
+      {/* PageHeader */}
+      <Section title="PageHeader" tokens={tokens} hidden={!showSection('PageHeader')}>
+        <Row label="Minimal — title only" tokens={tokens}>
+          <div style={{ width: '100%', maxWidth: 860 }}>
+            <PageHeader title="Settings" />
+          </div>
+        </Row>
+        <Row label="Subtitle + single primary action" tokens={tokens}>
+          <div style={{ width: '100%', maxWidth: 860 }}>
+            <PageHeader
+              title="Acme Corp"
+              subtitle="Last updated 5 minutes ago"
+              breadcrumbs={[
+                { label: 'Home', href: '#' },
+                { label: 'Projects', href: '#' },
+                { label: 'Acme Corp' },
+              ]}
+              action={{ label: 'New report', onClick: () => {} }}
+            />
+          </div>
+        </Row>
+        <Row label="Detail view — Edit / Archive / Submit" tokens={tokens}>
+          <div style={{ width: '100%', maxWidth: 860 }}>
+            <PageHeader
+              title="Sana Khan"
+              subtitle="Senior Product Designer · Added 3 days ago"
+              breadcrumbs={[
+                { label: 'Home', href: '#' },
+                { label: 'Candidates', href: '#' },
+                { label: 'Sana Khan' },
+              ]}
+              secondaryActions={[
+                { label: 'Edit', onClick: () => {} },
+                { label: 'Archive', onClick: () => {} },
+              ]}
+              action={{ label: 'Submit to opportunity', onClick: () => {} }}
+            />
+          </div>
+        </Row>
+        <Row label="Danger zone — single danger action" tokens={tokens}>
+          <div style={{ width: '100%', maxWidth: 860 }}>
+            <PageHeader
+              title="Danger zone"
+              subtitle="These actions are irreversible."
+              breadcrumbs={[
+                { label: 'Home', href: '#' },
+                { label: 'Settings', href: '#' },
+                { label: 'Danger zone' },
+              ]}
+              action={{ label: 'Delete project', variant: 'danger', onClick: () => {} }}
+            />
+          </div>
+        </Row>
+        <Row label="Narrow viewport — actions wrap below title" tokens={tokens}>
+          <div style={{ width: 420 }}>
+            <PageHeader
+              title="Sana Khan"
+              subtitle="Senior Product Designer"
+              secondaryActions={[
+                { label: 'Edit', onClick: () => {} },
+                { label: 'Archive', onClick: () => {} },
+              ]}
+              action={{ label: 'Submit to opportunity', onClick: () => {} }}
+            />
+          </div>
         </Row>
       </Section>
 

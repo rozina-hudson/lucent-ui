@@ -3,7 +3,7 @@ import type { CompositionPattern } from '../types.js';
 export const PATTERN: CompositionPattern = {
   id: 'action-bar',
   name: 'Action Bar',
-  description: 'Page-level or card-level header pairing a title with action buttons. Page headers use breadcrumb, large display title, and a divider below; card headers are compact with small text.',
+  description: 'Page-level or card-level header pairing a title with action buttons. Page headers use breadcrumb, large display title, and a divider below; card headers are compact with small text. Supports multi-action headers with secondary outline buttons preceding the primary CTA.',
   category: 'action',
   components: ['text', 'button', 'row', 'stack', 'breadcrumb', 'divider', 'card'],
 
@@ -11,13 +11,13 @@ export const PATTERN: CompositionPattern = {
 Page header:
 Stack gap="4"
 ├── Breadcrumb                               ← navigation context
-├── Row justify="between" align="end"
+├── Row justify="between" align="end" wrap
 │   ├── Stack gap="1"
 │   │   ├── Text (h1, 3xl, bold, display)    ← page title
 │   │   └── Text (sm, secondary)             ← subtitle
-│   └── Row gap="2"                          ← actions
-│       ├── Button (outline, sm)
-│       └── Button (primary, sm)
+│   └── Row gap="2" wrap                     ← actions (wraps below title on narrow screens)
+│       ├── Button[] (outline, sm)           ← secondary actions (0–3, leftmost)
+│       └── Button (primary, sm)             ← primary CTA (rightmost, always single)
 └── Divider
 
 Card header:
@@ -49,6 +49,28 @@ Row justify="between" align="start"
 </Stack>`,
 
   variants: [
+    {
+      title: 'Page header — detail view with secondary actions',
+      code: `<Stack gap="4">
+  <Breadcrumb items={[
+    { label: 'Home', href: '#' },
+    { label: 'Candidates', href: '#' },
+    { label: 'Sana Khan' },
+  ]} />
+  <Row justify="between" align="end" wrap gap="3">
+    <Stack gap="1">
+      <Text as="h1" size="3xl" weight="bold" family="display">Sana Khan</Text>
+      <Text size="sm" color="secondary">Senior Product Designer · Added 3 days ago</Text>
+    </Stack>
+    <Row gap="2" wrap>
+      <Button variant="outline" size="sm">Edit</Button>
+      <Button variant="outline" size="sm">Archive</Button>
+      <Button variant="primary" size="sm">Submit to opportunity</Button>
+    </Row>
+  </Row>
+  <Divider />
+</Stack>`,
+    },
     {
       title: 'Page header — danger zone',
       code: `<Stack gap="4">
@@ -94,5 +116,11 @@ Row justify="between" align="start"
     'buttons to the baseline of the title block so they sit level with the subtitle. ' +
     'Card headers are compact: sm semibold text with xs/ghost buttons that recede ' +
     'visually. The primary action is always rightmost following natural reading order. ' +
-    'Both patterns use justify="between" to push title and actions to opposite edges.',
+    'Both patterns use justify="between" to push title and actions to opposite edges. ' +
+    'Multi-action page headers (e.g. detail views with Edit / Archive / Submit) follow ' +
+    'the three-zone CTA rule: 0–3 secondary actions render as variant="outline" to the ' +
+    'left of a single primary button, keeping them visually subordinate. Beyond 3 ' +
+    'secondary actions, reach for SplitButton or an overflow menu instead of widening ' +
+    'the row. Both the outer title/action Row and the inner action Row set wrap so the ' +
+    'buttons flow below the title on narrow viewports instead of overflowing.',
 };
