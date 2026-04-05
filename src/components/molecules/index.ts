@@ -23,3 +23,4 @@ export * from './FilterSelect/index.js';
 export * from './FilterSearch/index.js';
 export * from './FilterDateRange/index.js';
 export * from './Stepper/index.js';
+export * from './PageHeader/index.js';
