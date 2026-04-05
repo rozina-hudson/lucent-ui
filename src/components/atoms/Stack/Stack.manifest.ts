@@ -47,8 +47,8 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
       type: 'enum',
       required: false,
       default: 'div',
-      description: 'HTML element to render. Use semantic elements when appropriate (nav for navigation, form for forms).',
-      enumValues: ['div', 'section', 'nav', 'form', 'fieldset', 'ul', 'ol'],
+      description: 'HTML element to render. Use semantic elements when appropriate (nav for navigation, ul/ol for lists, section/header/footer/main/aside/article for landmarks). When rendering as ul/ol, list-style/margin/padding are auto-reset; consumers pass <li> children.',
+      enumValues: ['div', 'section', 'nav', 'header', 'footer', 'main', 'aside', 'article', 'form', 'fieldset', 'ul', 'ol'],
     },
     {
       name: 'wrap',
@@ -97,6 +97,10 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
     {
       title: 'Semantic nav',
       code: `<Stack as="nav" gap="1">\n  <NavLink href="/home">Home</NavLink>\n  <NavLink href="/settings">Settings</NavLink>\n</Stack>`,
+    },
+    {
+      title: 'Semantic list (ul)',
+      code: `<Stack as="ul" gap="3" aria-label="Recent notes">\n  {notes.map(note => (\n    <li key={note.id}>\n      <Text size="sm">{note.body}</Text>\n    </li>\n  ))}\n</Stack>`,
     },
   ],
 

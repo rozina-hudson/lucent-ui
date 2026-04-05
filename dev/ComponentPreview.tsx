@@ -2460,6 +2460,25 @@ function Inner({
             <Text size="sm" color="secondary">Loading...</Text>
           </StackAtom>
         </Row>
+        <Row label={'as="ul" (semantic list)'} tokens={tokens}>
+          <StackAtom as="ul" gap="3" aria-label="Recent notes" style={{ padding: tokens.space4, background: tokens.surfaceSecondary, borderRadius: tokens.radiusMd, width: 260 }}>
+            <li>
+              <Text size="sm">Kickoff call scheduled for Monday.</Text>
+            </li>
+            <li>
+              <Text size="sm">Draft brief shared with stakeholders.</Text>
+            </li>
+            <li>
+              <Text size="sm">Awaiting final sign-off on scope.</Text>
+            </li>
+          </StackAtom>
+        </Row>
+        <Row label={'as="section" (landmark)'} tokens={tokens}>
+          <StackAtom as="section" gap="2" aria-labelledby="stack-section-heading" style={{ padding: tokens.space4, background: tokens.surfaceSecondary, borderRadius: tokens.radiusMd, width: 260 }}>
+            <Text as="h3" id="stack-section-heading" size="md" weight="semibold">Summary</Text>
+            <Text size="sm" color="secondary">Renders a real &lt;section&gt; element with aria-labelledby.</Text>
+          </StackAtom>
+        </Row>
       </Section>
 
       {/* Row */}
@@ -2503,6 +2522,23 @@ function Inner({
               </RowAtom>
             </StackAtom>
           </Card>
+        </Row>
+        <Row label={'as="nav" (landmark)'} tokens={tokens}>
+          <RowAtom as="nav" gap="4" aria-label="Primary" style={{ padding: `${tokens.space3} ${tokens.space4}`, background: tokens.surfaceSecondary, borderRadius: tokens.radiusMd }}>
+            <Text as="span" size="sm" weight="medium">Home</Text>
+            <Text as="span" size="sm" color="secondary">About</Text>
+            <Text as="span" size="sm" color="secondary">Pricing</Text>
+            <Text as="span" size="sm" color="secondary">Contact</Text>
+          </RowAtom>
+        </Row>
+        <Row label={'as="ul" (horizontal list)'} tokens={tokens}>
+          <RowAtom as="ul" gap="2" aria-label="Tags" wrap style={{ maxWidth: 320 }}>
+            {['React', 'TypeScript', 'Design', 'Systems'].map(t => (
+              <li key={t}>
+                <Badge>{t}</Badge>
+              </li>
+            ))}
+          </RowAtom>
         </Row>
       </Section>
 

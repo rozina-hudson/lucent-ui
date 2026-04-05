@@ -1,6 +1,18 @@
 import type { CSSProperties, ReactNode } from 'react';
 
-export type RowAs = 'div' | 'section' | 'nav' | 'form' | 'fieldset' | 'ul' | 'ol';
+export type RowAs =
+  | 'div'
+  | 'section'
+  | 'nav'
+  | 'header'
+  | 'footer'
+  | 'main'
+  | 'aside'
+  | 'article'
+  | 'form'
+  | 'fieldset'
+  | 'ul'
+  | 'ol';
 
 export type RowGap =
   | '0' | '1' | '2' | '3' | '4' | '5' | '6'
@@ -50,6 +62,7 @@ export function Row({
   style,
   ...rest
 }: RowProps) {
+  const isList = as === 'ul' || as === 'ol';
   const computedStyle: CSSProperties = {
     display: 'flex',
     flexDirection: 'row',
@@ -57,6 +70,7 @@ export function Row({
     alignItems: alignMap[align],
     justifyContent: justifyMap[justify],
     ...(wrap && { flexWrap: 'wrap' }),
+    ...(isList && { listStyle: 'none', margin: 0, padding: 0 }),
     ...style,
   };
 
