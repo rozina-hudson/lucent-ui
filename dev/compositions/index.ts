@@ -5,3 +5,4 @@ export { NotificationFeed } from './NotificationFeed.js';
 export { OnboardingFlow } from './OnboardingFlow.js';
 export { DashboardHeader } from './DashboardHeader.js';
 export { ActivityFeed } from './ActivityFeed.js';
+export { MetricsDashboard } from './MetricsDashboard.js';

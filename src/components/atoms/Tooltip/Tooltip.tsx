@@ -8,6 +8,8 @@ export interface TooltipProps {
   placement?: TooltipPlacement;
   /** Delay in ms before the tooltip appears. Default: 300 */
   delay?: number;
+  /** Controlled visibility. When provided, overrides hover behavior. */
+  open?: boolean;
 }
 
 // Arrow size in px
@@ -53,8 +55,9 @@ const arrowStyles: Record<TooltipPlacement, CSSProperties> = {
   },
 };
 
-export function Tooltip({ content, children, placement = 'top', delay = 300 }: TooltipProps) {
+export function Tooltip({ content, children, placement = 'top', delay = 300, open }: TooltipProps) {
   const [visible, setVisible] = useState(false);
+  const isVisible = open !== undefined ? open : visible;
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const show = () => {
@@ -77,7 +80,7 @@ export function Tooltip({ content, children, placement = 'top', delay = 300 }: T
       onBlur={hide}
     >
       {children}
-      {visible && (
+      {isVisible && (
         <span
           role="tooltip"
           style={{

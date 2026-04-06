@@ -2,6 +2,7 @@
 
 export * from './components/atoms/index.js';
 export * from './components/molecules/index.js';
+export * from './components/charts/index.js';
 
 export { LucentProvider, useLucent, LucentProviderManifest, ThemeAnchorsSpec } from './provider/index.js';
 export type { LucentProviderProps } from './provider/index.js';
