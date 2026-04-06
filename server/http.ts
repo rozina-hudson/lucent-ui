@@ -4,6 +4,43 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
 import { registerTools, DESIGN_RULES_SUMMARY } from './tools.js';
+import { getRecentCalls, subscribeToCalls, type StoredCall } from './logger.js';
+
+/** Compact summary of recent traffic for the dashboard's stat tiles and charts. */
+interface UsageAggregates {
+  total: number;
+  perTool: Record<string, number>;
+  uniqueKeys: number;
+  lastMinute: number;
+  errors: number;
+  avgDurationMs: number | null;
+}
+
+function computeAggregates(calls: StoredCall[]): UsageAggregates {
+  const perTool: Record<string, number> = {};
+  const keySet = new Set<string>();
+  let errors = 0;
+  let totalDuration = 0;
+  let lastMinute = 0;
+  const oneMinuteAgo = Date.now() - 60_000;
+
+  for (const call of calls) {
+    perTool[call.tool] = (perTool[call.tool] ?? 0) + 1;
+    if (call.key !== undefined) keySet.add(call.key);
+    if (!call.ok) errors += 1;
+    totalDuration += call.durationMs;
+    if (Date.parse(call.t) >= oneMinuteAgo) lastMinute += 1;
+  }
+
+  return {
+    total: calls.length,
+    perTool,
+    uniqueKeys: keySet.size,
+    lastMinute,
+    errors,
+    avgDurationMs: calls.length > 0 ? Math.round(totalDuration / calls.length) : null,
+  };
+}
 
 const PORT = Number(process.env['PORT'] ?? 3000);
 const HOST = process.env['HOST'] ?? '127.0.0.1';
@@ -91,6 +128,50 @@ const httpServer = createServer(async (req, res) => {
   // Health check — unauthenticated, useful for uptime probes
   if (url.pathname === '/health' && req.method === 'GET') {
     writeJson(res, 200, { status: 'ok' });
+    return;
+  }
+
+  // Usage snapshot — recent calls + aggregates for the dashboard.
+  if (url.pathname === '/usage' && req.method === 'GET') {
+    if (!checkAuth(req)) {
+      res.setHeader('WWW-Authenticate', 'Bearer');
+      writeJson(res, 401, { error: 'Unauthorized' });
+      return;
+    }
+    const calls = getRecentCalls();
+    writeJson(res, 200, {
+      calls,
+      aggregates: computeAggregates(calls),
+    });
+    return;
+  }
+
+  // Usage live stream — SSE, pushes each new tool call as it happens.
+  if (url.pathname === '/usage/stream' && req.method === 'GET') {
+    if (!checkAuth(req)) {
+      res.setHeader('WWW-Authenticate', 'Bearer');
+      writeJson(res, 401, { error: 'Unauthorized' });
+      return;
+    }
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      Connection: 'keep-alive',
+      'X-Accel-Buffering': 'no', // disable proxy buffering (nginx, some CDNs)
+    });
+    // Prime the connection so clients know we're live.
+    res.write(': connected\n\n');
+    const unsubscribe = subscribeToCalls((entry) => {
+      res.write(`data: ${JSON.stringify(entry)}\n\n`);
+    });
+    // Keep-alive heartbeat every 25s so idle connections aren't dropped.
+    const heartbeat = setInterval(() => {
+      res.write(': heartbeat\n\n');
+    }, 25_000);
+    req.on('close', () => {
+      clearInterval(heartbeat);
+      unsubscribe();
+    });
     return;
   }
 

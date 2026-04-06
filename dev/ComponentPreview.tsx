@@ -41,6 +41,7 @@ import { Table } from '../src/components/atoms/Table/index.js';
 import { PageLayout } from '../src/components/molecules/PageLayout/index.js';
 import { TokenPreview } from './TokenPreview.js';
 import { SelectPlayground } from './SelectPlayground.js';
+import { UsageDashboard } from './UsageDashboard.js';
 import { DataTable } from '../src/components/molecules/DataTable/index.js';
 import { CommandPalette } from '../src/components/molecules/CommandPalette/index.js';
 import { MultiSelect } from '../src/components/molecules/MultiSelect/index.js';
@@ -159,7 +160,7 @@ function StarIcon() {
   );
 }
 
-export type DevTab = 'components' | 'tokens' | 'playground';
+export type DevTab = 'components' | 'tokens' | 'playground' | 'usage';
 
 export function ComponentPreview({ tab, setTab }: { tab: DevTab; setTab: (t: DevTab) => void }) {
   const [theme, setTheme] = useState<Theme>('light');
@@ -449,6 +450,7 @@ function Inner({
     { key: 'components', label: 'Components' },
     { key: 'tokens', label: 'Tokens' },
     { key: 'playground', label: 'Playground' },
+    { key: 'usage', label: 'Usage' },
   ];
 
   // ─── Cmd+K command palette items ──────────────────────────────────────────
@@ -473,6 +475,7 @@ function Inner({
     items.push(
       { id: 'tokens-page', label: 'Tokens', description: 'Token reference', group: 'Pages', onSelect: () => setTab('tokens') },
       { id: 'playground-page', label: 'Playground', description: 'Select playground', group: 'Pages', onSelect: () => setTab('playground') },
+      { id: 'usage-page', label: 'Usage', description: 'Live MCP tool-call dashboard', group: 'Pages', onSelect: () => setTab('usage') },
       { id: 'all-components', label: 'All Components', description: 'Show everything', group: 'Pages', onSelect: () => { setTab('components'); setComponentFilter(''); } },
     );
 
@@ -3639,8 +3642,10 @@ function Inner({
       </div>
       ) : tab === 'tokens' ? (
         <TokenPreview />
-      ) : (
+      ) : tab === 'playground' ? (
         <SelectPlayground />
+      ) : (
+        <UsageDashboard />
       )}
     </PageLayout>
     </>

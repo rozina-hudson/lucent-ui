@@ -2,13 +2,9 @@
 
 ## 0.39.1
 
-### Patch Changes
+### Bug Fixes
 
-- e7a861a: **Card (combo variant) — preserve body framing when header or footer is absent**
-
-  The combo variant relies on the `header` and `footer` slots to provide vertical chrome around the elevated body. When one or both slots were omitted, the elevated body sat flush against the wrapper edge, breaking the "framed body" metaphor.
-
-  The body now mirrors the existing horizontal inset pattern (`calc(px / 3)`) vertically: when `header` is absent it applies `marginTop: calc(py / 3)`, and when `footer` is absent it applies `marginBottom: calc(py / 3)`. Both margins apply when neither slot is set. The inset scales with the `padding` prop (sm / md / lg). Combo cards with both header and footer render identically to before.
+- **`Card` (combo variant) — preserve body framing when header or footer is absent** ([#140](https://github.com/rozina-hudson/lucent-ui/pull/140)) — the combo variant relies on the `header` and `footer` slots to provide vertical chrome around the elevated body. When one or both slots were omitted, the elevated body sat flush against the wrapper edge, breaking the framed-body metaphor. The body now mirrors the existing horizontal inset (`calc(px / 3)`) vertically: `marginTop: calc(py / 3)` when `header` is absent, `marginBottom: calc(py / 3)` when `footer` is absent. Both margins apply when neither slot is set. Scales with the `padding` prop (sm / md / lg). Combo cards with both slots render identically to before.
 
 ## 0.39.0
 

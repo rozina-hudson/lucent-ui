@@ -1,16 +1,21 @@
 import { createHash } from 'node:crypto';
 
 /**
- * Structured logging for MCP tool calls.
+ * Structured logging + in-memory ring buffer for MCP tool calls.
  *
  * One JSON line per call is written to stderr (greppable, parseable by log
- * shippers). Set `LUCENT_MCP_QUIET=1` to disable all logging.
+ * shippers), and the same entry is pushed to an in-memory ring buffer used
+ * by the `/usage` and `/usage/stream` HTTP endpoints.
  *
- * When `LUCENT_API_KEY` is set, a short hash prefix of the key is included
+ * Set `LUCENT_MCP_QUIET=1` to silence stderr — the ring buffer still fills,
+ * so the usage dashboard keeps working.
+ *
+ * When `LUCENT_API_KEY` is set, a short sha256 prefix of the key is included
  * in log entries for usage analytics. The raw key is never logged.
  */
 
 const QUIET = process.env['LUCENT_MCP_QUIET'] === '1';
+const BUFFER_SIZE = 500;
 
 /**
  * Returns the first 8 hex chars of sha256(key). Short enough to stay readable
@@ -29,10 +34,39 @@ export interface ToolCallLogEntry {
   error?: string;
 }
 
+/** An entry as stored in the ring buffer (with the computed timestamp + key hash). */
+export interface StoredCall extends ToolCallLogEntry {
+  t: string;
+  key?: string;
+}
+
+// ─── Ring buffer + subscribers ───────────────────────────────────────────────
+
+const recentCalls: StoredCall[] = [];
+type Subscriber = (entry: StoredCall) => void;
+const subscribers = new Set<Subscriber>();
+
+/** Snapshot of the ring buffer, newest first. */
+export function getRecentCalls(): StoredCall[] {
+  return recentCalls.slice().reverse();
+}
+
+/**
+ * Subscribe to new tool calls as they happen. Returns an unsubscribe function.
+ * Used by the `/usage/stream` SSE endpoint to push live updates.
+ */
+export function subscribeToCalls(fn: Subscriber): () => void {
+  subscribers.add(fn);
+  return () => {
+    subscribers.delete(fn);
+  };
+}
+
+// ─── Logging ─────────────────────────────────────────────────────────────────
+
 export function logToolCall(entry: ToolCallLogEntry): void {
-  if (QUIET) return;
   const apiKey = process.env['LUCENT_API_KEY'];
-  const line = JSON.stringify({
+  const stored: StoredCall = {
     t: new Date().toISOString(),
     tool: entry.tool,
     params: entry.params,
@@ -40,9 +74,28 @@ export function logToolCall(entry: ToolCallLogEntry): void {
     ok: entry.ok,
     ...(entry.error !== undefined && { error: entry.error }),
     ...(apiKey !== undefined && { key: hashKeyPrefix(apiKey) }),
-  });
-  process.stderr.write(line + '\n');
+  };
+
+  // 1. Push to ring buffer (always, even in QUIET mode — dashboards still work).
+  recentCalls.push(stored);
+  if (recentCalls.length > BUFFER_SIZE) recentCalls.shift();
+
+  // 2. Notify subscribers (SSE streams).
+  for (const sub of subscribers) {
+    try {
+      sub(stored);
+    } catch {
+      // Never let a broken subscriber break the tool call path.
+    }
+  }
+
+  // 3. Write to stderr unless QUIET.
+  if (!QUIET) {
+    process.stderr.write(JSON.stringify(stored) + '\n');
+  }
 }
+
+// ─── Tool handler wrapper ────────────────────────────────────────────────────
 
 // Tool handlers have heterogeneous argument shapes (some take an object, some
 // take nothing). A generic constraint with `any[]` here is the cleanest way to
