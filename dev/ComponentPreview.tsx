@@ -74,6 +74,11 @@ import { NotificationFeed } from './compositions/NotificationFeed.js';
 import { OnboardingFlow } from './compositions/OnboardingFlow.js';
 import { DashboardHeader } from './compositions/DashboardHeader.js';
 import { ActivityFeed } from './compositions/ActivityFeed.js';
+import { MetricsDashboard } from './compositions/MetricsDashboard.js';
+import { SparkLine } from '../src/components/charts/SparkLine/index.js';
+import { BarChart } from '../src/components/charts/BarChart/index.js';
+import { AreaChart } from '../src/components/charts/AreaChart/index.js';
+import { DonutChart } from '../src/components/charts/DonutChart/index.js';
 
 // ─── Palette map ────────────────────────────────────────────────────────────
 
@@ -214,6 +219,7 @@ function Inner({
     text:        { label: 'Text & Labels',      tier: 'atom', items: ['Text', 'Badge', 'Chip', 'Tag', 'Icon', 'Tooltip', 'CodeBlock'] },
     media:       { label: 'Media & Status',     tier: 'atom', items: ['Avatar', 'Spinner', 'Progress', 'Divider'] },
     layout:      { label: 'Layout',             tier: 'atom', items: ['Stack', 'Row', 'Table'] },
+    charts:      { label: 'Charts',             tier: 'atom', items: ['SparkLine', 'BarChart', 'AreaChart', 'DonutChart'] },
     forms:       { label: 'Forms',              tier: 'molecule', items: ['FormField', 'SearchInput', 'MultiSelect', 'DatePicker', 'DateRangePicker', 'FileUpload'] },
     filters:     { label: 'Filters',            tier: 'molecule', items: ['FilterSearch', 'FilterSelect', 'FilterMultiSelect', 'FilterDateRange'] },
     containers:  { label: 'Containers',         tier: 'molecule', items: ['Card', 'Alert', 'EmptyState', 'Skeleton', 'Collapsible'] },
@@ -223,7 +229,7 @@ function Inner({
     'r-cards':   { label: 'Cards',              tier: 'pattern', items: ['ProfileCard', 'ProductItemCard', 'AnnouncementCard', 'CollapsibleCard', 'EmptyStateCard'] },
     'r-layouts': { label: 'Layouts',            tier: 'pattern', items: ['SettingsPanel', 'FormLayout', 'StatsRow', 'ActionBar', 'ConfirmationDialog', 'BulkActionBar'] },
     'r-filters': { label: 'Filters',           tier: 'pattern', items: ['SearchFilterBar'] },
-    'c-all':     { label: 'All Compositions',   tier: 'composition', items: ['GoldenProfileCard', 'GoldenPreferencesCard', 'GoldenPricingTable', 'GoldenNotificationFeed', 'GoldenOnboardingFlow', 'GoldenDashboardHeader', 'GoldenActivityFeed'] },
+    'c-all':     { label: 'All Compositions',   tier: 'composition', items: ['GoldenProfileCard', 'GoldenPreferencesCard', 'GoldenPricingTable', 'GoldenNotificationFeed', 'GoldenOnboardingFlow', 'GoldenDashboardHeader', 'GoldenActivityFeed', 'GoldenMetricsDashboard'] },
   };
 
   const allSections = Object.values(sectionGroups).flatMap(g => g.items);
@@ -2569,6 +2575,154 @@ function Inner({
         </Row>
       </Section>
 
+      {/* ─── Charts ─────────────────────────────────────────────────────────── */}
+
+      <Section title="SparkLine" tokens={tokens} hidden={!showSection('SparkLine')}>
+        <Row label="Basic" tokens={tokens}>
+          <div style={{ width: 200 }}>
+            <SparkLine data={[4, 7, 3, 8, 5, 9, 6, 10, 7]} />
+          </div>
+        </Row>
+        <Row label="Filled" tokens={tokens}>
+          <div style={{ width: 200 }}>
+            <SparkLine data={[4, 7, 3, 8, 5, 9, 6, 10, 7]} filled />
+          </div>
+        </Row>
+        <Row label="Variants" tokens={tokens}>
+          <div style={{ display: 'flex', gap: 'var(--lucent-space-4)', flexWrap: 'wrap' }}>
+            {(['accent', 'success', 'warning', 'danger', 'info'] as const).map((c) => (
+              <div key={c} style={{ width: 120 }}>
+                <Text size="xs" color="secondary">{c}</Text>
+                <SparkLine data={[2, 5, 3, 7, 4, 8, 6]} filled color={c} />
+              </div>
+            ))}
+          </div>
+        </Row>
+      </Section>
+
+      <Section title="BarChart" tokens={tokens} hidden={!showSection('BarChart')}>
+        <Row label="Basic" tokens={tokens}>
+          <div style={{ width: 400 }}>
+            <BarChart data={[
+              { label: 'Jan', value: 32 },
+              { label: 'Feb', value: 45 },
+              { label: 'Mar', value: 28 },
+              { label: 'Apr', value: 52 },
+              { label: 'May', value: 38 },
+              { label: 'Jun', value: 60 },
+            ]} />
+          </div>
+        </Row>
+        <Row label="With values" tokens={tokens}>
+          <div style={{ width: 400 }}>
+            <BarChart
+              data={[
+                { label: 'Q1', value: 120 },
+                { label: 'Q2', value: 180 },
+                { label: 'Q3', value: 150 },
+                { label: 'Q4', value: 210 },
+              ]}
+              showValues
+              color="success"
+              formatValue={(v) => `$${v}k`}
+            />
+          </div>
+        </Row>
+        <Row label="Per-bar colors" tokens={tokens}>
+          <div style={{ width: 400 }}>
+            <BarChart data={[
+              { label: 'Good', value: 72, color: 'var(--lucent-success-default)' },
+              { label: 'Warn', value: 55, color: 'var(--lucent-warning-default)' },
+              { label: 'Bad', value: 89, color: 'var(--lucent-danger-default)' },
+            ]} showValues />
+          </div>
+        </Row>
+      </Section>
+
+      <Section title="AreaChart" tokens={tokens} hidden={!showSection('AreaChart')}>
+        <Row label="Basic" tokens={tokens}>
+          <div style={{ width: 500 }}>
+            <AreaChart data={[
+              { label: 'Jan', value: 30 },
+              { label: 'Feb', value: 45 },
+              { label: 'Mar', value: 38 },
+              { label: 'Apr', value: 52 },
+              { label: 'May', value: 48 },
+              { label: 'Jun', value: 62 },
+            ]} />
+          </div>
+        </Row>
+        <Row label="With dots" tokens={tokens}>
+          <div style={{ width: 500 }}>
+            <AreaChart
+              data={[
+                { label: 'Mon', value: 12 },
+                { label: 'Tue', value: 18 },
+                { label: 'Wed', value: 15 },
+                { label: 'Thu', value: 22 },
+                { label: 'Fri', value: 20 },
+              ]}
+              showDots
+              color="success"
+            />
+          </div>
+        </Row>
+        <Row label="Multi-series" tokens={tokens}>
+          <div style={{ width: 500 }}>
+            <AreaChart
+              series={[
+                { id: 'revenue', name: 'Revenue', data: [
+                  { label: 'Jan', value: 40 }, { label: 'Feb', value: 55 }, { label: 'Mar', value: 48 },
+                  { label: 'Apr', value: 62 }, { label: 'May', value: 58 }, { label: 'Jun', value: 72 },
+                ]},
+                { id: 'costs', name: 'Costs', data: [
+                  { label: 'Jan', value: 30 }, { label: 'Feb', value: 35 }, { label: 'Mar', value: 32 },
+                  { label: 'Apr', value: 38 }, { label: 'May', value: 42 }, { label: 'Jun', value: 40 },
+                ]},
+              ]}
+              showDots
+            />
+          </div>
+        </Row>
+      </Section>
+
+      <Section title="DonutChart" tokens={tokens} hidden={!showSection('DonutChart')}>
+        <Row label="Basic" tokens={tokens}>
+          <DonutChart data={[
+            { label: 'Direct', value: 42 },
+            { label: 'Search', value: 28 },
+            { label: 'Social', value: 18 },
+            { label: 'Referral', value: 12 },
+          ]} />
+        </Row>
+        <Row label="With center label" tokens={tokens}>
+          <DonutChart
+            data={[
+              { label: 'Used', value: 75 },
+              { label: 'Free', value: 25 },
+            ]}
+            size={180}
+            centerLabel={
+              <StackAtom gap="0" align="center">
+                <Text size="xl" weight="bold">75%</Text>
+                <Text size="xs" color="secondary">used</Text>
+              </StackAtom>
+            }
+          />
+        </Row>
+        <Row label="Thick ring" tokens={tokens}>
+          <DonutChart
+            data={[
+              { label: 'Complete', value: 68 },
+              { label: 'In Progress', value: 22 },
+              { label: 'Not Started', value: 10 },
+            ]}
+            thickness={0.5}
+            size={180}
+          />
+        </Row>
+      </Section>
+
       <Section title="NavMenu" tokens={tokens} hidden={!showSection('NavMenu')}>
         <Row label="Vertical — child active (parent highlights)" tokens={tokens}>
           <div style={{ width: 220, background: tokens.bgSubtle, borderRadius: tokens.radiusMd, padding: tokens.space3 }}>
@@ -3636,6 +3790,12 @@ function Inner({
       <Section title="Activity Feed" tokens={tokens} hidden={!showSection('GoldenActivityFeed')}>
         <Row label="Full composition" tokens={tokens}>
           <ActivityFeed />
+        </Row>
+      </Section>
+
+      <Section title="Metrics Dashboard" tokens={tokens} hidden={!showSection('GoldenMetricsDashboard')}>
+        <Row label="Full composition" tokens={tokens}>
+          <MetricsDashboard />
         </Row>
       </Section>
 
