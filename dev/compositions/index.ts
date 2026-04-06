@@ -4,3 +4,4 @@ export { PricingTable } from './PricingTable.js';
 export { NotificationFeed } from './NotificationFeed.js';
 export { OnboardingFlow } from './OnboardingFlow.js';
 export { DashboardHeader } from './DashboardHeader.js';
+export { ActivityFeed } from './ActivityFeed.js';

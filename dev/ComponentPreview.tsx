@@ -72,6 +72,7 @@ import { PricingTable } from './compositions/PricingTable.js';
 import { NotificationFeed } from './compositions/NotificationFeed.js';
 import { OnboardingFlow } from './compositions/OnboardingFlow.js';
 import { DashboardHeader } from './compositions/DashboardHeader.js';
+import { ActivityFeed } from './compositions/ActivityFeed.js';
 
 // ─── Palette map ────────────────────────────────────────────────────────────
 
@@ -221,7 +222,7 @@ function Inner({
     'r-cards':   { label: 'Cards',              tier: 'pattern', items: ['ProfileCard', 'ProductItemCard', 'AnnouncementCard', 'CollapsibleCard', 'EmptyStateCard'] },
     'r-layouts': { label: 'Layouts',            tier: 'pattern', items: ['SettingsPanel', 'FormLayout', 'StatsRow', 'ActionBar', 'ConfirmationDialog', 'BulkActionBar'] },
     'r-filters': { label: 'Filters',           tier: 'pattern', items: ['SearchFilterBar'] },
-    'c-all':     { label: 'All Compositions',   tier: 'composition', items: ['GoldenProfileCard', 'GoldenPreferencesCard', 'GoldenPricingTable', 'GoldenNotificationFeed', 'GoldenOnboardingFlow', 'GoldenDashboardHeader'] },
+    'c-all':     { label: 'All Compositions',   tier: 'composition', items: ['GoldenProfileCard', 'GoldenPreferencesCard', 'GoldenPricingTable', 'GoldenNotificationFeed', 'GoldenOnboardingFlow', 'GoldenDashboardHeader', 'GoldenActivityFeed'] },
   };
 
   const allSections = Object.values(sectionGroups).flatMap(g => g.items);
@@ -3626,6 +3627,12 @@ function Inner({
       <Section title="Dashboard Header" tokens={tokens} hidden={!showSection('GoldenDashboardHeader')}>
         <Row label="Full composition" tokens={tokens}>
           <DashboardHeader />
+        </Row>
+      </Section>
+
+      <Section title="Activity Feed" tokens={tokens} hidden={!showSection('GoldenActivityFeed')}>
+        <Row label="Full composition" tokens={tokens}>
+          <ActivityFeed />
         </Row>
       </Section>
 
