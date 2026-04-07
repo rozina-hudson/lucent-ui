@@ -8,7 +8,7 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
   specVersion: '0.1',
 
   description:
-    'Full-viewport shell layout with optional header, left sidebar, right panel, and footer slots arranged in a flex column/row structure.',
+    'Full-viewport shell layout with optional header, left sidebar (with header/footer slots), right panel, and footer slots arranged in a flex column/row structure.',
 
   designIntent:
     'PageLayout owns the outermost chrome of an application page. Chrome regions (header, sidebar, footer) ' +
@@ -16,9 +16,16 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
     'noticeable with tinted navigation values. The body row is a flex row containing ' +
     'an optional left sidebar, a bordered main content card, and an optional right panel — all as structural ' +
     'siblings so they share the same vertical space. The header and footer sit outside the body row as ' +
-    'flex children of the outer column, ensuring they span the full width. Sidebars collapse to zero width ' +
-    'with a smooth width transition, avoiding layout jumps. The main card automatically drops its right ' +
-    'margin when a right panel is present so no manual mainStyle override is needed. ' +
+    'flex children of the outer column, ensuring they span the full width. ' +
+    'The left sidebar is a flex column with three zones: sidebarHeader (pinned top — logo/branding), ' +
+    'sidebar (scrollable middle — navigation), and sidebarFooter (pinned bottom — account/help/settings). ' +
+    'All three zones are optional and render independently. ' +
+    'sidebarCollapsedWidth controls the collapsed width (default 0 for full collapse, set to e.g. 56 for icon-only rail). ' +
+    'On narrow viewports (below sidebarDrawerBreakpoint, default 768px), sidebarMode "auto" automatically ' +
+    'switches the sidebar to a slide-in drawer overlay with a hamburger toggle in the header, ' +
+    'keeping the main content full-width. The drawer renders via portal with backdrop, ' +
+    'closes on backdrop click or Escape, and locks body scroll while open. ' +
+    'The main card automatically drops its right margin when a right panel is present so no manual mainStyle override is needed. ' +
     'The footer is intentionally narrow (default 28px) and should be used sparingly — suited to ' +
     'status bars, connection indicators, keyboard shortcut hints, or contextual action strips, ' +
     'in the style of an editor status bar. It is not meant as a general-purpose page footer.',
@@ -47,7 +54,19 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
       name: 'sidebar',
       type: 'ReactNode',
       required: false,
-      description: 'Content rendered in the left sidebar, a flex sibling of <main>.',
+      description: 'Scrollable content in the middle zone of the left sidebar (typically navigation).',
+    },
+    {
+      name: 'sidebarHeader',
+      type: 'ReactNode',
+      required: false,
+      description: 'Pinned content at the top of the sidebar — logo, app name, branding. Does not scroll.',
+    },
+    {
+      name: 'sidebarFooter',
+      type: 'ReactNode',
+      required: false,
+      description: 'Pinned content at the bottom of the sidebar — account switcher, help, secondary actions. Does not scroll.',
     },
     {
       name: 'sidebarWidth',
@@ -57,11 +76,47 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
       description: 'Left sidebar width in px (number) or any CSS value (string). Default: 240.',
     },
     {
+      name: 'sidebarCollapsedWidth',
+      type: 'string',
+      required: false,
+      default: '0',
+      description: 'Width the sidebar collapses to — 0 for full collapse (default), 56 for icon-only rail.',
+    },
+    {
       name: 'sidebarCollapsed',
       type: 'boolean',
       required: false,
       default: 'false',
-      description: 'When true, collapses the left sidebar to zero width with a transition.',
+      description: 'When true, collapses the left sidebar to sidebarCollapsedWidth with a transition.',
+    },
+    {
+      name: 'sidebarMode',
+      type: 'string',
+      required: false,
+      default: '"auto"',
+      description:
+        'Sidebar display mode. "inline" = always inline, "drawer" = always drawer overlay, ' +
+        '"auto" = switches to drawer below sidebarDrawerBreakpoint. Default: "auto".',
+    },
+    {
+      name: 'sidebarDrawerBreakpoint',
+      type: 'number',
+      required: false,
+      default: '768',
+      description: 'Viewport width (px) below which sidebar switches to drawer mode. Only used when sidebarMode="auto". Default: 768.',
+    },
+    {
+      name: 'sidebarDrawerOpen',
+      type: 'boolean',
+      required: false,
+      default: 'false',
+      description: 'Controlled open state when sidebar is in drawer mode.',
+    },
+    {
+      name: 'onSidebarDrawerOpenChange',
+      type: '(open: boolean) => void',
+      required: false,
+      description: 'Called when the drawer open state changes (backdrop click, escape key).',
     },
     {
       name: 'rightSidebar',
@@ -146,10 +201,13 @@ export const COMPONENT_MANIFEST: ComponentManifest = {
 </PageLayout>`,
     },
     {
-      title: 'Collapsible sidebar',
+      title: 'Collapsible sidebar with logo and account footer',
       code: `<PageLayout
-  sidebar={<nav>...</nav>}
+  sidebarHeader={<Logo collapsed={isCollapsed} />}
+  sidebar={<NavMenu orientation="vertical" hasIcons>...</NavMenu>}
+  sidebarFooter={<AccountMenu collapsed={isCollapsed} />}
   sidebarCollapsed={isCollapsed}
+  sidebarCollapsedWidth={56}
 >
   <div>Page content</div>
 </PageLayout>`,

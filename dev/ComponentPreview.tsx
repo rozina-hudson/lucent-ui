@@ -1,5 +1,6 @@
-import { useState, useMemo } from 'react';
-import { LucentProvider, useLucent, createTheme } from '../src/index.js';
+import { useState, useMemo, useRef, useLayoutEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
+import { LucentProvider, useLucent, createTheme, useMediaQuery } from '../src/index.js';
 import { LucentDevTools } from '../src/devtools/index.js';
 import type { PaletteName, ShapeName, ShadowName } from '../src/tokens/presets/types.js';
 import type { ColorPalette } from '../src/tokens/presets/types.js';
@@ -157,6 +158,91 @@ function SmallIcon({ d }: { d: string }) {
   );
 }
 
+/** Hover-triggered popover for collapsed sidebar — matches Menu component styling. */
+function NavPopover({ trigger, label, children }: { trigger: React.ReactNode; label?: string; children: React.ReactNode }) {
+  const [visible, setVisible] = useState(false);
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+
+  const cancelHide = () => { if (hideTimer.current) { clearTimeout(hideTimer.current); hideTimer.current = null; } };
+  const show = () => { cancelHide(); setVisible(true); };
+  const hide = () => { hideTimer.current = setTimeout(() => setVisible(false), 120); };
+
+  const updatePos = useCallback(() => {
+    const el = triggerRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    setPos({ top: rect.top, left: rect.right + 6 });
+  }, []);
+
+  useLayoutEffect(() => {
+    if (visible) updatePos();
+  }, [visible, updatePos]);
+
+  return (
+    <div ref={triggerRef} onMouseEnter={show} onMouseLeave={hide} style={{ display: 'inline-flex' }}>
+      {trigger}
+      {visible && pos && createPortal(
+        <div
+          onMouseEnter={cancelHide}
+          onMouseLeave={hide}
+          style={{
+            position: 'fixed',
+            top: pos.top,
+            left: pos.left,
+            minWidth: 180,
+            background: 'color-mix(in srgb, var(--lucent-surface-overlay) 85%, transparent)',
+            backdropFilter: 'blur(6px)',
+            WebkitBackdropFilter: 'blur(6px)',
+            border: '1px solid color-mix(in srgb, var(--lucent-accent-default) 15%, var(--lucent-border-default))',
+            borderRadius: 'var(--lucent-radius-lg)',
+            boxShadow: '0 0 24px -4px color-mix(in srgb, var(--lucent-accent-default) 12%, transparent), var(--lucent-shadow-md)',
+            padding: 'var(--lucent-space-2)',
+            maxHeight: 'min(320px, calc(100vh - 32px))',
+            overflowY: 'auto',
+            zIndex: 9999,
+            fontFamily: 'var(--lucent-font-family-base)',
+            fontSize: 'var(--lucent-font-size-sm)',
+          }}
+        >
+          {label && <div style={{ padding: 'var(--lucent-space-2) var(--lucent-space-2) var(--lucent-space-1)', fontSize: 'var(--lucent-font-size-xs)', fontWeight: 'var(--lucent-font-weight-semibold)', color: 'var(--lucent-text-secondary)' }}>{label}</div>}
+          {children}
+        </div>,
+        document.body,
+      )}
+    </div>
+  );
+}
+
+/** Single menu item inside NavPopover — handles its own hover state. */
+function NavPopoverItem({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onClick={onClick}
+      style={{
+        padding: 'var(--lucent-space-2)',
+        borderRadius: 'var(--lucent-radius-md)',
+        cursor: 'pointer',
+        background: active
+          ? 'color-mix(in srgb, var(--lucent-accent-default) 12%, var(--lucent-surface-overlay))'
+          : hovered
+            ? 'var(--lucent-surface-secondary)'
+            : 'transparent',
+        boxShadow: active ? 'var(--lucent-shadow-sm)' : 'none',
+        color: 'var(--lucent-text-primary)',
+        whiteSpace: 'nowrap',
+        transition: 'background var(--lucent-duration-fast) var(--lucent-easing-default), box-shadow var(--lucent-duration-fast) var(--lucent-easing-default)',
+      }}
+    >
+      {label}
+    </div>
+  );
+}
+
 function StarIcon() {
   return (
     <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -255,6 +341,8 @@ function Inner({
   const [radioSize, setRadioSize] = useState('m');
   const [toggled, setToggled] = useState(false);
   const [sliderValue, setSliderValue] = useState(40);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectVal, setSelectVal] = useState('');
   const [tags, setTags] = useState(['React', 'TypeScript', 'Design Systems']);
   const [searchQuery, setSearchQuery] = useState('');
@@ -316,31 +404,98 @@ function Inner({
   const patternGroups = Object.entries(sectionGroups).filter(([, g]) => g.tier === 'pattern');
   const compositionGroups = Object.entries(sectionGroups).filter(([, g]) => g.tier === 'composition');
 
-  const navSidebar = (
-    <div style={{ padding: tokens.space3, display: 'flex', flexDirection: 'column', gap: tokens.space2 }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: tokens.space2 }}>
-        <SegmentedControl
-          size="sm"
-          options={[{ value: 'sm', label: 'SM' }, { value: 'md', label: 'MD' }, { value: 'lg', label: 'LG' }]}
-          value={navSize}
-          onChange={(v) => setNavSize(v as 'sm' | 'md' | 'lg')}
-        />
-        <div style={{ display: 'flex', alignItems: 'center', gap: tokens.space3 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: tokens.space2 }}>
-            <Text size="xs" color="secondary">Inverse</Text>
-            <Toggle size="sm" checked={navInverse} onChange={(e) => setNavInverse(e.target.checked)} />
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: tokens.space2 }}>
-            <Text size="xs" color="secondary">Icons</Text>
-            <Toggle size="sm" checked={navIcons} onChange={(e) => setNavIcons(e.target.checked)} />
-          </div>
+  const navCollapsed = navIcons && sidebarCollapsed;
+  const isMobile = useMediaQuery('(max-width: 767px)');
+
+  // Wrapper that also closes the mobile drawer when navigating
+  const navTo = (filter: string) => { setComponentFilter(filter); setDrawerOpen(false); };
+
+  const navSidebarFooter = navCollapsed ? undefined : (
+    <div style={{ borderTop: `1px solid ${tokens.borderDefault}`, padding: tokens.space3, display: 'flex', flexDirection: 'column', gap: tokens.space2 }}>
+      <SegmentedControl
+        size="sm"
+        options={[{ value: 'sm', label: 'SM' }, { value: 'md', label: 'MD' }, { value: 'lg', label: 'LG' }]}
+        value={navSize}
+        onChange={(v) => setNavSize(v as 'sm' | 'md' | 'lg')}
+      />
+      <div style={{ display: 'flex', alignItems: 'center', gap: tokens.space3 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: tokens.space2 }}>
+          <Text size="xs" color="secondary">Inverse</Text>
+          <Toggle size="sm" checked={navInverse} onChange={(e) => setNavInverse(e.target.checked)} />
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: tokens.space2 }}>
+          <Text size="xs" color="secondary">Icons</Text>
+          <Toggle size="sm" checked={navIcons} onChange={(e) => setNavIcons(e.target.checked)} />
         </div>
       </div>
+    </div>
+  );
+
+  const collapsedIconBtnStyle: React.CSSProperties = { width: 36, height: 36, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' };
+  const navSidebarCollapsed = (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: tokens.space1, padding: `${tokens.space2} 0` }}>
+      <Tooltip content="All components" placement="right" delay={0}>
+        <Button variant={!componentFilter ? 'secondary' : 'ghost'} size="sm" onClick={() => navTo('')} style={collapsedIconBtnStyle}>
+          <NavIcon />
+        </Button>
+      </Tooltip>
+      {atomGroups.map(([key, group]) => {
+        const isSelectAll = selectAllGroups.has(key);
+        const active = isSelectAll ? componentFilter === `group:${key}` : group.items.includes(componentFilter);
+        return (
+          <NavPopover key={key} label={group.label} trigger={
+            <Button variant={active ? 'secondary' : 'ghost'} size="sm" onClick={() => navTo(isSelectAll ? `group:${key}` : group.items[0])} style={collapsedIconBtnStyle}>
+              <NavIcon />
+            </Button>
+          }>
+            {group.items.map(name => (
+              <NavPopoverItem key={name} label={name} active={componentFilter === name} onClick={() => navTo(name)} />
+            ))}
+          </NavPopover>
+        );
+      })}
+      {moleculeGroups.map(([key, group]) => (
+        <NavPopover key={key} label={group.label} trigger={
+          <Button variant={group.items.includes(componentFilter) ? 'secondary' : 'ghost'} size="sm" onClick={() => navTo(group.items[0])} style={collapsedIconBtnStyle}>
+            <NavIcon />
+          </Button>
+        }>
+          {group.items.map(name => (
+            <NavPopoverItem key={name} label={name} active={componentFilter === name} onClick={() => navTo(name)} />
+          ))}
+        </NavPopover>
+      ))}
+      {patternGroups.map(([key, group]) => (
+        <NavPopover key={key} label={group.label} trigger={
+          <Button variant={group.items.includes(componentFilter) ? 'secondary' : 'ghost'} size="sm" onClick={() => navTo(group.items[0])} style={collapsedIconBtnStyle}>
+            <NavIcon />
+          </Button>
+        }>
+          {group.items.map(name => (
+            <NavPopoverItem key={name} label={name.replace(/([A-Z])/g, ' $1').trim()} active={componentFilter === name} onClick={() => navTo(name)} />
+          ))}
+        </NavPopover>
+      ))}
+      <div style={{ width: 24, borderTop: `1px solid ${tokens.borderDefault}`, margin: `${tokens.space1} 0` }} />
+      {compositionGroups.flatMap(([, group]) =>
+        group.items.map(name => (
+          <Tooltip key={name} content={name.replace(/^Golden/, '').replace(/([A-Z])/g, ' $1').trim()} placement="right" delay={0}>
+            <Button variant={componentFilter === name ? 'secondary' : 'ghost'} size="sm" onClick={() => navTo(name)} style={collapsedIconBtnStyle}>
+              <NavIcon />
+            </Button>
+          </Tooltip>
+        ))
+      )}
+    </div>
+  );
+
+  const navSidebar = (
+    <div style={{ padding: `${tokens.space1} ${tokens.space3}` }}>
       <NavMenu orientation="vertical" size={navSize} inverse={navInverse} hasIcons={navIcons}>
         <NavMenu.Item
           as="button"
           isActive={!componentFilter}
-          onClick={() => setComponentFilter('')}
+          onClick={() => navTo('')}
           icon={navIcons ? <NavIcon /> : undefined}
         >
           All components
@@ -357,7 +512,7 @@ function Inner({
                   ? componentFilter === `group:${key}`
                   : group.items.includes(componentFilter)
                 }
-                onClick={() => setComponentFilter(isSelectAll ? `group:${key}` : group.items[0])}
+                onClick={() => navTo(isSelectAll ? `group:${key}` : group.items[0])}
                 icon={navIcons ? <NavIcon /> : undefined}
               >
                 {group.label}
@@ -367,7 +522,7 @@ function Inner({
                       key={name}
                       as="button"
                       isActive={componentFilter === name}
-                      onClick={() => setComponentFilter(name)}
+                      onClick={() => navTo(name)}
                     >
                       {name}
                     </NavMenu.Item>
@@ -376,8 +531,8 @@ function Inner({
               </NavMenu.Item>
             );
           })}
-          <NavMenu.Item as="button" isActive={componentFilter === 'atoms-overview'} onClick={() => setComponentFilter('atoms-overview')} icon={navIcons ? <NavIcon /> : undefined}>Overview</NavMenu.Item>
-          <NavMenu.Item as="button" isActive={componentFilter === 'atoms-guidelines'} onClick={() => setComponentFilter('atoms-guidelines')} icon={navIcons ? <NavIcon /> : undefined}>Guidelines</NavMenu.Item>
+          <NavMenu.Item as="button" isActive={componentFilter === 'atoms-overview'} onClick={() => navTo('atoms-overview')} icon={navIcons ? <NavIcon /> : undefined}>Overview</NavMenu.Item>
+          <NavMenu.Item as="button" isActive={componentFilter === 'atoms-guidelines'} onClick={() => navTo('atoms-guidelines')} icon={navIcons ? <NavIcon /> : undefined}>Guidelines</NavMenu.Item>
         </NavMenu.Group>
         <NavMenu.Group label="Molecules">
           {moleculeGroups.map(([key, group]) => (
@@ -385,7 +540,7 @@ function Inner({
               key={key}
               as="button"
               isActive={group.items.includes(componentFilter)}
-              onClick={() => setComponentFilter(group.items[0])}
+              onClick={() => navTo(group.items[0])}
               icon={navIcons ? <NavIcon /> : undefined}
             >
               {group.label}
@@ -395,7 +550,7 @@ function Inner({
                     key={name}
                     as="button"
                     isActive={componentFilter === name}
-                    onClick={() => setComponentFilter(name)}
+                    onClick={() => navTo(name)}
                   >
                     {name}
                   </NavMenu.Item>
@@ -403,7 +558,7 @@ function Inner({
               </NavMenu.Sub>
             </NavMenu.Item>
           ))}
-          <NavMenu.Item as="button" isActive={componentFilter === 'mol-patterns'} onClick={() => setComponentFilter('mol-patterns')} icon={navIcons ? <NavIcon /> : undefined}>Patterns</NavMenu.Item>
+          <NavMenu.Item as="button" isActive={componentFilter === 'mol-patterns'} onClick={() => navTo('mol-patterns')} icon={navIcons ? <NavIcon /> : undefined}>Patterns</NavMenu.Item>
         </NavMenu.Group>
         <NavMenu.Group label="Patterns">
           {patternGroups.map(([key, group]) => (
@@ -411,7 +566,7 @@ function Inner({
               key={key}
               as="button"
               isActive={group.items.includes(componentFilter)}
-              onClick={() => setComponentFilter(group.items[0])}
+              onClick={() => navTo(group.items[0])}
               icon={navIcons ? <NavIcon /> : undefined}
             >
               {group.label}
@@ -421,7 +576,7 @@ function Inner({
                     key={name}
                     as="button"
                     isActive={componentFilter === name}
-                    onClick={() => setComponentFilter(name)}
+                    onClick={() => navTo(name)}
                   >
                     {name.replace(/([A-Z])/g, ' $1').trim()}
                   </NavMenu.Item>
@@ -437,7 +592,7 @@ function Inner({
                 key={name}
                 as="button"
                 isActive={componentFilter === name}
-                onClick={() => setComponentFilter(name)}
+                onClick={() => navTo(name)}
                 icon={navIcons ? <NavIcon /> : undefined}
               >
                 {name.replace(/^Golden/, '').replace(/([A-Z])/g, ' $1').trim()}
@@ -446,11 +601,24 @@ function Inner({
           ))}
         </NavMenu.Group>
         <NavMenu.Separator />
-        <NavMenu.Item as="button" isActive={componentFilter === 'changelog'} onClick={() => setComponentFilter('changelog')} icon={navIcons ? <NavIcon /> : undefined}>Changelog</NavMenu.Item>
-        <NavMenu.Item as="button" isActive={componentFilter === 'about'} onClick={() => setComponentFilter('about')} icon={navIcons ? <NavIcon /> : undefined}>About</NavMenu.Item>
+        <NavMenu.Item as="button" isActive={componentFilter === 'changelog'} onClick={() => navTo('changelog')} icon={navIcons ? <NavIcon /> : undefined}>Changelog</NavMenu.Item>
+        <NavMenu.Item as="button" isActive={componentFilter === 'about'} onClick={() => navTo('about')} icon={navIcons ? <NavIcon /> : undefined}>About</NavMenu.Item>
       </NavMenu>
     </div>
   );
+
+  const currentSidebarWidth = navSize === 'lg' ? 280 : navSize === 'md' ? 250 : 220;
+
+  const navSidebarProps = {
+    sidebar: navCollapsed ? navSidebarCollapsed : navSidebar,
+    ...(navSidebarFooter != null && { sidebarFooter: navSidebarFooter }),
+    sidebarWidth: currentSidebarWidth,
+    sidebarCollapsed: navCollapsed,
+    sidebarCollapsedWidth: 56,
+    ...(navIcons && { onSidebarCollapsedChange: (c: boolean) => setSidebarCollapsed(c) }),
+    sidebarDrawerOpen: drawerOpen,
+    onSidebarDrawerOpenChange: setDrawerOpen,
+  };
 
   const tabItems: { key: DevTab; label: string }[] = [
     { key: 'components', label: 'Components' },
@@ -493,39 +661,46 @@ function Inner({
     <CommandPalette commands={paletteCommands} placeholder="Jump to component…" />
     <PageLayout
       header={
-        <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: `0 ${tokens.space5}` }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: tokens.space5 }}>
-            <Text as="span" size="lg" weight="bold">Lucent UI</Text>
-            <nav style={{ display: 'flex', gap: 0, height: '100%' }}>
-              {tabItems.map(t => (
-                <button
-                  key={t.key}
-                  onClick={() => setTab(t.key)}
-                  style={{
-                    padding: `0 ${tokens.space4}`,
-                    height: '100%',
-                    border: 'none',
-                    borderBottom: tab === t.key ? `2px solid ${tokens.accentDefault}` : '2px solid transparent',
-                    background: 'transparent',
-                    fontFamily: tokens.fontFamilyBase,
-                    fontSize: tokens.fontSizeSm,
-                    fontWeight: tab === t.key ? tokens.fontWeightSemibold : tokens.fontWeightRegular,
-                    color: tab === t.key ? tokens.textPrimary : tokens.textSecondary,
-                    cursor: 'pointer',
-                  }}
-                >
-                  {t.label}
-                </button>
-              ))}
-            </nav>
+        <div style={{ height: '100%', display: 'flex', alignItems: 'center' }}>
+          {/* Logo — matches sidebar width so tabs align with content */}
+          <div style={{ width: tab === 'components' && !isMobile ? (navCollapsed ? 56 : currentSidebarWidth) : undefined, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: navCollapsed && !isMobile ? 'center' : undefined, gap: tokens.space3, padding: `0 ${tokens.space4}`, transition: 'width 200ms var(--lucent-easing-default)', overflow: 'hidden' }}>
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden style={{ flexShrink: 0 }}>
+              <rect width="22" height="22" rx="6" fill="var(--lucent-accent-default)" />
+              <text x="11" y="15" textAnchor="middle" fill="var(--lucent-text-on-accent)" fontSize="11" fontWeight="700" fontFamily="var(--lucent-font-family-display)">L</text>
+            </svg>
+            {!navCollapsed && <Text as="span" size="md" weight="bold" family="display" style={{ whiteSpace: 'nowrap' }}>Lucent UI</Text>}
           </div>
-          <Toggle label="Dark" checked={theme === 'dark'} onChange={onToggleTheme} />
+          <nav style={{ display: 'flex', gap: 0, height: '100%', flex: 1 }}>
+            {tabItems.map(t => (
+              <button
+                key={t.key}
+                onClick={() => setTab(t.key)}
+                style={{
+                  padding: `0 ${tokens.space4}`,
+                  height: '100%',
+                  border: 'none',
+                  borderBottom: tab === t.key ? `2px solid ${tokens.accentDefault}` : '2px solid transparent',
+                  background: 'transparent',
+                  fontFamily: tokens.fontFamilyBase,
+                  fontSize: tokens.fontSizeSm,
+                  fontWeight: tab === t.key ? tokens.fontWeightSemibold : tokens.fontWeightRegular,
+                  color: tab === t.key ? tokens.textPrimary : tokens.textSecondary,
+                  cursor: 'pointer',
+                }}
+              >
+                {t.label}
+              </button>
+            ))}
+          </nav>
+          <div style={{ padding: `0 ${tokens.space5}` }}>
+            <Toggle label="Dark" checked={theme === 'dark'} onChange={onToggleTheme} />
+          </div>
         </div>
       }
       headerHeight={48}
       chromeBackground="navigation"
       mainStyle={{ background: 'var(--lucent-bg-base)' }}
-      {...(tab === 'components' && { sidebar: navSidebar, sidebarWidth: navSize === 'lg' ? 280 : navSize === 'md' ? 250 : 220 })}
+      {...(tab === 'components' && navSidebarProps)}
     >
       {tab === 'components' ? (
       <div style={{ padding: tokens.space6 }}>
@@ -2148,6 +2323,96 @@ function Inner({
             >
               <div style={{ padding: tokens.space5 }}>
                 <Text color="secondary">Main scrollable content area.</Text>
+              </div>
+            </PageLayout>
+          </div>
+        </Row>
+        <Row label="Collapsible sidebar with logo + account footer" tokens={tokens}>
+          <div style={{ width: '100%', height: 380, border: `1px solid ${tokens.borderDefault}`, borderRadius: tokens.radiusMd, overflow: 'hidden' }}>
+            <PageLayout
+              headerHeight={44}
+              sidebarWidth={210}
+              sidebarCollapsedWidth={56}
+              sidebarCollapsed={sidebarCollapsed}
+              chromeBackground="navigation"
+              header={
+                <div style={{ height: '100%', display: 'flex', alignItems: 'center', padding: `0 ${tokens.space6}` }}>
+                  <Text weight="semibold">My App</Text>
+                </div>
+              }
+              sidebarHeader={
+                <div style={{ display: 'flex', alignItems: 'center', gap: tokens.space2, padding: `${tokens.space3} ${tokens.space4}`, overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden style={{ flexShrink: 0 }}>
+                    <rect width="24" height="24" rx="6" fill="var(--lucent-accent-default)" />
+                  </svg>
+                  {!sidebarCollapsed && <Text as="span" size="sm" weight="semibold" family="display">Acme Inc</Text>}
+                </div>
+              }
+              sidebar={
+                sidebarCollapsed ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: tokens.space1, padding: `${tokens.space2} 0` }}>
+                    <Tooltip content="Dashboard" side="right">
+                      <Button variant="secondary" size="sm" style={{ width: 36, height: 36, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="5" height="5" rx="1" /><rect x="9" y="2" width="5" height="5" rx="1" /><rect x="2" y="9" width="5" height="5" rx="1" /><rect x="9" y="9" width="5" height="5" rx="1" /></svg>
+                      </Button>
+                    </Tooltip>
+                    <Tooltip content="Projects" side="right">
+                      <Button variant="ghost" size="sm" style={{ width: 36, height: 36, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 4h12M2 8h12M2 12h8" /></svg>
+                      </Button>
+                    </Tooltip>
+                    <Tooltip content="Settings" side="right">
+                      <Button variant="ghost" size="sm" style={{ width: 36, height: 36, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="8" r="2" /><path d="M13.5 8a5.5 5.5 0 0 1-.3 1.6l1.3 1-1.2 2-1.5-.6a5.4 5.4 0 0 1-1.4.8L10 14H8l-.4-1.6a5.4 5.4 0 0 1-1.4-.8l-1.5.6-1.2-2 1.3-1A5.5 5.5 0 0 1 4.5 8c0-.5.1-1.1.3-1.6l-1.3-1 1.2-2 1.5.6a5.4 5.4 0 0 1 1.4-.8L8 2h2l.4 1.6c.5.2 1 .5 1.4.8l1.5-.6 1.2 2-1.3 1c.2.5.3 1.1.3 1.6Z" /></svg>
+                      </Button>
+                    </Tooltip>
+                  </div>
+                ) : (
+                  <NavMenu orientation="vertical" hasIcons aria-label="Main navigation" style={{ padding: `${tokens.space2} 0` }}>
+                    <NavMenu.Group label="Main">
+                      <NavMenu.Item icon={<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="5" height="5" rx="1" /><rect x="9" y="2" width="5" height="5" rx="1" /><rect x="2" y="9" width="5" height="5" rx="1" /><rect x="9" y="9" width="5" height="5" rx="1" /></svg>} isActive>Dashboard</NavMenu.Item>
+                      <NavMenu.Item icon={<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 4h12M2 8h12M2 12h8" /></svg>}>Projects</NavMenu.Item>
+                    </NavMenu.Group>
+                    <NavMenu.Group label="Settings">
+                      <NavMenu.Item icon={<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="8" r="2" /><path d="M13.5 8a5.5 5.5 0 0 1-.3 1.6l1.3 1-1.2 2-1.5-.6a5.4 5.4 0 0 1-1.4.8L10 14H8l-.4-1.6a5.4 5.4 0 0 1-1.4-.8l-1.5.6-1.2-2 1.3-1A5.5 5.5 0 0 1 4.5 8c0-.5.1-1.1.3-1.6l-1.3-1 1.2-2 1.5.6a5.4 5.4 0 0 1 1.4-.8L8 2h2l.4 1.6c.5.2 1 .5 1.4.8l1.5-.6 1.2 2-1.3 1c.2.5.3 1.1.3 1.6Z" /></svg>}>General</NavMenu.Item>
+                    </NavMenu.Group>
+                  </NavMenu>
+                )
+              }
+              sidebarFooter={
+                <div style={{ borderTop: `1px solid ${tokens.borderDefault}`, padding: `${tokens.space2} ${sidebarCollapsed ? tokens.space2 : tokens.space3}`, display: 'flex', flexDirection: 'column', gap: tokens.space2, alignItems: sidebarCollapsed ? 'center' : 'stretch' }}>
+                  {!sidebarCollapsed && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: tokens.space2, padding: `${tokens.space1} ${tokens.space2}` }}>
+                      <Avatar alt="JD" size="sm" />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <Text as="span" size="xs" weight="medium" truncate>Jane Doe</Text>
+                        <Text as="span" size="xs" color="secondary" truncate>jane@acme.com</Text>
+                      </div>
+                    </div>
+                  )}
+                  {sidebarCollapsed && (
+                    <Tooltip content="Jane Doe" side="right">
+                      <Avatar alt="JD" size="sm" style={{ cursor: 'pointer' }} />
+                    </Tooltip>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSidebarCollapsed(c => !c)}
+                    style={sidebarCollapsed ? { width: 36, height: 36, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' } : {}}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      {sidebarCollapsed
+                        ? <path d="M5 4l4 4-4 4" />
+                        : <path d="M11 4L7 8l4 4" />}
+                    </svg>
+                    {!sidebarCollapsed && <span style={{ marginLeft: 4, fontSize: 'var(--lucent-font-size-xs)' }}>Collapse</span>}
+                  </Button>
+                </div>
+              }
+            >
+              <div style={{ padding: tokens.space5 }}>
+                <Text color="secondary">Main scrollable content area. Click the collapse button in the sidebar footer.</Text>
               </div>
             </PageLayout>
           </div>
