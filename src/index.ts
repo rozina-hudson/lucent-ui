@@ -44,4 +44,7 @@ export type {
   ValidationError,
 } from './manifest/index.js';
 
+// Hooks
+export { useMediaQuery } from './hooks/index.js';
+
 export const LUCENT_UI_VERSION = '0.1.0';
