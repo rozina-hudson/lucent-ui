@@ -10,3 +10,4 @@ export { PATTERN as PricingTable } from './pricing-table.pattern.js';
 export { PATTERN as NotificationFeed } from './notification-feed.pattern.js';
 export { PATTERN as OnboardingFlow } from './onboarding-flow.pattern.js';
 export { PATTERN as DashboardHeader } from './dashboard-header.pattern.js';
+export { PATTERN as TabPage } from './tab-page.pattern.js';

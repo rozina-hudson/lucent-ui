@@ -313,7 +313,7 @@ function Inner({
     data:        { label: 'Data & Tables',      tier: 'molecule', items: ['DataTable', 'Timeline'] },
     overlays:    { label: 'Overlays & Menus',   tier: 'molecule', items: ['Menu', 'CommandPalette', 'Toast'] },
     'r-cards':   { label: 'Cards',              tier: 'pattern', items: ['ProfileCard', 'ProductItemCard', 'AnnouncementCard', 'CollapsibleCard', 'EmptyStateCard'] },
-    'r-layouts': { label: 'Layouts',            tier: 'pattern', items: ['SettingsPanel', 'FormLayout', 'StatsRow', 'ActionBar', 'ConfirmationDialog', 'BulkActionBar'] },
+    'r-layouts': { label: 'Layouts',            tier: 'pattern', items: ['SettingsPanel', 'FormLayout', 'StatsRow', 'ActionBar', 'ConfirmationDialog', 'BulkActionBar', 'TabPage'] },
     'r-filters': { label: 'Filters',           tier: 'pattern', items: ['SearchFilterBar'] },
     'c-all':     { label: 'All Compositions',   tier: 'composition', items: ['GoldenProfileCard', 'GoldenPreferencesCard', 'GoldenPricingTable', 'GoldenNotificationFeed', 'GoldenOnboardingFlow', 'GoldenDashboardHeader', 'GoldenActivityFeed', 'GoldenMetricsDashboard'] },
   };
@@ -2121,6 +2121,33 @@ function Inner({
                 { value: 'changelog', label: 'Changelog', content: <Text size="sm" color="secondary">Changelog content.</Text> },
                 { value: 'settings', label: 'Settings', content: <Text size="sm" color="secondary">Settings content.</Text> },
                 { value: 'advanced', label: 'Advanced', content: <Text size="sm" color="secondary">Advanced options.</Text> },
+              ]}
+            />
+          </div>
+        </Row>
+        <Row label="Small underline" tokens={tokens}>
+          <div style={{ width: '100%' }}>
+            <Tabs
+              size="sm"
+              tabs={[
+                { value: 'overview', label: 'Overview', content: <Text size="xs" color="secondary">Overview content goes here.</Text> },
+                { value: 'api', label: 'API', content: <Text size="xs" color="secondary">API reference content.</Text> },
+                { value: 'examples', label: 'Examples', content: <Text size="xs" color="secondary">Usage examples.</Text> },
+                { value: 'disabled', label: 'Disabled', content: null, disabled: true },
+              ]}
+            />
+          </div>
+        </Row>
+        <Row label="Small pills" tokens={tokens}>
+          <div style={{ width: '100%' }}>
+            <Tabs
+              size="sm"
+              variant="pills"
+              tabs={[
+                { value: 'overview', label: 'Overview', content: <Text size="xs" color="secondary">Overview content goes here.</Text> },
+                { value: 'api', label: 'API', content: <Text size="xs" color="secondary">API reference content.</Text> },
+                { value: 'examples', label: 'Examples', content: <Text size="xs" color="secondary">Usage examples.</Text> },
+                { value: 'disabled', label: 'Disabled', content: null, disabled: true },
               ]}
             />
           </div>
@@ -4009,6 +4036,132 @@ function Inner({
               ]}
               rows={sfbFilteredCandidates}
               emptyState={<Text size="sm" color="secondary">No candidates match your filters.</Text>}
+            />
+          </StackAtom>
+        </Row>
+      </Section>
+
+      <Section title="TabPage" tokens={tokens} hidden={!showSection('TabPage')}>
+        <Row label="Settings-style tab page" tokens={tokens}>
+          <StackAtom gap="4" style={{ width: 520 }}>
+            <RowAtom gap="3" align="center" justify="between">
+              <Text as="h2" size="xl" weight="bold">Project settings</Text>
+              <Button variant="outline" size="sm">Save all</Button>
+            </RowAtom>
+            <Tabs
+              defaultValue="general"
+              tabs={[
+                {
+                  value: 'general',
+                  label: 'General',
+                  content: (
+                    <Card>
+                      <StackAtom gap="4">
+                        <Text size="sm" weight="semibold">Project name</Text>
+                        <Text size="sm" color="secondary">
+                          Update your project name and description to help team members identify this project.
+                        </Text>
+                      </StackAtom>
+                    </Card>
+                  ),
+                },
+                {
+                  value: 'members',
+                  label: 'Members',
+                  content: (
+                    <Card>
+                      <StackAtom gap="4">
+                        <RowAtom justify="between" align="center">
+                          <Text size="sm" weight="semibold">Team members</Text>
+                          <Button variant="outline" size="sm">Invite</Button>
+                        </RowAtom>
+                        <Text size="sm" color="secondary">
+                          Manage who has access to this project and their permissions.
+                        </Text>
+                      </StackAtom>
+                    </Card>
+                  ),
+                },
+                {
+                  value: 'billing',
+                  label: 'Billing',
+                  content: (
+                    <Card>
+                      <StackAtom gap="4">
+                        <Text size="sm" weight="semibold">Plan &amp; usage</Text>
+                        <Text size="sm" color="secondary">
+                          Review your current plan, usage limits, and payment history.
+                        </Text>
+                      </StackAtom>
+                    </Card>
+                  ),
+                },
+              ]}
+            />
+          </StackAtom>
+        </Row>
+        <Row label="Detail view (no action button)" tokens={tokens}>
+          <StackAtom gap="4" style={{ width: 520 }}>
+            <StackAtom gap="1">
+              <Text as="h2" size="xl" weight="bold">Order #1042</Text>
+              <Text size="sm" color="secondary">Placed on March 15, 2025</Text>
+            </StackAtom>
+            <Tabs
+              defaultValue="items"
+              tabs={[
+                {
+                  value: 'items',
+                  label: 'Items',
+                  content: (
+                    <Card>
+                      <StackAtom gap="3">
+                        <RowAtom justify="between">
+                          <Text size="sm">Widget Pro × 2</Text>
+                          <Text size="sm" weight="medium">$49.98</Text>
+                        </RowAtom>
+                        <RowAtom justify="between">
+                          <Text size="sm">Adapter Cable</Text>
+                          <Text size="sm" weight="medium">$12.00</Text>
+                        </RowAtom>
+                      </StackAtom>
+                    </Card>
+                  ),
+                },
+                {
+                  value: 'shipping',
+                  label: 'Shipping',
+                  content: (
+                    <Card>
+                      <StackAtom gap="3">
+                        <Text size="sm" weight="semibold">Tracking</Text>
+                        <Text size="sm" color="secondary">UPS Ground — 1Z999AA10123456784</Text>
+                      </StackAtom>
+                    </Card>
+                  ),
+                },
+                {
+                  value: 'history',
+                  label: 'History',
+                  content: (
+                    <Card>
+                      <StackAtom gap="3">
+                        <RowAtom gap="3" align="center">
+                          <Text size="xs" color="secondary" style={{ width: 80 }}>Mar 15</Text>
+                          <Text size="sm">Order placed</Text>
+                        </RowAtom>
+                        <RowAtom gap="3" align="center">
+                          <Text size="xs" color="secondary" style={{ width: 80 }}>Mar 16</Text>
+                          <Text size="sm">Payment confirmed</Text>
+                        </RowAtom>
+                        <RowAtom gap="3" align="center">
+                          <Text size="xs" color="secondary" style={{ width: 80 }}>Mar 18</Text>
+                          <Text size="sm">Shipped</Text>
+                        </RowAtom>
+                      </StackAtom>
+                    </Card>
+                  ),
+                },
+              ]}
             />
           </StackAtom>
         </Row>

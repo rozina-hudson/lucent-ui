@@ -8,6 +8,7 @@ export interface TabItem {
 }
 
 export type TabsVariant = 'underline' | 'pills';
+export type TabsSize = 'sm' | 'md';
 
 export interface TabsProps {
   tabs: TabItem[];
@@ -15,10 +16,30 @@ export interface TabsProps {
   value?: string;
   onChange?: (value: string) => void;
   variant?: TabsVariant;
+  size?: TabsSize;
   style?: CSSProperties;
 }
 
-export function Tabs({ tabs, defaultValue, value, onChange, variant = 'underline', style }: TabsProps) {
+const sizeConfig = {
+  sm: {
+    fontSize: 'var(--lucent-font-size-sm)',
+    buttonPadding: 'var(--lucent-space-1) var(--lucent-space-1)',
+    buttonPaddingUnderline: '0 var(--lucent-space-1) var(--lucent-space-2)',
+    innerPadding: 'var(--lucent-space-1) var(--lucent-space-2)',
+    panelPadding: 'var(--lucent-space-3) 0',
+    dropdownPadding: 'var(--lucent-space-1) var(--lucent-space-3)',
+  },
+  md: {
+    fontSize: 'var(--lucent-font-size-md)',
+    buttonPadding: 'var(--lucent-space-1) var(--lucent-space-2)',
+    buttonPaddingUnderline: 'var(--lucent-space-1) var(--lucent-space-2) var(--lucent-space-3)',
+    innerPadding: 'var(--lucent-space-1) var(--lucent-space-3)',
+    panelPadding: 'var(--lucent-space-4) 0',
+    dropdownPadding: 'var(--lucent-space-2) var(--lucent-space-4)',
+  },
+} as const;
+
+export function Tabs({ tabs, defaultValue, value, onChange, variant = 'underline', size = 'md', style }: TabsProps) {
   const isControlled = value !== undefined;
   const [internalValue, setInternalValue] = useState(defaultValue ?? tabs[0]?.value ?? '');
   const activeValue = isControlled ? value! : internalValue;
@@ -29,6 +50,7 @@ export function Tabs({ tabs, defaultValue, value, onChange, variant = 'underline
   const mounted = useRef(false);
 
   const isPills = variant === 'pills';
+  const sc = sizeConfig[size];
 
   // Overflow state
   const tablistRef = useRef<HTMLDivElement | null>(null);
@@ -214,14 +236,12 @@ export function Tabs({ tabs, defaultValue, value, onChange, variant = 'underline
               onMouseEnter={() => { if (!isDisabled && isVisible) setHoveredIndex(i); }}
               onMouseLeave={() => setHoveredIndex(null)}
               style={{
-                padding: isPills
-                  ? 'var(--lucent-space-1) var(--lucent-space-2)'
-                  : 'var(--lucent-space-1) var(--lucent-space-2) var(--lucent-space-3)',
+                padding: isPills ? sc.buttonPadding : sc.buttonPaddingUnderline,
                 background: 'none',
                 border: 'none',
                 cursor: isDisabled ? 'not-allowed' : 'pointer',
                 fontFamily: 'var(--lucent-font-family-base)',
-                fontSize: 'var(--lucent-font-size-md)',
+                fontSize: sc.fontSize,
                 fontWeight: isActive ? 'var(--lucent-font-weight-medium)' : 'var(--lucent-font-weight-regular)',
                 color: isDisabled
                   ? 'var(--lucent-text-disabled)'
@@ -241,7 +261,7 @@ export function Tabs({ tabs, defaultValue, value, onChange, variant = 'underline
             >
               <span style={{
                 display: 'block',
-                padding: 'var(--lucent-space-1) var(--lucent-space-3)',
+                padding: sc.innerPadding,
                 borderRadius: 'var(--lucent-radius-md)',
                 background: !isPills && hoveredIndex === i && !isActive && !isDisabled
                   ? 'var(--lucent-surface-secondary)'
@@ -279,14 +299,12 @@ export function Tabs({ tabs, defaultValue, value, onChange, variant = 'underline
             onMouseEnter={() => setMoreHovered(true)}
             onMouseLeave={() => setMoreHovered(false)}
             style={{
-              padding: isPills
-                ? 'var(--lucent-space-1) var(--lucent-space-2)'
-                : 'var(--lucent-space-1) var(--lucent-space-2) var(--lucent-space-3)',
+              padding: isPills ? sc.buttonPadding : sc.buttonPaddingUnderline,
               background: 'none',
               border: 'none',
               cursor: 'pointer',
               fontFamily: 'var(--lucent-font-family-base)',
-              fontSize: 'var(--lucent-font-size-md)',
+              fontSize: sc.fontSize,
               fontWeight: activeInOverflow ? 'var(--lucent-font-weight-medium)' : 'var(--lucent-font-weight-regular)',
               color: activeInOverflow ? 'var(--lucent-text-primary)' : 'var(--lucent-text-secondary)',
               whiteSpace: 'nowrap',
@@ -297,7 +315,7 @@ export function Tabs({ tabs, defaultValue, value, onChange, variant = 'underline
           >
             <span style={{
               display: 'block',
-              padding: 'var(--lucent-space-1) var(--lucent-space-3)',
+              padding: sc.innerPadding,
               borderRadius: 'var(--lucent-radius-md)',
               background: moreHovered
                 ? 'var(--lucent-surface-secondary)'
@@ -377,7 +395,7 @@ export function Tabs({ tabs, defaultValue, value, onChange, variant = 'underline
                 style={{
                   display: 'block',
                   width: '100%',
-                  padding: 'var(--lucent-space-2) var(--lucent-space-4)',
+                  padding: sc.dropdownPadding,
                   background: isActive
                     ? 'var(--lucent-surface-secondary)'
                     : isHovered
@@ -386,7 +404,7 @@ export function Tabs({ tabs, defaultValue, value, onChange, variant = 'underline
                   border: 'none',
                   cursor: isDisabled ? 'not-allowed' : 'pointer',
                   fontFamily: 'var(--lucent-font-family-base)',
-                  fontSize: 'var(--lucent-font-size-md)',
+                  fontSize: sc.fontSize,
                   fontWeight: isActive ? 'var(--lucent-font-weight-medium)' : 'var(--lucent-font-weight-regular)',
                   color: isDisabled
                     ? 'var(--lucent-text-disabled)'
@@ -413,7 +431,7 @@ export function Tabs({ tabs, defaultValue, value, onChange, variant = 'underline
           id={`lucent-tabpanel-${tab.value}`}
           aria-labelledby={`lucent-tab-${tab.value}`}
           hidden={tab.value !== activeValue}
-          style={{ padding: 'var(--lucent-space-4) 0', outline: 'none' }}
+          style={{ padding: sc.panelPadding, outline: 'none' }}
           tabIndex={0}
         >
           {tab.content}
