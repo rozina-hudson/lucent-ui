@@ -314,7 +314,7 @@ function Inner({
     overlays:    { label: 'Overlays & Menus',   tier: 'molecule', items: ['Menu', 'CommandPalette', 'Toast'] },
     'r-cards':   { label: 'Cards',              tier: 'pattern', items: ['ProfileCard', 'ProductItemCard', 'AnnouncementCard', 'CollapsibleCard', 'EmptyStateCard'] },
     'r-layouts': { label: 'Layouts',            tier: 'pattern', items: ['SettingsPanel', 'FormLayout', 'StatsRow', 'ActionBar', 'ConfirmationDialog', 'BulkActionBar', 'TabPage'] },
-    'r-filters': { label: 'Filters',           tier: 'pattern', items: ['SearchFilterBar'] },
+    'r-filters': { label: 'Filters',           tier: 'pattern', items: ['SearchFilterBar', 'SearchFilterPanel'] },
     'c-all':     { label: 'All Compositions',   tier: 'composition', items: ['GoldenProfileCard', 'GoldenPreferencesCard', 'GoldenPricingTable', 'GoldenNotificationFeed', 'GoldenOnboardingFlow', 'GoldenDashboardHeader', 'GoldenActivityFeed', 'GoldenMetricsDashboard'] },
   };
 
@@ -365,6 +365,37 @@ function Inner({
   const [sfbDateRange, setSfbDateRange] = useState<{ start: Date; end: Date } | undefined>();
   const sfbHasFilters = sfbStatuses.size > 0 || sfbTags.size > 0 || sfbDateRange !== undefined;
   const sfbClearAll = () => { setSfbStatuses(new Set()); setSfbTags(new Set()); setSfbDateRange(undefined); setSfbSearch(''); setSfbSearchOpen(false); };
+
+  // Search & Filter Panel state
+  const [sfpSearch, setSfpSearch] = useState('');
+  const [sfpCategory, setSfpCategory] = useState('');
+  const [sfpTags, setSfpTags] = useState<string[]>([]);
+  const [sfpDateRange, setSfpDateRange] = useState<{ start: Date; end: Date } | undefined>();
+  const [sfpSortBy, setSfpSortBy] = useState('');
+  const sfpCategoryOptions = [
+    { value: 'design', label: 'Design' },
+    { value: 'engineering', label: 'Engineering' },
+    { value: 'marketing', label: 'Marketing' },
+    { value: 'product', label: 'Product' },
+  ];
+  const sfpTagOptions = [
+    { value: 'react', label: 'React' },
+    { value: 'typescript', label: 'TypeScript' },
+    { value: 'figma', label: 'Figma' },
+    { value: 'node', label: 'Node.js' },
+  ];
+  const sfpSortOptions = [
+    { value: 'newest', label: 'Newest first' },
+    { value: 'oldest', label: 'Oldest first' },
+    { value: 'name', label: 'Name A–Z' },
+  ];
+  type SfpActiveFilter = { key: string; label: string; clear: () => void };
+  const sfpActiveFilters: SfpActiveFilter[] = [
+    ...(sfpCategory ? [{ key: 'category', label: `Category: ${sfpCategoryOptions.find(o => o.value === sfpCategory)?.label ?? sfpCategory}`, clear: () => setSfpCategory('') }] : []),
+    ...sfpTags.map(t => ({ key: `tag-${t}`, label: sfpTagOptions.find(o => o.value === t)?.label ?? t, clear: () => setSfpTags(prev => prev.filter(v => v !== t)) })),
+    ...(sfpDateRange ? [{ key: 'date', label: `${sfpDateRange.start.toLocaleDateString()} – ${sfpDateRange.end.toLocaleDateString()}`, clear: () => setSfpDateRange(undefined) }] : []),
+  ];
+  const sfpClearAll = () => { setSfpSearch(''); setSfpCategory(''); setSfpTags([]); setSfpDateRange(undefined); setSfpSortBy(''); };
 
   // Filter bar + DataTable composition
   const [sfbSearch, setSfbSearch] = useState('');
@@ -4164,6 +4195,124 @@ function Inner({
               ]}
             />
           </StackAtom>
+        </Row>
+      </Section>
+
+      <Section title="SearchFilterPanel" tokens={tokens} hidden={!showSection('SearchFilterPanel')}>
+        <Row label="Collapsible panel — default" tokens={tokens}>
+          <Card style={{ width: '100%', maxWidth: 680 }}>
+            <Collapsible
+              trigger={
+                <RowAtom gap="2" align="center">
+                  <Text as="span" weight="medium">Filters</Text>
+                  {sfpActiveFilters.length > 0 && (
+                    <Badge variant="accent">{sfpActiveFilters.length}</Badge>
+                  )}
+                </RowAtom>
+              }
+              defaultOpen
+            >
+              <StackAtom gap="4">
+                <SearchInput
+                  placeholder="Search items…"
+                  value={sfpSearch}
+                  onChange={setSfpSearch}
+                />
+                <RowAtom gap="3" wrap>
+                  <Select
+                    label="Category"
+                    value={sfpCategory}
+                    onChange={setSfpCategory}
+                    options={sfpCategoryOptions}
+                  />
+                  <MultiSelect
+                    label="Tags"
+                    value={sfpTags}
+                    onChange={setSfpTags}
+                    options={sfpTagOptions}
+                  />
+                  <DateRangePicker
+                    label="Date range"
+                    value={sfpDateRange}
+                    onChange={setSfpDateRange}
+                  />
+                  <Select
+                    label="Sort by"
+                    value={sfpSortBy}
+                    onChange={setSfpSortBy}
+                    options={sfpSortOptions}
+                  />
+                </RowAtom>
+                {sfpActiveFilters.length > 0 && (
+                  <RowAtom gap="2" wrap>
+                    {sfpActiveFilters.map(f => (
+                      <Chip key={f.key} size="sm" onDismiss={f.clear}>{f.label}</Chip>
+                    ))}
+                  </RowAtom>
+                )}
+                <Divider />
+                <RowAtom gap="3" justify="end">
+                  <Button variant="ghost" onClick={sfpClearAll}>Clear all</Button>
+                  <Button variant="primary" onClick={() => {}}>Apply filters</Button>
+                </RowAtom>
+              </StackAtom>
+            </Collapsible>
+          </Card>
+        </Row>
+        <Row label="Vertical stacked — sidebar/drawer" tokens={tokens}>
+          <Card padding="lg" style={{ width: 320 }}>
+            <StackAtom gap="4">
+              <Text size="lg" weight="semibold">Filters</Text>
+              <SearchInput
+                placeholder="Search…"
+                value={sfpSearch}
+                onChange={setSfpSearch}
+              />
+              <StackAtom gap="3">
+                <Select
+                  label="Category"
+                  value={sfpCategory}
+                  onChange={setSfpCategory}
+                  options={sfpCategoryOptions}
+                />
+                <MultiSelect
+                  label="Tags"
+                  value={sfpTags}
+                  onChange={setSfpTags}
+                  options={sfpTagOptions}
+                />
+                <DateRangePicker
+                  label="Date range"
+                  value={sfpDateRange}
+                  onChange={setSfpDateRange}
+                />
+                <Select
+                  label="Sort by"
+                  value={sfpSortBy}
+                  onChange={setSfpSortBy}
+                  options={sfpSortOptions}
+                />
+              </StackAtom>
+              {sfpActiveFilters.length > 0 && (
+                <>
+                  <Divider />
+                  <StackAtom gap="2">
+                    <RowAtom gap="2" align="center" justify="between">
+                      <Text size="sm" weight="semibold">Active filters</Text>
+                      <Button variant="ghost" size="xs" onClick={sfpClearAll}>Clear all</Button>
+                    </RowAtom>
+                    <RowAtom gap="2" wrap>
+                      {sfpActiveFilters.map(f => (
+                        <Chip key={f.key} size="sm" onDismiss={f.clear}>{f.label}</Chip>
+                      ))}
+                    </RowAtom>
+                  </StackAtom>
+                </>
+              )}
+              <Divider />
+              <Button variant="primary" onClick={() => {}}>Apply filters</Button>
+            </StackAtom>
+          </Card>
         </Row>
       </Section>
 
