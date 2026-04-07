@@ -2125,6 +2125,33 @@ function Inner({
             />
           </div>
         </Row>
+        <Row label="Small underline" tokens={tokens}>
+          <div style={{ width: '100%' }}>
+            <Tabs
+              size="sm"
+              tabs={[
+                { value: 'overview', label: 'Overview', content: <Text size="xs" color="secondary">Overview content goes here.</Text> },
+                { value: 'api', label: 'API', content: <Text size="xs" color="secondary">API reference content.</Text> },
+                { value: 'examples', label: 'Examples', content: <Text size="xs" color="secondary">Usage examples.</Text> },
+                { value: 'disabled', label: 'Disabled', content: null, disabled: true },
+              ]}
+            />
+          </div>
+        </Row>
+        <Row label="Small pills" tokens={tokens}>
+          <div style={{ width: '100%' }}>
+            <Tabs
+              size="sm"
+              variant="pills"
+              tabs={[
+                { value: 'overview', label: 'Overview', content: <Text size="xs" color="secondary">Overview content goes here.</Text> },
+                { value: 'api', label: 'API', content: <Text size="xs" color="secondary">API reference content.</Text> },
+                { value: 'examples', label: 'Examples', content: <Text size="xs" color="secondary">Usage examples.</Text> },
+                { value: 'disabled', label: 'Disabled', content: null, disabled: true },
+              ]}
+            />
+          </div>
+        </Row>
       </Section>
 
       <Section title="Collapsible" tokens={tokens} hidden={!showSection('Collapsible')}>
