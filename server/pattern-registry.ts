@@ -16,6 +16,7 @@ import { PATTERN as ActivityFeed } from '../src/manifest/patterns/activity-feed.
 import { PATTERN as MetricsDashboard } from '../src/manifest/patterns/metrics-dashboard.pattern.js';
 import { PATTERN as TabPage } from '../src/manifest/patterns/tab-page.pattern.js';
 import { PATTERN as SearchFilterPanel } from '../src/manifest/patterns/search-filter-panel.pattern.js';
+import { PATTERN as MultiStepWizard } from '../src/manifest/patterns/multi-step-wizard.pattern.js';
 
 export const ALL_PATTERNS: CompositionPattern[] = [
   ProfileCard,
@@ -34,4 +35,5 @@ export const ALL_PATTERNS: CompositionPattern[] = [
   MetricsDashboard,
   TabPage,
   SearchFilterPanel,
+  MultiStepWizard,
 ];

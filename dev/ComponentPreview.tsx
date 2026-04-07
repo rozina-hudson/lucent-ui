@@ -313,7 +313,7 @@ function Inner({
     data:        { label: 'Data & Tables',      tier: 'molecule', items: ['DataTable', 'Timeline'] },
     overlays:    { label: 'Overlays & Menus',   tier: 'molecule', items: ['Menu', 'CommandPalette', 'Toast'] },
     'r-cards':   { label: 'Cards',              tier: 'pattern', items: ['ProfileCard', 'ProductItemCard', 'AnnouncementCard', 'CollapsibleCard', 'EmptyStateCard'] },
-    'r-layouts': { label: 'Layouts',            tier: 'pattern', items: ['SettingsPanel', 'FormLayout', 'StatsRow', 'ActionBar', 'ConfirmationDialog', 'BulkActionBar', 'TabPage'] },
+    'r-layouts': { label: 'Layouts',            tier: 'pattern', items: ['SettingsPanel', 'FormLayout', 'StatsRow', 'ActionBar', 'ConfirmationDialog', 'BulkActionBar', 'TabPage', 'MultiStepWizard'] },
     'r-filters': { label: 'Filters',           tier: 'pattern', items: ['SearchFilterBar', 'SearchFilterPanel'] },
     'c-all':     { label: 'All Compositions',   tier: 'composition', items: ['GoldenProfileCard', 'GoldenPreferencesCard', 'GoldenPricingTable', 'GoldenNotificationFeed', 'GoldenOnboardingFlow', 'GoldenDashboardHeader', 'GoldenActivityFeed', 'GoldenMetricsDashboard'] },
   };
@@ -367,6 +367,7 @@ function Inner({
   const sfbClearAll = () => { setSfbStatuses(new Set()); setSfbTags(new Set()); setSfbDateRange(undefined); setSfbSearch(''); setSfbSearchOpen(false); };
 
   // Search & Filter Panel state
+  const [wizardStep, setWizardStep] = useState(0);
   const [sfpSearch, setSfpSearch] = useState('');
   const [sfpCategory, setSfpCategory] = useState('');
   const [sfpTags, setSfpTags] = useState<string[]>([]);
@@ -4314,6 +4315,120 @@ function Inner({
             </StackAtom>
           </Card>
         </Row>
+      </Section>
+
+      <Section title="MultiStepWizard" tokens={tokens} hidden={!showSection('MultiStepWizard')}>
+        {(() => {
+          const STEPS = [
+            { title: 'Shipping address', description: 'Where should we deliver your order?' },
+            { title: 'Payment method', description: 'How would you like to pay?' },
+            { title: 'Order preferences', description: 'Customise your delivery.' },
+            { title: 'Review & confirm', description: 'Double-check everything before placing your order.' },
+          ];
+          const current = STEPS[wizardStep]!;
+          return (
+            <>
+              <Row label="Checkout wizard — 4 steps" tokens={tokens}>
+                <Card variant="elevated" padding="lg" style={{ width: 480 }}>
+                  <StackAtom gap="5">
+                    <StackAtom gap="2">
+                      <Text size="xs" color="secondary">Step {wizardStep + 1} of {STEPS.length}</Text>
+                      <Progress value={((wizardStep + 1) / STEPS.length) * 100} size="sm" />
+                    </StackAtom>
+                    <StackAtom gap="1">
+                      <Text as="h2" size="lg" weight="semibold">{current.title}</Text>
+                      <Text size="sm" color="secondary">{current.description}</Text>
+                    </StackAtom>
+                    <Divider />
+                    {wizardStep === 0 && (
+                      <StackAtom gap="4">
+                        <FormField label="Full name" htmlFor="wiz-name" required>
+                          <Input id="wiz-name" placeholder="Jane Doe" />
+                        </FormField>
+                        <FormField label="Street address" htmlFor="wiz-addr" required>
+                          <Input id="wiz-addr" placeholder="123 Main St" />
+                        </FormField>
+                        <RowAtom gap="4">
+                          <FormField label="City" htmlFor="wiz-city" required style={{ flex: 2 }}>
+                            <Input id="wiz-city" placeholder="San Francisco" />
+                          </FormField>
+                          <FormField label="State" htmlFor="wiz-state" required style={{ flex: 1 }}>
+                            <Input id="wiz-state" placeholder="CA" />
+                          </FormField>
+                          <FormField label="ZIP" htmlFor="wiz-zip" required style={{ flex: 1 }}>
+                            <Input id="wiz-zip" placeholder="94103" />
+                          </FormField>
+                        </RowAtom>
+                      </StackAtom>
+                    )}
+                    {wizardStep === 1 && (
+                      <StackAtom gap="4">
+                        <FormField label="Card number" htmlFor="wiz-card" required>
+                          <Input id="wiz-card" placeholder="4242 4242 4242 4242" />
+                        </FormField>
+                        <RowAtom gap="4">
+                          <FormField label="Expiry" htmlFor="wiz-exp" required style={{ flex: 1 }}>
+                            <Input id="wiz-exp" placeholder="MM / YY" />
+                          </FormField>
+                          <FormField label="CVV" htmlFor="wiz-cvv" required style={{ flex: 1 }}>
+                            <Input id="wiz-cvv" placeholder="123" />
+                          </FormField>
+                        </RowAtom>
+                      </StackAtom>
+                    )}
+                    {wizardStep === 2 && (
+                      <StackAtom gap="4">
+                        <FormField label="Delivery speed" htmlFor="wiz-speed">
+                          <Select
+                            id="wiz-speed"
+                            defaultValue="standard"
+                            options={[
+                              { value: 'standard', label: 'Standard (5-7 days)' },
+                              { value: 'express', label: 'Express (2-3 days)' },
+                              { value: 'overnight', label: 'Overnight' },
+                            ]}
+                          />
+                        </FormField>
+                        <FormField label="Gift message (optional)" htmlFor="wiz-gift">
+                          <Input id="wiz-gift" placeholder="Happy birthday!" />
+                        </FormField>
+                      </StackAtom>
+                    )}
+                    {wizardStep === 3 && (
+                      <StackAtom gap="3">
+                        <RowAtom justify="between">
+                          <Text size="sm" color="secondary">Ship to</Text>
+                          <Text size="sm">Jane Doe, 123 Main St, SF 94103</Text>
+                        </RowAtom>
+                        <RowAtom justify="between">
+                          <Text size="sm" color="secondary">Payment</Text>
+                          <Text size="sm">Visa ending 4242</Text>
+                        </RowAtom>
+                        <RowAtom justify="between">
+                          <Text size="sm" color="secondary">Delivery</Text>
+                          <Text size="sm">Standard (5-7 days)</Text>
+                        </RowAtom>
+                        <Divider />
+                        <RowAtom justify="between">
+                          <Text size="sm" weight="semibold">Total</Text>
+                          <Text size="sm" weight="semibold">$49.99</Text>
+                        </RowAtom>
+                      </StackAtom>
+                    )}
+                    <RowAtom gap="3" justify="between">
+                      <Button variant="outline" onClick={() => setWizardStep(s => s - 1)} disabled={wizardStep === 0}>
+                        Back
+                      </Button>
+                      <Button variant="primary" onClick={() => setWizardStep(s => Math.min(s + 1, STEPS.length - 1))}>
+                        {wizardStep === STEPS.length - 1 ? 'Place order' : 'Continue'}
+                      </Button>
+                    </RowAtom>
+                  </StackAtom>
+                </Card>
+              </Row>
+            </>
+          );
+        })()}
       </Section>
 
       {/* ─── Golden Compositions ─────────────────────────────────────────── */}
