@@ -15,6 +15,7 @@ import { PATTERN as BulkActionBar } from '../src/manifest/patterns/bulk-action-b
 import { PATTERN as ActivityFeed } from '../src/manifest/patterns/activity-feed.pattern.js';
 import { PATTERN as MetricsDashboard } from '../src/manifest/patterns/metrics-dashboard.pattern.js';
 import { PATTERN as TabPage } from '../src/manifest/patterns/tab-page.pattern.js';
+import { PATTERN as SearchFilterPanel } from '../src/manifest/patterns/search-filter-panel.pattern.js';
 
 export const ALL_PATTERNS: CompositionPattern[] = [
   ProfileCard,
@@ -32,4 +33,5 @@ export const ALL_PATTERNS: CompositionPattern[] = [
   ActivityFeed,
   MetricsDashboard,
   TabPage,
+  SearchFilterPanel,
 ];

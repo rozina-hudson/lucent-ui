@@ -11,3 +11,4 @@ export { PATTERN as NotificationFeed } from './notification-feed.pattern.js';
 export { PATTERN as OnboardingFlow } from './onboarding-flow.pattern.js';
 export { PATTERN as DashboardHeader } from './dashboard-header.pattern.js';
 export { PATTERN as TabPage } from './tab-page.pattern.js';
+export { PATTERN as SearchFilterPanel } from './search-filter-panel.pattern.js';
