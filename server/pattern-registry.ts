@@ -14,6 +14,7 @@ import { PATTERN as ConfirmationDialog } from '../src/manifest/patterns/confirma
 import { PATTERN as BulkActionBar } from '../src/manifest/patterns/bulk-action-bar.pattern.js';
 import { PATTERN as ActivityFeed } from '../src/manifest/patterns/activity-feed.pattern.js';
 import { PATTERN as MetricsDashboard } from '../src/manifest/patterns/metrics-dashboard.pattern.js';
+import { PATTERN as TabPage } from '../src/manifest/patterns/tab-page.pattern.js';
 
 export const ALL_PATTERNS: CompositionPattern[] = [
   ProfileCard,
@@ -30,4 +31,5 @@ export const ALL_PATTERNS: CompositionPattern[] = [
   BulkActionBar,
   ActivityFeed,
   MetricsDashboard,
+  TabPage,
 ];
