@@ -1,5 +1,13 @@
 # lucent-ui
 
+## 0.43.0
+
+### Minor Changes
+
+- **DataTable — sticky columns and horizontal scroll**
+
+  DataTable columns now support a `sticky` boolean prop that pins them in place during horizontal scroll. All body cells use `whiteSpace: nowrap` to prevent line breaking, allowing the table to overflow and scroll horizontally instead. Sticky columns get opaque backgrounds, a subtle right box-shadow on the last pinned column, and cumulative left offsets measured via ResizeObserver. Supports multiple sticky columns with correct stacking.
+
 ## 0.42.0
 
 ### Minor Changes
