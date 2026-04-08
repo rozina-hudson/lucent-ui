@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from 'react';
 import type { CSSProperties, MouseEventHandler, ReactNode } from 'react';
+import { sanitizeHref } from '../../../utils/sanitizeHref.js';
 
 export type CardVariant = 'ghost' | 'outline' | 'filled' | 'elevated' | 'combo';
 export type CardPadding = 'none' | 'sm' | 'md' | 'lg';
@@ -274,7 +275,7 @@ export function Card({
       style={rootStyle}
       {...handlers}
       {...(isLink && {
-        href: isDisabled ? undefined : href,
+        href: isDisabled ? undefined : sanitizeHref(href),
         ...(target !== undefined && { target }),
         ...(rel !== undefined && { rel }),
       })}

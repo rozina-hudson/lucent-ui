@@ -1,5 +1,6 @@
 import type { CSSProperties, ComponentType, MouseEvent, ReactNode } from 'react';
 import { Text } from '../../atoms/Text/index.js';
+import { sanitizeHref } from '../../../utils/sanitizeHref.js';
 
 export interface BreadcrumbItem {
   label: ReactNode;
@@ -86,7 +87,7 @@ export function Breadcrumb({ items, separator = '/', style, LinkComponent }: Bre
               ) : item.href != null ? (
                 LinkComponent ? (
                   <LinkComponent
-                    href={item.href}
+                    href={sanitizeHref(item.href) ?? '#'}
                     style={linkStyle}
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
@@ -96,7 +97,7 @@ export function Breadcrumb({ items, separator = '/', style, LinkComponent }: Bre
                   </LinkComponent>
                 ) : (
                   <a
-                    href={item.href}
+                    href={sanitizeHref(item.href)}
                     onClick={item.onClick}
                     style={linkStyle}
                     onMouseEnter={handleMouseEnter}

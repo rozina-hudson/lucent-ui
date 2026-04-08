@@ -47,4 +47,7 @@ export type {
 // Hooks
 export { useMediaQuery } from './hooks/index.js';
 
+// Utilities
+export { sanitizeHref } from './utils/sanitizeHref.js';
+
 export const LUCENT_UI_VERSION = '0.1.0';

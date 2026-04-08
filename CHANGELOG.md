@@ -1,10 +1,10 @@
 # lucent-ui
 
-## 0.41.0
+## 0.42.0
 
 ### Minor Changes
 
-- e7fa5e6: **PageLayout — collapsible sidebar, drawer mode, and mobile support**
+- e9da1d1: **PageLayout — collapsible sidebar, drawer mode, and mobile support**
 
   PageLayout now supports a collapsible sidebar (`collapsible` prop) that can shrink to an icon rail on desktop and slide in as a drawer on mobile. The sidebar width, collapse breakpoint, and drawer mode are all configurable. Collapsed state is controlled or uncontrolled via `collapsed` / `defaultCollapsed` / `onCollapsedChange`. The drawer overlay uses a semi-transparent backdrop and supports swipe-to-dismiss on touch devices.
 
