@@ -1,6 +1,6 @@
 {
   "name": "lucent-ui",
-  "version": "0.40.0",
+  "version": "0.41.0",
   "description": "An AI-first React component library with machine-readable manifests.",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -64,11 +64,15 @@
   },
   "devDependencies": {
     "@changesets/cli": "^2.30.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^25.3.3",
     "@types/react": "^18.3.28",
     "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "^4.7.0",
     "@vitest/ui": "^4.0.18",
+    "jsdom": "^29.0.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "typescript": "^5.9.3",
