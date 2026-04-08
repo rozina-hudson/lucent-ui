@@ -1,4 +1,5 @@
 import { forwardRef, type ButtonHTMLAttributes, type CSSProperties, type MouseEvent as ReactMouseEvent, type ReactNode } from 'react';
+import { sanitizeHref } from '../../../utils/sanitizeHref.js';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'danger-outline' | 'danger-ghost';
 export type ButtonSize = '2xs' | 'xs' | 'sm' | 'md' | 'lg';
@@ -84,7 +85,8 @@ export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPr
   ({ variant = 'primary', size = 'md', loading = false, fullWidth = false, spread = false, leftIcon, rightIcon, chevron = false, disableHoverStyles = false, bordered = true, href, target, rel, children, disabled, style, type, onClick, ...rest }, ref) => {
     const isDisabled = disabled ?? loading;
     const isIconOnly = !children && !loading && (!!leftIcon || !!rightIcon);
-    const isLink = href !== undefined;
+    const safeHref = sanitizeHref(href);
+    const isLink = safeHref !== undefined;
     const Tag = (isLink ? 'a' : 'button') as React.ElementType;
 
     const resolvedStyle: CSSProperties = {
@@ -128,7 +130,7 @@ export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPr
         {...(isLink
           ? {
               role: 'link',
-              ...(isDisabled ? { 'aria-disabled': true, tabIndex: -1 } : { href }),
+              ...(isDisabled ? { 'aria-disabled': true, tabIndex: -1 } : { href: safeHref }),
               ...(target !== undefined && { target }),
               ...(rel !== undefined && { rel }),
             }

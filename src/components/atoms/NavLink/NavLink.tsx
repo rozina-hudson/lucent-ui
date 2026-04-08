@@ -1,4 +1,5 @@
 import type { CSSProperties, MouseEventHandler, ReactNode } from 'react';
+import { sanitizeHref } from '../../../utils/sanitizeHref.js';
 
 export interface NavLinkProps {
   children: ReactNode;
@@ -29,7 +30,7 @@ export function NavLink({
 
   return (
     <Tag
-      href={disabled ? undefined : href}
+      href={disabled ? undefined : sanitizeHref(href)}
       onClick={disabled ? undefined : onClick}
       aria-current={isActive ? 'page' : undefined}
       aria-disabled={disabled || undefined}

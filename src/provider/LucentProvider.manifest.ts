@@ -134,7 +134,23 @@ export const LucentProviderManifest: ComponentManifest = {
     'Anchor colors are applied to the dark base palette; derivation runs with dark-calibrated lightness deltas.\n\n' +
 
     'DO NOT nest multiple LucentProviders unless intentionally theming a sub-tree differently ' +
-    '(e.g. an inverted sidebar). The outermost provider wins for `:root` CSS vars.',
+    '(e.g. an inverted sidebar). The outermost provider wins for `:root` CSS vars.\n\n' +
+
+    'SECURITY — CONTENT SECURITY POLICY: LucentProvider injects `<style>` tags into `<head>` at ' +
+    'runtime via `element.textContent`. Consuming applications MUST include `style-src \'self\' \'unsafe-inline\'` ' +
+    'in their Content-Security-Policy header, or apply a nonce to Lucent\'s injected style elements. ' +
+    'A recommended minimum CSP: `default-src \'self\'; script-src \'self\'; style-src \'self\' \'unsafe-inline\'; ' +
+    'img-src \'self\' data:; font-src \'self\'; connect-src \'self\'`.\n\n' +
+
+    'SECURITY — TOKEN SANITIZATION: Token values passed via `tokens` or `anchors` are sanitized before ' +
+    'injection into CSS custom properties — characters that could break out of a CSS value context ' +
+    '(`{};<>@\\`) are stripped. Despite this, tokens should only come from trusted sources (code-level ' +
+    'config or a trusted CMS), never from raw user input.\n\n' +
+
+    'SECURITY — URL SANITIZATION: All lucent-ui components that accept `href` props (Button, NavLink, ' +
+    'Card, Breadcrumb, NavMenu) run values through `sanitizeHref()`, which blocks `javascript:`, `data:`, ' +
+    '`vbscript:`, and other executable protocols. The `sanitizeHref` utility is exported from the library ' +
+    'for use in consuming application code.',
 
   props: [
     {

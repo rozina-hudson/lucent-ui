@@ -12,8 +12,19 @@ export function tokenToCssVar(key: string): string {
 }
 
 /**
+ * Strips characters that could break out of a CSS property value context.
+ * Prevents injection of extra declarations, rules, or selectors via token values.
+ */
+function sanitizeCssValue(value: string): string {
+  return value.replace(/[{}<>;@\\]/g, '');
+}
+
+/**
  * Generates a CSS string of custom properties from a token set.
  * Inject the result into a <style> tag or a CSS-in-JS solution.
+ *
+ * Token values are sanitized to prevent CSS injection — characters that
+ * could break out of a property value context (`{};<>@\`) are stripped.
  *
  * @example
  * const css = makeLibraryCSS(lightTokens);
@@ -24,7 +35,7 @@ export function makeLibraryCSS(
   selector = ':root',
 ): string {
   const vars = Object.entries(tokens)
-    .map(([key, value]) => `  ${tokenToCssVar(key)}: ${value};`)
+    .map(([key, value]) => `  ${tokenToCssVar(key)}: ${sanitizeCssValue(value)};`)
     .join('\n');
 
   return `${selector} {\n${vars}\n}`;

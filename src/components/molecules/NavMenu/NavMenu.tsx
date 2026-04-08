@@ -11,6 +11,7 @@ import {
   type MouseEventHandler,
   type KeyboardEvent,
 } from 'react';
+import { sanitizeHref } from '../../../utils/sanitizeHref.js';
 
 /* ─── Constants ─────────────────────────────────────────────────────────────── */
 
@@ -359,7 +360,7 @@ export function NavMenuItem({
     <Tag
       data-lucent-navitem=""
       data-active={isActive || undefined}
-      href={disabled ? undefined : href}
+      href={disabled ? undefined : sanitizeHref(href)}
       onClick={disabled ? undefined : onClick}
       aria-current={isActive ? 'page' : undefined}
       aria-disabled={disabled || undefined}
