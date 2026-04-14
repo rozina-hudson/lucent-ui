@@ -1,6 +1,6 @@
 # MCP server hosting
 
-The Lucent MCP HTTP server (`lucent-mcp-http`, source in [`server/http.ts`](../server/http.ts)) is deployed to [Fly.io](https://fly.io) so `https://mcp.lucentui.com/mcp` is reachable 24/7 without a developer machine in the loop.
+The Lucent MCP HTTP server (`lucent-mcp-http`, source in [`server/http.ts`](../server/http.ts)) is deployed to [Fly.io](https://fly.io) so `https://mcp.lucentui.ai/mcp` is reachable 24/7 without a developer machine in the loop.
 
 This doc covers:
 
@@ -78,21 +78,25 @@ fly secrets set LUCENT_API_KEY="$(openssl rand -hex 32)"
 
 Until issue #151 lands (per-user API keys), this is a single shared secret — rotation affects every beta user at once.
 
-## DNS cutover
+## Custom domain
 
-`mcp.lucentui.com` currently points at a local `cloudflared` named tunnel. To move it to the Fly app:
+Production hostname is `mcp.lucentui.ai`, pointed at the Fly app via Cloudflare DNS. To attach a new custom hostname (or re-point an existing one):
 
-1. In Fly, attach the custom hostname:
+1. Attach the hostname to the Fly app — this also triggers Let's Encrypt cert issuance:
    ```bash
-   fly certs create mcp.lucentui.com
+   fly certs create mcp.lucentui.ai --app lucent-mcp
    ```
-2. Fly prints a CNAME target (something like `lucent-mcp.fly.dev`). Update the DNS record for `mcp.lucentui.com` to CNAME to that target.
-3. Wait for `fly certs show mcp.lucentui.com` to report `Status: Ready` (usually <5 min once DNS resolves).
-4. Smoke-test against the custom hostname:
+2. Fly prints DNS records to set. For this app it's A + AAAA (shared IPv4/IPv6), not a CNAME.
+3. In Cloudflare, on the `lucentui.ai` zone, add the two records exactly as Fly printed them. **Set both to "DNS only" (grey cloud) — if left proxied, Cloudflare terminates TLS and Fly's cert challenge fails.**
+4. Watch cert validation:
    ```bash
-   curl https://mcp.lucentui.com/health
+   fly certs check mcp.lucentui.ai --app lucent-mcp
    ```
-5. Stop the `cloudflared` service on the laptop.
+   Usually reports `Status = Issued` within 1–2 min once DNS resolves to the Fly IPs.
+5. Smoke-test:
+   ```bash
+   curl https://mcp.lucentui.ai/health
+   ```
 
 ## Local fallback via `cloudflared`
 
@@ -107,4 +111,4 @@ LUCENT_API_KEY=dev-only HOST=127.0.0.1 PORT=3000 node dist-server/server/http.js
 cloudflared tunnel run lucent-mcp
 ```
 
-Point your MCP client at `http://127.0.0.1:3000/mcp` for pure-local dev, or at the named-tunnel hostname for remote clients. Do not use the production DNS (`mcp.lucentui.com`) for local work — it lives with Fly now.
+Point your MCP client at `http://127.0.0.1:3000/mcp` for pure-local dev, or at the named-tunnel hostname for remote clients. Do not use the production DNS (`mcp.lucentui.ai`) for local work — it lives with Fly now.
