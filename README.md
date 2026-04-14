@@ -162,9 +162,9 @@ Connect Lucent UI's manifest layer to your AI coding tool. The server exposes th
 node dist-server/server/index.js
 ```
 
-### Hosted HTTP endpoint
+### Hosted HTTP endpoint (beta)
 
-For clients that support remote MCP, the server is also available over HTTP at `https://mcp.lucentui.ai/mcp` (bearer-token auth via `LUCENT_API_KEY`). See [`docs/MCP_HOSTING.md`](docs/MCP_HOSTING.md) for the Fly.io deploy flow, key rotation, and the local `cloudflared` fallback.
+The server is live at `https://mcp.lucentui.ai/mcp` with per-user bearer-token auth. Beta users: see [`docs/BETA_QUICKSTART.md`](docs/BETA_QUICKSTART.md) for how to request a key and configure your MCP client. Operators: see [`docs/MCP_HOSTING.md`](docs/MCP_HOSTING.md) for the Fly.io deploy and key-management flow.
 
 ---
 
