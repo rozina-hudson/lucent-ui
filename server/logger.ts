@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto';
+import { getAuthContext } from './auth.js';
 
 /**
  * Structured logging + in-memory ring buffer for MCP tool calls.
@@ -10,21 +10,12 @@ import { createHash } from 'node:crypto';
  * Set `LUCENT_MCP_QUIET=1` to silence stderr — the ring buffer still fills,
  * so the usage dashboard keeps working.
  *
- * When `LUCENT_API_KEY` is set, a short sha256 prefix of the key is included
- * in log entries for usage analytics. The raw key is never logged.
+ * When called inside an authenticated HTTP request, the caller's key hash
+ * prefix and label are included so usage can be attributed per user.
  */
 
 const QUIET = process.env['LUCENT_MCP_QUIET'] === '1';
 const BUFFER_SIZE = 500;
-
-/**
- * Returns the first 8 hex chars of sha256(key). Short enough to stay readable
- * in logs, safe to leak (pre-image resistant), and unique enough to distinguish
- * customers once multi-key auth lands (see issue #15).
- */
-function hashKeyPrefix(key: string): string {
-  return createHash('sha256').update(key).digest('hex').slice(0, 8);
-}
 
 export interface ToolCallLogEntry {
   tool: string;
@@ -34,10 +25,13 @@ export interface ToolCallLogEntry {
   error?: string;
 }
 
-/** An entry as stored in the ring buffer (with the computed timestamp + key hash). */
+/** An entry as stored in the ring buffer (with timestamp + key/user attribution). */
 export interface StoredCall extends ToolCallLogEntry {
   t: string;
+  /** First 8 hex chars of sha256(key) — safe for logs. */
   key?: string;
+  /** Human-readable label from the key record ("alice@example.com"). */
+  user?: string;
 }
 
 // ─── Ring buffer + subscribers ───────────────────────────────────────────────
@@ -65,7 +59,7 @@ export function subscribeToCalls(fn: Subscriber): () => void {
 // ─── Logging ─────────────────────────────────────────────────────────────────
 
 export function logToolCall(entry: ToolCallLogEntry): void {
-  const apiKey = process.env['LUCENT_API_KEY'];
+  const auth = getAuthContext();
   const stored: StoredCall = {
     t: new Date().toISOString(),
     tool: entry.tool,
@@ -73,7 +67,7 @@ export function logToolCall(entry: ToolCallLogEntry): void {
     durationMs: entry.durationMs,
     ok: entry.ok,
     ...(entry.error !== undefined && { error: entry.error }),
-    ...(apiKey !== undefined && { key: hashKeyPrefix(apiKey) }),
+    ...(auth !== undefined && { key: auth.keyHashPrefix, user: auth.label }),
   };
 
   // 1. Push to ring buffer (always, even in QUIET mode — dashboards still work).
