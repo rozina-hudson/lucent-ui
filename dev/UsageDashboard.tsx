@@ -180,7 +180,7 @@ function ConnectForm({
 
           {errorMsg !== null && <Alert variant="danger" title="Connection failed">{errorMsg}</Alert>}
 
-          <FormField label="Server URL" helperText="e.g. http://127.0.0.1:3000 or https://mcp.lucentui.com">
+          <FormField label="Server URL" helperText="e.g. http://127.0.0.1:3000 or https://mcp.lucentui.ai">
             <Input
               value={url}
               onChange={(e) => setUrl(e.target.value)}
