@@ -6,9 +6,9 @@ This doc covers:
 
 1. Why Fly, and the shape of the deploy
 2. First-time deploy
-3. Setting and rotating `LUCENT_API_KEY`
-4. DNS cutover
-5. Local fallback via `cloudflared`
+3. Per-user API keys (mint, list, revoke, rotate)
+4. Custom domain setup
+5. Local development
 
 ## Why Fly
 
@@ -34,11 +34,12 @@ Railway, Vercel (via `@vercel/mcp-adapter`), and Cloudflare Workers were conside
 Prerequisites: [`flyctl`](https://fly.io/docs/hands-on/install-flyctl/) installed and logged in (`fly auth login`).
 
 ```bash
-# From the repo root. Creates the app on first run, deploys a new revision on later runs.
-fly deploy
+fly apps create lucent-mcp
+fly volumes create lucent_mcp_data --app lucent-mcp --region iad --size 1
+fly deploy --app lucent-mcp
 ```
 
-The app name (`lucent-mcp`) and region (`iad`) come from `fly.toml`. Change them there if you need a different region or want a throwaway staging app.
+The `lucent_mcp_data` volume holds the SQLite key database (`/data/keys.db` inside the container). A 1 GB volume is far more than needed — Fly's minimum — and survives deploys.
 
 Verify the deploy:
 
@@ -48,35 +49,63 @@ curl https://lucent-mcp.fly.dev/health
 
 # Should return 401 Unauthorized (no bearer token)
 curl -i https://lucent-mcp.fly.dev/mcp -X POST
-
-# Should return a JSON-RPC response listing tools
-curl -s https://lucent-mcp.fly.dev/mcp \
-  -X POST \
-  -H "Authorization: Bearer $LUCENT_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
 ```
 
-## Setting and rotating `LUCENT_API_KEY`
+To actually call `/mcp` you need a key — mint one via the admin CLI below.
 
-The server requires a bearer token for `/mcp`, `/usage`, and `/usage/stream`. `/health` is intentionally unauthenticated so Fly's health check can probe it.
+## Per-user API keys
 
-**Set the secret** (only needed once, or when rotating):
+Every `/mcp`, `/usage`, and `/usage/stream` request requires `Authorization: Bearer <key>`. Keys are stored as sha256 hashes in the SQLite DB on the Fly volume — plaintext is only shown once at mint time. (`/health` stays unauthenticated so Fly's probe works.)
+
+### Mint a key
+
+Keys are minted via `lucent-mcp-admin`, which is shipped in the container. Run it over `fly ssh console`:
 
 ```bash
-# Generate a strong random key and push it to Fly's secret store.
-# `fly secrets set` triggers a rolling restart, so the new key takes effect immediately.
-fly secrets set LUCENT_API_KEY="$(openssl rand -hex 32)"
+fly ssh console --app lucent-mcp
+# inside the container:
+node dist-server/server/admin.js mint alice@example.com
 ```
 
-**Rotate**:
+The output includes the plaintext key once — save it, it will not be shown again. Hand it to the user for their MCP client's `Authorization: Bearer …` header.
 
-1. Generate the new key: `NEW_KEY=$(openssl rand -hex 32)`
-2. Distribute to beta users through your usual channel *before* cutting over (they'll need to update their MCP client config).
-3. `fly secrets set LUCENT_API_KEY="$NEW_KEY"` — rolling restart happens automatically.
-4. Old key stops working as soon as the new machine comes up.
+### List keys
 
-Until issue #151 lands (per-user API keys), this is a single shared secret — rotation affects every beta user at once.
+```bash
+node dist-server/server/admin.js list
+```
+
+Shows label, masked hash, created/last-used timestamps, and revoked state for every key.
+
+### Revoke a key
+
+```bash
+node dist-server/server/admin.js revoke alice@example.com
+# or by hash prefix:
+node dist-server/server/admin.js revoke a1b2c3d4
+```
+
+Revocation is a soft delete (sets `revoked_at`) — the row stays for audit purposes, but the key stops authenticating immediately.
+
+### End-of-beta bulk revoke
+
+To kill every active key at once (e.g. when the beta ends):
+
+```bash
+fly ssh console --app lucent-mcp
+# inside the container:
+sqlite3 /data/keys.db "UPDATE keys SET revoked_at = datetime('now') WHERE revoked_at IS NULL"
+```
+
+### Legacy `LUCENT_API_KEY` (transition only)
+
+Before per-user keys landed, auth was a single shared `LUCENT_API_KEY` secret. The server still accepts that value if the secret is set, as a fallback during cutover. Once the first DB key is minted and confirmed working, remove the legacy secret:
+
+```bash
+fly secrets unset LUCENT_API_KEY --app lucent-mcp
+```
+
+After that, only DB keys authenticate.
 
 ## Custom domain
 
@@ -98,17 +127,20 @@ Production hostname is `mcp.lucentui.ai`, pointed at the Fly app via Cloudflare 
    curl https://mcp.lucentui.ai/health
    ```
 
-## Local fallback via `cloudflared`
+## Local development
 
-The managed Fly app is the source of truth, but you can still run `lucent-mcp-http` locally and expose it via Cloudflare Tunnel for quick iteration — useful when testing a change before pushing to Fly.
+The managed Fly app is the source of truth, but you can run `lucent-mcp-http` locally for quick iteration. The local server uses the same admin CLI against a local SQLite file.
 
 ```bash
-# In one shell, run the server locally.
 pnpm build:server
-LUCENT_API_KEY=dev-only HOST=127.0.0.1 PORT=3000 node dist-server/server/http.js
 
-# In another shell, expose it through the named tunnel.
-cloudflared tunnel run lucent-mcp
+# Mint a dev key (first run creates ./data/keys.db)
+node dist-server/server/admin.js mint dev
+
+# Start the server
+HOST=127.0.0.1 PORT=3000 node dist-server/server/http.js
 ```
 
-Point your MCP client at `http://127.0.0.1:3000/mcp` for pure-local dev, or at the named-tunnel hostname for remote clients. Do not use the production DNS (`mcp.lucentui.ai`) for local work — it lives with Fly now.
+Point your MCP client at `http://127.0.0.1:3000/mcp` with the minted key as the bearer token. Do not use the production DNS (`mcp.lucentui.ai`) for local work — it lives with Fly.
+
+To expose the local server to remote clients, pair it with a Cloudflare Tunnel (`cloudflared tunnel run …`). Not needed for most iteration.

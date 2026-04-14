@@ -10,7 +10,13 @@ primary_region = "iad"
 [env]
   HOST = "0.0.0.0"
   PORT = "3000"
-  # LUCENT_API_KEY is set via `fly secrets set` — never commit it here.
+  LUCENT_KEY_DB = "/data/keys.db"
+  # LUCENT_API_KEY is still accepted as a legacy fallback during cutover;
+  # unset via `fly secrets unset LUCENT_API_KEY` once a DB key is minted.
+
+[[mounts]]
+  source = "lucent_mcp_data"
+  destination = "/data"
 
 [http_service]
   internal_port = 3000

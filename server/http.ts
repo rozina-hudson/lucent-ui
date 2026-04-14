@@ -5,6 +5,7 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
 import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js';
 import { registerTools, DESIGN_RULES_SUMMARY } from './tools.js';
 import { getRecentCalls, subscribeToCalls, type StoredCall } from './logger.js';
+import { openKeyStore, runWithAuth, type AuthContext } from './auth.js';
 
 /** Compact summary of recent traffic for the dashboard's stat tiles and charts. */
 interface UsageAggregates {
@@ -44,8 +45,11 @@ function computeAggregates(calls: StoredCall[]): UsageAggregates {
 
 const PORT = Number(process.env['PORT'] ?? 3000);
 const HOST = process.env['HOST'] ?? '127.0.0.1';
-const API_KEY = process.env['LUCENT_API_KEY'];
+const LEGACY_KEY = process.env['LUCENT_API_KEY'];
 const MCP_PATH = process.env['LUCENT_MCP_PATH'] ?? '/mcp';
+const KEY_DB_PATH = process.env['LUCENT_KEY_DB'] ?? './data/keys.db';
+
+const keyStore = openKeyStore(KEY_DB_PATH);
 
 function log(msg: string): void {
   process.stderr.write(`[lucent-mcp-http] ${msg}\n`);
@@ -96,12 +100,17 @@ function jsonRpcError(
   });
 }
 
-function checkAuth(req: IncomingMessage): boolean {
-  if (!API_KEY) return true; // Auth disabled when env var is not set
+function extractBearer(req: IncomingMessage): string | null {
   const header = req.headers['authorization'];
-  if (typeof header !== 'string') return false;
+  if (typeof header !== 'string') return null;
   const match = header.match(/^Bearer\s+(.+)$/i);
-  return match !== null && match[1] === API_KEY;
+  return match !== null && match[1] !== undefined ? match[1] : null;
+}
+
+function authenticate(req: IncomingMessage): AuthContext | null {
+  const bearer = extractBearer(req);
+  if (bearer === null) return null;
+  return keyStore.authenticate(bearer);
 }
 
 function setCorsHeaders(res: ServerResponse): void {
@@ -133,7 +142,7 @@ const httpServer = createServer(async (req, res) => {
 
   // Usage snapshot — recent calls + aggregates for the dashboard.
   if (url.pathname === '/usage' && req.method === 'GET') {
-    if (!checkAuth(req)) {
+    if (authenticate(req) === null) {
       res.setHeader('WWW-Authenticate', 'Bearer');
       writeJson(res, 401, { error: 'Unauthorized' });
       return;
@@ -148,7 +157,7 @@ const httpServer = createServer(async (req, res) => {
 
   // Usage live stream — SSE, pushes each new tool call as it happens.
   if (url.pathname === '/usage/stream' && req.method === 'GET') {
-    if (!checkAuth(req)) {
+    if (authenticate(req) === null) {
       res.setHeader('WWW-Authenticate', 'Bearer');
       writeJson(res, 401, { error: 'Unauthorized' });
       return;
@@ -180,7 +189,8 @@ const httpServer = createServer(async (req, res) => {
     return;
   }
 
-  if (!checkAuth(req)) {
+  const authCtx = authenticate(req);
+  if (authCtx === null) {
     res.setHeader('WWW-Authenticate', 'Bearer');
     writeJson(res, 401, { error: 'Unauthorized' });
     return;
@@ -203,7 +213,8 @@ const httpServer = createServer(async (req, res) => {
       void transport.close();
       void server.close();
     });
-    await transport.handleRequest(req, res, body);
+    // Propagate the authenticated identity to tool handlers + the logger.
+    await runWithAuth(authCtx, () => transport.handleRequest(req, res, body));
   } catch (err) {
     log(`error handling request: ${(err as Error).message}`);
     if (!res.headersSent) {
@@ -214,11 +225,12 @@ const httpServer = createServer(async (req, res) => {
 
 httpServer.listen(PORT, HOST, () => {
   log(`listening on http://${HOST}:${PORT}${MCP_PATH}`);
-  if (!API_KEY) {
-    log('WARNING: LUCENT_API_KEY is not set — the server is unauthenticated.');
+  log(`key store: ${KEY_DB_PATH}`);
+  if (LEGACY_KEY !== undefined) {
+    log('note: LUCENT_API_KEY (legacy) is set and will be accepted as a fallback. Unset it once a DB key is minted.');
   }
   if (HOST === '0.0.0.0' || HOST === '::') {
-    log(`WARNING: bound to ${HOST}. Set LUCENT_API_KEY before exposing publicly.`);
+    log(`WARNING: bound to ${HOST}. Ensure at least one DB key is minted before exposing publicly.`);
   }
 });
 
