@@ -2665,6 +2665,30 @@ function Inner({
         <Row label="Empty state" tokens={tokens}>
           <DataTable columns={[{ key: 'name', header: 'Name' }]} rows={[]} style={{ width: 320 }} />
         </Row>
+        <Row label="Sticky column + horizontal scroll" tokens={tokens}>
+          <DataTable
+            style={{ maxWidth: 600 }}
+            pageSize={0}
+            columns={[
+              { key: 'name', header: 'Name', sticky: true, sortable: true, width: '140px' },
+              { key: 'position', header: 'Position', sortable: true },
+              { key: 'email', header: 'Email' },
+              { key: 'availability', header: 'Availability', render: (row: { availability: string }) => <Badge variant={row.availability === 'Available' ? 'success' : 'warning'}>{row.availability}</Badge> },
+              { key: 'skills', header: 'Skills' },
+              { key: 'location', header: 'Location' },
+              { key: 'experience', header: 'Experience' },
+              { key: 'salary', header: 'Salary Range', align: 'right' as const },
+            ]}
+            rows={[
+              { name: 'Priya Patel', position: 'ML Engineer', email: 'priya.patel@email.com', availability: 'Available', skills: 'Python, TensorFlow, PyTorch', location: 'Remote', experience: '6 years', salary: '$140k–$180k' },
+              { name: 'Sophie Zhang', position: 'Frontend Engineer', email: 'sophie.zhang@email.com', availability: 'Available', skills: 'React, TypeScript, CSS', location: 'New York, NY', experience: '4 years', salary: '$120k–$150k' },
+              { name: 'Mia Tanaka', position: 'React Developer', email: 'mia.tanaka@email.com', availability: 'Available', skills: 'React, JavaScript, Redux', location: 'Los Angeles, CA', experience: '5 years', salary: '$130k–$160k' },
+              { name: 'Isabella Gomez', position: 'Data Scientist', email: 'isabella.gomez@email.com', availability: 'Available', skills: 'Python, scikit-learn, Pandas', location: 'Miami, FL', experience: '3 years', salary: '$110k–$140k' },
+              { name: 'Aiden Walsh', position: 'Data Analyst', email: 'aiden.walsh@email.com', availability: 'Open to opportunities', skills: 'SQL, Python, Tableau', location: 'Remote', experience: '2 years', salary: '$90k–$110k' },
+              { name: 'Omar Hassan', position: 'Senior Backend', email: 'omar.hassan@email.com', availability: 'Available', skills: 'Python, FastAPI, PostgreSQL', location: 'Denver, CO', experience: '8 years', salary: '$160k–$200k' },
+            ]}
+          />
+        </Row>
       </Section>
 
       <Section title="CommandPalette" tokens={tokens} hidden={!showSection('CommandPalette')}>

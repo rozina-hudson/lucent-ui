@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, type CSSProperties, type ReactNode } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef, type CSSProperties, type ReactNode } from 'react';
 import { Text } from '../../atoms/Text/index.js';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -15,6 +15,8 @@ export interface DataTableColumn<T> {
   headerFilter?: ReactNode;
   width?: string;
   align?: 'left' | 'center' | 'right';
+  /** Pin this column so it stays visible when the table scrolls horizontally */
+  sticky?: boolean;
 }
 
 export interface DataTableProps<T extends object> {
@@ -92,6 +94,42 @@ export function DataTable<T extends object>({
   const currentPage = isPageControlled ? controlledPage! : internalPage;
 
   const hasFilterableColumns = columns.some(c => c.filterable);
+
+  // Sticky columns — measure header widths to compute cumulative left offsets
+  const stickyHeaderRefs = useRef<Map<string, HTMLTableCellElement>>(new Map());
+  const [stickyLefts, setStickyLefts] = useState<Record<string, number>>({});
+  const lastStickyKey = (() => {
+    for (let i = columns.length - 1; i >= 0; i--) {
+      const col = columns[i];
+      if (col?.sticky) return col.key;
+    }
+    return null;
+  })();
+
+  useLayoutEffect(() => {
+    const keys = columns.filter(c => c.sticky).map(c => c.key);
+    if (keys.length === 0) return;
+
+    const measure = () => {
+      const lefts: Record<string, number> = {};
+      let cumLeft = 0;
+      for (const key of keys) {
+        lefts[key] = cumLeft;
+        const el = stickyHeaderRefs.current.get(key);
+        if (el) cumLeft += el.getBoundingClientRect().width;
+      }
+      setStickyLefts(lefts);
+    };
+
+    measure();
+
+    const observer = new ResizeObserver(measure);
+    for (const key of keys) {
+      const el = stickyHeaderRefs.current.get(key);
+      if (el) observer.observe(el);
+    }
+    return () => observer.disconnect();
+  }, [columns]);
 
   // Filter (before sort)
   const filteredRows = hasFilterableColumns
@@ -190,7 +228,7 @@ export function DataTable<T extends object>({
         background: 'var(--lucent-surface)',
       }}>
         <table style={{
-          width: '100%',
+          minWidth: '100%',
           borderCollapse: 'collapse',
           fontFamily: 'var(--lucent-font-family-base)',
           fontSize: 'var(--lucent-font-size-sm)',
@@ -203,18 +241,32 @@ export function DataTable<T extends object>({
                 return (
                   <th
                     key={col.key}
+                    ref={col.sticky ? (el: HTMLTableCellElement | null) => {
+                      if (el) stickyHeaderRefs.current.set(col.key, el);
+                      else stickyHeaderRefs.current.delete(col.key);
+                    } : undefined}
                     onClick={col.sortable ? () => handleSort(col.key) : undefined}
                     style={{
                       padding: 'var(--lucent-space-3) var(--lucent-space-4)',
                       textAlign: col.align ?? 'left',
                       fontWeight: 'var(--lucent-font-weight-medium)',
                       color: 'var(--lucent-text-secondary)',
-                      background: 'color-mix(in srgb, var(--lucent-text-primary) 5%, transparent)',
+                      background: col.sticky
+                        ? 'color-mix(in srgb, var(--lucent-text-primary) 5%, var(--lucent-surface))'
+                        : 'color-mix(in srgb, var(--lucent-text-primary) 5%, transparent)',
                       borderBottom: '1px solid var(--lucent-border-default)',
                       cursor: col.sortable ? 'pointer' : 'default',
                       userSelect: 'none',
                       whiteSpace: 'nowrap',
                       ...(col.width ? { width: col.width } : {}),
+                      ...(col.sticky ? {
+                        position: 'sticky' as const,
+                        left: stickyLefts[col.key] ?? 0,
+                        zIndex: 2,
+                      } : {}),
+                      ...(col.key === lastStickyKey ? {
+                        boxShadow: '2px 0 4px -2px color-mix(in srgb, var(--lucent-text-primary) 10%, transparent)',
+                      } : {}),
                     }}
                   >
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--lucent-space-1)' }}>
@@ -270,6 +322,19 @@ export function DataTable<T extends object>({
                         color: 'var(--lucent-text-primary)',
                         textAlign: col.align ?? 'left',
                         verticalAlign: 'middle',
+                        whiteSpace: 'nowrap',
+                        ...(col.sticky ? {
+                          position: 'sticky' as const,
+                          left: stickyLefts[col.key] ?? 0,
+                          zIndex: 1,
+                          background: hoveredRow === i
+                            ? 'color-mix(in srgb, var(--lucent-text-primary) 4%, var(--lucent-surface))'
+                            : 'var(--lucent-surface)',
+                          transition: 'background var(--lucent-duration-fast) var(--lucent-easing-default)',
+                        } : {}),
+                        ...(col.key === lastStickyKey ? {
+                          boxShadow: '2px 0 4px -2px color-mix(in srgb, var(--lucent-text-primary) 10%, transparent)',
+                        } : {}),
                       }}
                     >
                       {col.render
