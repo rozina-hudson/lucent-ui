@@ -10,6 +10,7 @@ export * from './Checkbox/index.js';
 export * from './Radio/index.js';
 export * from './Toggle/index.js';
 export * from './Select/index.js';
+export * from './Combobox/index.js';
 export * from './Tag/index.js';
 export * from './Tooltip/index.js';
 export * from './Icon/index.js';
