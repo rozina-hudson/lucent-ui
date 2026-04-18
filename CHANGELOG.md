@@ -1,5 +1,23 @@
 # lucent-ui
 
+## 0.44.0
+
+### Minor Changes
+
+- **Combobox atom — searchable form-field autocomplete** ([#158](https://github.com/rozina-hudson/lucent-ui/issues/158), [#161](https://github.com/rozina-hudson/lucent-ui/pull/161))
+
+  New atom that fills the gap between `Select` (native dropdown, no search — unusable past ~15 options) and `FilterSelect` (filter-bar pill chrome, wrong for forms). Input-matching chrome so it drops into `FormField` cleanly alongside other form controls.
+
+  - Type-to-filter across the full option list (case-insensitive match on label and hint)
+  - Single-value commit on Enter / click / Tab-on-match
+  - Full WAI-ARIA 1.2 combobox pattern: `role=combobox`, `aria-autocomplete=list`, `aria-expanded`, `aria-controls`, `aria-activedescendant`
+  - Keyboard: ArrowUp/Down (skips disabled), Home/End, Enter, Tab, Escape
+  - Options support secondary `hint` (e.g. "UTC-05:00") and optional `group` headings rendered once per group
+  - `sm` / `md` / `lg` sizes — heights match `Input` at every tier
+  - Controlled (`value`) + uncontrolled (`defaultValue`) modes
+  - `allowCustomValue` escape hatch for free-form text with suggestions (tag input style)
+  - Portal-rendered listbox positioned off the field wrapper so it sits flush under the field even when helper/error text is present
+
 ## 0.43.0
 
 ### Minor Changes
