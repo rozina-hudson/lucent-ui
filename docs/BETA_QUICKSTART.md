@@ -23,9 +23,11 @@ Your key looks like `lucent_beta_` followed by 32 hex characters.
 
 Pick whichever client you already use. The config is the same shape in all of them: a bearer token against our HTTPS endpoint.
 
-> **Heads up:** this is a **remote HTTP MCP** server. Older MCP clients that only speak stdio (local-process only) won't work directly — you'd need a local bridge, which is out of scope for beta. Claude Desktop ≥ Nov 2025 and Cursor ≥ 0.44 both support remote HTTP natively.
+> **Heads up:** this is a **remote HTTP MCP** server. Cursor ≥ 0.44 talks to it natively. Claude Desktop currently needs a tiny `npx mcp-remote` bridge (Node required) because its config validator strips remote HTTP entries on launch — the recipe below handles that for you.
 
 ### Claude Desktop
+
+Claude Desktop's config validator currently strips remote HTTP MCP entries on launch, and its in-app "Add custom connector" dialog only accepts OAuth — not bearer tokens. The working path is a local `mcp-remote` bridge that pipes our HTTPS endpoint through a stdio command.
 
 Edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
 
@@ -33,17 +35,20 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) o
 {
   "mcpServers": {
     "lucent-ui": {
-      "type": "http",
-      "url": "https://mcp.lucentui.ai/mcp",
-      "headers": {
-        "Authorization": "Bearer lucent_beta_your_key_here"
-      }
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@latest",
+        "https://mcp.lucentui.ai/mcp",
+        "--header",
+        "Authorization: Bearer lucent_beta_your_key_here"
+      ]
     }
   }
 }
 ```
 
-Fully quit and reopen Claude Desktop. The Lucent tools should show up in the tools picker in the chat UI.
+Requires Node.js on your machine (for `npx`). Fully quit and reopen Claude Desktop. The Lucent tools should show up in the tools picker in the chat UI.
 
 ### Cursor
 
@@ -93,6 +98,8 @@ If the assistant's code uses props that are actually in the manifest, you're goo
 **`404 Not Found` or "connection refused"** — You're probably hitting the wrong URL. The path is `/mcp` (not `/` or `/v1/mcp`), and the hostname is `mcp.lucentui.ai` (not `.com`).
 
 **Client says "MCP server not supported" or only accepts a `command`/`args` config** — Your client is on an older version that only speaks stdio. Update it. If you can't, tell us and we'll look at a bridge as a followup.
+
+**Claude Desktop deletes the `lucent-ui` block on launch** — Recent Claude Desktop builds (≥ `1.2773.0`) reject remote HTTP MCP entries in the JSON config and silently strip them. Use the `npx mcp-remote` command form shown above — it satisfies the stdio-only validator while piping the remote HTTPS tools through. The in-app "Add custom connector" dialog won't work either: it only accepts OAuth, not bearer tokens.
 
 **Tools show up but every call errors** — Usually a stale config. Fully quit and relaunch the client (not just close the window). On macOS, `⌘Q` the app, then reopen.
 
