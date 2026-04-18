@@ -381,6 +381,7 @@ export function Combobox({
             top: dropdownPos.top,
             left: dropdownPos.left,
             width: dropdownPos.width,
+            boxSizing: 'border-box',
             zIndex: 1000,
             background: 'color-mix(in srgb, var(--lucent-surface-overlay) 85%, transparent)',
             backdropFilter: 'blur(6px)',
