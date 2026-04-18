@@ -22,6 +22,7 @@ import { Checkbox } from '../src/components/atoms/Checkbox/index.js';
 import { Radio, RadioGroup } from '../src/components/atoms/Radio/index.js';
 import { Toggle } from '../src/components/atoms/Toggle/index.js';
 import { Select } from '../src/components/atoms/Select/index.js';
+import { Combobox } from '../src/components/atoms/Combobox/index.js';
 import { Tag } from '../src/components/atoms/Tag/index.js';
 import { Tooltip } from '../src/components/atoms/Tooltip/index.js';
 import { Icon } from '../src/components/atoms/Icon/index.js';
@@ -301,7 +302,7 @@ function Inner({
 
   const sectionGroups: Record<string, { label: string; tier: 'atom' | 'molecule' | 'pattern' | 'composition'; items: string[] }> = {
     buttons:     { label: 'Buttons & Actions', tier: 'atom', items: ['Button', 'SplitButton', 'ButtonGroup', 'Toggle', 'SegmentedControl'] },
-    inputs:      { label: 'Input Fields',      tier: 'atom', items: ['Input', 'Textarea', 'Select', 'Checkbox', 'Radio', 'Slider', 'ColorPicker', 'ColorSwatch'] },
+    inputs:      { label: 'Input Fields',      tier: 'atom', items: ['Input', 'Textarea', 'Select', 'Combobox', 'Checkbox', 'Radio', 'Slider', 'ColorPicker', 'ColorSwatch'] },
     text:        { label: 'Text & Labels',      tier: 'atom', items: ['Text', 'Badge', 'Chip', 'Tag', 'Icon', 'Tooltip', 'CodeBlock'] },
     media:       { label: 'Media & Status',     tier: 'atom', items: ['Avatar', 'Spinner', 'Progress', 'Divider'] },
     layout:      { label: 'Layout',             tier: 'atom', items: ['Stack', 'Row', 'Table'] },
@@ -344,6 +345,7 @@ function Inner({
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectVal, setSelectVal] = useState('');
+  const [comboboxVal, setComboboxVal] = useState('America/New_York');
   const [tags, setTags] = useState(['React', 'TypeScript', 'Design Systems']);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterQuery, setFilterQuery] = useState('');
@@ -1690,6 +1692,118 @@ function Inner({
               placeholder="Select a role"
               options={[{ value: 'admin', label: 'Admin' }, { value: 'member', label: 'Member' }]}
               errorText="Please select a role to continue"
+            />
+          </div>
+        </Row>
+      </Section>
+
+      {/* Combobox */}
+      <Section title="Combobox" tokens={tokens} hidden={!showSection('Combobox')}>
+        <Row label="Timezone picker (with hints)" tokens={tokens}>
+          <div style={{ width: 320 }}>
+            <Combobox
+              label="Timezone"
+              placeholder="Search timezones…"
+              options={[
+                { value: 'America/Los_Angeles', label: 'America/Los_Angeles', hint: 'UTC-08:00' },
+                { value: 'America/Denver',      label: 'America/Denver',      hint: 'UTC-07:00' },
+                { value: 'America/Chicago',     label: 'America/Chicago',     hint: 'UTC-06:00' },
+                { value: 'America/New_York',    label: 'America/New_York',    hint: 'UTC-05:00' },
+                { value: 'Europe/London',       label: 'Europe/London',       hint: 'UTC+00:00' },
+                { value: 'Europe/Paris',        label: 'Europe/Paris',        hint: 'UTC+01:00' },
+                { value: 'Europe/Berlin',       label: 'Europe/Berlin',       hint: 'UTC+01:00' },
+                { value: 'Asia/Dubai',          label: 'Asia/Dubai',          hint: 'UTC+04:00' },
+                { value: 'Asia/Kolkata',        label: 'Asia/Kolkata',        hint: 'UTC+05:30' },
+                { value: 'Asia/Shanghai',       label: 'Asia/Shanghai',       hint: 'UTC+08:00' },
+                { value: 'Asia/Tokyo',          label: 'Asia/Tokyo',          hint: 'UTC+09:00' },
+                { value: 'Australia/Sydney',    label: 'Australia/Sydney',    hint: 'UTC+10:00' },
+              ]}
+              value={comboboxVal}
+              onChange={setComboboxVal}
+            />
+          </div>
+        </Row>
+        <Row label="Sizes" tokens={tokens}>
+          {(['sm', 'md', 'lg'] as const).map(s => (
+            <div key={s} style={{ width: 220 }}>
+              <Combobox
+                size={s}
+                placeholder={`Size ${s}`}
+                options={[
+                  { value: 'react', label: 'React' },
+                  { value: 'vue',   label: 'Vue' },
+                  { value: 'svelte', label: 'Svelte' },
+                  { value: 'solid', label: 'Solid' },
+                ]}
+                defaultValue="react"
+              />
+            </div>
+          ))}
+        </Row>
+        <Row label="Grouped" tokens={tokens}>
+          <div style={{ width: 280 }}>
+            <Combobox
+              label="Currency"
+              placeholder="Choose a currency"
+              options={[
+                { value: 'usd', label: 'US Dollar',     hint: 'USD', group: 'Americas' },
+                { value: 'cad', label: 'CA Dollar',     hint: 'CAD', group: 'Americas' },
+                { value: 'brl', label: 'Brazilian Real', hint: 'BRL', group: 'Americas' },
+                { value: 'eur', label: 'Euro',          hint: 'EUR', group: 'Europe' },
+                { value: 'gbp', label: 'British Pound', hint: 'GBP', group: 'Europe' },
+                { value: 'jpy', label: 'Japanese Yen',  hint: 'JPY', group: 'Asia' },
+                { value: 'cny', label: 'Chinese Yuan',  hint: 'CNY', group: 'Asia' },
+              ]}
+            />
+          </div>
+        </Row>
+        <Row label="With helper" tokens={tokens}>
+          <div style={{ width: 280 }}>
+            <Combobox
+              label="Assignee"
+              placeholder="Search team…"
+              helperText="Required"
+              options={[
+                { value: 'a', label: 'Ada Lovelace' },
+                { value: 'g', label: 'Grace Hopper' },
+                { value: 'm', label: 'Margaret Hamilton' },
+                { value: 'k', label: 'Katherine Johnson' },
+              ]}
+            />
+          </div>
+        </Row>
+        <Row label="With error" tokens={tokens}>
+          <div style={{ width: 280 }}>
+            <Combobox
+              label="Role"
+              placeholder="Select a role"
+              errorText="Please pick a role to continue"
+              options={[{ value: 'admin', label: 'Admin' }, { value: 'member', label: 'Member' }]}
+            />
+          </div>
+        </Row>
+        <Row label="Free-form (allowCustomValue)" tokens={tokens}>
+          <div style={{ width: 280 }}>
+            <Combobox
+              label="Tag"
+              placeholder="Pick or type a tag"
+              helperText="Type to create a new tag"
+              allowCustomValue
+              options={[
+                { value: 'design',     label: 'design' },
+                { value: 'engineering', label: 'engineering' },
+                { value: 'marketing',  label: 'marketing' },
+              ]}
+            />
+          </div>
+        </Row>
+        <Row label="Disabled" tokens={tokens}>
+          <div style={{ width: 280 }}>
+            <Combobox
+              label="Locked field"
+              disabled
+              defaultValue="en"
+              options={[{ value: 'en', label: 'English' }, { value: 'fr', label: 'French' }]}
             />
           </div>
         </Row>
