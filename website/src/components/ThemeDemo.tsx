@@ -10,6 +10,7 @@ import {
   Text,
   Progress,
   Chip,
+  Bolt,
 } from 'lucent-ui';
 import type { ThemeAnchors, PresetName } from 'lucent-ui';
 
@@ -219,9 +220,7 @@ export default function ThemeDemo() {
               background: `${gold}20`, border: `1px solid ${gold}40`,
               display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
             }}>
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2L3 7v10l9 5 9-5V7L12 2z" fill={gold} opacity={0.9} />
-              </svg>
+              <span aria-hidden style={{ display: 'inline-flex', width: 10, height: 10, color: gold, opacity: 0.9 }}><Bolt /></span>
             </div>
             <span style={{
               fontFamily: sans, fontSize: 14, fontWeight: 300,
