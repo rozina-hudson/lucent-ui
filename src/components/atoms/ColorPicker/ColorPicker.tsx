@@ -239,6 +239,7 @@ function SliderTrack({ value, min, max, onChange, trackStyle, formatTooltip }: S
 
 // ─── Eyedropper icon ──────────────────────────────────────────────────────────
 
+// TODO: no Eyedropper icon in iconset — kept inline
 function EyedropperIcon() {
   return (
     <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>

@@ -3,6 +3,9 @@ import { createPortal } from 'react-dom';
 import { Input, type InputSize } from '../../atoms/Input/Input.js';
 import { Spinner } from '../../atoms/Spinner/Spinner.js';
 import { Text } from '../../atoms/Text/Text.js';
+import { Search } from '../../../icons/Search.js';
+import { Filters } from '../../../icons/Filters.js';
+import { X } from '../../../icons/X.js';
 
 export interface SearchResult {
   id: string | number;
@@ -33,22 +36,15 @@ const dropdownTextSize: Record<InputSize, 'sm' | 'md'> = { sm: 'sm', md: 'md', l
 const dropdownPadding: Record<InputSize, string> = { sm: 'var(--lucent-space-1)', md: 'var(--lucent-space-2)', lg: 'var(--lucent-space-2)' };
 
 const SearchIcon = ({ size = 16 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 16 16" fill="none" aria-hidden="true">
-    <circle cx="6.5" cy="6.5" r="4" stroke="currentColor" strokeWidth="1.5"/>
-    <path d="M9.5 9.5L13 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-  </svg>
+  <span style={{ display: 'inline-flex', width: size, height: size }}><Search /></span>
 );
 
 const FilterIcon = ({ size = 16 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 16 16" fill="none" aria-hidden="true">
-    <path d="M2 3h12M4 8h8M6 13h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-  </svg>
+  <span style={{ display: 'inline-flex', width: size, height: size }}><Filters /></span>
 );
 
 const ClearIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-    <path d="M3 3L11 11M11 3L3 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-  </svg>
+  <span style={{ display: 'inline-flex', width: 14, height: 14 }}><X /></span>
 );
 
 export function SearchInput({

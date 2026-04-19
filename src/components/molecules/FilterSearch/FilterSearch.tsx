@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, type CSSProperties } from 'react';
 import { Button } from '../../atoms/Button/index.js';
 import { Input } from '../../atoms/Input/index.js';
+import { Search } from '../../../icons/Search.js';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -26,10 +27,7 @@ export interface FilterSearchProps {
 // ─── Search icon ─────────────────────────────────────────────────────────────
 
 const SearchIcon = () => (
-  <svg width={16} height={16} viewBox="0 0 16 16" fill="none" aria-hidden="true">
-    <circle cx="6.5" cy="6.5" r="4" stroke="currentColor" strokeWidth="1.5" />
-    <path d="M9.5 9.5L13 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-  </svg>
+  <span aria-hidden style={{ display: 'inline-flex', width: 16, height: 16 }}><Search /></span>
 );
 
 // ─── Component ───────────────────────────────────────────────────────────────

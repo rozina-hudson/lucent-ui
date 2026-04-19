@@ -1,6 +1,9 @@
 import { useState, useRef, useEffect, useLayoutEffect, type CSSProperties } from 'react';
 import { createPortal } from 'react-dom';
 import { Text } from '../../atoms/Text/index.js';
+import { ChevronLeft } from '../../../icons/ChevronLeft.js';
+import { ChevronRight } from '../../../icons/ChevronRight.js';
+import { Calendar as CalendarIcon } from '../../../icons/Calendar.js';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -113,12 +116,7 @@ function NavButton({ dir, onClick, disabled, size = 'md' }: { dir: 'prev' | 'nex
         transition: 'background var(--lucent-duration-fast)',
       }}
     >
-      <svg width={iconS} height={iconS} viewBox="0 0 16 16" fill="none" aria-hidden>
-        <path
-          d={dir === 'prev' ? 'M10 12L6 8l4-4' : 'M6 4l4 4-4 4'}
-          stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
-        />
-      </svg>
+      <span aria-hidden style={{ display: 'inline-flex', width: iconS, height: iconS }}>{dir === 'prev' ? <ChevronLeft /> : <ChevronRight />}</span>
     </button>
   );
 }
@@ -351,11 +349,7 @@ export function DatePicker({
           ].join(', '),
         }}
       >
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden style={{ flexShrink: 0 }}>
-          <rect x="1" y="2" width="12" height="11" rx="2" stroke="currentColor" strokeWidth="1.3" />
-          <path d="M1 6h12" stroke="currentColor" strokeWidth="1.3" />
-          <path d="M4 1v2M10 1v2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-        </svg>
+        <span aria-hidden style={{ display: 'inline-flex', width: 14, height: 14, flexShrink: 0 }}><CalendarIcon /></span>
         <span style={{ flex: 1, textAlign: 'left' }}>
           {selected ? formatDate(selected) : placeholder}
         </span>

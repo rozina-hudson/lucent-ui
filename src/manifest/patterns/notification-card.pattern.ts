@@ -46,13 +46,7 @@ Card (elevated, padding="lg", media=<img>)
       title: 'System notice (no media, with status icon)',
       code: `<Card variant="outline" padding="md" style={{ width: 400 }}>
   <Row gap="3" align="start">
-    <Icon size="lg" color="var(--lucent-warning-text)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-        <line x1={12} y1={9} x2={12} y2={13} />
-        <line x1={12} y1={17} x2={12.01} y2={17} />
-      </svg>
-    </Icon>
+    <Icon size="lg" color="var(--lucent-warning-text)"><AlertTriangle /></Icon>
     <Stack gap="2" style={{ flex: 1 }}>
       <Text size="sm" weight="semibold">Storage almost full</Text>
       <Text size="sm" color="secondary">You've used 92% of your storage. Upgrade your plan or delete unused files to free up space.</Text>
@@ -86,12 +80,7 @@ Card (elevated, padding="lg", media=<img>)
       title: 'Success confirmation',
       code: `<Card variant="outline" padding="md" style={{ width: 400, borderColor: 'var(--lucent-success-default)' }}>
   <Row gap="3" align="start">
-    <Icon size="lg" color="var(--lucent-success-text)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-        <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
-        <polyline points="22 4 12 14.01 9 11.01" />
-      </svg>
-    </Icon>
+    <Icon size="lg" color="var(--lucent-success-text)"><CircleCheck /></Icon>
     <Stack gap="1" style={{ flex: 1 }}>
       <Text size="sm" weight="semibold">Payment received</Text>
       <Text size="sm" color="secondary">Your invoice #1042 for $2,400.00 has been paid successfully.</Text>

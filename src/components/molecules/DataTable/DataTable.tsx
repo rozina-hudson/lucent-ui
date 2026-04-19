@@ -1,5 +1,11 @@
 import { useState, useEffect, useLayoutEffect, useRef, type CSSProperties, type ReactNode } from 'react';
 import { Text } from '../../atoms/Text/index.js';
+import { ArrowsUpDown } from '../../../icons/ArrowsUpDown.js';
+import { ChevronUp } from '../../../icons/ChevronUp.js';
+import { ChevronDown } from '../../../icons/ChevronDown.js';
+import { ChevronLeft } from '../../../icons/ChevronLeft.js';
+import { ChevronRight } from '../../../icons/ChevronRight.js';
+import { Check } from '../../../icons/Check.js';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -42,34 +48,18 @@ type SortState = { key: string; dir: 'asc' | 'desc' };
 // ─── Icons ────────────────────────────────────────────────────────────────────
 
 function SortIcon({ state }: { state: 'asc' | 'desc' | 'none' }) {
+  const Icon = state === 'asc' ? ChevronUp : state === 'desc' ? ChevronDown : ArrowsUpDown;
   return (
-    <svg
-      width="12" height="12" viewBox="0 0 12 12" fill="none"
-      aria-hidden
-      style={{ flexShrink: 0, opacity: state === 'none' ? 0.35 : 1 }}
-    >
-      <path
-        d="M6 2L9 5H3L6 2Z"
-        fill="currentColor"
-        opacity={state === 'desc' ? 0.35 : 1}
-      />
-      <path
-        d="M6 10L3 7H9L6 10Z"
-        fill="currentColor"
-        opacity={state === 'asc' ? 0.35 : 1}
-      />
-    </svg>
+    <span aria-hidden style={{ display: 'inline-flex', width: 12, height: 12, flexShrink: 0, opacity: state === 'none' ? 0.35 : 1 }}>
+      <Icon />
+    </span>
   );
 }
 
 function ChevronIcon({ dir }: { dir: 'left' | 'right' }) {
+  const Icon = dir === 'left' ? ChevronLeft : ChevronRight;
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
-      <path
-        d={dir === 'left' ? 'M10 12L6 8l4-4' : 'M6 4l4 4-4 4'}
-        stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
-      />
-    </svg>
+    <span aria-hidden style={{ display: 'inline-flex', width: 16, height: 16 }}><Icon /></span>
   );
 }
 
@@ -679,9 +669,7 @@ function DropdownOption({ label, isSelected, onClick }: { label: string; isSelec
         transition: 'border-color var(--lucent-duration-fast), background var(--lucent-duration-fast)',
       }}>
         {isSelected && (
-          <svg width="8" height="8" viewBox="0 0 8 8" fill="none" aria-hidden>
-            <path d="M1 4L3 6L7 2" stroke="var(--lucent-accent-fg)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          <span aria-hidden style={{ display: 'inline-flex', width: 8, height: 8, color: 'var(--lucent-accent-fg)' }}><Check /></span>
         )}
       </span>
       {label}

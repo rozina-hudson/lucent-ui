@@ -3,6 +3,7 @@ import {
   type CSSProperties, type KeyboardEvent, type ReactNode,
 } from 'react';
 import { createPortal } from 'react-dom';
+import { ChevronDown } from '../../../icons/ChevronDown.js';
 
 export interface ComboboxOption {
   value: string;
@@ -364,9 +365,7 @@ export function Combobox({
             transition: 'transform var(--lucent-duration-fast) var(--lucent-easing-default)',
           }}
         >
-          <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
+          <span style={{ display: 'inline-flex', width: 14, height: 14 }}><ChevronDown /></span>
         </span>
       </div>
 
