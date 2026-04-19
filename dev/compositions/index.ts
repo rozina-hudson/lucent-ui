@@ -6,3 +6,4 @@ export { OnboardingFlow } from './OnboardingFlow.js';
 export { DashboardHeader } from './DashboardHeader.js';
 export { ActivityFeed } from './ActivityFeed.js';
 export { MetricsDashboard } from './MetricsDashboard.js';
+export { LoginScreen } from './LoginScreen.js';
