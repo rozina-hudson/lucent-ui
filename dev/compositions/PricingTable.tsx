@@ -1,12 +1,11 @@
 import {
   Card, Text, Button, Stack, Row, Chip, Divider,
+  Check,
 } from '../../src/index.js';
 
 function CheckIcon() {
   return (
-    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="var(--lucent-success-default)" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <polyline points="20 6 9 17 4 12" />
-    </svg>
+    <span aria-hidden style={{ display: 'inline-flex', width: 16, height: 16, color: 'var(--lucent-success-default)' }}><Check /></span>
   );
 }
 

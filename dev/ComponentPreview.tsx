@@ -26,6 +26,13 @@ import { Combobox } from '../src/components/atoms/Combobox/index.js';
 import { Tag } from '../src/components/atoms/Tag/index.js';
 import { Tooltip } from '../src/components/atoms/Tooltip/index.js';
 import { Icon } from '../src/components/atoms/Icon/index.js';
+import * as LucentIcons from '../src/icons/index.js';
+import {
+  AlertTriangle, ArrowTrendingUp, ArrowsUpDown, Bolt, Check, ChevronDown, ChevronLeft, ChevronRight,
+  CircleCheck, CircleInfo, CircleMinus, CircleX, Clock, Copy, Dashboard, Delete, Download, Edit, Email, ExternalLink,
+  File as FileIcon, Filters, Folder, Grid, Headphones, Link, List, Lock, LogOut, Phone, Plus, PriceTag,
+  Refresh, Save, Search, Send, Settings, Upload, View, X as XIcon,
+} from '../src/icons/index.js';
 import { Text } from '../src/components/atoms/Text/index.js';
 import { FormField } from '../src/components/molecules/FormField/index.js';
 import { SearchInput } from '../src/components/molecules/SearchInput/index.js';
@@ -796,8 +803,8 @@ function Inner({
         </Row>
         <Row label="Icons" tokens={tokens}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: 280 }}>
-            <Input leftElement={<svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>} placeholder="Search…" />
-            <Input rightElement={<svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>} type="password" placeholder="Password" />
+            <Input leftElement={<Icon size="sm"><Search /></Icon>} placeholder="Search…" />
+            <Input leftElement={<Icon size="sm"><Lock /></Icon>} rightElement={<Icon size="sm"><View /></Icon>} type="password" placeholder="Password" />
           </div>
         </Row>
         <Row label="Prefix / suffix" tokens={tokens}>
@@ -1110,14 +1117,7 @@ function Inner({
         <Row label="With illustration + CTA" tokens={tokens}>
           <Card style={{ width: 360 }}>
             <EmptyState
-              illustration={
-                <Icon size="xl">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx={11} cy={11} r={8} />
-                    <path d="M21 21l-4.35-4.35" />
-                  </svg>
-                </Icon>
-              }
+              illustration={<Icon size="xl"><Search /></Icon>}
               title="No results found"
               description="Try adjusting your search or filters to find what you're looking for."
               action={<Button variant="secondary" size="sm">Clear filters</Button>}
@@ -1866,8 +1866,8 @@ function Inner({
           <Chip swatch="#f43f5e" onDismiss={() => {}}>Rose</Chip>
         </Row>
         <Row label="With icon" tokens={tokens}>
-          <Chip leftIcon={<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M1 4l5-3 5 3v5a1 1 0 01-1 1H2a1 1 0 01-1-1V4z" /></svg>} onDismiss={() => {}}>Folders</Chip>
-          <Chip leftIcon={<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="1" width="8" height="10" rx="1" /><path d="M4 4h4M4 6h4M4 8h2" /></svg>} onDismiss={() => {}}>Files</Chip>
+          <Chip leftIcon={<Icon size="xs"><Folder /></Icon>} onDismiss={() => {}}>Folders</Chip>
+          <Chip leftIcon={<Icon size="xs"><FileIcon /></Icon>} onDismiss={() => {}}>Files</Chip>
         </Row>
         <Row label="Borderless" tokens={tokens}>
           <Chip variant="success" borderless>New</Chip>
@@ -1920,24 +1920,42 @@ function Inner({
           {(['xs', 'sm', 'md', 'lg', 'xl'] as const).map(s => (
             <Tooltip key={s} content={s} delay={0}>
               <Icon size={s} label={`${s} icon`}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx={12} cy={12} r={10} />
-                  <path d="M12 8v4l3 3" />
-                </svg>
+                <Clock />
               </Icon>
             </Tooltip>
           ))}
         </Row>
         <Row label="Coloured" tokens={tokens}>
-          <Icon size="lg" color="var(--lucent-success-default)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
-          </Icon>
-          <Icon size="lg" color="var(--lucent-danger-default)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><circle cx={12} cy={12} r={10} /><path d="M15 9l-6 6M9 9l6 6" /></svg>
-          </Icon>
-          <Icon size="lg" color="var(--lucent-warning-default)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /><line x1={12} y1={9} x2={12} y2={13} /><line x1={12} y1={17} x2="12.01" y2={17} /></svg>
-          </Icon>
+          <Icon size="lg" color="var(--lucent-success-default)"><Check /></Icon>
+          <Icon size="lg" color="var(--lucent-danger-default)"><CircleX /></Icon>
+          <Icon size="lg" color="var(--lucent-warning-default)"><AlertTriangle /></Icon>
+        </Row>
+        <Row label="Iconset" tokens={tokens}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(104px, 1fr))', gap: tokens.space2, width: '100%' }}>
+            {Object.entries(LucentIcons).map(([name, IconComp]) => (
+              <div
+                key={name}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: tokens.space2,
+                  padding: tokens.space3,
+                  borderRadius: tokens.radiusSm,
+                  border: `1px solid ${tokens.borderSubtle}`,
+                  background: tokens.surface,
+                }}
+              >
+                <Icon size="lg" label={name}>
+                  <IconComp />
+                </Icon>
+                <Text size="xs" color="secondary" family="mono" align="center" truncate>
+                  {name}
+                </Text>
+              </div>
+            ))}
+          </div>
         </Row>
       </Section>
 
@@ -1974,15 +1992,15 @@ function Inner({
           <Button size="lg">Large</Button>
         </Row>
         <Row label="2xs icon-only" tokens={tokens}>
-          <Button size="2xs" variant="ghost" leftIcon={<SmallIcon d="M6 9l6 6 6-6" />} aria-label="Expand" />
-          <Button size="2xs" variant="ghost" leftIcon={<SmallIcon d="M4 12h16M12 4v16" />} aria-label="Add" />
-          <Button size="2xs" variant="ghost" leftIcon={<SmallIcon d="M23 4l-6.5 17L13 12 2 8.5z" />} aria-label="Send" />
-          <Button size="2xs" variant="outline" leftIcon={<SmallIcon d="M1 4v6h6M23 20v-6h-6" />} aria-label="Refresh" />
-          <Button size="2xs" variant="outline" leftIcon={<SmallIcon d="M18 6L6 18M6 6l12 12" />} aria-label="Close" />
-          <Button size="2xs" variant="secondary" leftIcon={<SmallIcon d="M12 20h9M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z" />} aria-label="Edit" />
-          <Button size="2xs" variant="danger" leftIcon={<SmallIcon d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />} aria-label="Delete" />
-          <Button size="2xs" variant="danger-outline" leftIcon={<SmallIcon d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4M12 17h.01" />} aria-label="Warn" />
-          <Button size="2xs" variant="danger-ghost" leftIcon={<SmallIcon d="M18 6L6 18M6 6l12 12" />} aria-label="Remove" />
+          <Button size="2xs" variant="ghost" leftIcon={<Icon size="xs"><ChevronDown /></Icon>} aria-label="Expand" />
+          <Button size="2xs" variant="ghost" leftIcon={<Icon size="xs"><Plus /></Icon>} aria-label="Add" />
+          <Button size="2xs" variant="ghost" leftIcon={<Icon size="xs"><Send /></Icon>} aria-label="Send" />
+          <Button size="2xs" variant="outline" leftIcon={<Icon size="xs"><Refresh /></Icon>} aria-label="Refresh" />
+          <Button size="2xs" variant="outline" leftIcon={<Icon size="xs"><XIcon /></Icon>} aria-label="Close" />
+          <Button size="2xs" variant="secondary" leftIcon={<Icon size="xs"><Edit /></Icon>} aria-label="Edit" />
+          <Button size="2xs" variant="danger" leftIcon={<Icon size="xs"><Delete /></Icon>} aria-label="Delete" />
+          <Button size="2xs" variant="danger-outline" leftIcon={<Icon size="xs"><AlertTriangle /></Icon>} aria-label="Warn" />
+          <Button size="2xs" variant="danger-ghost" leftIcon={<Icon size="xs"><CircleMinus /></Icon>} aria-label="Remove" />
         </Row>
         <Row label="Icons" tokens={tokens}>
           <Button leftIcon={<StarIcon />}>With prefix</Button>
@@ -2002,10 +2020,10 @@ function Inner({
           <Button variant="primary" fullWidth>Full width</Button>
         </Row>
         <Row label="As link (href)" tokens={tokens}>
-          <Button variant="ghost" size="sm" href="mailto:hello@example.com" leftIcon={<SmallIcon d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM22 6l-10 7L2 6" />} aria-label="Email" />
-          <Button variant="ghost" size="sm" href="tel:+15555551234" leftIcon={<SmallIcon d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" />} aria-label="Call" />
-          <Button variant="primary" href="https://example.com" target="_blank" rel="noopener noreferrer" rightIcon={<SmallIcon d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />}>Open docs</Button>
-          <Button variant="outline" href="/settings">Internal link</Button>
+          <Button variant="ghost" size="sm" href="mailto:hello@example.com" leftIcon={<Icon size="xs"><Email /></Icon>} aria-label="Email" />
+          <Button variant="ghost" size="sm" href="tel:+15555551234" leftIcon={<Icon size="xs"><Phone /></Icon>} aria-label="Call" />
+          <Button variant="primary" href="https://example.com" target="_blank" rel="noopener noreferrer" rightIcon={<Icon size="xs"><ExternalLink /></Icon>}>Open docs</Button>
+          <Button variant="outline" href="/settings" leftIcon={<Icon size="xs"><Link /></Icon>}>Internal link</Button>
           <Button variant="outline" href="/settings" disabled>Disabled link</Button>
         </Row>
       </Section>
@@ -2043,9 +2061,10 @@ function Inner({
         <StackAtom gap="2">
           <span style={{ fontSize: tokens.fontSizeXs, color: tokens.textSecondary, fontFamily: tokens.fontFamilyMono, letterSpacing: tokens.letterSpacingWide, textTransform: 'uppercase' }}>With icons</span>
           <RowAtom gap="5" wrap>
-            <SplitButton leftIcon={<StarIcon />} onClick={() => {}} menuItems={[{ label: 'Save as draft', onSelect: () => {}, icon: <SmallIcon d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" /> }, { label: 'Export', onSelect: () => {}, icon: <SmallIcon d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" /> }]}>Save</SplitButton>
-            <SplitButton variant="outline" leftIcon={<SmallIcon d="M12 19V5M5 12l7-7 7 7" />} onClick={() => {}} menuItems={[{ label: 'Deploy to staging', onSelect: () => {}, icon: <SmallIcon d="M22 12h-4l-3 9L9 3l-3 9H2" /> }, { label: 'Rollback', onSelect: () => {}, danger: true, icon: <SmallIcon d="M1 4v6h6M23 20v-6h-6" /> }]}>Deploy</SplitButton>
-            <SplitButton variant="danger" leftIcon={<SmallIcon d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />} onClick={() => {}} menuItems={[{ label: 'Move to trash', onSelect: () => {}, icon: <SmallIcon d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" /> }, { label: 'Delete forever', onSelect: () => {}, danger: true, icon: <SmallIcon d="M18 6L6 18M6 6l12 12" /> }]}>Delete</SplitButton>
+            <SplitButton leftIcon={<StarIcon />} onClick={() => {}} menuItems={[{ label: 'Save as draft', onSelect: () => {}, icon: <Icon size="xs"><Save /></Icon> }, { label: 'Export', onSelect: () => {}, icon: <Icon size="xs"><Download /></Icon> }]}>Save</SplitButton>
+            {/* TODO: missing plain ArrowUp icon in iconset; using Bolt for Deploy trigger */}
+            <SplitButton variant="outline" leftIcon={<SmallIcon d="M12 19V5M5 12l7-7 7 7" />} onClick={() => {}} menuItems={[{ label: 'Deploy to staging', onSelect: () => {}, icon: <Icon size="xs"><Bolt /></Icon> }, { label: 'Rollback', onSelect: () => {}, danger: true, icon: <Icon size="xs"><Refresh /></Icon> }]}>Deploy</SplitButton>
+            <SplitButton variant="danger" leftIcon={<Icon size="xs"><Delete /></Icon>} onClick={() => {}} menuItems={[{ label: 'Move to trash', onSelect: () => {}, icon: <Icon size="xs"><Delete /></Icon> }, { label: 'Delete forever', onSelect: () => {}, danger: true, icon: <Icon size="xs"><XIcon /></Icon> }]}>Delete</SplitButton>
           </RowAtom>
         </StackAtom>
         <StackAtom gap="2">
@@ -2062,6 +2081,7 @@ function Inner({
       <Section title="ButtonGroup" tokens={tokens} hidden={!showSection('ButtonGroup')}>
         <Row label="Outline toolbar" tokens={tokens}>
           <ButtonGroup>
+            {/* TODO: missing Bold/Italic/Underline icons in iconset */}
             <Button variant="outline" leftIcon={<SmallIcon d="M6 4h8a4 4 0 010 8H6z" />} aria-label="Bold" />
             <Button variant="outline" leftIcon={<SmallIcon d="M19 4h-9M14 20H5M15 4L9 20" />} aria-label="Italic" />
             <Button variant="outline" leftIcon={<SmallIcon d="M6 3v7a6 6 0 0012 0V3M4 21h16" />} aria-label="Underline" />
@@ -2074,6 +2094,7 @@ function Inner({
         </Row>
         <Row label="Ghost toolbar" tokens={tokens}>
           <ButtonGroup>
+            {/* TODO: missing Bold/Italic/Underline icons in iconset */}
             <Button variant="ghost" leftIcon={<SmallIcon d="M6 4h8a4 4 0 010 8H6z" />} aria-label="Bold" />
             <Button variant="ghost" leftIcon={<SmallIcon d="M19 4h-9M14 20H5M15 4L9 20" />} aria-label="Italic" />
             <Button variant="ghost" leftIcon={<SmallIcon d="M6 3v7a6 6 0 0012 0V3M4 21h16" />} aria-label="Underline" />
@@ -2086,6 +2107,7 @@ function Inner({
         </Row>
         <Row label="Ghost xs" tokens={tokens}>
           <ButtonGroup>
+            {/* TODO: missing Bold/Italic/Underline icons in iconset */}
             <Button variant="ghost" size="xs" leftIcon={<SmallIcon d="M6 4h8a4 4 0 010 8H6z" />} aria-label="Bold" />
             <Button variant="ghost" size="xs" leftIcon={<SmallIcon d="M19 4h-9M14 20H5M15 4L9 20" />} aria-label="Italic" />
             <Button variant="ghost" size="xs" leftIcon={<SmallIcon d="M6 3v7a6 6 0 0012 0V3M4 21h16" />} aria-label="Underline" />
@@ -2526,28 +2548,28 @@ function Inner({
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: tokens.space1, padding: `${tokens.space2} 0` }}>
                     <Tooltip content="Dashboard" side="right">
                       <Button variant="secondary" size="sm" style={{ width: 36, height: 36, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="5" height="5" rx="1" /><rect x="9" y="2" width="5" height="5" rx="1" /><rect x="2" y="9" width="5" height="5" rx="1" /><rect x="9" y="9" width="5" height="5" rx="1" /></svg>
+                        <Icon size="sm"><Dashboard /></Icon>
                       </Button>
                     </Tooltip>
                     <Tooltip content="Projects" side="right">
                       <Button variant="ghost" size="sm" style={{ width: 36, height: 36, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 4h12M2 8h12M2 12h8" /></svg>
+                        <Icon size="sm"><List /></Icon>
                       </Button>
                     </Tooltip>
                     <Tooltip content="Settings" side="right">
                       <Button variant="ghost" size="sm" style={{ width: 36, height: 36, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="8" r="2" /><path d="M13.5 8a5.5 5.5 0 0 1-.3 1.6l1.3 1-1.2 2-1.5-.6a5.4 5.4 0 0 1-1.4.8L10 14H8l-.4-1.6a5.4 5.4 0 0 1-1.4-.8l-1.5.6-1.2-2 1.3-1A5.5 5.5 0 0 1 4.5 8c0-.5.1-1.1.3-1.6l-1.3-1 1.2-2 1.5.6a5.4 5.4 0 0 1 1.4-.8L8 2h2l.4 1.6c.5.2 1 .5 1.4.8l1.5-.6 1.2 2-1.3 1c.2.5.3 1.1.3 1.6Z" /></svg>
+                        <Icon size="sm"><Settings /></Icon>
                       </Button>
                     </Tooltip>
                   </div>
                 ) : (
                   <NavMenu orientation="vertical" hasIcons aria-label="Main navigation" style={{ padding: `${tokens.space2} 0` }}>
                     <NavMenu.Group label="Main">
-                      <NavMenu.Item icon={<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="5" height="5" rx="1" /><rect x="9" y="2" width="5" height="5" rx="1" /><rect x="2" y="9" width="5" height="5" rx="1" /><rect x="9" y="9" width="5" height="5" rx="1" /></svg>} isActive>Dashboard</NavMenu.Item>
-                      <NavMenu.Item icon={<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 4h12M2 8h12M2 12h8" /></svg>}>Projects</NavMenu.Item>
+                      <NavMenu.Item icon={<Icon size="sm"><Dashboard /></Icon>} isActive>Dashboard</NavMenu.Item>
+                      <NavMenu.Item icon={<Icon size="sm"><List /></Icon>}>Projects</NavMenu.Item>
                     </NavMenu.Group>
                     <NavMenu.Group label="Settings">
-                      <NavMenu.Item icon={<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="8" r="2" /><path d="M13.5 8a5.5 5.5 0 0 1-.3 1.6l1.3 1-1.2 2-1.5-.6a5.4 5.4 0 0 1-1.4.8L10 14H8l-.4-1.6a5.4 5.4 0 0 1-1.4-.8l-1.5.6-1.2-2 1.3-1A5.5 5.5 0 0 1 4.5 8c0-.5.1-1.1.3-1.6l-1.3-1 1.2-2 1.5.6a5.4 5.4 0 0 1 1.4-.8L8 2h2l.4 1.6c.5.2 1 .5 1.4.8l1.5-.6 1.2 2-1.3 1c.2.5.3 1.1.3 1.6Z" /></svg>}>General</NavMenu.Item>
+                      <NavMenu.Item icon={<Icon size="sm"><Settings /></Icon>}>General</NavMenu.Item>
                     </NavMenu.Group>
                   </NavMenu>
                 )
@@ -2574,11 +2596,7 @@ function Inner({
                     onClick={() => setSidebarCollapsed(c => !c)}
                     style={sidebarCollapsed ? { width: 36, height: 36, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' } : {}}
                   >
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      {sidebarCollapsed
-                        ? <path d="M5 4l4 4-4 4" />
-                        : <path d="M11 4L7 8l4 4" />}
-                    </svg>
+                    <Icon size="sm">{sidebarCollapsed ? <ChevronRight /> : <ChevronLeft />}</Icon>
                     {!sidebarCollapsed && <span style={{ marginLeft: 4, fontSize: 'var(--lucent-font-size-xs)' }}>Collapse</span>}
                   </Button>
                 </div>
@@ -2696,10 +2714,10 @@ function Inner({
           <CommandPalette
             shortcutKey=""
             commands={[
-              { id: 'new', label: 'New document', description: 'Create a blank document', group: 'Create', onSelect: () => {}, icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg> },
-              { id: 'open', label: 'Open file…', description: 'Browse and open a file', group: 'Create', onSelect: () => {}, icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5v3a1 1 0 001 1h9a1 1 0 001-1v-3M8 3v7M5 6l3-3 3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> },
-              { id: 'settings', label: 'Settings', description: 'Open app settings', group: 'Navigate', onSelect: () => {}, icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.5"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg> },
-              { id: 'logout', label: 'Log out', group: 'Account', onSelect: () => {}, icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 2.5H3.5a1 1 0 00-1 1v9a1 1 0 001 1H6M10.5 11L13.5 8l-3-3M6 8h7.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+              { id: 'new', label: 'New document', description: 'Create a blank document', group: 'Create', onSelect: () => {}, icon: <Icon size="sm"><Plus /></Icon> },
+              { id: 'open', label: 'Open file…', description: 'Browse and open a file', group: 'Create', onSelect: () => {}, icon: <Icon size="sm"><Upload /></Icon> },
+              { id: 'settings', label: 'Settings', description: 'Open app settings', group: 'Navigate', onSelect: () => {}, icon: <Icon size="sm"><Settings /></Icon> },
+              { id: 'logout', label: 'Log out', group: 'Account', onSelect: () => {}, icon: <Icon size="sm"><LogOut /></Icon> },
             ]}
           />
           <Text size="sm" color="secondary">Press <kbd style={{ padding: '1px 5px', borderRadius: tokens.radiusSm, border: `1px solid ${tokens.borderDefault}`, fontFamily: tokens.fontFamilyMono, fontSize: tokens.fontSizeXs }}>⌘K</kbd> to open the palette</Text>
@@ -2879,10 +2897,10 @@ function Inner({
         </Row>
         <Row label="With icons" tokens={tokens}>
           <Menu trigger={<Button variant="outline" chevron>Options</Button>}>
-            <MenuItem icon={<svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>} shortcut="⌘E" onSelect={() => console.log('edit')}>Edit</MenuItem>
-            <MenuItem icon={<svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>} shortcut="⌘D" onSelect={() => console.log('duplicate')}>Duplicate</MenuItem>
+            <MenuItem icon={<Icon size="xs"><Edit /></Icon>} shortcut="⌘E" onSelect={() => console.log('edit')}>Edit</MenuItem>
+            <MenuItem icon={<Icon size="xs"><Copy /></Icon>} shortcut="⌘D" onSelect={() => console.log('duplicate')}>Duplicate</MenuItem>
             <MenuSeparator />
-            <MenuItem icon={<svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>} onSelect={() => console.log('delete')} danger>Delete</MenuItem>
+            <MenuItem icon={<Icon size="xs"><Delete /></Icon>} onSelect={() => console.log('delete')} danger>Delete</MenuItem>
           </Menu>
         </Row>
         <Row label="With groups" tokens={tokens}>
@@ -3290,7 +3308,7 @@ function Inner({
           ]} />
         </Row>
         <Row label="With icon" tokens={tokens}>
-          <FilterSelect label="Newest first" size="sm" icon={<svg width={14} height={14} viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 2v12M4 14l-3-3M4 14l3-3M12 14V2M12 2l-3 3M12 2l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>} options={[
+          <FilterSelect label="Newest first" size="sm" icon={<Icon size="sm"><ArrowsUpDown /></Icon>} options={[
             { value: 'newest', label: 'Newest first' },
             { value: 'oldest', label: 'Oldest first' },
             { value: 'name', label: 'Name A–Z' },
@@ -3689,13 +3707,7 @@ function Inner({
         <Row label="Destructive confirmation" tokens={tokens}>
           <Card variant="elevated" padding="lg" style={{ maxWidth: 400 }}>
             <StackAtom gap="8" align="center">
-              <Icon size="xl" color="var(--lucent-danger-text)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-                  <line x1={12} y1={9} x2={12} y2={13} />
-                  <line x1={12} y1={17} x2={12.01} y2={17} />
-                </svg>
-              </Icon>
+              <Icon size="xl" color="var(--lucent-danger-text)"><AlertTriangle /></Icon>
               <StackAtom gap="1" align="center">
                 <Text size="lg" weight="semibold">Delete project?</Text>
                 <Text size="sm" color="secondary" align="center">This will permanently delete &quot;Acme Corp&quot; and all of its data. This action cannot be undone.</Text>
@@ -3710,13 +3722,7 @@ function Inner({
         <Row label="With typed confirmation" tokens={tokens}>
           <Card variant="elevated" padding="lg" style={{ maxWidth: 400 }}>
             <StackAtom gap="8" align="center">
-              <Icon size="xl" color="var(--lucent-danger-text)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-                  <line x1={12} y1={9} x2={12} y2={13} />
-                  <line x1={12} y1={17} x2={12.01} y2={17} />
-                </svg>
-              </Icon>
+              <Icon size="xl" color="var(--lucent-danger-text)"><AlertTriangle /></Icon>
               <StackAtom gap="1" align="center">
                 <Text size="lg" weight="semibold">Delete your account?</Text>
                 <Text size="sm" color="secondary" align="center">All projects, data, and billing history will be permanently removed. Type DELETE to confirm.</Text>
@@ -3732,13 +3738,7 @@ function Inner({
         <Row label="Non-destructive confirmation" tokens={tokens}>
           <Card variant="elevated" padding="lg" style={{ maxWidth: 400 }}>
             <StackAtom gap="8" align="center">
-              <Icon size="xl" color="var(--lucent-info-text)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx={12} cy={12} r={10} />
-                  <line x1={12} y1={16} x2={12} y2={12} />
-                  <line x1={12} y1={8} x2={12.01} y2={8} />
-                </svg>
-              </Icon>
+              <Icon size="xl" color="var(--lucent-info-text)"><CircleInfo /></Icon>
               <StackAtom gap="1" align="center">
                 <Text size="lg" weight="semibold">Publish changes?</Text>
                 <Text size="sm" color="secondary" align="center">This will make your draft visible to all team members. You can unpublish later from settings.</Text>
@@ -3858,14 +3858,7 @@ function Inner({
         <Row label="No results" tokens={tokens}>
           <Card variant="outline" padding="lg" style={{ width: 400 }}>
             <EmptyState
-              illustration={
-                <Icon size="xl">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx={11} cy={11} r={8} />
-                    <path d="M21 21l-4.35-4.35" />
-                  </svg>
-                </Icon>
-              }
+              illustration={<Icon size="xl"><Search /></Icon>}
               title="No results found"
               description="Try adjusting your search or filters to find what you're looking for."
               action={<Button variant="secondary" size="sm">Clear filters</Button>}
@@ -3875,13 +3868,7 @@ function Inner({
         <Row label="Getting started" tokens={tokens}>
           <Card variant="elevated" padding="lg" style={{ width: 400 }}>
             <EmptyState
-              illustration={
-                <Icon size="xl">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 5v14M5 12h14" />
-                  </svg>
-                </Icon>
-              }
+              illustration={<Icon size="xl"><Plus /></Icon>}
               title="No projects yet"
               description="Create your first project to get started."
               action={<Button variant="primary" size="sm">Create project</Button>}
@@ -3891,14 +3878,7 @@ function Inner({
         <Row label="Error with retry" tokens={tokens}>
           <Card variant="outline" padding="lg" style={{ width: 400 }}>
             <EmptyState
-              illustration={
-                <Icon size="xl">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx={12} cy={12} r={10} />
-                    <path d="M12 8v4M12 16h.01" />
-                  </svg>
-                </Icon>
-              }
+              illustration={<Icon size="xl"><CircleInfo /></Icon>}
               title="Something went wrong"
               description="We couldn't load your data. Please try again."
               action={<Button variant="outline" size="sm">Retry</Button>}
@@ -3915,12 +3895,7 @@ function Inner({
             style={{ width: 320 }}
             media={
               <div style={{ height: 180, background: `linear-gradient(135deg, ${tokens.surfaceRaised} 0%, color-mix(in srgb, ${tokens.accentDefault} 12%, ${tokens.surfaceRaised}) 100%)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Icon size="xl" color={tokens.textSecondary}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M3 18v-6a9 9 0 0118 0v6" />
-                    <path d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3zM3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3z" />
-                  </svg>
-                </Icon>
+                <Icon size="xl" color={tokens.textSecondary}><Headphones /></Icon>
               </div>
             }
           >
@@ -3946,15 +3921,7 @@ function Inner({
           <Card variant="outline" padding="lg" hoverable style={{ width: 340 }}>
             <StackAtom gap="4">
               <RowAtom gap="3" align="start">
-                <Icon size="lg" color="var(--lucent-text-secondary)">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
-                    <polyline points="14 2 14 8 20 8" />
-                    <line x1={16} y1={13} x2={8} y2={13} />
-                    <line x1={16} y1={17} x2={8} y2={17} />
-                    <polyline points="10 9 9 9 8 9" />
-                  </svg>
-                </Icon>
+                <Icon size="lg" color="var(--lucent-text-secondary)"><FileIcon /></Icon>
                 <StackAtom gap="1" style={{ flex: 1 }}>
                   <Text size="md" weight="semibold">Design Tokens at Scale</Text>
                   <Text size="xs" color="secondary">Published Mar 15, 2026</Text>
@@ -4006,12 +3973,7 @@ function Inner({
             style={{ width: 380 }}
             media={
               <div style={{ height: 160, background: `linear-gradient(135deg, color-mix(in srgb, ${tokens.accentDefault} 15%, ${tokens.surfaceRaised}) 0%, color-mix(in srgb, ${tokens.accentDefault} 5%, ${tokens.surfaceRaised}) 100%)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Icon size="xl" color={tokens.accentDefault}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M3 3v18h18" />
-                    <path d="M7 16l4-8 4 4 4-6" />
-                  </svg>
-                </Icon>
+                <Icon size="xl" color={tokens.accentDefault}><ArrowTrendingUp /></Icon>
               </div>
             }
           >
@@ -4033,13 +3995,7 @@ function Inner({
         <Row label="System notice (no media)" tokens={tokens}>
           <Card variant="outline" padding="md" style={{ width: 400, borderColor: 'var(--lucent-warning-default)' }}>
             <RowAtom gap="3" align="start">
-              <Icon size="lg" color="var(--lucent-warning-text)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-                  <line x1={12} y1={9} x2={12} y2={13} />
-                  <line x1={12} y1={17} x2={12.01} y2={17} />
-                </svg>
-              </Icon>
+              <Icon size="lg" color="var(--lucent-warning-text)"><AlertTriangle /></Icon>
               <StackAtom gap="2" style={{ flex: 1 }}>
                 <Text size="sm" weight="semibold">Storage almost full</Text>
                 <Text size="sm" color="secondary">You've used 92% of your storage. Upgrade your plan or delete unused files to free up space.</Text>
@@ -4055,12 +4011,7 @@ function Inner({
           <Card variant="filled" padding="md" hoverable style={{ width: 380 }}>
             <RowAtom gap="5" align="center">
               <div style={{ width: 80, height: 80, borderRadius: 'var(--lucent-radius-lg)', overflow: 'hidden', flexShrink: 0, background: `linear-gradient(135deg, color-mix(in srgb, var(--lucent-success-default) 20%, ${tokens.surfaceRaised}) 0%, ${tokens.surfaceRaised} 100%)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Icon size="lg" color="var(--lucent-success-text)">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" />
-                    <line x1={7} y1={7} x2={7.01} y2={7} />
-                  </svg>
-                </Icon>
+                <Icon size="lg" color="var(--lucent-success-text)"><PriceTag /></Icon>
               </div>
               <StackAtom gap="2" style={{ flex: 1 }}>
                 <RowAtom gap="2" align="center">
@@ -4076,12 +4027,7 @@ function Inner({
         <Row label="Success confirmation" tokens={tokens}>
           <Card variant="outline" padding="md" style={{ width: 400, borderColor: 'var(--lucent-success-default)' }}>
             <RowAtom gap="3" align="start">
-              <Icon size="lg" color="var(--lucent-success-text)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
-                  <polyline points="22 4 12 14.01 9 11.01" />
-                </svg>
-              </Icon>
+              <Icon size="lg" color="var(--lucent-success-text)"><CircleCheck /></Icon>
               <StackAtom gap="1" style={{ flex: 1 }}>
                 <Text size="sm" weight="semibold">Payment received</Text>
                 <Text size="sm" color="secondary">Your invoice #1042 for $2,400.00 has been paid successfully.</Text>
@@ -4146,7 +4092,7 @@ function Inner({
             {sfbHasFilters && <Button variant="ghost" size="sm" onClick={sfbClearAll}>Clear all</Button>}
             <div style={{ flex: 1 }} />
             <RowAtom gap="2" align="center">
-              <Menu trigger={<Button variant="secondary" size="sm" chevron leftIcon={<svg width={14} height={14} viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 2v12M4 14l-3-3M4 14l3-3M12 14V2M12 2l-3 3M12 2l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}>Newest first</Button>} size="sm">
+              <Menu trigger={<Button variant="secondary" size="sm" chevron leftIcon={<Icon size="sm"><ArrowsUpDown /></Icon>}>Newest first</Button>} size="sm">
                 <MenuItem selected onSelect={() => {}}>Newest first</MenuItem>
                 <MenuItem onSelect={() => {}}>Oldest first</MenuItem>
                 <MenuItem onSelect={() => {}}>Name A–Z</MenuItem>
@@ -4155,8 +4101,8 @@ function Inner({
                 size="sm"
                 defaultValue="grid"
                 options={[
-                  { value: 'grid', label: <svg width={14} height={14} viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="1" y="1" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5"/><rect x="9" y="1" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5"/><rect x="1" y="9" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5"/><rect x="9" y="9" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5"/></svg> },
-                  { value: 'list', label: <svg width={14} height={14} viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 3h12M2 8h12M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg> },
+                  { value: 'grid', label: <Icon size="sm"><Grid /></Icon> },
+                  { value: 'list', label: <Icon size="sm"><List /></Icon> },
                 ]}
               />
             </RowAtom>
@@ -4194,12 +4140,12 @@ function Inner({
                       { value: 'active', label: 'Active' },
                       { value: 'archived', label: 'Archived' },
                       { value: 'on-hold', label: 'On hold' },
-                    ]} value={[...sfbStatuses]} onChange={(vals) => setSfbStatuses(new Set(vals))} icon={<svg width={12} height={12} viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 3h12M4 8h8M6 13h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>} />
+                    ]} value={[...sfbStatuses]} onChange={(vals) => setSfbStatuses(new Set(vals))} icon={<Icon size="xs"><Filters /></Icon>} />
                   ),
                   render: (row: typeof sfbCandidates[0]) => <Chip size="sm" variant={row.status === 'Active' ? 'success' : row.status === 'Archived' ? 'neutral' : 'warning'} dot>{row.status}</Chip> },
                 { key: 'tags', header: 'Tags',
                   headerFilter: (
-                    <FilterMultiSelect label="" variant="ghost" size="xs" options={sfbTagOptions} value={[...sfbTags]} onChange={(vals) => setSfbTags(new Set(vals))} icon={<svg width={12} height={12} viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 3h12M4 8h8M6 13h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>} />
+                    <FilterMultiSelect label="" variant="ghost" size="xs" options={sfbTagOptions} value={[...sfbTags]} onChange={(vals) => setSfbTags(new Set(vals))} icon={<Icon size="xs"><Filters /></Icon>} />
                   ),
                   render: (row: typeof sfbCandidates[0]) => <RowAtom gap="1" wrap>{row.tags.map(t => <Chip key={t} size="sm" swatch={{ 'data-science': '#6366f1', devops: '#10b981', hot: '#f59e0b', react: '#3b82f6' }[t]}>{t}</Chip>)}</RowAtom> },
                 { key: 'added', header: 'Added', sortable: true, render: (row: typeof sfbCandidates[0]) => <Text size="sm" color="secondary">{row.added.toLocaleDateString()}</Text> },
