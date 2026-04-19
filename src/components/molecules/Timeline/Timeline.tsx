@@ -1,5 +1,9 @@
 import { type CSSProperties, type ReactNode } from 'react';
 import { Text } from '../../atoms/Text/index.js';
+import { Check } from '../../../icons/Check.js';
+import { X } from '../../../icons/X.js';
+import { AlertTriangle } from '../../../icons/AlertTriangle.js';
+import { CircleInfo } from '../../../icons/CircleInfo.js';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -34,33 +38,16 @@ const STATUS_FILL: Record<TimelineItemStatus, string> = {
 // ─── Default icons (white on filled background) ──────────────────────────────
 
 function DefaultIcon({ status }: { status: TimelineItemStatus }) {
-  if (status === 'success') {
+  const iconFor: Partial<Record<TimelineItemStatus, ReactNode>> = {
+    success: <Check />,
+    danger: <X />,
+    warning: <AlertTriangle />,
+    info: <CircleInfo />,
+  };
+  const node = iconFor[status];
+  if (node) {
     return (
-      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden>
-        <path d="M2.5 5.2l1.8 1.8L7.5 3.5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    );
-  }
-  if (status === 'danger') {
-    return (
-      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden>
-        <path d="M3 3l4 4M7 3L3 7" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" />
-      </svg>
-    );
-  }
-  if (status === 'warning') {
-    return (
-      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden>
-        <path d="M5 2.5v3M5 7.5v.01" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" />
-      </svg>
-    );
-  }
-  if (status === 'info') {
-    return (
-      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden>
-        <circle cx="5" cy="3" r="0.75" fill="#fff" />
-        <path d="M5 5v2.5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" />
-      </svg>
+      <span aria-hidden style={{ display: 'inline-flex', width: 10, height: 10, color: '#fff' }}>{node}</span>
     );
   }
   // default: small inner dot

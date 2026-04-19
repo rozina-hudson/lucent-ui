@@ -4,6 +4,7 @@ import {
 } from 'react';
 import { createPortal } from 'react-dom';
 import { Text } from '../../atoms/Text/index.js';
+import { Check } from '../../../icons/Check.js';
 
 // ─── Keyframes ────────────────────────────────────────────────────────────────
 
@@ -299,9 +300,7 @@ export function MenuItem({
           display: 'flex',
           color: 'var(--lucent-accent-default)',
         }}>
-          <svg width={checkSize} height={checkSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-            <polyline points="20 6 9 17 4 12" />
-          </svg>
+          <span aria-hidden style={{ display: 'inline-flex', width: checkSize, height: checkSize }}><Check /></span>
         </span>
       )}
     </div>

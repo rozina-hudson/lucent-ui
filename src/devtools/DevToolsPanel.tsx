@@ -15,6 +15,7 @@ import { Toggle } from '../components/atoms/Toggle/index.js';
 import { Text } from '../components/atoms/Text/index.js';
 import { Badge } from '../components/atoms/Badge/index.js';
 import { PANEL } from './panelColors.js';
+import { X } from '../icons/X.js';
 
 type PanelTab = 'design' | 'type' | 'tokens';
 
@@ -103,9 +104,7 @@ export function DevToolsPanel({ state, theme, position, mode, onModeChange, onTh
               )}
             </Button>
             <Button variant="ghost" size="2xs" onClick={onClose} aria-label="Close">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <path d="M2 2l10 10M12 2L2 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              </svg>
+              <span aria-hidden style={{ display: 'inline-flex', width: 14, height: 14 }}><X /></span>
             </Button>
           </div>
         </div>

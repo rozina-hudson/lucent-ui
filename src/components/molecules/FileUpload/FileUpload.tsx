@@ -3,6 +3,9 @@ import {
   type CSSProperties, type DragEvent, type ChangeEvent,
 } from 'react';
 import { Text } from '../../atoms/Text/index.js';
+import { File as FileIcon } from '../../../icons/File.js';
+import { Upload } from '../../../icons/Upload.js';
+import { X } from '../../../icons/X.js';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -63,11 +66,7 @@ function FileRow({
       border: `1px solid ${hasError ? 'var(--lucent-danger-default)' : 'var(--lucent-border-default)'}`,
       background: 'var(--lucent-surface)',
     }}>
-      {/* File icon */}
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden style={{ flexShrink: 0, color: 'var(--lucent-text-secondary)' }}>
-        <path d="M5 2h7l4 4v12a1 1 0 01-1 1H5a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" strokeWidth="1.3" />
-        <path d="M12 2v4h4" stroke="currentColor" strokeWidth="1.3" />
-      </svg>
+      <span aria-hidden style={{ display: 'inline-flex', width: 20, height: 20, flexShrink: 0, color: 'var(--lucent-text-secondary)' }}><FileIcon /></span>
 
       <div style={{ flex: 1, minWidth: 0 }}>
         <Text size="sm" truncate>{item.file.name}</Text>
@@ -115,9 +114,7 @@ function FileRow({
           transition: 'background var(--lucent-duration-fast)',
         }}
       >
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden>
-          <path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        </svg>
+        <span aria-hidden style={{ display: 'inline-flex', width: 12, height: 12 }}><X /></span>
       </button>
     </div>
   );
@@ -217,12 +214,7 @@ export function FileUpload({
           outline: 'none',
         }}
       >
-        {/* Upload icon */}
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden
-          style={{ color: disabled ? 'var(--lucent-text-disabled)' : dragging ? 'var(--lucent-accent-default)' : 'var(--lucent-text-secondary)' }}>
-          <path d="M16 20V10M16 10l-4 4M16 10l4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-          <path d="M8 24h16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-        </svg>
+        <span aria-hidden style={{ display: 'inline-flex', width: 32, height: 32, color: disabled ? 'var(--lucent-text-disabled)' : dragging ? 'var(--lucent-accent-default)' : 'var(--lucent-text-secondary)' }}><Upload /></span>
 
         <div style={{ textAlign: 'center', width: '100%' }}>
           <Text color={disabled ? 'disabled' : 'primary'} weight="medium" align="center">

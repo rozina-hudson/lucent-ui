@@ -1,5 +1,6 @@
 import { useState, type CSSProperties, type ReactNode } from 'react';
 import { Menu, MenuItem, type MenuPlacement, type MenuSize } from '../../molecules/Menu/index.js';
+import { ChevronDown } from '../../../icons/ChevronDown.js';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -302,9 +303,9 @@ export function SplitButton({
               width: chevronBtnWidth[size],
             }}
           >
-            <svg width={px} height={px} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden style={{ flexShrink: 0, transition: 'transform var(--lucent-duration-fast) var(--lucent-easing-default)', ...(menuOpen && { transform: 'rotate(180deg)' }) }}>
-              <polyline points="6 9 12 15 18 9" />
-            </svg>
+            <span aria-hidden style={{ display: 'inline-flex', width: px, height: px, flexShrink: 0, transition: 'transform var(--lucent-duration-fast) var(--lucent-easing-default)', ...(menuOpen && { transform: 'rotate(180deg)' }) }}>
+              <ChevronDown />
+            </span>
           </button>
         }
       >
