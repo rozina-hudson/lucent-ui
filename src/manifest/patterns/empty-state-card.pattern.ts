@@ -18,14 +18,7 @@ Card (outline, padding="lg")
 
   code: `<Card variant="outline" padding="lg" style={{ width: 400 }}>
   <EmptyState
-    illustration={
-      <Icon size="xl">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-          <circle cx={11} cy={11} r={8} />
-          <path d="M21 21l-4.35-4.35" />
-        </svg>
-      </Icon>
-    }
+    illustration={<Icon size="xl"><Search /></Icon>}
     title="No results found"
     description="Try adjusting your search or filters to find what you're looking for."
     action={<Button variant="secondary" size="sm">Clear filters</Button>}
@@ -37,13 +30,7 @@ Card (outline, padding="lg")
       title: 'Getting started empty state',
       code: `<Card variant="elevated" padding="lg" style={{ width: 400 }}>
   <EmptyState
-    illustration={
-      <Icon size="xl">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 5v14M5 12h14" />
-        </svg>
-      </Icon>
-    }
+    illustration={<Icon size="xl"><Plus /></Icon>}
     title="No projects yet"
     description="Create your first project to get started."
     action={<Button variant="primary" size="sm">Create project</Button>}
@@ -54,14 +41,7 @@ Card (outline, padding="lg")
       title: 'Error empty state with retry',
       code: `<Card variant="outline" padding="lg" style={{ width: 400 }}>
   <EmptyState
-    illustration={
-      <Icon size="xl">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-          <circle cx={12} cy={12} r={10} />
-          <path d="M12 8v4M12 16h.01" />
-        </svg>
-      </Icon>
-    }
+    illustration={<Icon size="xl"><CircleInfo /></Icon>}
     title="Something went wrong"
     description="We couldn't load your data. Please try again."
     action={<Button variant="outline" size="sm">Retry</Button>}

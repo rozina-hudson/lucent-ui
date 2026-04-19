@@ -1,4 +1,5 @@
 import { useState, type ReactNode, type CSSProperties } from 'react';
+import { X } from '../../../icons/X.js';
 
 export type ChipVariant = 'neutral' | 'accent' | 'success' | 'warning' | 'danger' | 'info';
 export type ChipSize = 'sm' | 'md' | 'lg';
@@ -251,9 +252,7 @@ export function Chip({
             lineHeight: 1,
           }}
         >
-          <svg width={s.iconSize - 2} height={s.iconSize - 2} viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round">
-            <path d="M2 2L8 8M8 2L2 8" />
-          </svg>
+          <span style={{ display: 'inline-flex', width: s.iconSize - 2, height: s.iconSize - 2 }}><X /></span>
         </button>
       )}
     </>

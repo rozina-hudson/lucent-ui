@@ -1,5 +1,6 @@
 import { useEffect, type CSSProperties, type ReactNode } from 'react';
 import { Chip } from '../../atoms/Chip/index.js';
+import { Check } from '../../../icons/Check.js';
 
 export type StepperSize = 'sm' | 'md' | 'lg';
 export type StepperOrientation = 'horizontal' | 'vertical';
@@ -54,9 +55,7 @@ function normalizeStep(step: string | StepDef): StepDef {
 
 function CheckIcon({ size }: { size: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <polyline points="20 6 9 17 4 12" />
-    </svg>
+    <span aria-hidden style={{ display: 'inline-flex', width: size, height: size }}><Check /></span>
   );
 }
 

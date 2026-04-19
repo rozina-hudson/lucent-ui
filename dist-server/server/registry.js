@@ -9,6 +9,7 @@ import { COMPONENT_MANIFEST as Icon } from '../src/components/atoms/Icon/Icon.ma
 import { COMPONENT_MANIFEST as Input } from '../src/components/atoms/Input/Input.manifest.js';
 import { COMPONENT_MANIFEST as Radio } from '../src/components/atoms/Radio/Radio.manifest.js';
 import { COMPONENT_MANIFEST as Select } from '../src/components/atoms/Select/Select.manifest.js';
+import { COMPONENT_MANIFEST as Combobox } from '../src/components/atoms/Combobox/Combobox.manifest.js';
 import { COMPONENT_MANIFEST as Spinner } from '../src/components/atoms/Spinner/Spinner.manifest.js';
 import { COMPONENT_MANIFEST as Tag } from '../src/components/atoms/Tag/Tag.manifest.js';
 import { COMPONENT_MANIFEST as Text } from '../src/components/atoms/Text/Text.manifest.js';
@@ -38,6 +39,7 @@ export const ALL_MANIFESTS = [
     Input,
     Radio,
     Select,
+    Combobox,
     Spinner,
     Tag,
     Text,

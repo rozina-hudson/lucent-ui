@@ -21,13 +21,7 @@ Card (elevated, padding="lg", maxWidth=400)
 
   code: `<Card variant="elevated" padding="lg" style={{ maxWidth: 400 }}>
   <Stack gap="8" align="center">
-    <Icon size="xl" color="var(--lucent-danger-text)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-        <line x1={12} y1={9} x2={12} y2={13} />
-        <line x1={12} y1={17} x2={12.01} y2={17} />
-      </svg>
-    </Icon>
+    <Icon size="xl" color="var(--lucent-danger-text)"><AlertTriangle /></Icon>
     <Stack gap="1" align="center">
       <Text size="lg" weight="semibold">Delete project?</Text>
       <Text size="sm" color="secondary" align="center">This will permanently delete "Acme Corp" and all of its data. This action cannot be undone.</Text>
@@ -44,13 +38,7 @@ Card (elevated, padding="lg", maxWidth=400)
       title: 'With typed confirmation',
       code: `<Card variant="elevated" padding="lg" style={{ maxWidth: 400 }}>
   <Stack gap="8" align="center">
-    <Icon size="xl" color="var(--lucent-danger-text)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-        <line x1={12} y1={9} x2={12} y2={13} />
-        <line x1={12} y1={17} x2={12.01} y2={17} />
-      </svg>
-    </Icon>
+    <Icon size="xl" color="var(--lucent-danger-text)"><AlertTriangle /></Icon>
     <Stack gap="1" align="center">
       <Text size="lg" weight="semibold">Delete your account?</Text>
       <Text size="sm" color="secondary" align="center">All projects, data, and billing history will be permanently removed. Type DELETE to confirm.</Text>
@@ -67,13 +55,7 @@ Card (elevated, padding="lg", maxWidth=400)
       title: 'Non-destructive confirmation',
       code: `<Card variant="elevated" padding="lg" style={{ maxWidth: 400 }}>
   <Stack gap="8" align="center">
-    <Icon size="xl" color="var(--lucent-info-text)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-        <circle cx={12} cy={12} r={10} />
-        <line x1={12} y1={16} x2={12} y2={12} />
-        <line x1={12} y1={8} x2={12.01} y2={8} />
-      </svg>
-    </Icon>
+    <Icon size="xl" color="var(--lucent-info-text)"><CircleInfo /></Icon>
     <Stack gap="1" align="center">
       <Text size="lg" weight="semibold">Publish changes?</Text>
       <Text size="sm" color="secondary" align="center">This will make your draft visible to all team members. You can unpublish later from settings.</Text>

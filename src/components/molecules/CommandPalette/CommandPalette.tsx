@@ -4,6 +4,7 @@ import {
 } from 'react';
 import { Button } from '../../atoms/Button/index.js';
 import { Text } from '../../atoms/Text/index.js';
+import { Search } from '../../../icons/Search.js';
 
 // ─── Keyframes ────────────────────────────────────────────────────────────────
 
@@ -198,10 +199,7 @@ export function CommandPalette({
           padding: 'var(--lucent-space-3) var(--lucent-space-4)',
           borderBottom: filtered.length > 0 ? '1px solid var(--lucent-border-subtle)' : 'none',
         }}>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden style={{ flexShrink: 0, color: 'var(--lucent-text-secondary)' }}>
-            <circle cx="7" cy="7" r="4.5" stroke="currentColor" strokeWidth="1.5" />
-            <path d="M10.5 10.5L13.5 13.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
+          <span aria-hidden style={{ display: 'inline-flex', width: 16, height: 16, flexShrink: 0, color: 'var(--lucent-text-secondary)' }}><Search /></span>
           <input
             ref={inputRef}
             role="searchbox"

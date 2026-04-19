@@ -10,6 +10,11 @@ import {
 } from 'react';
 import { createPortal } from 'react-dom';
 import { Text } from '../../atoms/Text/Text.js';
+import { CircleInfo } from '../../../icons/CircleInfo.js';
+import { CircleCheck } from '../../../icons/CircleCheck.js';
+import { AlertTriangle } from '../../../icons/AlertTriangle.js';
+import { CircleX } from '../../../icons/CircleX.js';
+import { X } from '../../../icons/X.js';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -83,45 +88,15 @@ export function useToast(): ToastContextValue {
 /*  Icons (reuse Alert patterns)                                       */
 /* ------------------------------------------------------------------ */
 
-const InfoIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-    <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.5"/>
-    <path d="M8 5.5V8.5M8 10.5V11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-  </svg>
-);
-
-const SuccessIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-    <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.5"/>
-    <path d="M5 8L7 10L11 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
-
-const WarningIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-    <path d="M8 2L14.5 13H1.5L8 2Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
-    <path d="M8 6V9M8 11V11.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-  </svg>
-);
-
-const DangerIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-    <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.5"/>
-    <path d="M5.5 5.5L10.5 10.5M10.5 5.5L5.5 10.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-  </svg>
-);
-
-const DismissIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-    <path d="M3 3L11 11M11 3L3 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-  </svg>
+const iconBox = (node: ReactNode, size = 16) => (
+  <span style={{ display: 'inline-flex', width: size, height: size }}>{node}</span>
 );
 
 const defaultIcons: Record<Exclude<ToastVariant, 'default'>, ReactNode> = {
-  info:    <InfoIcon />,
-  success: <SuccessIcon />,
-  warning: <WarningIcon />,
-  danger:  <DangerIcon />,
+  info:    iconBox(<CircleInfo />),
+  success: iconBox(<CircleCheck />),
+  warning: iconBox(<AlertTriangle />),
+  danger:  iconBox(<CircleX />),
 };
 
 /* ------------------------------------------------------------------ */
@@ -255,7 +230,7 @@ function ToastCard({ entry, onDismiss, hideContent, fixedHeight }: ToastCardProp
           onMouseEnter={(e) => { if (!hideContent) e.currentTarget.style.opacity = '1'; }}
           onMouseLeave={(e) => { if (!hideContent) e.currentTarget.style.opacity = '0.6'; }}
         >
-          <DismissIcon />
+          {iconBox(<X />, 14)}
         </button>
       </div>
     </div>

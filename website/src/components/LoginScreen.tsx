@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { Email, Lock, View, Hide, Check } from 'lucent-ui';
 
 const INK = '#0b0d12';
 const INK_PANEL = 'rgba(17,19,24,0.7)';
@@ -201,13 +202,9 @@ function Pill({ children, dot, accent }: { children: ReactNode; dot?: boolean; a
 type IconName = 'mail' | 'lock' | 'eye' | 'eyeOff';
 
 function FieldIcon({ name }: { name: IconName }) {
+  const Icon = name === 'mail' ? Email : name === 'lock' ? Lock : name === 'eye' ? View : Hide;
   return (
-    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round">
-      {name === 'mail' && (<><rect x="2" y="4" width="20" height="16" rx="2" /><path d="M22 7 12 13 2 7" /></>)}
-      {name === 'lock' && (<><rect x="3" y="11" width="18" height="10" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></>)}
-      {name === 'eye' && (<><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" /><circle cx="12" cy="12" r="3" /></>)}
-      {name === 'eyeOff' && (<><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.77 21.77 0 0 1 5.17-6.17" /><path d="M22.54 6.42A21.77 21.77 0 0 1 23 12s-4 8-11 8a11 11 0 0 1-2.17-.22" /><path d="M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8" /><line x1="1" y1="1" x2="23" y2="23" /></>)}
-    </svg>
+    <span aria-hidden style={{ display: 'inline-flex', width: 16, height: 16 }}><Icon /></span>
   );
 }
 
@@ -316,9 +313,7 @@ function RememberCheckbox({ on, onChange, label }: { on: boolean; onChange: (v: 
         }}
       >
         {on && (
-          <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke={INK} strokeWidth={3.5} strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="20 6 9 17 4 12" />
-          </svg>
+          <span aria-hidden style={{ display: 'inline-flex', width: 10, height: 10, color: INK }}><Check /></span>
         )}
       </span>
       {label}
@@ -462,10 +457,7 @@ function LoginCard() {
         <SsoButton
           label="SSO"
           icon={
-            <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="11" width="18" height="10" rx="2" />
-              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-            </svg>
+            <span aria-hidden style={{ display: 'inline-flex', width: 16, height: 16, color: GOLD }}><Lock /></span>
           }
         />
       </div>

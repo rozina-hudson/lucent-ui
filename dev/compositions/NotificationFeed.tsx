@@ -1,5 +1,6 @@
 import {
   Card, Avatar, Text, Button, Chip, Stack, Row, Tooltip,
+  View, Check, X as XIconSrc,
 } from '../../src/index.js';
 
 interface Notification {
@@ -27,29 +28,13 @@ const typeChip: Record<Notification['type'], { variant: 'accent' | 'info' | 'war
   invite: { variant: 'success', label: 'Invite' },
 };
 
-function EyeIcon() {
-  return (
-    <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" />
-    </svg>
-  );
-}
+const tinyIcon = (node: React.ReactNode): React.ReactNode => (
+  <span aria-hidden style={{ display: 'inline-flex', width: 12, height: 12 }}>{node}</span>
+);
 
-function CheckIcon() {
-  return (
-    <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <polyline points="20 6 9 17 4 12" />
-    </svg>
-  );
-}
-
-function XIcon() {
-  return (
-    <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-    </svg>
-  );
-}
+function EyeIcon() { return tinyIcon(<View />); }
+function CheckIcon() { return tinyIcon(<Check />); }
+function XIcon() { return tinyIcon(<XIconSrc />); }
 
 const iconBtnStyle: React.CSSProperties = { width: 24, height: 24, padding: 0, minWidth: 0 };
 
