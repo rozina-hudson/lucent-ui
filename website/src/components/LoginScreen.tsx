@@ -89,13 +89,9 @@ function SignalBackground() {
     const onResize = () => size();
     window.addEventListener('resize', onResize);
 
-    const ro = 'ResizeObserver' in window ? new ResizeObserver(size) : null;
-    if (ro && canvas.parentElement) ro.observe(canvas.parentElement);
-
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener('resize', onResize);
-      ro?.disconnect();
     };
   }, []);
 
@@ -253,7 +249,7 @@ function LoginField({ type, value, onChange, placeholder, icon, autoComplete, on
         onFocus={() => setFocus(true)}
         onBlur={() => setFocus(false)}
         spellCheck={false}
-        {...(autoComplete !== undefined && { autoComplete })}
+        autoComplete={autoComplete}
         style={{
           flex: 1,
           minWidth: 0,
@@ -602,19 +598,18 @@ function LoginCard() {
   );
 }
 
-export function LoginScreen() {
+export default function LoginScreen() {
   return (
     <div
       style={{
-        position: 'relative',
-        width: '100%',
-        height: 720,
+        position: 'fixed',
+        inset: 0,
         overflow: 'hidden',
         background: INK,
         color: TEXT,
         fontFamily: '"DM Sans", -apple-system, sans-serif',
-        borderRadius: 4,
-        border: `1px solid ${BORDER}`,
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
       <style>{KEYFRAMES}</style>
@@ -639,7 +634,10 @@ export function LoginScreen() {
           pointerEvents: 'none',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <a
+          href="/"
+          style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', pointerEvents: 'auto' }}
+        >
           <svg width={18} height={18} viewBox="0 0 24 24" fill="none">
             <rect x="3" y="4" width="14" height="2.5" rx="1" fill={GOLD} />
             <rect x="5" y="8" width="16" height="2.5" rx="1" fill={GOLD} opacity="0.85" />
@@ -649,7 +647,7 @@ export function LoginScreen() {
           <span style={{ fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', color: TEXT }}>
             Lucent UI
           </span>
-        </div>
+        </a>
         <Pill dot>All systems operational</Pill>
       </header>
 
@@ -657,7 +655,7 @@ export function LoginScreen() {
         style={{
           position: 'relative',
           zIndex: 2,
-          height: '100%',
+          flex: 1,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',

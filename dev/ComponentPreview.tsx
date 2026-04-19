@@ -77,7 +77,6 @@ import { OnboardingFlow } from './compositions/OnboardingFlow.js';
 import { DashboardHeader } from './compositions/DashboardHeader.js';
 import { ActivityFeed } from './compositions/ActivityFeed.js';
 import { MetricsDashboard } from './compositions/MetricsDashboard.js';
-import { LoginScreen } from './compositions/LoginScreen.js';
 import { SparkLine } from '../src/components/charts/SparkLine/index.js';
 import { BarChart } from '../src/components/charts/BarChart/index.js';
 import { AreaChart } from '../src/components/charts/AreaChart/index.js';
@@ -317,7 +316,7 @@ function Inner({
     'r-cards':   { label: 'Cards',              tier: 'pattern', items: ['ProfileCard', 'ProductItemCard', 'AnnouncementCard', 'CollapsibleCard', 'EmptyStateCard'] },
     'r-layouts': { label: 'Layouts',            tier: 'pattern', items: ['SettingsPanel', 'FormLayout', 'StatsRow', 'ActionBar', 'ConfirmationDialog', 'BulkActionBar', 'TabPage', 'MultiStepWizard'] },
     'r-filters': { label: 'Filters',           tier: 'pattern', items: ['SearchFilterBar', 'SearchFilterPanel'] },
-    'c-all':     { label: 'All Compositions',   tier: 'composition', items: ['GoldenProfileCard', 'GoldenPreferencesCard', 'GoldenPricingTable', 'GoldenNotificationFeed', 'GoldenOnboardingFlow', 'GoldenDashboardHeader', 'GoldenActivityFeed', 'GoldenMetricsDashboard', 'GoldenLoginScreen'] },
+    'c-all':     { label: 'All Compositions',   tier: 'composition', items: ['GoldenProfileCard', 'GoldenPreferencesCard', 'GoldenPricingTable', 'GoldenNotificationFeed', 'GoldenOnboardingFlow', 'GoldenDashboardHeader', 'GoldenActivityFeed', 'GoldenMetricsDashboard'] },
   };
 
   const allSections = Object.values(sectionGroups).flatMap(g => g.items);
@@ -4617,12 +4616,6 @@ function Inner({
       <Section title="Metrics Dashboard" tokens={tokens} hidden={!showSection('GoldenMetricsDashboard')}>
         <Row label="Full composition" tokens={tokens}>
           <MetricsDashboard />
-        </Row>
-      </Section>
-
-      <Section title="Login Screen" tokens={tokens} hidden={!showSection('GoldenLoginScreen')}>
-        <Row label="Full composition" tokens={tokens}>
-          <LoginScreen />
         </Row>
       </Section>
 
