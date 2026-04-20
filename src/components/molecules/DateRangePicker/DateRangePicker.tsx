@@ -6,6 +6,7 @@ import {
   formatDate, isSameDay, isBeforeDay, isAfterDay,
   calPadding, calMinWidth,
 } from '../DatePicker/DatePicker.js';
+import { Calendar as CalendarIcon } from '../../../icons/Calendar.js';
 
 export interface DateRange {
   start: Date;
@@ -225,11 +226,7 @@ export function DateRangePicker({
             ].join(', '),
           }}
         >
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden style={{ flexShrink: 0 }}>
-            <rect x="1" y="2" width="12" height="11" rx="2" stroke="currentColor" strokeWidth="1.3" />
-            <path d="M1 6h12" stroke="currentColor" strokeWidth="1.3" />
-            <path d="M4 1v2M10 1v2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-          </svg>
+          <span aria-hidden style={{ display: 'inline-flex', width: 14, height: 14, flexShrink: 0 }}><CalendarIcon /></span>
           <span style={{ flex: 1, textAlign: 'left' }}>
             {formatRange(selected, placeholder)}
           </span>

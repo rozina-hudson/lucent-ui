@@ -51,14 +51,7 @@ Card (elevated, padding="lg", media=<img>)
       code: `<Card variant="outline" padding="lg" hoverable style={{ width: 340 }}>
   <Stack gap="4">
     <Row gap="3" align="start">
-      <Icon size={20} color="var(--lucent-text-secondary)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
-          <polyline points="14 2 14 8 20 8" />
-          <line x1={16} y1={13} x2={8} y2={13} />
-          <line x1={16} y1={17} x2={8} y2={17} />
-        </svg>
-      </Icon>
+      <Icon size={20} color="var(--lucent-text-secondary)"><File /></Icon>
       <Stack gap="1" style={{ flex: 1 }}>
         <Text size="md" weight="semibold">Design Tokens at Scale</Text>
         <Text size="xs" color="secondary">Published Mar 15, 2026</Text>

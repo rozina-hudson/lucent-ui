@@ -1,6 +1,8 @@
 import { useState, useEffect, type CSSProperties, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useMediaQuery } from '../../../hooks/useMediaQuery.js';
+import { X } from '../../../icons/X.js';
+import { List } from '../../../icons/List.js';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -145,20 +147,7 @@ function DrawerToggle({ open, onClick }: { open: boolean; onClick: () => void })
         flexShrink: 0,
       }}
     >
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden>
-        {open ? (
-          <>
-            <line x1="4" y1="4" x2="16" y2="16" />
-            <line x1="4" y1="16" x2="16" y2="4" />
-          </>
-        ) : (
-          <>
-            <line x1="3" y1="5" x2="17" y2="5" />
-            <line x1="3" y1="10" x2="17" y2="10" />
-            <line x1="3" y1="15" x2="17" y2="15" />
-          </>
-        )}
-      </svg>
+      <span aria-hidden style={{ display: 'inline-flex', width: 20, height: 20 }}>{open ? <X /> : <List />}</span>
     </button>
   );
 }

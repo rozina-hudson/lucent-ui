@@ -1,5 +1,6 @@
 import { forwardRef, type ButtonHTMLAttributes, type CSSProperties, type MouseEvent as ReactMouseEvent, type ReactNode } from 'react';
 import { sanitizeHref } from '../../../utils/sanitizeHref.js';
+import { ChevronDown } from '../../../icons/ChevronDown.js';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'danger-outline' | 'danger-ghost';
 export type ButtonSize = '2xs' | 'xs' | 'sm' | 'md' | 'lg';
@@ -255,9 +256,9 @@ const chevronSizePx: Record<ButtonSize, number> = { '2xs': 8, xs: 10, sm: 12, md
 function ButtonChevron({ size }: { size: ButtonSize }) {
   const px = chevronSizePx[size];
   return (
-    <svg width={px} height={px} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden style={{ flexShrink: 0, marginLeft: -2 }}>
-      <polyline points="6 9 12 15 18 9" />
-    </svg>
+    <span aria-hidden style={{ display: 'inline-flex', width: px, height: px, flexShrink: 0, marginLeft: -2 }}>
+      <ChevronDown />
+    </span>
   );
 }
 

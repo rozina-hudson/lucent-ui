@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from 'react';
+import { X } from '../../../icons/X.js';
 
 export type TagVariant = 'neutral' | 'accent' | 'success' | 'warning' | 'danger' | 'info';
 export type TagSize = 'sm' | 'md' | 'lg';
@@ -89,9 +90,7 @@ export function Tag({ children, variant = 'neutral', size = 'md', onDismiss, dis
             e.currentTarget.style.background = 'transparent';
           }}
         >
-          <svg width={s.iconSize} height={s.iconSize} viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round">
-            <path d="M2 2L8 8M8 2L2 8" />
-          </svg>
+          <span style={{ display: 'inline-flex', width: s.iconSize, height: s.iconSize }}><X /></span>
         </button>
       )}
     </span>

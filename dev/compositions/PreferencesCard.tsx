@@ -1,21 +1,18 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import {
   Card, Text, Badge, Toggle, Select, Slider, Button, Stack, Row, Divider, Menu, MenuItem, MenuSeparator,
+  MoreVertical, Email, Notification, Save,
 } from '../../src/index.js';
 
 function OverflowIcon() {
   return (
-    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <circle cx="12" cy="5" r="1" /><circle cx="12" cy="12" r="1" /><circle cx="12" cy="19" r="1" />
-    </svg>
+    <span aria-hidden style={{ display: 'inline-flex', width: 16, height: 16 }}><MoreVertical /></span>
   );
 }
 
-function SettingIcon({ d }: { d: string }) {
+function SettingIcon({ icon }: { icon: ReactNode }) {
   return (
-    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="var(--lucent-text-secondary)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d={d} />
-    </svg>
+    <span aria-hidden style={{ display: 'inline-flex', width: 16, height: 16, color: 'var(--lucent-text-secondary)' }}>{icon}</span>
   );
 }
 
@@ -50,7 +47,7 @@ export function PreferencesCard() {
         <Stack gap="4">
           <Row justify="between" align="center">
             <Row gap="3" align="center">
-              <SettingIcon d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM22 6l-10 7L2 6" />
+              <SettingIcon icon={<Email />} />
               <Stack gap="1">
                 <Text size="sm" weight="medium">Email alerts</Text>
                 <Text size="xs" color="secondary">Get notified when someone mentions you.</Text>
@@ -60,7 +57,7 @@ export function PreferencesCard() {
           </Row>
           <Row justify="between" align="center">
             <Row gap="3" align="center">
-              <SettingIcon d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9zM13.73 21a2 2 0 0 1-3.46 0" />
+              <SettingIcon icon={<Notification />} />
               <Stack gap="1">
                 <Text size="sm" weight="medium">Push notifications</Text>
                 <Text size="xs" color="secondary">Receive push notifications on your device.</Text>
@@ -70,7 +67,7 @@ export function PreferencesCard() {
           </Row>
           <Row justify="between" align="center">
             <Row gap="3" align="center">
-              <SettingIcon d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2zM17 21v-8H7v8M7 3v5h8" />
+              <SettingIcon icon={<Save />} />
               <Stack gap="1">
                 <Text size="sm" weight="medium">Auto-save</Text>
                 <Text size="xs" color="secondary">Automatically save changes as you edit.</Text>
