@@ -1,5 +1,19 @@
 # lucent-ui
 
+## 0.46.0
+
+### Minor Changes
+
+- **Iconset v2 — 21 new icons + 38 updated paths.**
+
+  Iconset grows from 69 → 90 icons.
+
+  **New (21):** Archive, Briefcase, Building, CirclePlay, CreditCard, DarkMode, Dollar, Drag, Flag, LightMode, LogIn, Megaphone, NoKey, Page, Play, RadioChecked, RadioUnchecked, Sparkle, Unarchive, Unlink, Verified.
+
+  **Updated (38):** AlertTriangle, Bolt, Check, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, CircleCheck, CircleHelp, CircleInfo, CirclePlus, CircleX, Clock, Copy, Dashboard, Database, Delete, Edit, File, Folder, Grid, Home, Inbox, Key, Link, List, LogOut, Minus, People, Person, Pipeline, Plus, PriceTag, Puzzle, Send, Settings, Shield, X — paths refreshed to the latest design.
+
+  **Not a breaking change.** Purely additive (21 new named exports) plus internal path refreshes on existing icon components.
+
 ## 0.45.0
 
 ### Minor Changes
