@@ -1947,7 +1947,7 @@ function Inner({
                   background: tokens.surface,
                 }}
               >
-                <Icon size="lg" label={name}>
+                <Icon size="lg" label={name} color={tokens.textPrimary}>
                   <IconComp />
                 </Icon>
                 <Text size="xs" color="secondary" family="mono" align="center" truncate>
