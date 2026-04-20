@@ -1,5 +1,27 @@
 # lucent-ui
 
+## 0.45.0
+
+### Minor Changes
+
+- **Lucent iconset (69 icons) + library-wide dogfooding.**
+
+  Adds a custom 69-icon set under `src/icons/`, exported from the public API as tree-shakable named React components. Consumed via the existing `Icon` atom wrapper:
+
+  ```tsx
+  import { Icon, ChevronDown } from "lucent-ui";
+
+  <Icon size="md">
+    <ChevronDown />
+  </Icon>;
+  ```
+
+  Internal components (Button chevron, Select/Combobox/SplitButton dropdowns, Chip/Tag dismiss, Alert/Toast status, Menu check, CommandPalette search, DataTable sort/pagination/check, DatePicker, FileUpload, PageLayout drawer toggle, Timeline, Stepper, SearchInput, FilterSearch, CodeBlock, devtools controls) now render iconset components instead of hand-drawn inline SVG paths — visual refresh with no API changes.
+
+  **Also in this release:** `LoginScreen` composition and `/login` page added to the marketing site.
+
+  **Not a breaking change.** Public API (props, types, component signatures) unchanged; 69 new named exports added.
+
 ## 0.44.0
 
 ### Minor Changes
